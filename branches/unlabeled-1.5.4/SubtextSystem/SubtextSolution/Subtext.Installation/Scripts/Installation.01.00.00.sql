@@ -7,7 +7,7 @@ ALTER TABLE [dbo].[subtext_Log] DROP CONSTRAINT FK_subtext_Log_subtext_Config
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[subtext_Log]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[subtext_Log]
+drop table [subtext_Log]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[subtext_Log]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
