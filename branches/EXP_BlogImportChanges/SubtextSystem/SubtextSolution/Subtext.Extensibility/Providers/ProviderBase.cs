@@ -59,8 +59,7 @@ namespace Subtext.Extensibility.Providers
 			}
 
 			// Use the cache because the reflection used later is expensive
-			object oconfig = ConfigurationSettings.GetConfig(sectionName);
-			ProviderConfiguration config = (ProviderConfiguration)oconfig;
+			ProviderConfiguration config = (ProviderConfiguration)ConfigurationSettings.GetConfig(sectionName);
 
 			ProviderBase provider = Instance(sectionName, config.Providers.DefaultProvider);
 
