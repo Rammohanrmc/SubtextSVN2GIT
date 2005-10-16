@@ -2,7 +2,7 @@
 <%@ Register TagPrefix="MP" Namespace="Subtext.Web.Controls" Assembly="Subtext.Web.Controls" %>
 <MP:MasterPage id="MPContainer" TemplateFile="~/HostAdmin/PageTemplate.ascx" runat="server">
 	<MP:ContentRegion id="MPTitle" runat="server">Subtext Import - Step 2 - Gather Information</MP:ContentRegion>
-	<MP:ContentRegion id="MPSubTitle" runat="server">Gathering Information</MP:ContentRegion>
+	<MP:ContentRegion id="MPSectionTitle" runat="server">Gathering Information</MP:ContentRegion>
 	<p class="error"><asp:Literal id="ltlErrorMessage" Runat="server" EnableViewState="False"></asp:Literal></p>
 	<p>
 		In this step, the import engine needs to gather some information 

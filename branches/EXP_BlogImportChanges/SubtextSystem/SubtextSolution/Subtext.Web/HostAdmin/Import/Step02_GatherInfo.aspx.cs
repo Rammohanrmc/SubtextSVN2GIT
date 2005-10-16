@@ -13,12 +13,12 @@ namespace Subtext.Web.HostAdmin
 		protected System.Web.UI.WebControls.PlaceHolder plcImportInformation;
 		protected System.Web.UI.WebControls.Button btnNext;
 		protected Subtext.Web.Controls.ContentRegion MPTitle;
-		protected Subtext.Web.Controls.ContentRegion MPSubTitle;
 		protected Subtext.Web.Controls.MasterPage MPContainer;
 		protected System.Web.UI.WebControls.Literal ltlErrorMessage;
 		protected System.Web.UI.WebControls.Button btnBeginImport;
 		protected System.Web.UI.HtmlControls.HtmlGenericControl paraBeginImportText;
 		ProviderInfo _providerInfo = null;
+		protected Subtext.Web.Controls.ContentRegion MPSectionTitle;
 		Control importInformationControl = null;
 
 		private void Page_Load(object sender, System.EventArgs e)
@@ -124,8 +124,8 @@ namespace Subtext.Web.HostAdmin
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.btnBeginImport.Click += new EventHandler(btnBeginImport_Click);
 			this.btnNext.Click += new System.EventHandler(this.btnNext_Click);
+			this.btnBeginImport.Click += new System.EventHandler(this.btnBeginImport_Click);
 			this.Load += new System.EventHandler(this.Page_Load);
 
 		}
