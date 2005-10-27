@@ -149,11 +149,6 @@
                     AssemblyName = "DotNetOpenMail"
                     HintPath = "ExternalDependencies\DotNetOpenMail.dll"
                 />
-                <Reference
-                    Name = "BlogML"
-                    AssemblyName = "BlogML"
-                    HintPath = "ExternalDependencies\BlogML.dll"
-                />
             </References>
         </Build>
         <Files>
@@ -519,6 +514,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Exceptions\CommentBlacklistException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Exceptions\CommentDuplicateException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -547,10 +547,6 @@
                     RelPath = "Exceptions\InvalidApplicationNameException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ExternalDependencies\BlogML.dll"
-                    BuildAction = "Content"
                 />
                 <File
                     RelPath = "ExternalDependencies\CookComputing.XmlRpc.dll"
@@ -582,11 +578,6 @@
                 />
                 <File
                     RelPath = "Format\UrlFormats.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Import\SubtextBlogMLWriter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
