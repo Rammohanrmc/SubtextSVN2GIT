@@ -39,7 +39,7 @@ namespace Subtext.Web.Admin.Pages
 		private const string RES_FAILURE = "Configuration update failed.";
 
 		protected Subtext.Web.Admin.WebUI.AdvancedPanel Edit;
-		protected System.Web.UI.WebControls.LinkButton lkbPost;
+		protected System.Web.UI.WebControls.Button lkbPost;
 		protected System.Web.UI.WebControls.TextBox txbTitle;
 		protected System.Web.UI.WebControls.TextBox txbSubtitle;
 		protected System.Web.UI.WebControls.TextBox txbAuthor;

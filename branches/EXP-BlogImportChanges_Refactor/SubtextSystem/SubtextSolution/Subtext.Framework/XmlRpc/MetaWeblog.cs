@@ -259,15 +259,18 @@ namespace Subtext.Framework.XmlRpc
 
 		// we'll also add a couple structs and methods to give us nominal MT API-level support.
 		// by doing this we'll allow w.bloggar to run against .Text using w.b's MT configuration.
-		[XmlRpcMissingMapping(MappingAction.Ignore)]
 		public struct MtCategory
 		{
-			[XmlRpcMissingMapping(MappingAction.Error)]
 			public string categoryId;
-			[XmlRpcMissingMapping(MappingAction.Error)]
+			[XmlRpcMissingMapping(MappingAction.Ignore)]
 			public string categoryName;
+			[XmlRpcMissingMapping(MappingAction.Ignore)]
 			public bool isPrimary;
 
+			/// <summary>
+			/// Initializes a new instance of the <see cref="MtCategory"/> class.
+			/// </summary>
+			/// <param name="category">The category.</param>
 			public MtCategory(string category)
 			{
 				categoryId = category;
@@ -275,12 +278,37 @@ namespace Subtext.Framework.XmlRpc
 				isPrimary = false;
 			}
 
+			/// <summary>
+			/// Initializes a new instance of the <see cref="MtCategory"/> class.
+			/// </summary>
+			/// <param name="id">The id.</param>
+			/// <param name="category">The category.</param>
 			public MtCategory(string id, string category)
 			{
 				categoryId = id;
 				categoryName = category;
 				isPrimary = false;
 			}
+		}
+
+		/// <summary>
+		/// Represents a text filter returned by mt.supportedTextFilters.
+		/// </summary>
+		[XmlRpcMissingMapping(MappingAction.Ignore)]
+		public struct MtTextFilter
+		{
+			/// <summary>
+			/// Initializes a new instance of the <see cref="MtTextFilter"/> class.
+			/// </summary>
+			/// <param name="key">The key.</param>
+			/// <param name="label">The label.</param>
+			public MtTextFilter(string key, string label)
+			{
+				this.key = key; 
+				this.label = label;
+			}
+			public string key;
+			public string label;
 		}
 
 		[XmlRpcMethod("mt.getCategoryList", 
@@ -363,6 +391,23 @@ namespace Subtext.Framework.XmlRpc
 			}				
 			
 			return categories;
+		}
+
+		/// <summary>
+		/// Retrieve information about the text formatting plugins supported by the server.
+		/// </summary>
+		/// <returns>
+		/// an array of structs containing String key and String label. 
+		/// key is the unique string identifying a text formatting plugin, 
+		/// and label is the readable description to be displayed to a user. 
+		/// key is the value that should be passed in the mt_convert_breaks 
+		/// parameter to newPost and editPost.
+		/// </returns>
+		[XmlRpcMethod("mt.supportedTextFilters",
+			 Description="Retrieve information about the text formatting plugins supported by the server.")]
+		public MtTextFilter[] GetSupportedTextFilters()
+		{
+			return new MtTextFilter[] {new MtTextFilter("test", "test"), };
 		}
 		#endregion
 
