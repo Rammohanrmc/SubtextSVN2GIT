@@ -52,6 +52,8 @@
 							<li>
 								<a href="Options.aspx" id="TabOptions">Options</a></li>
 							</li>
+							<li>
+								<a href="ImportExport.aspx" id="TabImportExport">Import/Export</a></li>
 						</ul>
 						<div id="SubNav">
 							<ANW:BreadCrumbs id="BreadCrumbs" UsePrefixText="true" IsPanel="false" IncludeRoot="false" runat="server" />

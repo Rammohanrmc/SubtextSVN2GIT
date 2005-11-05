@@ -1,5 +1,5 @@
 using System;
-using NUnit.Framework;
+using MbUnit.Framework;
 using Subtext.Extensibility;
 using Subtext.Framework;
 using Subtext.Framework.Components;
@@ -20,7 +20,7 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		/// Makes sure that the content checksum hash is being created correctly.
 		/// </summary>
 		[Test]
-		[Rollback]
+		[RollBack]
 		public void EntryCreateHasContentHash()
 		{
 			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
@@ -32,7 +32,7 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 			entry.Body = "Some Body";
 			int id = Entries.Create(entry);
 
-			Entry savedEntry = Entries.GetEntry(id, false);
+			Entry savedEntry = Entries.GetEntry(id, EntryGetOption.All);
 			Assert.IsTrue(savedEntry.ContentChecksumHash.Length > 0, "The Content Checksum should be larger than 0.");
 
 		}
