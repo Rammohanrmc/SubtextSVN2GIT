@@ -685,7 +685,7 @@ ul#TopNav li {
 }
 
 #SubNav A:link, 
-#SubNav A:visited,{
+#SubNav A:visited {
 	color: #001E6A;
 	background: inherit;	
 	/*font-weight: normal;*/
