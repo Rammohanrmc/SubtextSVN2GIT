@@ -328,9 +328,19 @@ namespace Subtext.Framework.Text
 		/// </summary>
 		/// <param name="str">The string to be checked</param>
 		/// <returns></returns>
-		public static String ReturnCheckForNull(String str)
+		public static String ReturnCheckForNull(string str)
 		{
 			return (str == null || str.Equals(string.Empty)) ? string.Empty : str;
+		}
+		/// <summary>
+		/// Returns a NULL if the passed in string is either the EmptyString ("") or 
+		/// is NULL, else it returns the passed in string.
+		/// </summary>
+		/// <param name="str">The string to be checked</param>
+		/// <returns></returns>
+		public static String ReturnNullForEmpty(string str)
+		{
+			return (str == null || str.Equals(string.Empty)) ? null : str;
 		}
 	}
 }

@@ -591,6 +591,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Import\SubtextBlogMLReader.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Import\SubtextBlogMLWriter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
