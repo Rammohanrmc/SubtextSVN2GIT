@@ -2,7 +2,13 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Data.SqlClient;
+using System.Web;
 using BlogML;
+using log4net;
+using Subtext.Framework.Configuration;
+using Subtext.Framework.Format;
+using Subtext.Framework.Logging;
+using Subtext.Framework.Text;
 
 namespace Subtext.Framework.Import
 {
@@ -15,6 +21,7 @@ namespace Subtext.Framework.Import
 		private bool _IsUseGuids;
 		private string _Host;
 		private Hashtable _Categories = new Hashtable();
+		private readonly static ILog log = new Log();
 		
 		// Used by Sql Data Handlers //////////////////////////
 		private string _connectionString;
@@ -209,6 +216,7 @@ namespace Subtext.Framework.Import
 		{
 			int currentPostId = -1;
 			string newPostID = string.Empty;
+			string postContent = post["Text"] as string;
 			
 			try
 			{
@@ -228,11 +236,12 @@ namespace Subtext.Framework.Import
 							   DateTime.Parse(post["DateAdded"].ToString()).ToUniversalTime(),
 							   DateTime.Parse(post["DateUpdated"].ToString()).ToUniversalTime(),
 							   true,
-							   post["Text"] as string, 
+							   postContent, 
 							   GetPostUrl(newPostID),
 							   false);
 				Writer.Flush();
 
+				WritePostAttachments(postContent);
 				WritePostComments(currentPostId);
 				WritePostCategories(currentPostId);
 				WritePostTrakbacks(currentPostId);
@@ -247,6 +256,44 @@ namespace Subtext.Framework.Import
 			}
 		}
 
+		private void WritePostAttachments(string content)
+		{
+			string[] imagesURLs = SgmlUtil.GetAttributeValues(content, "img", "src");
+			string imageURL = null;
+			string appFullRootUrl = "http://" + Config.CurrentBlog.Host.ToLower() 
+				+ StringHelper.ReturnCheckForNull(HttpContext.Current.Request.ApplicationPath.ToLower());
+			
+			if(imagesURLs.Length > 0)
+			{
+				WriteStartAttachments();
+				for(int i=0; i < imagesURLs.Length; i++)
+				{
+					imageURL = imagesURLs[i].ToLower();
+
+					// now we need to determine if the URL is local
+					if(SgmlUtil.IsRootUrlOf(appFullRootUrl, imageURL))
+					{
+						try
+						{
+							// TODO: get the siteRoot-relative url for imageURL
+							WriteAttachment(
+								UrlFormats.StripHostFromUrl(imageURL), 
+								UrlFormats.GetImageFullUrl(imageURL));
+							Writer.Flush();
+						}
+						catch(Exception e)
+						{
+							// lets do some error logging!
+							log.Error(string.Format(
+								"An error occured while trying to write an attachment for this blog. Error: {0}", e.Message),
+								e);
+						}
+					}
+				}
+				WriteEndElement(); // End Attachments Element
+				Writer.Flush();
+			}
+		}
 		
 		private void WritePostComments( int postID )
 		{

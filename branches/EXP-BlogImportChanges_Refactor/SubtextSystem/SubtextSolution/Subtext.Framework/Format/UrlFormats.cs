@@ -312,7 +312,7 @@ namespace Subtext.Framework.Format
 		/// </summary>
 		/// <param name="imageUrl">url to an image</param>
 		/// <returns>fully qualified url to the image</returns>
-		public static string GetImageFullUrl( string imageUrl ) 
+		public static string GetImageFullUrl(string imageUrl) 
 		{
 			/// Examples of some fully qualified URLs: 
 			/// http://somehost.com/Subtext.Web/images/somehost_com/Subtext_Web/blog/8/pic.jpg
@@ -335,6 +335,22 @@ namespace Subtext.Framework.Format
 				imageUrl = "http://" + Config.CurrentBlog.Host + "/" + imageUrl ;
 			}
 			return imageUrl ;
+		}
+		/// <summary>
+		/// Return the url with the http://host stripped off the front. The given url
+		/// may or maynot have the http://host on it.
+		/// </summary>
+		/// <param name="url"></param>
+		/// <returns></returns>
+		public static string StripHostFromUrl(string url)
+		{
+			string fullHost = "http://" + Config.CurrentBlog.Host;
+			if(url.StartsWith(fullHost))
+			{
+				// use Lenght b/c we want to leave the beginning "/" character on newUrl
+				url = url.Substring(fullHost.Length);
+			}
+			return url;
 		}
 	}
 }
