@@ -261,7 +261,7 @@ namespace Subtext.Framework.Import
 			string[] imagesURLs = SgmlUtil.GetAttributeValues(content, "img", "src");
 			string imageURL = null;
 			string appFullRootUrl = "http://" + Config.CurrentBlog.Host.ToLower() 
-				+ StringHelper.ReturnCheckForNull(HttpContext.Current.Request.ApplicationPath.ToLower());
+				+ StringHelper.ReturnCheckForNull(HttpContext.Current.Request.ApplicationPath);
 			
 			if(imagesURLs.Length > 0)
 			{
@@ -275,9 +275,10 @@ namespace Subtext.Framework.Import
 					{
 						try
 						{
-							// TODO: get the siteRoot-relative url for imageURL
+							// make sure to write the imageURL as-is in the post so it can be
+							// found and fixed when un-serializing the blog later.
 							WriteAttachment(
-								UrlFormats.StripHostFromUrl(imageURL), 
+								imageURL, 
 								UrlFormats.GetImageFullUrl(imageURL));
 							Writer.Flush();
 						}
