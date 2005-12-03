@@ -17,13 +17,17 @@ using Image = System.Drawing.Image;
 namespace Subtext.Framework.Import
 {
 	/// <summary>
-	/// Summary description for SubtextBlogMLReader.
+	/// Reads and imports a BlogML file.  This is based on the BlogML standard 
+	/// proposed by Darren Neimke in <see href="http://markitup.com/Posts/PostsByCategory.aspx?categoryId=5751cee9-5b20-4db1-93bd-7e7c66208236">http://markitup.com/Posts/PostsByCategory.aspx?categoryId=5751cee9-5b20-4db1-93bd-7e7c66208236</see>
 	/// </summary>
 	public sealed class SubtextBlogMLReader
 	{
 
 		private readonly static ILog log = new Log();
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SubtextBlogMLReader"/> class.
+		/// </summary>
 		public SubtextBlogMLReader()
 		{
 			//

@@ -12,7 +12,10 @@ using Subtext.Framework.Text;
 
 namespace Subtext.Framework.Import
 {
-	
+	/// <summary>
+	/// Exports a blog to a BlogML file.  This is based on the BlogML standard 
+	/// proposed by Darren Neimke in <see href="http://markitup.com/Posts/PostsByCategory.aspx?categoryId=5751cee9-5b20-4db1-93bd-7e7c66208236">http://markitup.com/Posts/PostsByCategory.aspx?categoryId=5751cee9-5b20-4db1-93bd-7e7c66208236</see>
+	/// </summary>
 	public sealed class SubtextBlogMLWriter : BlogMLWriterBase
 	{
 		#region Private Members
