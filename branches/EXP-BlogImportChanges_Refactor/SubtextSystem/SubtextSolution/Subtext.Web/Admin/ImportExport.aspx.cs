@@ -24,6 +24,7 @@
 using System;
 using System.IO;
 using System.Web.UI.WebControls;
+using Subtext.Framework.Configuration;
 using Subtext.Framework.Import;
 using Subtext.Web.Admin.WebUI;
 
@@ -76,7 +77,7 @@ namespace Subtext.Web.Admin.Pages
 
 		private void btnSave_Click(object sender, EventArgs e)
 		{
-			Response.Redirect("~/Admin/Handlers/BlogMLExport.ashx?embed=" + this.chkEmbedAttach.Checked);
+			Response.Redirect(Config.CurrentBlog + "Admin/Handlers/BlogMLExport.ashx?embed=" + this.chkEmbedAttach.Checked);
 		}
 
 		private void btnLoad_Click(object sender, System.EventArgs e)
