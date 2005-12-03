@@ -709,6 +709,15 @@
                     BuildAction = "None"
                 />
                 <File
+                    RelPath = "Admin\Handlers\BlogMLExport.ashx"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Admin\Handlers\BlogMLExport.ashx.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Admin\Resources\admin.css"
                     BuildAction = "Content"
                 />
