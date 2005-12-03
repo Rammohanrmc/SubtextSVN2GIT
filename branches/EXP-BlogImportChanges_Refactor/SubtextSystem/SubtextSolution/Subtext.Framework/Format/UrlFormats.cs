@@ -352,5 +352,13 @@ namespace Subtext.Framework.Format
 			}
 			return url;
 		}
+
+		public static string GetHostFromExternalUrl(string url)
+		{
+			string hostDelim = "://";
+			int hostStart = url.IndexOf(hostDelim) + 3;
+			int hostEnd = url.IndexOf("/", hostStart);
+			return url.Substring(hostStart, hostEnd-hostStart);
+		}
 	}
 }

@@ -42,8 +42,10 @@ namespace Subtext.Web.Admin.Pages
 		protected AdvancedPanel Action;
 		protected MessagePanel Messages;
 
-		private string _dirPath = HttpContext.Current.Server.MapPath("~/Admin/BlogML") ;
-		private string _filePath = HttpContext.Current.Server.MapPath("~/Admin/BlogML/Data.xml") ;
+		private string dirPath = HttpContext.Current.Server.MapPath("~/Admin/BlogML");
+		private string filePath = HttpContext.Current.Server.MapPath("~/Admin/BlogML/Data.xml");
+		protected System.Web.UI.WebControls.Button btnLoad;
+		protected System.Web.UI.HtmlControls.HtmlInputFile importBlogMLFile;
 	
 		private void Page_Load(object sender, EventArgs e)
 		{
@@ -53,48 +55,10 @@ namespace Subtext.Web.Admin.Pages
 		{
 			base.OnPreRender (e);
 
-			//	TODO: need to figure out a cleaver way to dynamically & randomly generate the file  
-			//	name for output and then remove them after they've been clicked or after they expire.
+			//	TODO: need to figure out a clever way to dynamically & randomly generate the file  
+			//	name for output and then remove them after they've been clicked or after it expires.
 			hypBlogMLFile.NavigateUrl = "~/Admin/BlogML/Data.xml";
-			hypBlogMLFile.Visible = File.Exists(_filePath);
-		}
-
-		private void WriteBlogML()
-		{
-			string connStr = Config.Settings.ConnectionString;
-			SubtextBlogMLWriter blogWriter = new SubtextBlogMLWriter(connStr, Config.CurrentBlog.BlogID, false);
-			blogWriter.EmbedAttachments = this.chkEmbedAttach.Checked;
-
-			hypBlogMLFile.Visible = false;
-
-			if(!Directory.Exists(_dirPath))
-			{
-				Directory.CreateDirectory(_dirPath);
-			}
-			if(File.Exists(_filePath))
-			{
-				File.Delete(_filePath);
-			}
-
-			using(StreamWriter strWriter = File.CreateText(_filePath))
-			{
-				XmlTextWriter xWriter = null;
-				try
-				{
-					xWriter = new XmlTextWriter(strWriter);
-					xWriter.Formatting = Formatting.Indented;
-					blogWriter.Write(xWriter);
-				}
-				finally
-				{
-					xWriter.Close();
-				}
-			}
-		}
-
-		private void btnSave_Click(object sender, EventArgs e)
-		{
-			WriteBlogML();
+			hypBlogMLFile.Visible = File.Exists(filePath);
 		}
 
 		#region Web Form Designer generated code
@@ -113,11 +77,64 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.btnSave.Click += new EventHandler(this.btnSave_Click);
-			this.Load += new EventHandler(this.Page_Load);
+			this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+			this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
+			this.Load += new System.EventHandler(this.Page_Load);
 
 		}
 		#endregion
+
+		private void btnSave_Click(object sender, EventArgs e)
+		{
+			WriteBlogML();
+		}
+
+		private void btnLoad_Click(object sender, System.EventArgs e)
+		{
+			LoadBlogML();
+		}
+
+		private void WriteBlogML()
+		{
+			string connStr = Config.Settings.ConnectionString;
+			SubtextBlogMLWriter blogWriter = new SubtextBlogMLWriter(connStr, Config.CurrentBlog.BlogID, false);
+			blogWriter.EmbedAttachments = this.chkEmbedAttach.Checked;
+
+			hypBlogMLFile.Visible = false;
+
+			if(!Directory.Exists(dirPath))
+			{
+				Directory.CreateDirectory(dirPath);
+			}
+			if(File.Exists(filePath))
+			{
+				File.Delete(filePath);
+			}
+
+			using(StreamWriter strWriter = File.CreateText(filePath))
+			{
+				XmlTextWriter xWriter = null;
+				try
+				{
+					xWriter = new XmlTextWriter(strWriter);
+					xWriter.Formatting = Formatting.Indented;
+					blogWriter.Write(xWriter);
+				}
+				finally
+				{
+					xWriter.Close();
+				}
+			}
+		}
+
+		private void LoadBlogML()
+		{
+			SubtextBlogMLReader bmlReader = new SubtextBlogMLReader();
+
+			StreamReader sReader = new StreamReader(this.importBlogMLFile.PostedFile.InputStream);
+			bmlReader.ReadBlog(sReader.ReadToEnd(), false);
+			sReader.Close();
+		}
 	}
 }
 
