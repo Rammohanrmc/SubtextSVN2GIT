@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+<project name="SubText" default="dist.updateCVS">
+
+	<property name="CVSPATH" value="C:\Programmi\TortoiseCVS\cvs.exe"/>
+	<property name="SSHPATH" value="C:\Programmi\TortoiseCVS\TortoisePlink.exe"/>
+
+	<!-- Set this propery if you want to specify a custom destination
+		<property name="publish.root" value="D:\Simone\SubtextProject\SubtextSolution\buildArchive"/>
+		<property name="source.root" value="D:\Simone\SubtextProject\SubtextSolution\Subtext.DotTextUpgrader"/>
+	-->
+	
+	<target name="get-publishing-properties">
+		
+		<tstamp property="build.date" pattern="yyyyMMddTHHmmss" />
+	
+	
+		<ifnot test="${property::exists('publish.root')}"> 
+			<property name="publish.root" value="buildArchive"/>
+		</ifnot>
+		<ifnot test="${property::exists('source.root')}"> 
+			<property name="source.root" value="."/>
+		</ifnot>
+
+	<!--
+		<ifnot test="${property::exists('ccnet.label')}"> 
+			<fail message="ccnet.label property not set, so can't create labelled distribution files" />
+		</ifnot>
+	-->
+		
+		<property name="publish.dir.latest" value="${publish.root}\latest" />
+		<property name="publish.dir.archive" value="${publish.root}\archive" />
+		<property name="publish.dir.toCVS" value="${source.root}\Subtext.DotTextUpgrader" />
+
+	</target>
+
+
+	<target name="compile-main">
+		<solution configuration="debug">
+	    <projects>
+	        <include name="Subtext.Common\SubText.Common.csproj" />
+	        <include name="Subtext.DotTextUpgrader\Subtext.DotTextUpgrader.csproj" />
+	        <include name="Subtext.Extensibility\Subtext.Extensibility.csproj" />
+	        <include name="Subtext.Framework\Subtext.Framework.csproj" />
+	        <include name="Subtext.Installation\Subtext.Installation.csproj" />
+	        <include name="Subtext.Scripting\Subtext.Scripting.csproj" />
+	        <include name="Subtext.Web\Subtext.Web.csproj" />
+	        <include name="Subtext.Web.Controls\Subtext.Web.Controls.csproj" />
+	    </projects>
+		</solution>
+	</target>
+
+	<target name="compile-config">
+		<solution configuration="debug">
+    <projects>
+        <include name="SubtextConfigurationTool\SubtextConfigurationTool.csproj" />
+    </projects>
+		</solution>
+	</target>
+
+	<target name="compile-UnitTesting">
+		<solution configuration="debug">
+    <projects>
+        <include name="UnitTests.Subtext\UnitTests.SubText.csproj" />
+    </projects>
+    <referenceprojects>
+        <include name="Subtext.Common\SubText.Common.csproj" />
+        <include name="Subtext.DotTextUpgrader\Subtext.DotTextUpgrader.csproj" />
+        <include name="Subtext.Extensibility\Subtext.Extensibility.csproj" />
+        <include name="Subtext.Framework\Subtext.Framework.csproj" />
+        <include name="Subtext.Installation\Subtext.Installation.csproj" />
+        <include name="Subtext.Scripting\Subtext.Scripting.csproj" />
+        <include name="Subtext.Web\Subtext.Web.csproj" />
+        <include name="Subtext.Web.Controls\Subtext.Web.Controls.csproj" />
+    </referenceprojects>
+		</solution>
+	</target>
+
+
+
+	<target name="dist.publish.latest" depends="compile-main,get-publishing-properties">
+
+		<delete dir="${publish.dir.latest}" failonerror="false" />
+		<mkdir dir="${publish.dir.latest}" />
+		<copy todir="${publish.dir.latest}">
+			<fileset basedir="Subtext.Web">
+				<include name="**/*" />
+				<exclude name="**/*.bmp" />
+				<exclude name="Images/**" />
+				<include name="Images/*" />
+				<include name="Images/emotions/*" />
+				<exclude name="**/*.cs"/>
+				<exclude name="**/*.txt"/>
+				<exclude name="**/*.resx"/>
+				<exclude name="**/*.csproj"/>
+				<exclude name="**/*.csproj.user"/>
+				<exclude name="**/.cvsignore"/>
+				<exclude name="obj/**"/>
+			</fileset>
+		</copy>
+		
+		<attrib readonly="false" >
+			<fileset basedir="${publish.dir.latest}">
+				<include name="**/*" />
+			</fileset>
+		</attrib>
+		
+	</target>
+
+
+	<target name="dist.archive" depends="dist.publish.latest">
+		
+		<mkdir dir="${publish.dir.archive}" />
+		<zip zipfile="${publish.dir.archive}\${build.date}.zip">
+		<fileset basedir="${publish.dir.latest}">
+			<include name="**/*" />
+			<exclude name="**/*.pdb" />
+		</fileset>
+		</zip>
+		
+	</target>
+	
+	
+	<!--
+		<target name="dist.updateCVS" depends="get-publishing-properties">
+		-->
+	
+
+	<target name="dist.updateCVS" depends="dist.archive">
+			<copy file="${publish.dir.archive}\${build.date}.zip"
+				tofile="${publish.dir.toCVS}\SubtextDeployment.zip" />
+				
+		<property name="web.config.latest" value="${publish.dir.latest}\web.config" />
+		<property name="web.config.published" value="${publish.dir.toCVS}\Scripts\web.config" />
+		
+		<ifnot test="${file::up-to-date(web.config.latest,web.config.published)}">
+			<copy file="${publish.dir.latest}\web.config"
+					tofile="${publish.dir.toCVS}\Scripts\web.config" />	
+		</ifnot>
+
+		<cvs command="commit"
+				destination="${publish.dir.toCVS}\Scripts"
+				commandline="-m &quot;test via NANT&quot; web.config"
+				module="SubtextProject"
+				usesharpcvslib="false"
+				cvsfullpath="${CVSPATH}"
+				cvsrsh="${SSHPATH}"
+			>
+		</cvs>
+		
+		<cvs command="commit"
+				destination="${publish.dir.toCVS}"
+				commandline="-m &quot;test via NANT&quot; SubtextDeployment.zip"
+				module="SubtextProject"
+				usesharpcvslib="false"
+				cvsfullpath="${CVSPATH}"
+				cvsrsh="${SSHPATH}"
+			>
+		</cvs>
+
+	</target>
+
+
+</project>
