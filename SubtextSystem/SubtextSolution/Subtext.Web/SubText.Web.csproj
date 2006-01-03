@@ -192,6 +192,11 @@
                     Lcid = "0"
                     WrapperTool = "tlbimp"
                 />
+                <Reference
+                    Name = "Lesnikowski.Pawel.Mail.Pop3"
+                    AssemblyName = "Lesnikowski.Pawel.Mail.Pop3"
+                    HintPath = "ExternalDependencies\Lesnikowski.Pawel.Mail.Pop3.dll"
+                />
             </References>
         </Build>
         <Files>
@@ -1190,6 +1195,10 @@
                     BuildAction = "Content"
                 />
                 <File
+                    RelPath = "ExternalDependencies\Lesnikowski.Pawel.Mail.Pop3.dll"
+                    BuildAction = "Content"
+                />
+                <File
                     RelPath = "ExternalDependencies\MetaBuilders.WebControls.DefaultButtons.dll"
                     BuildAction = "Content"
                 />
@@ -1561,6 +1570,11 @@
                     RelPath = "Services\Dottext.asmx.resx"
                     DependentUpon = "Dottext.asmx.cs"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Services\MailToWeblog.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Services\SimpleBlogService.asmx"
@@ -3690,6 +3704,11 @@
                 />
                 <File
                     RelPath = "UI\Controls\StoryList.cs"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UI\Controls\SubtextSearch.cs"
                     SubType = "ASPXCodeBehind"
                     BuildAction = "Compile"
                 />

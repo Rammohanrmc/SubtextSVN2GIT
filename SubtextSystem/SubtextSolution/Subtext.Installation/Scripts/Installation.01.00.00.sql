@@ -144,7 +144,17 @@ CREATE TABLE [<dbUser,varchar,dbo>].[subtext_Config] (
 	[BlogGroup] [int] NULL ,
 	[LicenseUrl] [nvarchar] (64) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
 	[DaysTillCommentsClose] [int] NULL ,
-	[CommentDelayInMinutes] [int] NULL
+	[CommentDelayInMinutes] [int] NULL,
+	[pop3User] [char] (50) COLLATE Latin1_General_CI_AI NULL ,
+	[pop3Pass] [char] (20) COLLATE Latin1_General_CI_AI NULL ,
+	[pop3Server] [char] (50) COLLATE Latin1_General_CI_AI NULL ,
+	[pop3StartTag] [char] (10) COLLATE Latin1_General_CI_AI NULL ,
+	[pop3EndTag] [char] (10) COLLATE Latin1_General_CI_AI NULL ,
+	[pop3SubjectPrefix] [char] (10) COLLATE Latin1_General_CI_AI NULL ,
+	[pop3MTBEnable] [bit] NULL ,
+	[pop3DeleteOnlyProcessed] [bit] NULL ,
+	[pop3InlineAttachedPictures] [bit] NULL ,
+	[pop3HeightForThumbs] [int] NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 

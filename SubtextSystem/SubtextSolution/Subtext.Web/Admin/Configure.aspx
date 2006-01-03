@@ -1,25 +1,24 @@
-<%@ Register TagPrefix="SP" Namespace="Subtext.Web.Controls" Assembly="Subtext.Web.Controls" %>
-<%@ Register TagPrefix="ANW" Namespace="Subtext.Web.Admin.WebUI" Assembly="Subtext.Web" %>
 <%@ Page language="c#" Codebehind="Configure.aspx.cs" AutoEventWireup="false" Inherits="Subtext.Web.Admin.Pages.Configure" %>
+<%@ Register TagPrefix="ANW" Namespace="Subtext.Web.Admin.WebUI" Assembly="Subtext.Web" %>
+<%@ Register TagPrefix="SP" Namespace="Subtext.Web.Controls" Assembly="Subtext.Web.Controls" %>
 <ANW:PAGE id="PageContainer" Categorieslabel="Other Items" TabSectionID="Options" runat="server">
 	<ANW:MessagePanel id="Messages" runat="server"></ANW:MessagePanel>
-	<ANW:AdvancedPanel id="Edit" runat="server" DisplayHeader="true" BodyCssClass="Edit" HeaderCssClass="CollapsibleHeader"
-		HeaderText="Configure" Collapsible="False">
-		<FIELDSET>
-			<LEGEND>Enter configuration settings</LEGEND>
-			<P><LABEL class="Block" accessKey="t" for="Edit_txbTitle"><U>T</U>itle</LABEL>
+	<ANW:AdvancedPanel id="Edit" runat="server" Collapsible="False" HeaderText="Configure" HeaderCssClass="CollapsibleHeader"
+		BodyCssClass="Edit" DisplayHeader="true">
+		<FIELDSET><LEGEND>Enter configuration settings</LEGEND>
+<P><LABEL class="Block" accessKey="t" for="Edit_txbTitle"><U>T</U>itle</LABEL>
 				<asp:TextBox id="txbTitle" runat="server" CssClass="textinput"></asp:TextBox></P>
-			<P><LABEL class="Block" accessKey="s" for="Edit_txbSubtitle"><U>S</U>ubtitle</LABEL>
+<P><LABEL class="Block" accessKey="s" for="Edit_txbSubtitle"><U>S</U>ubtitle</LABEL>
 				<asp:TextBox id="txbSubtitle" runat="server" CssClass="textinput"></asp:TextBox></P>
-			<P><LABEL class="Block" accessKey="u" for="Edit_txbUser"><U>U</U>sername</LABEL>
+<P><LABEL class="Block" accessKey="u" for="Edit_txbUser"><U>U</U>sername</LABEL>
 				<asp:TextBox id="txbUser" runat="server" CssClass="textinput"></asp:TextBox></P>
-			<P><LABEL class="Block" accessKey="n" for="Edit_txbAuthor">Owner's Display 
+<P><LABEL class="Block" accessKey="n" for="Edit_txbAuthor">Owner's Display 
 <U>N</U>ame</LABEL>
 				<asp:TextBox id="txbAuthor" runat="server" CssClass="textinput"></asp:TextBox></P>
-			<P><LABEL class="Block" accessKey="e" for="Edit_txbAuthorEmail">Owner's 
+<P><LABEL class="Block" accessKey="e" for="Edit_txbAuthorEmail">Owner's 
 <U>E</U>mail</LABEL>
 				<asp:TextBox id="txbAuthorEmail" runat="server" CssClass="textinput"></asp:TextBox></P>
-			<P><LABEL class="Block" accessKey="z" for="Edit_ddlTimezone">Time<U>z</U>one</LABEL>
+<P><LABEL class="Block" accessKey="z" for="Edit_ddlTimezone">Time<U>z</U>one</LABEL>
 				<asp:DropDownList id="ddlTimezone" runat="server">
 					<asp:ListItem Text="Hawaii (GMT -10)" Value="-10" />
 					<asp:ListItem Text="Alaska (GMT -9)" Value="-9" />
@@ -41,7 +40,7 @@
 					<asp:ListItem Text="Pacific Rim Time (GMT +11)" Value="11" />
 					<asp:ListItem Text="New Zealand Time (GMT +12)" Value="12" />
 				</asp:DropDownList></P>
-			<P><LABEL class="Block" accessKey="l" for="Edit_ddlLangLocale"><U>L</U>anguage/Locale</LABEL>
+<P><LABEL class="Block" accessKey="l" for="Edit_ddlLangLocale"><U>L</U>anguage/Locale</LABEL>
 				<asp:DropDownList id="ddlLangLocale" runat="server">
 					<asp:ListItem Text="Afrikaans" Value="af" />
 					<asp:ListItem Text="Afrikaans - South Africa" Value="af-ZA" />
@@ -245,25 +244,55 @@
 					<asp:ListItem Text="Vietnamese" Value="vi" />
 					<asp:ListItem Text="Vietnamese - Vietnam" Value="vi-VN" />
 				</asp:DropDownList></P>
-			<P><LABEL class="Block" accessKey="d" for="Edit_ddlItemCount"><U>D</U>efault Number of 
+<P><LABEL class="Block" accessKey="d" for="Edit_ddlItemCount"><U>D</U>efault Number of 
 Feed/Homepage Items</LABEL>
 				<asp:DropDownList id="ddlItemCount" runat="server"></asp:DropDownList></P>
-			<P><LABEL class="Block" accessKey="s" for="Edit_ddlSkin">Display <U>S</U>kin</LABEL>
+<P><LABEL class="Block" accessKey="s" for="Edit_ddlSkin">Display <U>S</U>kin</LABEL>
 				<asp:DropDownList id="ddlSkin" runat="server"></asp:DropDownList></P>
-			<P><LABEL class="Block" accessKey="c" for="Edit_txbSecondaryCss">
+<P><LABEL class="Block" accessKey="c" for="Edit_txbSecondaryCss">
 					<SP:HelpToolTip id="HelpToolTip1" runat="server" HelpText="You can enter custom CSS within this block.  Be careful as the tool will not validate the CSS.  This CSS will be included (as a proper link) within every page of your blog."><U>
 							C</U>ustom 
 CSS</SP:HelpToolTip>
 				</LABEL>
 				<asp:TextBox id="txbSecondaryCss" runat="server" CssClass="textarea" TextMode="MultiLine"></asp:TextBox></P>
-			<P><LABEL class="Block" accessKey="a" for="Edit_txbNews">Static 
+<P><LABEL class="Block" accessKey="a" for="Edit_txbNews">Static 
 News/<U>A</U>nnouncement</LABEL>
 				<asp:TextBox id="txbNews" runat="server" CssClass="textarea" TextMode="MultiLine"></asp:TextBox></P>
-			<P><LABEL accessKey="w" for="Edit_ckbAllowServiceAccess">Allow <U>W</U>eb Service 
+<P><LABEL accessKey="w" for="Edit_ckbAllowServiceAccess">Allow <U>W</U>eb Service 
 Access</LABEL>
 				<asp:CheckBox id="ckbAllowServiceAccess" runat="server"></asp:CheckBox></P>
-			<DIV>
-				<asp:Button id="lkbPost" runat="server" CssClass="buttonSubmit" Text="Save"></asp:Button></DIV>
-		</FIELDSET>
+<HR width="100%" SIZE="1">
+<!--Mail to Weblog UI-->
+<P><LABEL class="Block" accessKey="m" for="Edit_ckbPop3MailToWeblog">Enable 
+<U>M</U>ailToWeblog 
+<asp:CheckBox id="ckbPop3MailToWeblog" runat="server"></asp:CheckBox></LABEL></P>
+<P><LABEL class="Block" accessKey="p" for="Edit_txbPop3Server"><U>P</U>op3 
+Server</LABEL>
+				<asp:TextBox id="txbPop3Server" runat="server" CssClass="textinput" Width="200px">pop3.yourdomain.com</asp:TextBox></P>
+<P><LABEL class="Block" accessKey="r" for="Edit_txbPop3User">Pop3 Use<U>r</U> 
+Name</LABEL>
+				<asp:TextBox id="txbPop3User" runat="server" CssClass="textinput" Width="100px"></asp:TextBox><LABEL class="Block" accessKey="y" for="Edit_txbPop3Password">Pop3 Password<U>Y</U></LABEL>
+				<asp:TextBox id="txbPop3Password" runat="server" CssClass="textinput" TextMode="Password" Width="100px"></asp:TextBox></P>
+<P><LABEL class="Block" accessKey="f" for="Edit_txbPop3Subject">Pop3 Subject 
+Pre<U>f</U>ix</LABEL>
+				<asp:TextBox id="txbPop3Subject" runat="server" CssClass="textinput" Width="100px">BLOGIT</asp:TextBox></P>
+<P><LABEL class="Block" accessKey="g" for="Edit_txbPop3StartTag">Pop3 Start 
+Ta<U>g</U></LABEL>
+				<asp:TextBox id="txbPop3StartTag" runat="server" CssClass="textinput" Width="100px">startTag</asp:TextBox>&nbsp;<LABEL class="Block" accessKey="x" for="Edit_txbPop3EndTag">Pop3 End Tag<U>X</U></LABEL>
+				<asp:TextBox id="txbPop3EndTag" runat="server" CssClass="textinput" Width="100px">endTag</asp:TextBox></P>
+<P><LABEL class="Block" accessKey="3" for="Edit_ckbPop3InlineAttachedPict">Pop<U>3</U> 
+Inline Attached Pictures 
+<asp:CheckBox id="ckbPop3InlineAttachedPict" runat="server"></asp:CheckBox></LABEL></P>
+<P><LABEL class="Block" accessKey="h" for="Edit_txbPop3ThumbHeight">Pop3 Inline 
+Attached Pictures Thumb <U>H</U>eight</LABEL>
+				<asp:TextBox id="txbPop3ThumbHeight" runat="server" CssClass="textinput" Width="50px">100</asp:TextBox></P>
+<P><LABEL class="Block" accessKey="o" for="Edit_ckbPop3DeleteProcessedEmail">Delete 
+Pr<U>o</U>cessed E-Mails 
+<asp:CheckBox id="ckbPop3DeleteProcessedEmail" runat="server"></asp:CheckBox></P></LABEL>
+<HR width="100%" SIZE="1">
+
+<P></P>
+<DIV>
+				<asp:Button id="lkbPost" runat="server" CssClass="buttonSubmit" Text="Save"></asp:Button></DIV></FIELDSET>
 	</ANW:AdvancedPanel>
 </ANW:PAGE>
