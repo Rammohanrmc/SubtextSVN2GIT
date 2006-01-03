@@ -1192,6 +1192,17 @@ namespace Subtext.Framework.Data
 					,SqlHelper.MakeInParam("@LicenseUrl", SqlDbType.NVarChar, 64, info.LicenseUrl)
 					,SqlHelper.MakeInParam("@DaysTillCommentsClose", SqlDbType.Int, 4, daysTillCommentsClose)
 					,SqlHelper.MakeInParam("@CommentDelayInMinutes", SqlDbType.Int, 4, commentDelayInMinutes)
+					,SqlHelper.MakeInParam("@pop3User", SqlDbType.NVarChar, 50, info.pop3User)
+					,SqlHelper.MakeInParam("@pop3Pass", SqlDbType.NVarChar, 20, info.pop3Pass)
+					,SqlHelper.MakeInParam("@pop3Server", SqlDbType.NVarChar, 50, info.pop3Server)
+					//,SqlHelper.MakeInParam("@pop3Interval", SqlDbType.Int, 4, info.pop3Interval)
+					,SqlHelper.MakeInParam("@pop3StartTag", SqlDbType.NVarChar, 10, info.pop3StartTag)
+					,SqlHelper.MakeInParam("@pop3EndTag", SqlDbType.NVarChar, 10, info.pop3EndTag)
+					,SqlHelper.MakeInParam("@pop3SubjectPrefix", SqlDbType.NVarChar, 10, info.pop3SubjectPrefix)
+					,SqlHelper.MakeInParam("@pop3MTBEnable", SqlDbType.Bit, 1, info.pop3MTBEnable)
+					,SqlHelper.MakeInParam("@pop3DeleteOnlyProcessed", SqlDbType.Bit, 1, info.pop3DeleteOnlyProcessed)
+					,SqlHelper.MakeInParam("@pop3InlineAttachedPictures", SqlDbType.Bit, 1, info.pop3InlineAttachedPictures)
+					,SqlHelper.MakeInParam("@pop3HeightForThumbs", SqlDbType.Int, 4, info.pop3HeightForThumbs)
 				};
 
 

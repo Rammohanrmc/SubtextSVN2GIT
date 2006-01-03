@@ -54,8 +54,20 @@ namespace Subtext.Web.Admin.Pages
 		protected System.Web.UI.WebControls.TextBox txbSecondaryCss;
 		protected Subtext.Web.Admin.WebUI.MessagePanel Messages;
 		protected Subtext.Web.Controls.HelpToolTip HelpToolTip1;
-		protected Subtext.Web.Controls.HelpToolTip HelpToolTip2;
+		protected System.Web.UI.WebControls.CheckBox ckbPop3MailToWeblog;
+		protected System.Web.UI.WebControls.TextBox txbPop3Server;
+		protected System.Web.UI.WebControls.TextBox txbPop3User;
+		protected System.Web.UI.WebControls.TextBox txbPop3Password;
+		protected System.Web.UI.WebControls.TextBox txbPop3Subject;
+		protected System.Web.UI.WebControls.TextBox txbPop3StartTag;
+		protected System.Web.UI.WebControls.TextBox txbPop3EndTag;
+		protected System.Web.UI.WebControls.CheckBox ckbPop3InlineAttachedPict;
+		protected System.Web.UI.WebControls.TextBox txbPop3ThumbHeight;
+		protected System.Web.UI.WebControls.CheckBox ckbPop3DeleteProcessedEmail;
 		//protected Subtext.Web.Admin.WebUI.Page PageContainer;
+		//protected Subtext.Web.Admin.WebUI.Page PageContainer;
+		protected Subtext.Web.Controls.HelpToolTip HelpToolTip2;
+
 	
 		#region Accessors
 		public CategoryType CategoryType
@@ -89,6 +101,20 @@ namespace Subtext.Web.Admin.Pages
 			txbNews.Text = info.News;
 			ckbAllowServiceAccess.Checked = info.AllowServiceAccess;
 			ddlTimezone.Items.FindByValue(info.TimeZone.ToString(CultureInfo.InvariantCulture)).Selected = true;
+
+			//CHANGE: Mail To Weblog changes - Gurkan Yeniceri
+			ckbPop3MailToWeblog.Checked = info.pop3MTBEnable;
+			txbPop3Server.Text =info.pop3Server;
+			txbPop3User.Text = info.pop3User;
+			txbPop3Password.Text = info.pop3Pass;
+			txbPop3Subject.Text = info.pop3SubjectPrefix;
+			txbPop3StartTag.Text = info.pop3StartTag;
+			txbPop3EndTag.Text = info.pop3EndTag;
+			//txbPop3Interval.Text = info.pop3Interval.ToString();
+			ckbPop3DeleteProcessedEmail.Checked = info.pop3DeleteOnlyProcessed;
+			ckbPop3InlineAttachedPict.Checked = info.pop3InlineAttachedPictures;
+			txbPop3ThumbHeight.Text = info.pop3HeightForThumbs.ToString();
+			//End of changes
 
 			try
 			{
@@ -189,6 +215,23 @@ namespace Subtext.Web.Admin.Pages
 				{
 					info.Skin.SkinCssFile = null;
 				}
+
+				
+				//CHANGE: Mail To Weblog changes - Gurkan Yeniceri
+				info.pop3MTBEnable = ckbPop3MailToWeblog.Checked;
+				info.pop3Server = txbPop3Server.Text;
+				info.pop3User = txbPop3User.Text;
+				info.pop3Pass = txbPop3Password.Text; //Password written to db as clear text. A two way hash would be good
+				info.pop3SubjectPrefix = txbPop3Subject.Text;
+				info.pop3StartTag = txbPop3StartTag.Text;
+				info.pop3EndTag = txbPop3EndTag.Text;
+				//if (txbPop3Interval.Text != string.Empty)
+					//info.pop3Interval = int.Parse(txbPop3Interval.Text);
+				info.pop3DeleteOnlyProcessed = ckbPop3DeleteProcessedEmail.Checked;
+				info.pop3InlineAttachedPictures = ckbPop3InlineAttachedPict.Checked;
+				if(txbPop3ThumbHeight.Text != string.Empty)
+					info.pop3HeightForThumbs = int.Parse(txbPop3ThumbHeight.Text);
+				//End of Changes
 
 				
 				Config.UpdateConfigData(info);

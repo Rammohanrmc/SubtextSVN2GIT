@@ -886,6 +886,16 @@ BEGIN
 		, LicenseUrl
 		, DaysTillCommentsClose
 		, CommentDelayInMinutes
+		, pop3User
+		, pop3Pass
+		, pop3Server
+		, pop3StartTag
+		, pop3EndTag
+		, pop3SubjectPrefix
+		, pop3MTBEnable
+		, pop3DeleteOnlyProcessed
+		, pop3InlineAttachedPictures
+		, pop3HeightForThumbs
 	FROM [<dbUser,varchar,dbo>].[subtext_Config]
 END
 ELSE
@@ -916,6 +926,16 @@ BEGIN
 		, LicenseUrl
 		, DaysTillCommentsClose
 		, CommentDelayInMinutes
+		, pop3User
+		, pop3Pass
+		, pop3Server
+		, pop3StartTag
+		, pop3EndTag
+		, pop3SubjectPrefix
+		, pop3MTBEnable
+		, pop3DeleteOnlyProcessed
+		, pop3InlineAttachedPictures
+		, pop3HeightForThumbs
 	FROM [<dbUser,varchar,dbo>].[subtext_Config]
 	WHERE	Host = @Host
 		AND Application = @Application
@@ -3497,7 +3517,16 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateConfig]
 	, @BlogID int
 	, @LicenseUrl nvarchar(64) = NULL
 	, @DaysTillCommentsClose int = NULL
-	, @CommentDelayInMinutes int = NULL
+	, @CommentDelayInMinutes int = NULL	, @pop3User nvarchar (50)
+	, @pop3Pass nvarchar (20)
+	, @pop3Server nvarchar (50)
+	, @pop3StartTag nvarchar (10)
+	, @pop3EndTag nvarchar (10)
+	, @pop3SubjectPrefix nvarchar (10)
+	, @pop3MTBEnable bit
+	, @pop3DeleteOnlyProcessed bit
+	, @pop3InlineAttachedPictures bit
+	, @pop3HeightForThumbs int
 )
 AS
 UPDATE [<dbUser,varchar,dbo>].[subtext_Config]
@@ -3522,6 +3551,17 @@ Set
 	, LicenseUrl = @LicenseUrl
 	, DaysTillCommentsClose = @DaysTillCommentsClose
 	, CommentDelayInMinutes = @CommentDelayInMinutes
+	, pop3User = @pop3User
+	, pop3Pass = @pop3Pass
+	, pop3Server = @pop3Server
+	, pop3StartTag = @pop3StartTag
+	, pop3EndTag = @pop3EndTag
+	, pop3SubjectPrefix = @pop3SubjectPrefix
+	, pop3MTBEnable = @pop3MTBEnable
+	, pop3DeleteOnlyProcessed = @pop3DeleteOnlyProcessed
+	, pop3InlineAttachedPictures = @pop3InlineAttachedPictures
+	, pop3HeightForThumbs = @pop3HeightForThumbs
+	
 WHERE BlogID = @BlogID
 
 GO
@@ -3871,6 +3911,16 @@ SELECT	blog.BlogID
 		, blog.LicenseUrl
 		, blog.DaysTillCommentsClose
 		, blog.CommentDelayInMinutes
+		, blog.pop3User
+		, blog.pop3Pass
+		, blog.pop3Server
+		, blog.pop3StartTag
+		, blog.pop3EndTag
+		, blog.pop3SubjectPrefix
+		, blog.pop3MTBEnable
+		, blog.pop3DeleteOnlyProcessed
+		, blog.pop3InlineAttachedPictures
+		, blog.pop3HeightForThumbs	
 		
 FROM [<dbUser,varchar,dbo>].[subtext_config] blog
     	INNER JOIN #TempPagedBlogIDs tmp ON (blog.[BlogID] = tmp.BlogID)
@@ -3931,6 +3981,16 @@ SELECT	blog.BlogID
 		, blog.LicenseUrl
 		, blog.DaysTillCommentsClose
 		, blog.CommentDelayInMinutes
+		, blog.pop3User
+		, blog.pop3Pass
+		, blog.pop3Server
+		, blog.pop3StartTag
+		, blog.pop3EndTag
+		, blog.pop3SubjectPrefix
+		, blog.pop3MTBEnable
+		, blog.pop3DeleteOnlyProcessed
+		, blog.pop3InlineAttachedPictures
+		, blog.pop3HeightForThumbs
 		
 FROM [<dbUser,varchar,dbo>].[subtext_config] blog
 WHERE	blog.BlogId = @BlogId
@@ -3981,6 +4041,16 @@ SELECT	blog.BlogID
 		, blog.LicenseUrl
 		, blog.DaysTillCommentsClose
 		, blog.CommentDelayInMinutes
+		, blog.pop3User
+		, blog.pop3Pass
+		, blog.pop3Server
+		, blog.pop3StartTag
+		, blog.pop3EndTag
+		, blog.pop3SubjectPrefix
+		, blog.pop3MTBEnable
+		, blog.pop3DeleteOnlyProcessed
+		, blog.pop3InlineAttachedPictures
+		, blog.pop3HeightForThumbs	
 		
 FROM [<dbUser,varchar,dbo>].[subtext_config] blog
 WHERE	blog.Host = @Host
@@ -4577,6 +4647,38 @@ if @BlogId < 0
 
 INSERT [<dbUser,varchar,dbo>].[subtext_Log]
 SELECT	@BlogId, @Date, @Thread, @Context, @Level, @Logger, @Message, @Exception
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_AddLogEntry]  TO [public]
+GO
+
+--Search stored proc - Gurkan Yeniceri
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+CREATE Proc [<dbUser,varchar,dbo>].[subtext_SearchEntries]
+(
+	@BlogID int,
+	@SearchStr varchar(30)
+)
+as
+
+Set @SearchStr = '%' + @SearchStr + '%'
+
+Select [ID], Title, DateAdded 
+From 	[<dbUser,varchar,dbo>].[subtext_Content]
+Where (PostType = 1 OR PostType = 2)
+AND ([Text] LIKE @SearchStr 
+OR Title LIKE @SearchStr)
+AND BlogID = @BlogID
 
 GO
 SET QUOTED_IDENTIFIER OFF 

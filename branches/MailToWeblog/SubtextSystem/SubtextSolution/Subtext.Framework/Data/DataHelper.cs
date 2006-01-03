@@ -775,6 +775,73 @@ namespace Subtext.Framework.Data
 				info.CommentDelayInMinutes = NullValue.NullInt32;
 			}
 
+			//CHANGE: MailToWeblog addition
+			//Gurkan Yeniceri
+			//NULL check was necessary because when a blog created through HostAdmin
+			//all pop3 values are null
+			#region MailToWeblog settings
+			if(reader["pop3DeleteOnlyProcessed"] != DBNull.Value)
+			{
+				info.pop3DeleteOnlyProcessed = (bool)reader["pop3DeleteOnlyProcessed"];
+			}
+			
+			if (reader["pop3EndTag"] != DBNull.Value)
+			{
+				info.pop3EndTag = (string) reader["pop3EndTag"];
+			}
+			if(reader["pop3HeightForThumbs"] != DBNull.Value)
+			{
+				info.pop3HeightForThumbs = (int)reader["pop3HeightForThumbs"];
+			}
+			else
+			{
+				info.pop3HeightForThumbs = NullValue.NullInt32;
+			}
+
+			if (reader["pop3InlineAttachedPictures"] != DBNull.Value)
+			{
+				info.pop3InlineAttachedPictures = (bool)reader["pop3InlineAttachedPictures"];
+			}
+			
+			//			if(reader["pop3Interval"] != DBNull.Value)
+			//			{
+			//				info.pop3Interval = (int)reader["pop3Interval"];
+			//			}
+			//			else
+			//			{
+			//				info.pop3Interval = NullValue.NullInt32;
+			//			}
+			
+			if(reader["pop3MTBEnable"] != DBNull.Value)
+			{
+				info.pop3MTBEnable = (bool)reader["pop3MTBEnable"];
+			}
+			
+
+			if(reader["pop3Pass"] != DBNull.Value)
+			{
+				info.pop3Pass = (string)reader["pop3Pass"];
+			}
+			if(reader["pop3Server"] != DBNull.Value)
+			{
+				info.pop3Server = (string)reader["pop3Server"];
+			}
+			if(reader["pop3StartTag"] != DBNull.Value)
+			{
+				info.pop3StartTag = (string)reader["pop3StartTag"];
+			}
+			if(reader["pop3SubjectPrefix"] != DBNull.Value)
+			{
+				info.pop3SubjectPrefix = (string)reader["pop3SubjectPrefix"];
+			}
+			if(reader["pop3User"] != DBNull.Value)
+			{
+				info.pop3User = (string)reader["pop3User"];
+			}
+			
+			#endregion MailToWeblog setting
+
+
 			return info;
 		}
 
