@@ -26,24 +26,36 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Configuration;
+using System.Threading;
 using log4net;
 using log4net.Appender;
 using log4net.Repository.Hierarchy;
-using Subtext.Framework;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Data;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Logging;
+using Subtext.Framework.Components;
+using Subtext.Web.Services;
+using Subtext.Framework;
 
 namespace Subtext 
 {
+	
 	public class Global : System.Web.HttpApplication
 	{
+
+		//CHANGE: Mail To Weblog - Gurkan Yeniceri
+		private MailToWeblog mailToWeblog = null;
+		private Thread mailToWeblogThread = null;
+		//End of changes - Gurkan Yeniceri
+
 		public override string GetVaryByCustomString(HttpContext context, string custom)
 		{
 			if(custom == "Blogger")
 			{
 				return Subtext.Framework.Configuration.Config.CurrentBlog.Application;
+
 			}
 
 			return base.GetVaryByCustomString(context,custom);
@@ -68,6 +80,31 @@ namespace Subtext
 			//get the ADO appender
 			h.ConfigurationChanged += new log4net.Repository.LoggerRepositoryConfigurationChangedEventHandler(log4Net_ConfigurationChanged);
 			EnsureLog4NetConnectionString(h);
+
+			//CHANGE: Mail To Weblog - Gurkan Yeniceri
+			BlogInfoCollection activeBlogs = new BlogInfoCollection();
+			string host = ConfigurationSettings.AppSettings.Get("AggregateHost"); //it is important to set up the AggregateHost in web.config
+			activeBlogs = BlogInfo.GetBlogsByHost(host); //get the active blogs !!! IS THERE A BETTER WAY WITHOUT USING AGGREGATEHOST???
+
+			//this is the main loop where all the blogs are checked
+			//TODO: Interval to check the blogs will be read from the web.config
+			foreach(BlogInfo activeblog in activeBlogs)
+			{
+				//even only one of the blog's pop3 is active we will run the thread
+				if (activeblog.pop3MTBEnable == true)
+				{
+					//mail to web log
+					mailToWeblog = new MailToWeblog();
+
+					mailToWeblogThread = new Thread(new ThreadStart(mailToWeblog.Run));
+					mailToWeblogThread.Name = "MailToWeblog";
+					mailToWeblogThread.IsBackground = true;
+					mailToWeblogThread.Start();
+					break;
+				}
+			}
+			//End of changes - Gurkan Yeniceri
+
 		}
 
 		private static void EnsureLog4NetConnectionString(Hierarchy h)
@@ -235,6 +272,14 @@ namespace Subtext
 		protected void Application_End(Object sender, EventArgs e)
 		{
 			Subtext.Framework.Stats.ClearQueue(true);
+			
+			
+			//CHANGE: Mail To Weblog - Gurkan Yeniceri
+			if (mailToWeblogThread != null)
+			{
+				mailToWeblogThread.Abort();
+				mailToWeblogThread.Join();
+			}
 		}
 			
 		#region Web Form Designer generated code
