@@ -100,15 +100,11 @@ namespace Subtext.Framework
 		public static BlogInfoCollection GetActiveBlogs(int pageIndex, int pageSize, bool sortDescending, out int totalBlogs)
 		{
 			BlogInfoCollection blogs = ObjectProvider.Instance().GetPagedBlogs(pageIndex, pageSize, sortDescending);
-
-			// the ObjectProvider puts the returned TotalRecords value in the MaxItems property.
-			totalBlogs = blogs.MaxItems;
-			for (int i = blogs.Count - 1; i > -1; i--)
+			totalBlogs = blogs.Count;
+			for(int i = blogs.Count - 1; i > -1; i--)
 			{
-				if (!blogs[i].IsActive)
-				{
+				if(!blogs[i].IsActive)
 					blogs.RemoveAt(i);
-				}
 			}
 			return blogs;
 		}
@@ -519,7 +515,7 @@ namespace Subtext.Framework
 			set
 			{
 				if(value != null)
-					value = value.Replace("/", string.Empty); //For legacy data.
+					value = UrlFormats.StripSurroundingSlashes(value);
 				
 				_application = value;
 			}
@@ -671,7 +667,7 @@ namespace Subtext.Framework
 			{
 				if(this.virtualUrl == null)
 				{
-					string appPath = "/" + HttpContext.Current.Request.ApplicationPath.Replace("/", string.Empty);
+					string appPath = "/" + UrlFormats.StripSurroundingSlashes(HttpContext.Current.Request.ApplicationPath);
 					if(appPath.Length > 0)
 					{
 						this.virtualUrl += appPath + "/";
@@ -700,6 +696,7 @@ namespace Subtext.Framework
 				return RootUrl + "Default.aspx";
 			}
 		}
+
 		/// <summary>
 		/// Gets the blog home virtual URL.
 		/// </summary>
