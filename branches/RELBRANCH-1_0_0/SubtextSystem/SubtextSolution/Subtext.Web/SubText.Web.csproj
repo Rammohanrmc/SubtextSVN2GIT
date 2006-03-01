@@ -752,10 +752,6 @@
                     BuildAction = "Content"
                 />
                 <File
-                    RelPath = "Admin\Resources\bg.gif"
-                    BuildAction = "Content"
-                />
-                <File
                     RelPath = "Admin\Resources\bg_body.gif"
                     BuildAction = "Content"
                 />
@@ -780,14 +776,6 @@
                     BuildAction = "Content"
                 />
                 <File
-                    RelPath = "Admin\Resources\left.gif"
-                    BuildAction = "Content"
-                />
-                <File
-                    RelPath = "Admin\Resources\left_on.gif"
-                    BuildAction = "Content"
-                />
-                <File
                     RelPath = "Admin\Resources\PageTemplate.ascx"
                     BuildAction = "Content"
                 />
@@ -804,14 +792,6 @@
                 />
                 <File
                     RelPath = "Admin\Resources\poweredbydotnet.gif"
-                    BuildAction = "Content"
-                />
-                <File
-                    RelPath = "Admin\Resources\right.gif"
-                    BuildAction = "Content"
-                />
-                <File
-                    RelPath = "Admin\Resources\right_on.gif"
                     BuildAction = "Content"
                 />
                 <File
@@ -1355,11 +1335,31 @@
                     BuildAction = "Content"
                 />
                 <File
+                    RelPath = "Images\admin.gif"
+                    BuildAction = "Content"
+                />
+                <File
                     RelPath = "Images\administration_icon.gif"
                     BuildAction = "Content"
                 />
                 <File
+                    RelPath = "Images\atom.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\atomsmall.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\contact.gif"
+                    BuildAction = "Content"
+                />
+                <File
                     RelPath = "Images\edit.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\home.gif"
                     BuildAction = "Content"
                 />
                 <File
@@ -1380,6 +1380,10 @@
                 />
                 <File
                     RelPath = "Images\PoweredBySubtext85x33.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\rss20icon.gif"
                     BuildAction = "Content"
                 />
                 <File
