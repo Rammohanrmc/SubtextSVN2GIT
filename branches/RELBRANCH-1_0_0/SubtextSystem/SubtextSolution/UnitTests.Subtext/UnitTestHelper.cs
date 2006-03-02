@@ -236,7 +236,20 @@ namespace UnitTests.Subtext
 					{
 						expectedChar = expected[i];
 					}
-					Console.WriteLine("{0}:\t{1} ({2})\t{3} ({4})", i, originalChar, (int)originalChar, expectedChar, (int)expectedChar);
+
+					string originalCharDisplay = "" + originalChar;
+					if(char.IsWhiteSpace(originalChar))
+					{
+						originalCharDisplay = "{" + (int)originalChar  + "}";
+					}
+
+					string expectedCharDisplay = "" + expectedChar;
+					if(char.IsWhiteSpace(expectedChar))
+					{
+						expectedCharDisplay = "{" + (int)expectedChar + "}";
+					}
+
+					Console.WriteLine("{0}:\t{1} ({2})\t{3} ({4})", i, originalCharDisplay, (int)originalChar, expectedCharDisplay, (int)expectedChar);
 				}
 				Assert.AreEqual(original, expected);
 			}
