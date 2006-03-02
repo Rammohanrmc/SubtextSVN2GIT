@@ -206,7 +206,7 @@ namespace UnitTests.Subtext.Framework.Configuration
 			
 			BlogInfo info = Config.GetBlogInfo("www.mydomain.com", string.Empty);
 			info.Host = "mydomain.com";
-			info.Application = "MyBlog";
+			info.Subfolder = "MyBlog";
 			Config.UpdateConfigData(info);
 		}
 
@@ -225,7 +225,7 @@ namespace UnitTests.Subtext.Framework.Configuration
 
 			BlogInfo info = Config.GetBlogInfo(anotherHost, string.Empty);
 			info.Host = _hostName;
-			info.Application = string.Empty;
+			info.Subfolder = string.Empty;
 			Config.UpdateConfigData(info);
 		}
 
@@ -280,7 +280,7 @@ namespace UnitTests.Subtext.Framework.Configuration
 		{
 			Config.CreateBlog("title", "blah", "blah", _hostName, "Anything");
 			BlogInfo info = Config.GetBlogInfo(_hostName, "Anything");
-			info.Application = "bin";
+			info.Subfolder = "bin";
 
 			Config.UpdateConfigData(info);
 		}
@@ -295,7 +295,7 @@ namespace UnitTests.Subtext.Framework.Configuration
 		{
 			Config.CreateBlog("title", "blah", "blah", _hostName, "archive");
 			BlogInfo info = Config.GetBlogInfo(_hostName, "archive");
-			info.Application = "archive";
+			info.Subfolder = "archive";
 
 			Config.UpdateConfigData(info);
 		}

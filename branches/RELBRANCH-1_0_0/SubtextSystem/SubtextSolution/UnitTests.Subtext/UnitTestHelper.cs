@@ -19,6 +19,7 @@ using System.Reflection;
 using System.Text;
 using System.Web;
 using MbUnit.Framework;
+using Subtext.Framework.Format;
 
 namespace UnitTests.Subtext
 {
@@ -131,7 +132,7 @@ namespace UnitTests.Subtext
 		
 		public static void SetHttpContextWithBlogRequest(string host, string blogName, string virtualDir, string page)
 		{
-			virtualDir = StripSlashes(virtualDir);	// Subtext.Web
+			virtualDir = UrlFormats.StripSurroundingSlashes(virtualDir);	// Subtext.Web
 			blogName = StripSlashes(blogName);		// MyBlog
 
 			string appPhysicalDir = @"c:\projects\SubtextSystem\";	

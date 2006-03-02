@@ -728,7 +728,7 @@ namespace Subtext.Framework.Data
 				info.LastUpdated = new DateTime(2003,1,1);
 			}
 			info.Host = (string)reader["Host"];
-			info.Application = (string)reader["Application"];
+			info.Subfolder = (string)reader["Application"];
 
 			info.Flag = (ConfigurationFlag)((int)reader["Flag"]);
 

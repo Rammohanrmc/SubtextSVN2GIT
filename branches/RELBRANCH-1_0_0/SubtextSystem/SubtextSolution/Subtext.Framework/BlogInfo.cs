@@ -504,23 +504,23 @@ namespace Subtext.Framework
 			set{FlagSetter(ConfigurationFlag.IsActive, value);}
 		}
 
-		private string _application;
+		private string subfolder;
 		/// <summary>
-		/// Gets or sets the application.
+		/// Gets or sets the subfolder the blog lives in.
 		/// </summary>
 		/// <value></value>
-		public string Application
+		public string Subfolder
 		{
 			get
 			{
-				return _application;
+				return this.subfolder;
 			}
 			set
 			{
 				if(value != null)
 					value = UrlFormats.StripSurroundingSlashes(value);
 				
-				_application = value;
+				this.subfolder = value;
 			}
 		}
 
@@ -663,6 +663,10 @@ namespace Subtext.Framework
 		}
 		string _rootUrl = null;
 
+		/// <summary>
+		/// Gets the virtual URL for the site.
+		/// </summary>
+		/// <value>The virtual URL.</value>
 		[XmlIgnore]
 		public string VirtualUrl
 		{
@@ -670,15 +674,16 @@ namespace Subtext.Framework
 			{
 				if(this.virtualUrl == null)
 				{
-					string appPath = "/" + UrlFormats.StripSurroundingSlashes(HttpContext.Current.Request.ApplicationPath);
+					this.virtualUrl = "/";
+					string appPath = UrlFormats.StripSurroundingSlashes(HttpContext.Current.Request.ApplicationPath);
 					if(appPath.Length > 0)
 					{
 						this.virtualUrl += appPath + "/";
 					}
 					
-					if(this.Application.Length > 0)
+					if(this.Subfolder.Length > 0)
 					{
-						this.virtualUrl += this.Application + "/";
+						this.virtualUrl += this.Subfolder + "/";
 					}
 				}
 				return this.virtualUrl;
@@ -730,7 +735,7 @@ namespace Subtext.Framework
 		/// <value></value>
 		public string CleanApplication
 		{
-			get {return this.Application.Replace("/", string.Empty).Trim();}
+			get {return this.Subfolder.Replace("/", string.Empty).Trim();}
 			
 		}
 
@@ -832,7 +837,7 @@ namespace Subtext.Framework
 		/// <returns></returns>
 		public override int GetHashCode()
 		{
-			return this.Host.GetHashCode() ^ this.Application.GetHashCode();
+			return this.Host.GetHashCode() ^ this.Subfolder.GetHashCode();
 		}
 	}
 }

@@ -269,7 +269,7 @@ namespace Subtext.Framework.Format
 			//This is too small a concatenation to create a  
 			//the overhead of a StringBuilder. If perf is really a hit here, 
 			//we can pass in a string builder.
-			String app = Config.CurrentBlog.Application;
+			String app = Config.CurrentBlog.Subfolder;
 			
 			string url = (app.Equals(String.Empty)) ? "~" : "~/" + app;
 			if(entry.PostType == PostType.BlogPost)
@@ -295,7 +295,7 @@ namespace Subtext.Framework.Format
 			String installPath = appPath;							// ex... "Subtext.Web" or ""
 			if(installPath.Length > 0)
 				installPath = "/" + installPath;
-			String blogAppName = Config.CurrentBlog.Application;
+			String blogAppName = Config.CurrentBlog.Subfolder;
 
 			if(blogAppName.Length > 0)
 				installPath = installPath + "/" + blogAppName;		// ex... "/Subtext.Web/MyBlog" or "/MyBlog"

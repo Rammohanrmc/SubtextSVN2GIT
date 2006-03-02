@@ -233,7 +233,7 @@ namespace Subtext.Framework.Configuration
 			aggregateBlog.Title = System.Configuration.ConfigurationSettings.AppSettings["AggregateTitle"];
 			aggregateBlog.Skin = SkinConfig.GetDefaultSkin();
 			aggregateBlog.Host = System.Configuration.ConfigurationSettings.AppSettings["AggregateHost"];
-			aggregateBlog.Application = "";
+			aggregateBlog.Subfolder = "";
 			aggregateBlog.UserName = HostInfo.Instance.HostUserName;
 			
 			return aggregateBlog;

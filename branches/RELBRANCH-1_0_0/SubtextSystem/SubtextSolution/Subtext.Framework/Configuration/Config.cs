@@ -232,7 +232,7 @@ namespace Subtext.Framework.Configuration
 		public static bool UpdateConfigData(BlogInfo info)
 		{
 			//Check for duplicate
-			BlogInfo potentialDuplicate = Subtext.Framework.Configuration.Config.GetBlogInfo(info.Host, info.Application);
+			BlogInfo potentialDuplicate = Subtext.Framework.Configuration.Config.GetBlogInfo(info.Host, info.Subfolder);
 			if(potentialDuplicate != null && !potentialDuplicate.Equals(info))
 			{
 				//we found a duplicate!
@@ -247,7 +247,7 @@ namespace Subtext.Framework.Configuration
 				throw new BlogHiddenException(potentialHidden);
 			}
 
-			string application = info.Application == null ? string.Empty : UrlFormats.StripSurroundingSlashes(info.Application);
+			string application = info.Subfolder == null ? string.Empty : UrlFormats.StripSurroundingSlashes(info.Subfolder);
 
 			if(application.Length == 0)
 			{
