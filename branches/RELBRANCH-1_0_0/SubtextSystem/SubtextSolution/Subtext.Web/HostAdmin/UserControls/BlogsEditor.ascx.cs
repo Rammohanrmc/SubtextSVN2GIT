@@ -422,7 +422,7 @@ namespace Subtext.Web.HostAdmin.UserControls
 					& ValidateRequiredField(this.txtHost, "Host Domain") 
 					& ValidateRequiredField(this.txtUsername, "Username")
 					& ValidateFieldLength(this.txtHost, "Host Domain", 100)
-					& ValidateFieldLength(this.txtApplication, "Application", 50)
+					& ValidateFieldLength(this.txtApplication, "Subfolder", 50)
 					& ValidateFieldLength(this.txtUsername, "Username", 50)
 					& ValidateFieldLength(this.txtPassword, "Password", 50)
 					& ValidateFieldLength(this.txtTitle, "Title", 100);

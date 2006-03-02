@@ -730,10 +730,10 @@ namespace Subtext.Framework
 		}
 
 		/// <summary>
-		/// Returns the Application string without any dashes.
+		/// Returns the Subfolder name without any dashes.
 		/// </summary>
 		/// <value></value>
-		public string CleanApplication
+		public string CleanSubfolder
 		{
 			get {return this.Subfolder.Replace("/", string.Empty).Trim();}
 			
