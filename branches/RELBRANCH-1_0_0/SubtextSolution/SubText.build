@@ -90,7 +90,6 @@
 		<copy todir="${publish.dir.latest}" includeemptydirs="false">
 			<fileset basedir="Subtext.Web">
 				<include name="**/*" />
-				<include name="emoticons.txt" />
 				<include name="Images/*" />
 				<include name="Images/emotions/*" />
 				<exclude name="**/*.bmp" />
@@ -104,6 +103,12 @@
 				<exclude name="**/*.csproj.user"/>
 				<exclude name="**/.cvsignore"/>
 				<exclude name="obj/**"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${publish.dir.latest}" includeemptydirs="false">
+			<fileset basedir="Subtext.Web">
+				<include name="emoticons.txt" />
 			</fileset>
 		</copy>
 		
