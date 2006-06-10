@@ -1,0 +1,56 @@
+using System;
+using MbUnit.Framework;
+using Subtext.Framework.Text;
+
+namespace UnitTests.Subtext.Framework.Text
+{
+	/// <summary>
+	/// Summary description for StringHelperTests.
+	/// </summary>
+	[TestFixture]
+	public class StringHelperTests
+	{
+		/// <summary>
+		/// Tests that we can properly pascal case text.
+		/// </summary>
+		/// <remarks>
+		/// Does not remove punctuation.
+		/// </remarks>
+		/// <param name="original"></param>
+		/// <param name="expected"></param>
+		[RowTest]
+		[Row("", "")]
+		[Row("a", "A")]
+		[Row("A", "A")]
+		[Row("A B", "AB")]
+		[Row("a bee keeper's dream.", "ABeeKeeper'sDream.")]
+		public void PascalCaseTests(string original, string expected)
+		{
+			Assert.AreEqual(expected, StringHelper.PascalCase(original));
+		}
+
+		[Test]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void PascalCaseThrowsArgumentNullException()
+		{
+			StringHelper.PascalCase(null);
+		}
+		
+		[RowTest]
+		[Row("BLAH Tast", "a", 6, ComparisonType.CaseSensitive)]
+		[Row("BLAH Tast", "a", 2, ComparisonType.CaseInsensitive)]
+		public void IndexOfHandlesCaseSensitivity(string source, string search, int expectedIndex, ComparisonType comparison)
+		{
+			Assert.AreEqual(expectedIndex, StringHelper.IndexOf(source, search, comparison), "Did not find the string '{0}' at the index {1}", search, expectedIndex);
+		}
+		
+		[RowTest]
+		[Row("Blah/Default.aspx", "Default.aspx", "Blah/", ComparisonType.CaseSensitive)]
+		[Row("Blah/Default.aspx", "default.aspx", "Blah/", ComparisonType.CaseInsensitive)]
+		[Row("Blah/Default.aspx", "default.aspx", "Blah/Default.aspx", ComparisonType.CaseSensitive)]
+		public void LeftBeforeOfHandlesCaseSensitivity(string source, string search, string expected, ComparisonType comparison)
+		{
+			Assert.AreEqual(expected, StringHelper.LeftBefore(source, search, comparison), "Truncating did not return the correct result.");
+		}
+	}
+}
