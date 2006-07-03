@@ -4399,7 +4399,7 @@ GO
 SET ANSI_NULLS ON 
 GO
 
-CREATE Proc [<dbUser,varchar,dbo>].Subtext_GetEntry_PreviousNext
+CREATE Proc [<dbUser,varchar,dbo>].[Subtext_GetEntry_PreviousNext]
 (
  @ID int,
  @PostType int = 1,
@@ -4422,6 +4422,9 @@ GO
 SET QUOTED_IDENTIFIER OFF 
 GO
 SET ANSI_NULLS ON 
+GO
+
+GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[Subtext_GetEntry_PreviousNext]  TO [public]
 GO
 
 /*Get Related Links (called from RelatedLinks.ascx) - GY*/
