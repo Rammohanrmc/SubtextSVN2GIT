@@ -1006,7 +1006,7 @@ namespace Subtext.Framework.Data
 		{
 			SqlParameter[] parameters = 
 			{
-				SqlHelper.MakeInParam("@Title", SqlDbType.NVarChar, 100, userName)
+				SqlHelper.MakeInParam("@Title", SqlDbType.NVarChar, 100, title)
 				, SqlHelper.MakeInParam("@UserName", SqlDbType.NVarChar, 50, userName)
 				, SqlHelper.MakeInParam("@Password", SqlDbType.NVarChar, 50, password)
 				, SqlHelper.MakeInParam("@Email", SqlDbType.NVarChar, 50, string.Empty)
