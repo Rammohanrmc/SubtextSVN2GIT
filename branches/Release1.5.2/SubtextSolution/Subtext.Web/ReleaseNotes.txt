@@ -1,5 +1,5 @@
 Version 1.5.2 - Bugfix Release
-- BUG:  [1492127] Fixed a changed a constraint on the subtext_Config.BlogGroup 
+- BUG:  [1492127] Fixed a constraint on the subtext_Config.BlogGroup 
 		in the import script.
 - BUG:  [1524172] The User Name Is Being Saved as the Title
 - BUG:  [1502661] Change ReverseDOS.config - turn on isRegex="true" flag for
