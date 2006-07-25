@@ -27,25 +27,27 @@ namespace Subtext.Web.Admin.Pages
 	/// Displays comments posted to the blog and allows the 
 	/// admin to delete comments.
 	/// </summary>
-	public partial class Feedback : AdminPage
+	public class Feedback : AdminPage
 	{
-		private int pageIndex = 0;
+		private int _resultsPageNumber = 1;
 		private bool _isListHidden = false;
+		protected System.Web.UI.WebControls.Repeater rprSelectionList;
+		protected System.Web.UI.WebControls.Button btnDelete;
+		protected Subtext.Web.Admin.WebUI.Pager ResultsPager;
+		protected Subtext.Web.Admin.WebUI.AdvancedPanel Results;
+		protected Subtext.Web.Admin.WebUI.MessagePanel Messages;
+		protected Subtext.Web.Admin.WebUI.Page PageContainer;
 	
-	    public Feedback() : base()
-	    {
-            this.TabSectionId = "Feedback";
-	    }
 
-		protected void Page_Load(object sender, System.EventArgs e)
+		private void Page_Load(object sender, System.EventArgs e)
 		{
 			if (!IsPostBack)
 			{
 				if (Request.QueryString[Keys.QRYSTR_PAGEINDEX] != null)
-					this.pageIndex = Convert.ToInt32(Request.QueryString[Keys.QRYSTR_PAGEINDEX]);
+					_resultsPageNumber = Convert.ToInt32(Request.QueryString[Keys.QRYSTR_PAGEINDEX]);
 
 				ResultsPager.PageSize = Preferences.ListingItemCount;
-				ResultsPager.PageIndex = this.pageIndex;
+				ResultsPager.PageIndex = _resultsPageNumber;
 				Results.Collapsible = false;
 				
 				BindList();
@@ -83,7 +85,7 @@ namespace Subtext.Web.Admin.Pages
 
 		private void BindList()
 		{
-            IPagedCollection<Entry> selectionList = Entries.GetPagedFeedback(this.pageIndex, ResultsPager.PageSize, true);		
+			PagedEntryCollection selectionList = Entries.GetPagedFeedback(_resultsPageNumber, ResultsPager.PageSize,true);		
 
 			if (selectionList.Count > 0)
 			{
@@ -132,11 +134,13 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		private void InitializeComponent()
 		{    
+			this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+			this.Load += new System.EventHandler(this.Page_Load);
 
 		}
 		#endregion
 
-		protected void btnDelete_Click(object sender, System.EventArgs e)
+		private void btnDelete_Click(object sender, System.EventArgs e)
 		{
 			ArrayList itemsToDelete = new ArrayList();
 			

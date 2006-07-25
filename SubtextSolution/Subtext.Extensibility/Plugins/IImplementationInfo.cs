@@ -50,6 +50,6 @@ namespace Subtext.Extensibility.Plugins
 		/// <summary>
 		/// Version information
 		/// </summary>
-		Version Version {get;}
+		IVersionDeclaration Version {get;}
 	}
 }

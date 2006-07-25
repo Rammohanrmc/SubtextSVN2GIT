@@ -18,38 +18,37 @@ using System.Web.UI.WebControls;
 
 namespace Subtext.Web.Admin.Pages
 {
-	public partial class AdminOptionsPage : AdminPage
-	{	
-	    public AdminOptionsPage() : base()
-	    {
-            TabSectionId = "Options";
-	    }
-	    
-		protected virtual void Page_Load(object sender, System.EventArgs e)
+	public class AdminOptionsPage : AdminPage
+	{
+		protected Subtext.Web.Admin.WebUI.AdvancedPanel Results;
+		protected Subtext.Web.Admin.WebUI.Page PageContainer;
+	
+		private void Page_Load(object sender, System.EventArgs e)
 		{
-            if (!IsPostBack)
-            {
-                BindLocalUI();
-            }
+			BindLocalUI();
 		}
 		
-		protected virtual void BindLocalUI()
+		private void BindLocalUI()
 		{
 			HyperLink lnkConfigure = Utilities.CreateHyperLink("Configure", "Configure.aspx");
 			HyperLink lnkSyndication = Utilities.CreateHyperLink("Syndication", "Syndication.aspx");
 			HyperLink lnkComments = Utilities.CreateHyperLink("Comments", "Comments.aspx");
-			HyperLink linkKeyWords = Utilities.CreateHyperLink("Key Words", "EditKeyWords.aspx");
-			HyperLink lnkPasswords = Utilities.CreateHyperLink("Password", "Password.aspx");
-			HyperLink lnkPreferences = Utilities.CreateHyperLink("Preferences", "Preferences.aspx");
+			HyperLink linkKeyWords		= Utilities.CreateHyperLink("Key Words", "EditKeyWords.aspx");
+			HyperLink lnkPasswords		= Utilities.CreateHyperLink("Password", "Password.aspx");
+			HyperLink lnkPreferences		= Utilities.CreateHyperLink("Preferences", "Preferences.aspx");
 
 			// Add the buttons to the PageContainer.
-            AdminMasterPage.AddToActions(lnkConfigure);
-            AdminMasterPage.AddToActions(lnkSyndication);
-            AdminMasterPage.AddToActions(lnkComments);
-            AdminMasterPage.AddToActions(linkKeyWords);
-            AdminMasterPage.AddToActions(lnkPasswords);
-            AdminMasterPage.AddToActions(lnkPreferences);
+			PageContainer.AddToActions(lnkConfigure);
+			PageContainer.AddToActions(lnkSyndication);
+			PageContainer.AddToActions(lnkComments);
+			PageContainer.AddToActions(linkKeyWords);
+			PageContainer.AddToActions(lnkPasswords);
+			PageContainer.AddToActions(lnkPreferences);
+
 		}
+
+
+
 
 		#region Web Form Designer generated code
 		override protected void OnInit(EventArgs e)
@@ -67,6 +66,7 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		private void InitializeComponent()
 		{    
+			this.Load += new System.EventHandler(this.Page_Load);
 
 		}
 		#endregion

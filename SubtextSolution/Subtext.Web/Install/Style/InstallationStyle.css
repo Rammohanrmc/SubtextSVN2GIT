@@ -18,11 +18,17 @@ body
 	width: 600px;
 }
 
-#main, .bordered
+div 
 {
-	border: solid 1px #bbb;
-	padding: 32px;
+	border-right: #bbb 1px solid; 
+	padding-right: 32px; 
+	border-top: #bbb 1px solid; 
+	padding-left: 32px; 
 	background: #fff; 
+	padding-bottom: 32px; 
+	border-left: #bbb 1px solid; 
+	padding-top: 32px; 
+	border-bottom: #bbb 1px solid 
 }
 
 h1

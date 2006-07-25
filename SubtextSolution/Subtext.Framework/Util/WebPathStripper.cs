@@ -25,8 +25,13 @@ namespace Subtext.Framework.Util
 	/// <summary>
 	/// Summary description for WebPathStripper.
 	/// </summary>
-	public static class WebPathStripper
+	public sealed class WebPathStripper
 	{
+		private WebPathStripper()
+		{
+
+		}
+
 		/// <summary>
 		/// Parses out the year from the request.
 		/// </summary>

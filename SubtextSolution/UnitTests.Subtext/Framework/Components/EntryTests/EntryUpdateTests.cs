@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using MbUnit.Framework;
-using Subtext.Extensibility;
 using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
@@ -35,8 +34,8 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 			
 			//Ok, update and make sure these changes persist.
 			Entries.Update(entry);
-
-            Entry savedEntry = Entries.GetEntry(entry.Id, PostConfig.None, false);
+			
+			Entry savedEntry = Entries.GetEntry(entry.EntryID, EntryGetOption.ActiveOnly);
 			Assert.IsFalse(savedEntry.IncludeInMainSyndication, "This item should still not be included in main syndication.");
 			int allowableMarginOfError = 1; //ms
 			Assert.IsTrue((savedEntry.DateSyndicated - entry.DateSyndicated).Milliseconds <= allowableMarginOfError, "The DateSyndicated was not stored in the db.");
@@ -47,14 +46,14 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 			savedEntry.IncludeInMainSyndication = true;
 			Assert.IsTrue(savedEntry.DateSyndicated >= date, "The DateSyndicated '{0}' should be updated to be later than '{1}.", savedEntry.DateSyndicated, date);
 			Entries.Update(savedEntry);
-            savedEntry = Entries.GetEntry(entry.Id, PostConfig.None, false);
+			savedEntry = Entries.GetEntry(entry.EntryID, EntryGetOption.ActiveOnly);
 			Assert.IsTrue(savedEntry.DateSyndicated >= date, "The DateSyndicated '{0}' should be updated to be later than '{1}.", savedEntry.DateSyndicated, date);
 		}
 
 		[SetUp]
 		public void SetUp()
 		{
-			_hostName = UnitTestHelper.GenerateRandomString();
+			_hostName = UnitTestHelper.GenerateRandomHostname();
 			UnitTestHelper.SetHttpContextWithBlogRequest(_hostName, string.Empty);
 			CommentFilter.ClearCommentCache();
 		}

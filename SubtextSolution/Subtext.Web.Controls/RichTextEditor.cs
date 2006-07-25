@@ -14,6 +14,8 @@
 #endregion
 
 using System;
+using System.ComponentModel;
+using System.Globalization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Subtext.Extensibility.Providers;
@@ -26,6 +28,7 @@ namespace Subtext.Web.Controls
 	[ValidationProperty("Text")]
 	public class RichTextEditor: WebControl, INamingContainer
 	{
+
 		#region EventHandlers
 		public delegate void ErrorEventHandler(object sender, RichTextEditorErrorEventArgs e);
 		public event ErrorEventHandler Error;
@@ -40,10 +43,10 @@ namespace Subtext.Web.Controls
 		#endregion
 
 		private Control editor;
-		private BlogEntryEditorProvider provider; 
+		private RichTextEditorProvider provider; 
 
-		private Unit _height = Unit.Empty;
-		private Unit _width = Unit.Empty;
+		private Unit _height=Unit.Empty;
+		private Unit _width=Unit.Empty;
 		
 		public string Text 
 		{
@@ -94,16 +97,14 @@ namespace Subtext.Web.Controls
 		{
 			try 
 			{
-				provider=BlogEntryEditorProvider.Instance();
-				provider.ControlId=this.ID;
+				provider=RichTextEditorProvider.Instance();
+				provider.ControlID=this.ID;
 				provider.InitializeControl();
-				
-				if(_height != Unit.Empty)
-					provider.Height = _height;
-				if(_width != Unit.Empty)
+				if(_height!=Unit.Empty)
+					provider.Height=_height;
+				if(_width!=Unit.Empty)
 					provider.Width=_width;
-				
-				editor = provider.RichTextEditorControl;
+				editor=provider.RichTextEditorControl;
 				this.Controls.Add(editor);
 				base.OnInit (e);
 			}

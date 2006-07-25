@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
-<project xmlns="http://nant.sf.net/schemas/nant.xsd" name="SubText" default="compile-main">
+<project xmlns="http://nant.sf.net/schemas/nant.xsd" name="SubText" default="dist.archive">
 	
-	<property name="nant.settings.currentframework" value="net-2.0"/>
+	<property name="nant.settings.currentframework" value="net-1.1"/>
 	<property name="configuration" value="release"/>
 	<property name="CVSPATH" value="C:\Programmi\TortoiseCVS\cvs.exe"/>
-	
-	<property name="msbuild" value="C:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\MSBuild.exe"/>
+	<property name="SSHPATH" value="C:\Programmi\TortoiseCVS\TortoisePlink.exe"/>
 
 	<!-- Set this propery if you want to specify a custom destination
 		<property name="publish.root" value="D:\Simone\SubtextProject\SubtextSolution\buildArchive"/>
@@ -41,11 +40,44 @@
 	</target>
 
 	<target name="compile-main">
-				<exec program="${msbuild}">
-				  <arg value="SubtextSolution.sln"/>
-				  <arg value="/t:Build"/>
-				  <arg value="/p:Configuration=${configuration}"/>
-			  </exec>
+		<solution configuration="${configuration}">
+			<projects>
+				<include name="Subtext.Common\SubText.Common.csproj" />
+				<include name="Subtext.Extensibility\Subtext.Extensibility.csproj" />
+				<include name="Subtext.Framework\Subtext.Framework.csproj" />
+				<include name="Subtext.Installation\Subtext.Installation.csproj" />
+				<include name="Subtext.Scripting\Subtext.Scripting.csproj" />
+				<include name="Subtext.Web\Subtext.Web.csproj" />
+				<include name="Subtext.Web.Controls\Subtext.Web.Controls.csproj" />
+				<include name="Subtext.Providers.RichTextEditor.FCKeditor\Subtext.Providers.RichTextEditor.FCKeditor.csproj" />
+			</projects>
+		</solution>
+	</target>
+
+	<target name="compile-config">
+		<solution configuration="${configuration}">
+			<projects>
+				<include name="SubtextConfigurationTool\SubtextConfigurationTool.csproj" />
+			</projects>
+		</solution>
+	</target>
+
+	<target name="compile-UnitTesting">
+		<solution configuration="${configuration}">
+			<projects>
+				<include name="UnitTests.Subtext\UnitTests.SubText.csproj" />
+			</projects>
+			<referenceprojects>
+				<include name="Subtext.Common\SubText.Common.csproj" />
+				<include name="Subtext.DotTextUpgrader\Subtext.DotTextUpgrader.csproj" />
+				<include name="Subtext.Extensibility\Subtext.Extensibility.csproj" />
+				<include name="Subtext.Framework\Subtext.Framework.csproj" />
+				<include name="Subtext.Installation\Subtext.Installation.csproj" />
+				<include name="Subtext.Scripting\Subtext.Scripting.csproj" />
+				<include name="Subtext.Web\Subtext.Web.csproj" />
+				<include name="Subtext.Web.Controls\Subtext.Web.Controls.csproj" />
+			</referenceprojects>
+		</solution>
 	</target>
 
 	<target name="dist.publish.latest" depends="compile-main,get-publishing-properties">

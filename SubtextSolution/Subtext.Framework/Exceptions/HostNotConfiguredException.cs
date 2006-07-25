@@ -21,7 +21,17 @@ namespace Subtext.Framework.Exceptions
 	/// Summary description for HostNotConfiguredException.
 	/// </summary>
 	[Serializable]
-	public class HostNotConfiguredException : Exception
+	public class HostNotConfiguredException : BaseSubtextException
 	{
+		/// <summary>
+		/// Returns a resource key for the message.  This is used to 
+		/// look up the message in the correct language within a 
+		/// resource file (when we get around to I8N).
+		/// </summary>
+		/// <value></value>
+		public override string MessageResourceKey
+		{
+			get { throw new NotImplementedException(); }
+		}
 	}
 }

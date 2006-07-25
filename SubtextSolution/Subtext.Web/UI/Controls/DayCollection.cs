@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using Subtext.Framework.Components;
 
 namespace Subtext.Web.UI.Controls
@@ -33,9 +32,9 @@ namespace Subtext.Web.UI.Controls
 
 		protected System.Web.UI.WebControls.Repeater DaysList;
 
-        private ICollection<EntryDay> bpdc;
+		private EntryDayCollection bpdc;
 
-        public ICollection<EntryDay> Days
+		public EntryDayCollection Days
 		{
 			set{bpdc = value;}
 		}

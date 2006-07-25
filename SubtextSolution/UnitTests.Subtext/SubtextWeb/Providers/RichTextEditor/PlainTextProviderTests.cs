@@ -16,7 +16,7 @@
 using System;
 using MbUnit.Framework;
 using System.Web.UI.WebControls;
-using Subtext.Web.Providers.BlogEntryEditor.PlainText;
+using Subtext.Web.Providers.RichTextEditor.PlainText;
 
 namespace UnitTests.Subtext.SubtextWeb.Providers.RichTextEditor
 {
@@ -28,20 +28,20 @@ namespace UnitTests.Subtext.SubtextWeb.Providers.RichTextEditor
 	public class PlainTextProviderTests
 	{
 
-		PlainTextBlogEntryEditorProvider ptrtep;
+		PlainTextRichTextEditorProvider ptrtep;
 
 		[SetUp]
 		public void SetUp()
 		{
-            ptrtep = new PlainTextBlogEntryEditorProvider();
+			ptrtep = new PlainTextRichTextEditorProvider();
 		}
 
 		[Test]
 		public void SetControlID() 
 		{
 			string test="MyTestControlID";
-			ptrtep.ControlId=test;
-			Assert.AreEqual(test,ptrtep.ControlId);
+			ptrtep.ControlID=test;
+			Assert.AreEqual(test,ptrtep.ControlID);
 		}
 
 		[Test]

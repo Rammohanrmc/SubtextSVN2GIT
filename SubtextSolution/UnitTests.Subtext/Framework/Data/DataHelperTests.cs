@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using MbUnit.Framework;
@@ -25,29 +24,10 @@ namespace UnitTests.Subtext.Framework.Data
 			reader.AddRecord(1, 2, 2005, 23);
 			reader.AddRecord(1, 23, 2005, 23);
 			
-			ICollection<ArchiveCount> archive = DataHelper.LoadArchiveCount(reader);
+			ArchiveCountCollection archive = DataHelper.LoadArchiveCount(reader);
 			Assert.AreEqual(2, archive.Count, "Should only have two records.");
-
-            ArchiveCount first = null;
-            ArchiveCount second = null;
-		    
-		    foreach(ArchiveCount count in archive)
-		    {
-		        if(first == null)
-		        {
-		            first = count;
-                    continue;
-		        }
-
-                if (second == null)
-                {
-                    second = count;
-                    continue;
-                }
-		    }
-		    
-			Assert.AreEqual(DateTime.ParseExact("01/02/2005", "MM/dd/yyyy", CultureInfo.InvariantCulture), first.Date, "Something happened to the date parsing.");
-            Assert.AreEqual(DateTime.ParseExact("01/23/2005", "MM/dd/yyyy", CultureInfo.InvariantCulture), second.Date, "Something happened to the date parsing.");
+			Assert.AreEqual(DateTime.ParseExact("01/02/2005", "MM/dd/yyyy", CultureInfo.InvariantCulture), archive[0].Date, "Something happened to the date parsing.");
+			Assert.AreEqual(DateTime.ParseExact("01/23/2005", "MM/dd/yyyy", CultureInfo.InvariantCulture), archive[1].Date, "Something happened to the date parsing.");
 		}
 
 		#region Teast class that implements IDataReader

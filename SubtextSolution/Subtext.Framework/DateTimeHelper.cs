@@ -6,8 +6,12 @@ namespace Subtext.Framework
 	/// <summary>
 	/// Class used for helping with date times.
 	/// </summary>
-	public static class DateTimeHelper
+	public sealed class DateTimeHelper
 	{
+		private DateTimeHelper()
+		{
+		}
+
 		/// <summary>
 		/// Tries to parse the date given in an unknown format. Returns 
 		/// NullValue.NullDateTime if it cannot.

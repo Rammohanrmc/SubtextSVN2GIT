@@ -36,7 +36,6 @@ using System;
 using System.Globalization;
 using System.Web;
 using System.Xml;
-using Subtext.Extensibility;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Logging;
@@ -80,26 +79,21 @@ namespace Subtext.Framework.Tracking
 				SendTrackbackResponse(context, 1, "EntryID is invalid or missing") ;
 			}
 
-            Entry entry = Entries.GetEntry(postId, PostConfig.IsActive, false);
-		    if(entry == null)
-		    {
-                SendTrackbackResponse(context, 1, "EntryID is invalid or missing");
-		        return;
-		    }
-
 			if(context.Request.HttpMethod == "POST")
 			{
-				CreateTrackbackAndSendResponse(context, entry, postId);
+				CreateTrackbackAndSendResponse(context, postId);
 			}
 			else
 			{
-				SendTrackbackRss(context, entry, postId);
+				SendTrackbackRss(context, postId);
 			}
 		}
 
-		private static void SendTrackbackRss(HttpContext context, Entry entry, int postId)
-		{	    
-		    XmlTextWriter w = new XmlTextWriter(context.Response.Output) ;
+		private static void SendTrackbackRss(HttpContext context, int postId)
+		{
+			Entry entry = Entries.GetEntry(postId, EntryGetOption.ActiveOnly);
+
+			XmlTextWriter w = new XmlTextWriter(context.Response.Output) ;
 			w.Formatting = Formatting.Indented;
 
 			w.WriteStartDocument() ;
@@ -119,7 +113,7 @@ namespace Subtext.Framework.Tracking
 			w.WriteEndDocument();
 		}
 
-		private void CreateTrackbackAndSendResponse(HttpContext context, Entry entry, int entryId)
+		private void CreateTrackbackAndSendResponse(HttpContext context, int postId)
 		{
 			string title     = SafeParam(context, "title");
 			string excerpt   = SafeParam(context, "excerpt");
@@ -132,14 +126,15 @@ namespace Subtext.Framework.Tracking
 				SendTrackbackResponse(context, 1, "no url parameter found, please try harder!");
 				return;
 			}
-
-			if (entry == null || !IsSourceVerification(url, entry.FullyQualifiedUrl))
+		
+			Entry trackedEntry = Entries.GetEntry(postId, EntryGetOption.ActiveOnly);
+			if (trackedEntry == null || !IsSourceVerification(url, trackedEntry.FullyQualifiedUrl))
 			{
 				SendTrackbackResponse(context, 2, "Sorry couldn't find a relevant link in " + url );
 				return;
 			}
 
-			Trackback trackback = new Trackback(entryId, title, url.ToString(), blog_name, excerpt);
+			Trackback trackback = new Trackback(postId, title, url.ToString(), blog_name, excerpt);
 			Entries.Create(trackback);
 		}
 		
@@ -154,19 +149,19 @@ namespace Subtext.Framework.Tracking
 			get { return true; }
 		}
 
-		private static void SendTrackbackResponse(HttpContext context, int errorNumber, string errorMessage)
+		private void SendTrackbackResponse(HttpContext context, int errNum, string errText)
 		{
 			XmlDocument d = new XmlDocument();
 			XmlElement root = d.CreateElement("response");
 			d.AppendChild(root) ;
 			XmlElement er = d.CreateElement("error");
 			root.AppendChild(er) ;
-			er.AppendChild(d.CreateTextNode(errorNumber.ToString(CultureInfo.InvariantCulture)));
-			if (errorMessage.Length > 0)
+			er.AppendChild(d.CreateTextNode(errNum.ToString(CultureInfo.InvariantCulture)));
+			if (errText.Length > 0)
 			{
 				XmlElement msg = d.CreateElement("message");
 				root.AppendChild(msg) ;
-				msg.AppendChild(d.CreateTextNode(errorMessage));
+				msg.AppendChild(d.CreateTextNode(errText));
 			}
 			d.Save(context.Response.Output);
 			context.Response.Output.Flush();

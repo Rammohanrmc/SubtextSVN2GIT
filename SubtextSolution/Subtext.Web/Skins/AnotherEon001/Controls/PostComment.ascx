@@ -19,12 +19,6 @@
 					ControlToValidate="tbName"></asp:RequiredFieldValidator></td>
 		</tr>
 		<tr>
-			<td>Email</td>
-			<td>
-				<asp:TextBox id="tbEmail" runat="server" Size="40" Width="300px" CssClass="Textbox"></asp:TextBox></td>
-			<td></td>
-		</tr>		
-		<tr>
 			<td>Url</td>
 			<td>
 				<asp:TextBox id="tbUrl" runat="server" Size="40" Width="300px" CssClass="Textbox"></asp:TextBox></td>

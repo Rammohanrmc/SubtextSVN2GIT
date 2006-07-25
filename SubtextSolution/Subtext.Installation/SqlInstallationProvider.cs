@@ -20,8 +20,8 @@ using System.Data.SqlClient;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Web.UI;
-using Microsoft.ApplicationBlocks.Data;
 using Subtext.Extensibility.Providers;
+using Subtext.Scripting;
 using Subtext.Web.Controls;
 
 namespace Subtext.Installation
@@ -33,6 +33,8 @@ namespace Subtext.Installation
 	{
 		Version _version = null;
 		string _connectionString = string.Empty;
+		string _name = string.Empty;
+		const string TableExistsSql = "SELECT COUNT(1) FROM dbo.sysobjects WHERE id = object_id(N'[{0}]') and OBJECTPROPERTY(id, N'IsUserTable') = 1";
 		
 		/// <summary>
 		/// Initializes the specified provider.
@@ -41,10 +43,21 @@ namespace Subtext.Installation
 		/// <param name="configValue">Config value.</param>
 		public override void Initialize(string name, NameValueCollection configValue)
 		{
-            _connectionString = ProviderConfigurationHelper.GetSettingValue("connectionStringName", configValue);
-            base.Initialize(name, configValue);
+			_name = name;
+			_connectionString = GetSettingValue("connectionString", configValue);
 		}
 
+		/// <summary>
+		/// Returns the friendly name of the provider when the provider is initialized.
+		/// </summary>
+		/// <value></value>
+		public override string Name
+		{
+			get
+			{
+				return _name;
+			}
+		}
 
 		/// <summary>
 		/// <p>
@@ -99,14 +112,11 @@ namespace Subtext.Installation
 		/// <returns></returns>
 		public override InstallationState GetInstallationStatus(Version currentAssemblyVersion)
 		{
-			Version installationVersion = GetCurrentInstallationVersion();
-			if (installationVersion == null)
+			if(!VersionTableExists)
 				return InstallationState.NeedsInstallation;
 			
-			if (NeedsUpgrade(installationVersion))
-			{
+			if(NeedsUpgrade)
 				return InstallationState.NeedsUpgrade;
-			}
 		
 			return InstallationState.Complete;
 		}
@@ -282,22 +292,26 @@ namespace Subtext.Installation
 		/// <value>
 		/// 	<c>true</c> if [needs upgrade]; otherwise, <c>false</c>.
 		/// </value>
-		public bool NeedsUpgrade(Version installationVersion)
+		public bool NeedsUpgrade
 		{
-			if(installationVersion >= CurrentAssemblyVersion)
+			get
 			{
-				return false;
-			}
+				Version installationVersion = GetCurrentInstallationVersion();
+				if(installationVersion >= CurrentAssemblyVersion)
+				{
+					return false;
+				}
 
-			if(installationVersion == null)
-			{
-				//This is the base version.  We need to hardcode this 
-				//because Subtext 1.0 didn't write the assembly version 
-				//into the database.
-				installationVersion = new Version(1, 0, 0, 0);
+				if(installationVersion == null)
+				{
+					//This is the base version.  We need to hardcode this 
+					//because Subtext 1.0 didn't write the assembly version 
+					//into the database.
+					installationVersion = new Version(1, 0, 0, 0);
+				}
+				string[] scripts = ListInstallationScripts(installationVersion, CurrentAssemblyVersion);
+				return scripts.Length > 0;
 			}
-			string[] scripts = ListInstallationScripts(installationVersion, CurrentAssemblyVersion);
-			return scripts.Length > 0;
 		}
 
 		/// <summary>
@@ -337,6 +351,32 @@ namespace Subtext.Installation
 		public override bool Repair()
 		{
 			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the blog content table exists.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if the blog content table exists; otherwise, <c>false</c>.
+		/// </value>
+		bool VersionTableExists
+		{
+			get
+			{
+				return DoesTableExist("subtext_Version");
+			}
+		}
+
+		bool DoesTableExist(string tableName)
+		{
+			
+			return 0 < GetTableCount(tableName);
+		}
+
+		int GetTableCount(string tableName)
+		{
+			string blogContentTableSql = String.Format(TableExistsSql, tableName);			
+			return (int)SqlHelper.ExecuteScalar(_connectionString, CommandType.Text, blogContentTableSql);
 		}
 
 		internal class InstallationScriptInfo

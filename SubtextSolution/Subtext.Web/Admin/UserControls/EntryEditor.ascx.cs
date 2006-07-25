@@ -15,7 +15,6 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
@@ -29,6 +28,7 @@ using Subtext.Framework.Util;
 using Subtext.Web.Admin.Pages;
 using Subtext.Web.Admin.WebUI;
 using Subtext.Web.Controls;
+using Page = Subtext.Web.Admin.WebUI.Page;
 using StringHelper = Subtext.Framework.Text.StringHelper;
 
 namespace Subtext.Web.Admin.UserControls
@@ -39,7 +39,7 @@ namespace Subtext.Web.Admin.UserControls
 		private const string VSKEY_CATEGORYTYPE = "CategoryType";
 
 		private int _filterCategoryID = NullValue.NullInt32;
-		private int pageIndex = 0;
+		private int _resultsPageNumber = 1;
 		private bool _isListHidden = false;
 		
 		#region Declared Controls
@@ -157,13 +157,13 @@ namespace Subtext.Web.Admin.UserControls
 			if (!IsPostBack)
 			{
 				if (null != Request.QueryString[Keys.QRYSTR_PAGEINDEX])
-					this.pageIndex = Convert.ToInt32(Request.QueryString[Keys.QRYSTR_PAGEINDEX]);
+					_resultsPageNumber = Convert.ToInt32(Request.QueryString[Keys.QRYSTR_PAGEINDEX]);
 
 				if (null != Request.QueryString[Keys.QRYSTR_CATEGORYID])
 					_filterCategoryID = Convert.ToInt32(Request.QueryString[Keys.QRYSTR_CATEGORYID]);
 
 				ResultsPager.PageSize = Preferences.ListingItemCount;
-				ResultsPager.PageIndex = this.pageIndex;
+				ResultsPager.PageIndex = _resultsPageNumber;
 				Results.Collapsible = false;
 
 				if (NullValue.NullInt32 != _filterCategoryID)
@@ -219,7 +219,8 @@ namespace Subtext.Web.Admin.UserControls
 		{
 			Edit.Visible = false;
 
-            IPagedCollection<Entry> selectionList = Entries.GetPagedEntries(this.EntryType, _filterCategoryID, this.pageIndex, ResultsPager.PageSize, true);		
+			PagedEntryCollection selectionList = Entries.GetPagedEntries(this.EntryType, _filterCategoryID, 
+				_resultsPageNumber, ResultsPager.PageSize,true);		
 
 			if (selectionList.Count > 0)
 			{				
@@ -236,7 +237,7 @@ namespace Subtext.Web.Admin.UserControls
 
 		private void BindCategoryList()
 		{
-            cklCategories.DataSource = Links.GetCategories(CategoryType, ActiveFilter.None);
+			cklCategories.DataSource = Links.GetCategories(CategoryType, false);
 			cklCategories.DataValueField = "CategoryID";
 			cklCategories.DataTextField = "Title";
 			cklCategories.DataBind();
@@ -257,7 +258,7 @@ namespace Subtext.Web.Admin.UserControls
 		{
 			SetConfirmation();
 			
-			Entry currentPost = Entries.GetEntry(PostID, PostConfig.IsActive, false);
+			Entry currentPost = Entries.GetEntry(PostID, EntryGetOption.All);
 			if(currentPost == null)
 			{
 				Response.Redirect("EditPosts.aspx");
@@ -299,11 +300,10 @@ namespace Subtext.Web.Admin.UserControls
 
 			ckbPublished.Checked = currentPost.IsActive;
 
-            BindCategoryList();
-			for (int i = 0; i < cklCategories.Items.Count; i++)
+			for (int i =0; i < cklCategories.Items.Count;i++)
 				cklCategories.Items[i].Selected = false;
 
-			ICollection<Link> postCategories = Links.GetLinkCollectionByPostID(PostID);
+			LinkCollection postCategories = Links.GetLinkCollectionByPostID(PostID);
 			if (postCategories.Count > 0)
 			{
 				foreach(Link postCategory in postCategories)
@@ -319,14 +319,15 @@ namespace Subtext.Web.Admin.UserControls
 			Results.Collapsible = true;
 			Advanced.Collapsed = !Preferences.AlwaysExpandAdvanced;
 
-            AdminPageTemplate adminMasterPage = Page.Master as AdminPageTemplate;
-            if (adminMasterPage != null && adminMasterPage.BreadCrumb != null)
+			Control container = Page.FindControl("PageContainer");
+			if (null != container && container is Page)
 			{	
+				Page page = (Page)container;
 				string title = string.Format(CultureInfo.InvariantCulture, "Editing {0} \"{1}\"", 
 					CategoryType == CategoryType.StoryCollection ? "Article" : "Post", currentPost.Title);
 
-                adminMasterPage.BreadCrumb.AddLastItem(title);
-                adminMasterPage.Title = title;
+				page.BreadCrumbs.AddLastItem(title);
+				page.Title = title;
 			}
 
 			if(currentPost.HasEntryName)
@@ -394,7 +395,7 @@ namespace Subtext.Web.Admin.UserControls
 			else
 			{
 				// We came from outside the post, let's go there.
-				Entry updatedEntry = Entries.GetEntry(PostID, PostConfig.IsActive, false);
+				Entry updatedEntry = Entries.GetEntry(PostID, EntryGetOption.ActiveOnly);
 				if(updatedEntry != null)
 				{
 					Response.Redirect(updatedEntry.Url);
@@ -421,7 +422,7 @@ namespace Subtext.Web.Admin.UserControls
 					}
 					else
 					{
-						entry = Entries.GetEntry(PostID, PostConfig.IsActive, false);
+						entry = Entries.GetEntry(PostID, EntryGetOption.All);
 						if(entry.PostType != EntryType)
 						{
 							this.EntryType = entry.PostType;
@@ -432,7 +433,7 @@ namespace Subtext.Web.Admin.UserControls
 					entry.Body = HtmlHelper.StripRTB(richTextEditor.Xhtml, Request.Url.Host);
 					entry.Author = Config.CurrentBlog.Author;
 					entry.Email = Config.CurrentBlog.Email;
-					entry.BlogId = Config.CurrentBlog.Id;
+					entry.BlogId = Config.CurrentBlog.BlogId;
 
 					// Advanced options
 					/* Need to do some special checks for txb*.Text == "", b/c they get posted 
@@ -459,7 +460,7 @@ namespace Subtext.Web.Admin.UserControls
 					{
 						successMessage = Constants.RES_SUCCESSEDIT;
 						entry.DateUpdated = BlogTime.CurrentBloggerTime;
-						entry.Id = PostID;
+						entry.EntryID = PostID;
 						
 						//TODO: Add here code to be called before updating a post
 						
@@ -470,7 +471,7 @@ namespace Subtext.Web.Admin.UserControls
 						if(ReturnToOriginalPost)
 						{
 							// We came from outside the post, let's go there.
-							Entry updatedEntry = Entries.GetEntry(PostID, PostConfig.IsActive, false);
+							Entry updatedEntry = Entries.GetEntry(PostID, EntryGetOption.ActiveOnly);
 							if(updatedEntry != null)
 							{
 								Response.Redirect(updatedEntry.Url);
@@ -487,7 +488,6 @@ namespace Subtext.Web.Admin.UserControls
 						PostID = Entries.Create(entry);
 						
 						//TODO: Add here code to be called after creating a post
-						AddCommunityCredits(entry);
 					}
 
 					UpdateCategories();
@@ -618,12 +618,10 @@ namespace Subtext.Web.Admin.UserControls
 					PostID = Convert.ToInt32(e.CommandArgument);
 					BindPostEdit();
 					break;
-				
-			    case "delete" :
+				case "delete" :
 					ConfirmDelete(Convert.ToInt32(e.CommandArgument));
 					break;
-				
-			    default:
+				default:
 					break;
 			}
 		}
@@ -633,7 +631,7 @@ namespace Subtext.Web.Admin.UserControls
 			if(PostID > -1 && ReturnToOriginalPost)
 			{
 				// We came from outside the post, let's go there.
-				Entry updatedEntry = Entries.GetEntry(PostID, PostConfig.IsActive, false);
+				Entry updatedEntry = Entries.GetEntry(PostID, EntryGetOption.ActiveOnly);
 				if(updatedEntry != null)
 				{
 					Response.Redirect(updatedEntry.Url);
@@ -657,49 +655,6 @@ namespace Subtext.Web.Admin.UserControls
 		protected void richTextEditor_Error(object sender, Subtext.Web.Controls.RichTextEditorErrorEventArgs e)
 		{
 			this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, "TODO...", e.Exception.Message));
-		}
-
-		private string AddCommunityCredits(Entry entry) 
-		{
-			string result=string.Empty;
-
-			bool commCreditsEnabled;
-			try
-			{
-                commCreditsEnabled = Convert.ToBoolean(System.Configuration.ConfigurationManager.AppSettings["CommCreditEnabled"]);
-			}
-			catch(Exception) 
-			{
-				commCreditsEnabled = false;
-			}
-
-			if(commCreditsEnabled.Equals("true")) 
-			{
-				com.community_credit.www.AffiliateServices wsCommunityCredit = new Subtext.Web.com.community_credit.www.AffiliateServices();
-				string url=entry.FullyQualifiedUrl.ToString();
-				string category=String.Empty;
-				if(entry.PostType==PostType.BlogPost)
-					category="Blog";
-				else if (entry.PostType==PostType.Story)
-					category="Article";
-				string description = "Blogged about: " + entry.Title;
-				BlogInfo info = Config.CurrentBlog;
-				string firstName=string.Empty;
-				string lastName=info.Author;
-				string email=info.Email;
-                string affiliateCode = System.Configuration.ConfigurationManager.AppSettings["CommCreditAffiliateCode"];
-                string affiliateKey = System.Configuration.ConfigurationManager.AppSettings["CommCreditAffiliateKey"];
-				
-				try 
-				{
-					result=wsCommunityCredit.AddCommunityCredit(email,firstName,lastName,description,url,category,affiliateCode,affiliateKey);
-				}
-				catch(Exception ex) 
-				{
-					this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, "Error during Community Credits submission (your post has been saved)", ex.Message));
-				}	
-			}
-			return result;
 		}
 	}
 }

@@ -1,8 +1,4 @@
 <%@ Control Language="c#" Inherits="Subtext.Web.UI.Controls.ViewPost" %>
-<%@ Register TagPrefix="uc1" TagName="PreviousNext" Src="PreviousNext.ascx" %>
-
-<uc1:PreviousNext id="PreviousNext" runat="server" />
-
 	<div class="post">
 		<h2>
 			<asp:HyperLink Runat="server" ID="editLink" /><asp:HyperLink Runat="server" ID="TitleUrl" />
@@ -12,5 +8,6 @@
 			<a href="javascript:window.print();" class="printIcon"><span>Print</span></a> | posted on <asp:Literal id="PostDescription"  runat="server" />
 		</p>
 	</div>
-	<asp:Literal ID="TrackBack" Runat="server" />
+	<asp:Literal ID = "PingBack" Runat = "server" />
+	<asp:Literal ID = "TrackBack" Runat = "server" />
 	

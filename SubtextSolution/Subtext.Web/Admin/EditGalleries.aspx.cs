@@ -14,26 +14,39 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
-using Image=Subtext.Framework.Components.Image;
-
-using ICSharpCode.SharpZipLib.Zip;
-using ICSharpCode.SharpZipLib.Zip.Compression;
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
-using System.Text;
 
 namespace Subtext.Web.Admin.Pages
 {
-	public partial class EditGalleries : AdminPage
+	public class EditGalleries : AdminPage
 	{
 		protected bool _isListHidden;
+
+		protected Subtext.Web.Admin.WebUI.Page PageContainer;
+		protected Subtext.Web.Admin.WebUI.AdvancedPanel Results;
+		protected System.Web.UI.WebControls.Repeater rprImages;
+		protected System.Web.UI.WebControls.DataGrid dgrSelectionList;
+		protected System.Web.UI.WebControls.TextBox txbNewTitle;
+		protected System.Web.UI.WebControls.CheckBox ckbNewIsActive;
+		protected System.Web.UI.WebControls.Button lkbPost;
+		protected Subtext.Web.Admin.WebUI.AdvancedPanel Add;
+		protected System.Web.UI.WebControls.TextBox txbImageTitle;
+		protected System.Web.UI.WebControls.Button lbkAddImage;
+		protected Subtext.Web.Admin.WebUI.AdvancedPanel AddImages;
+		protected System.Web.UI.WebControls.Panel ImagesDiv;
+		protected System.Web.UI.HtmlControls.HtmlInputFile ImageFile;
+		protected System.Web.UI.WebControls.CheckBox ckbIsActiveImage;
+		protected Subtext.Web.Admin.WebUI.MessagePanel Messages;
+		protected System.Web.UI.WebControls.PlaceHolder plhImageHeader;
+		protected Subtext.Web.Controls.ScrollPositionSaver scrollsaver;
+		protected System.Web.UI.WebControls.TextBox txbNewDescription;
 		// jsbright added to support prompting for new file name
+		protected Panel PanelSuggestNewName, PanelDefaultName;
+		protected TextBox TextBoxImageFileName;
 
 		#region Accessors
 		private int CategoryID
@@ -49,12 +62,7 @@ namespace Subtext.Web.Admin.Pages
 		}
 		#endregion
 
-	    protected EditGalleries() : base()
-	    {
-            this.TabSectionId = "Galleries";
-	    }
-	    
-		protected void Page_Load(object sender, System.EventArgs e)
+		private void Page_Load(object sender, System.EventArgs e)
 		{
 			if(!Config.Settings.AllowImages)
 			{
@@ -80,7 +88,7 @@ namespace Subtext.Web.Admin.Pages
 		private void BindList()
 		{
 			// TODO: possibly, later on, add paging support a la other cat editors
-            ICollection<LinkCategory> selectionList = Links.GetCategories(CategoryType.ImageCollection, ActiveFilter.None);
+			LinkCategoryCollection selectionList = Links.GetCategories(CategoryType.ImageCollection, false);
 
 			if (selectionList.Count > 0)
 			{
@@ -104,7 +112,7 @@ namespace Subtext.Web.Admin.Pages
 		{
 			CategoryID = galleryID;
 			LinkCategory selectedGallery = Links.GetLinkCategory(galleryID,false);
-			ICollection<Image> imageList = Images.GetImagesByCategoryID(galleryID, false);
+			ImageCollection imageList = Images.GetImagesByCategoryID(galleryID, false);
 
 			plhImageHeader.Controls.Clear();
 			string galleryTitle = string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0} - {1} images", selectedGallery.Title, imageList.Count);
@@ -115,12 +123,14 @@ namespace Subtext.Web.Admin.Pages
 
 			ShowImages();
 
-			if(AdminMasterPage != null && AdminMasterPage.BreadCrumb != null)
-            {
+			Control container = Page.FindControl("PageContainer");
+			if (null != container && container is Subtext.Web.Admin.WebUI.Page)
+			{	
+				Subtext.Web.Admin.WebUI.Page page = (Subtext.Web.Admin.WebUI.Page)container;
 				string title = string.Format(System.Globalization.CultureInfo.InvariantCulture, "Viewing Gallery \"{0}\"", selectedGallery.Title);
 
-				AdminMasterPage.BreadCrumb.AddLastItem(title);
-				AdminMasterPage.Title = title;
+				page.BreadCrumbs.AddLastItem(title);
+				page.Title = title;
 			}
 
 			AddImages.Collapsed = !Preferences.AlwaysExpandAdvanced;
@@ -227,139 +237,8 @@ namespace Subtext.Web.Admin.Pages
 		/// <param name="e"></param>
 		protected void OnAddImage(object sender, System.EventArgs e)
 		{
-            string fileName = ImageFile.PostedFile.FileName;
-
-            int lastDot = fileName.LastIndexOf(".");
-            if (lastDot > -1)
-            {
-                string ext = fileName.Substring(lastDot + 1);
-                if (ext.ToLower().Equals("zip"))
-                {
-                    // Handle as an archive
-                    PersistImageArchive();
-                    return;
-                }
-            }
-
-            // If there was no dot, or extension wasn't ZIP, then treat as a single image
-			PersistImage(fileName);
+			PersistImage(ImageFile.PostedFile.FileName);
 		}
-
-
-        private void PersistImageArchive()
-        {
-            List<string> goodFiles = new List<string>(),
-                badFiles = new List<string>(),
-                updatedFiles = new List<string>();
-
-            Subtext.Framework.Components.Image image;
-
-            byte[] archiveData = Images.GetFileStream(ImageFile.PostedFile),
-                fileData;
-            System.IO.MemoryStream ms = new System.IO.MemoryStream(archiveData);
-
-            using (ZipInputStream zip = new ZipInputStream(ms))
-            {
-                ZipEntry theEntry;
-                while ((theEntry = zip.GetNextEntry()) != null)
-                {
-                    string fileName = Path.GetFileName(theEntry.Name);
-
-                    // TODO: Filter for image types?
-                    if (fileName != String.Empty)
-                    {
-                        image = new Subtext.Framework.Components.Image();
-                        image.CategoryID = CategoryID;
-                        image.Title = fileName;
-                        image.IsActive = ckbIsActiveImage.Checked;
-                        image.File = Images.GetFileName(fileName);
-                        image.LocalFilePath = Images.LocalGalleryFilePath(Context, CategoryID);
-
-                        // Read the next file from the Zip stream
-                        using (System.IO.MemoryStream currentFileData = new System.IO.MemoryStream((int)theEntry.Size))
-                        {
-                            int size = 2048;
-                            byte[] data = new byte[size];
-                            while (true)
-                            {
-                                size = zip.Read(data, 0, data.Length);
-                                if (size > 0)
-                                {
-                                    currentFileData.Write(data, 0, size);
-                                }
-                                else break;
-                            }
-
-                            fileData = currentFileData.ToArray();
-                        }
-
-                        try
-                        {
-                            // If it exists, update it
-                            if (System.IO.File.Exists(image.OriginalFilePath))
-                            {
-                                Images.Update(image, fileData);
-                                updatedFiles.Add(theEntry.Name);
-                            }
-                            else
-                            {
-                                // Attempt insertion as a new image
-                                int imageID = Images.InsertImage(image, fileData);
-                                if (imageID > 0)
-                                {
-                                    goodFiles.Add(theEntry.Name);
-                                }
-                                else
-                                {
-                                    // Wrong format, perhaps?
-                                    badFiles.Add(theEntry.Name);
-                                }
-                            }
-                        }
-                        catch( Exception ex )
-                        {
-                            badFiles.Add(theEntry.Name + " (" + ex.Message + ")");
-                        }
-                    }
-                }
-            }
-
-            string status = string.Format(
-                @"<script type=""text/javascript"">
-                    function ToggleVisibility(ctrl)
-                    {{
-                        if( ctrl.style.display == 'none' )
-                        {{
-                            ctrl.style.display = '';
-                        }}
-                        else
-                        {{
-                            ctrl.style.display = 'none';
-                        }}
-                    }}
-                </script>
-                The archive has been processed.<br />
-                <b><a onclick=""javascript:ToggleVisibility( document.getElementById('ImportAddDetails'))"">Adds ({0})</a></b><span id=""ImportAddDetails"" style=""display:none""> : {1}</span><br />
-                <b><a onclick=""javascript:ToggleVisibility(document.getElementById('ImportUpdateDetails'))"">Updates ({2})</a></b><span id=""ImportUpdateDetails"" style=""display:none""> : {3}</span><br />
-                <b><a onclick=""javascript:ToggleVisibility(document.getElementById('ImportErrorDetails'))"">Errors ({4})</a></b><span id=""ImportErrorDetails"" style=""display:none""> : {5}</span>", 
-                
-                goodFiles.Count, 
-                (goodFiles.Count > 0 ? string.Join(", ", goodFiles.ToArray()) : "none"), 
-                updatedFiles.Count, 
-                (updatedFiles.Count > 0 ? string.Join(", ", updatedFiles.ToArray()) : "none"), 
-                badFiles.Count, 
-                (badFiles.Count > 0 ? string.Join(", ", badFiles.ToArray()) : "none"));
-
-            this.Messages.ShowMessage(status);
-            txbImageTitle.Text = String.Empty;
-
-            // if we're successful we need to revert back to our standard view
-            PanelSuggestNewName.Visible = false;
-            PanelDefaultName.Visible = true;
-
-            // re-bind the gallery; note we'll skip this step if a correctable error occurs.
-            BindGallery();
-        }
 
 		/// <summary>
 		/// The user is providing the file name here. 
@@ -403,7 +282,7 @@ namespace Subtext.Web.Admin.Pages
 						PanelDefaultName.Visible = false;
 
 						AddImages.Collapsed = false;
-						// Unfortunately you can't set ImageFile.PostedFile.FileName. At least suggest
+						// unfortunately you cann't set ImageFile.PostedFile.FileName. At least suggest
 						// a name for the new file.
 						TextBoxImageFileName.Text = image.File;
 						return;
@@ -477,7 +356,9 @@ namespace Subtext.Web.Admin.Pages
 			this.dgrSelectionList.EditCommand += new System.Web.UI.WebControls.DataGridCommandEventHandler(this.dgrSelectionList_EditCommand);
 			this.dgrSelectionList.UpdateCommand += new System.Web.UI.WebControls.DataGridCommandEventHandler(this.dgrSelectionList_UpdateCommand);
 			this.dgrSelectionList.DeleteCommand += new System.Web.UI.WebControls.DataGridCommandEventHandler(this.dgrSelectionList_DeleteCommand);
+			this.lkbPost.Click += new System.EventHandler(this.lkbPost_Click);
 			this.rprImages.ItemCommand += new System.Web.UI.WebControls.RepeaterCommandEventHandler(this.rprImages_ItemCommand);
+			this.Load += new System.EventHandler(this.Page_Load);
 
 		}
 		#endregion
@@ -541,7 +422,7 @@ namespace Subtext.Web.Admin.Pages
 			Messages.Clear();
 		}
 
-		protected void lkbPost_Click(object sender, System.EventArgs e)
+		private void lkbPost_Click(object sender, System.EventArgs e)
 		{
 			LinkCategory newCategory = new LinkCategory();
 			newCategory.CategoryType = CategoryType.ImageCollection;

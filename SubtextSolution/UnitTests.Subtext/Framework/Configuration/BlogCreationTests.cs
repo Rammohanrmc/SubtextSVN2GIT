@@ -31,7 +31,7 @@ namespace UnitTests.Subtext.Framework.Configuration
 	{
 		string _hostName;
 
-        /// <summary>
+		/// <summary>
 		/// Ensures that creating a blog will hash the password 
 		/// if UseHashedPassword is set in web.config (as it should be).
 		/// </summary>
@@ -90,9 +90,9 @@ namespace UnitTests.Subtext.Framework.Configuration
 		[RollBack]
 		public void AddingDistinctBlogsIsFine()
 		{
-			Config.CreateBlog("title", "username", "password", UnitTestHelper.GenerateRandomString(), string.Empty);
-			Config.CreateBlog("title", "username", "password", "www2." + UnitTestHelper.GenerateRandomString(), string.Empty);
-			Config.CreateBlog("title", "username", "password", UnitTestHelper.GenerateRandomString(), string.Empty);
+			Config.CreateBlog("title", "username", "password", UnitTestHelper.GenerateRandomHostname(), string.Empty);
+			Config.CreateBlog("title", "username", "password", "www2." + UnitTestHelper.GenerateRandomHostname(), string.Empty);
+			Config.CreateBlog("title", "username", "password", UnitTestHelper.GenerateRandomHostname(), string.Empty);
 			Config.CreateBlog("title", "username", "password", _hostName, "Blog1");
 			Config.CreateBlog("title", "username", "password", _hostName, "Blog2");
 			Config.CreateBlog("title", "username", "password", _hostName, "Blog3");
@@ -133,7 +133,7 @@ namespace UnitTests.Subtext.Framework.Configuration
 		[ExpectedException(typeof(BlogDuplicationException))]
 		public void UpdateBlogCannotConflictWithDuplicateHostAndSubfolder()
 		{
-			string secondHost = UnitTestHelper.GenerateRandomString();
+			string secondHost = UnitTestHelper.GenerateRandomHostname();
 			Config.CreateBlog("title", "username", "password", _hostName, "MyBlog");
 			Config.CreateBlog("title", "username2", "password2", secondHost, "MyBlog");
 			BlogInfo info = Config.GetBlogInfo(secondHost, "MyBlog");
@@ -151,7 +151,7 @@ namespace UnitTests.Subtext.Framework.Configuration
 		[ExpectedException(typeof(BlogDuplicationException))]
 		public void UpdateBlogCannotConflictWithDuplicateHost()
 		{
-			string anotherHost = UnitTestHelper.GenerateRandomString();
+			string anotherHost = UnitTestHelper.GenerateRandomHostname();
 			Config.CreateBlog("title", "username", "password", _hostName, string.Empty);
 			Config.CreateBlog("title", "username2", "password2", anotherHost, string.Empty);
 			BlogInfo info = Config.GetBlogInfo(anotherHost, string.Empty);
@@ -218,7 +218,7 @@ namespace UnitTests.Subtext.Framework.Configuration
 		[ExpectedException(typeof(BlogRequiresSubfolderException))]
 		public void UpdatingBlogWithDuplicateHostNameRequiresSubfolderName()
 		{
-			string anotherHost = UnitTestHelper.GenerateRandomString();
+			string anotherHost = UnitTestHelper.GenerateRandomHostname();
 			Config.CreateBlog("title", "username", "password", _hostName, "MyBlog1");
 			Config.CreateBlog("title", "username", "password", anotherHost, string.Empty);
 
@@ -335,19 +335,21 @@ namespace UnitTests.Subtext.Framework.Configuration
 
 		/// <summary>
 		/// Sets the up test fixture.  This is called once for 
-		/// this test fixture before all the tests run.
+		/// this test fixture before all the tests run.  It 
+		/// essentially copies the App.config file to the 
+		/// run directory.
 		/// </summary>
 		[TestFixtureSetUp]
 		public void SetUpTestFixture()
 		{
 			//Confirm app settings
-            UnitTestHelper.AssertAppSettings();
+			Assert.AreEqual("~/Admin/Resources/PageTemplate.ascx", System.Configuration.ConfigurationSettings.AppSettings["Admin.DefaultTemplate"]) ;
 		}
 		
 		[SetUp]
 		public void SetUp()
 		{
-			_hostName = UnitTestHelper.GenerateRandomString();
+			_hostName = UnitTestHelper.GenerateRandomHostname();
 			UnitTestHelper.SetHttpContextWithBlogRequest(_hostName, "MyBlog");
 		}
 

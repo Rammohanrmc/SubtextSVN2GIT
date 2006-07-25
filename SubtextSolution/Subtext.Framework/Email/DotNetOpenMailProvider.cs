@@ -25,7 +25,7 @@ namespace Subtext.Framework.Email
 	/// Implements the <see cref="EmailProvider"/> using an open source library, 
 	/// <see href="http://dotnetopenmail.sourceforge.net/">DotNetOpenMail</see>. 
 	/// </summary>
-	public class DotNetOpenMailProvider : EmailProvider
+	public class DotNetOpenMailProvider : EmailProviderBase
 	{
 		static Log Log = new Log();
 

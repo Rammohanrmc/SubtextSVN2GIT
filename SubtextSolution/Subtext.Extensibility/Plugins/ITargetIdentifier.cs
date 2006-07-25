@@ -14,14 +14,13 @@
 #endregion
 
 using System;
-using Subtext.Extensibility.Plugins;
 
 namespace Subtext.Extensibility.Plugins
 {
-    /// <summary>
-    /// Summary description for ITargetIdentifier.
-    /// </summary>
-    public interface ITargetIdentifier : IModuleIdentifier
-    {
-    }
+	/// <summary>
+	/// Summary description for ITargetIdentifier.
+	/// </summary>
+	public interface ITargetIdentifier : IModuleIdentifier
+	{
+	}
 }

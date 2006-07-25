@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using Subtext.Framework.Components;
 
 namespace Subtext.Common.Syndication
@@ -29,7 +28,7 @@ namespace Subtext.Common.Syndication
 		/// </summary>
 		/// <param name="entries">Entries.</param>
 		/// <param name="dateLastViewedFeedItemPublished">Last viewed feed item.</param>
-        public AtomWriter(IList<Entry> entries, DateTime dateLastViewedFeedItemPublished, bool useDeltaEncoding) : base(dateLastViewedFeedItemPublished, useDeltaEncoding)
+		public AtomWriter(EntryCollection entries, DateTime dateLastViewedFeedItemPublished, bool useDeltaEncoding) : base(dateLastViewedFeedItemPublished, useDeltaEncoding)
 		{
 			this.Entries = entries;
 			this.UseAggBugs = true;

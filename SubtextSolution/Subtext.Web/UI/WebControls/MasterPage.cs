@@ -33,7 +33,7 @@ namespace Subtext.Web.UI.WebControls
 	/// </summary>
 	[ToolboxData("<{0}:MasterPage runat=server></{0}:MasterPage>"),
 		ToolboxItem(typeof(WebControlToolboxItem)),
-		Designer(typeof(ContainerControlDesigner))]
+		Designer(typeof(ReadWriteControlDesigner))]
 	public class MasterPage : System.Web.UI.HtmlControls.HtmlContainerControl
 	{
 		Subtext.Framework.Logging.Log Log = new Subtext.Framework.Logging.Log();
@@ -54,7 +54,7 @@ namespace Subtext.Web.UI.WebControls
 			{ 
 				if(this.templateFile == null)
 				{
-					this.templateFile = string.Format(skinPath, Globals.Skin());
+					this.templateFile =  string.Format(skinPath, Globals.Skin(Context));
 				}
 				return this.templateFile;
 			}
@@ -89,7 +89,7 @@ namespace Subtext.Web.UI.WebControls
 			}
 			catch(System.IO.FileNotFoundException e)
 			{
-				Log.Warn("The configured skin '" + Config.CurrentBlog.Skin.TemplateFolder + "' does not exist.  Reverting to a default skin.", e);
+				Log.Warn("The configured skin '" + Config.CurrentBlog.Skin.SkinName + "' does not exist.  Reverting to a default skin.", e);
 				Config.CurrentBlog.Skin = SkinConfig.GetDefaultSkin();
 				this.templateFile = null;
 				this.template = this.Page.LoadControl(this.TemplateFile);

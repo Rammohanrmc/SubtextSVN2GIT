@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Collections.Specialized;
 using System.Xml.Serialization;
 using Subtext.Extensibility;
 using Subtext.Framework.Configuration;
@@ -52,8 +51,8 @@ namespace Subtext.Framework.Components
 		/// Gets or sets the entry ID.
 		/// </summary>
 		/// <value>The entry ID.</value>
-		[XmlAttribute("EntryID")]
-		public int Id
+		[XmlAttribute]
+		public int EntryID
 		{
 			get{return _entryid;}
 			set{_entryid = value;}
@@ -491,15 +490,6 @@ namespace Subtext.Framework.Components
 			return checksum;
 		}
 
-        /// <summary>
-        /// Returns the categories for this entry.
-        /// </summary>
-        public StringCollection Categories
-        {
-            get { return this.categories; }
-        }
-
-        private StringCollection categories = new StringCollection();
 	}
 }
 

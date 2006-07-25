@@ -16,12 +16,6 @@
 					<asp:textbox id="tbName" runat="server" cssclass="Text" />
 				</dd>
 				<dt>
-					Email
-				</dt>
-				<dd>
-					<asp:textbox id="tbEmail" runat="server" cssclass="Text" />
-				</dd>
-				<dt>
 					Url
 				</dt>
 				<dd>

@@ -102,7 +102,7 @@ namespace Subtext.Web.HostAdmin.UserControls
 			this.pnlResults.Visible = true;
 			this.pnlEdit.Visible = false;
 
-            IPagedCollection<BlogInfo> blogs; 
+			BlogInfoCollection blogs = null; 
 			
 			int totalBlogs;
 			if(this.chkShowInactive.Checked)
@@ -163,16 +163,14 @@ namespace Subtext.Web.HostAdmin.UserControls
 			string onChangeScript = string.Format(System.Globalization.CultureInfo.InvariantCulture, "onPreviewChanged('{0}', '{1}', '{2}', false);", this.txtHost.ClientID, this.txtApplication.ClientID, this.virtualDirectory.ClientID);
 			string onBlurScript = string.Format(System.Globalization.CultureInfo.InvariantCulture, "onPreviewChanged('{0}', '{1}', '{2}', true);", this.txtHost.ClientID, this.txtApplication.ClientID, this.virtualDirectory.ClientID);
 
-			if(!Page.ClientScript.IsStartupScriptRegistered("SetUrlPreview"))
+			if(!Page.IsStartupScriptRegistered("SetUrlPreview"))
 			{
 				string startupScript = "<script type=\"text/javascript\">" 
 					+ Environment.NewLine 
 					+ onBlurScript 
 					+ Environment.NewLine 
 					+ "</script>";
-
-				Type ctype = this.GetType();
-				Page.ClientScript.RegisterStartupScript(ctype,"SetUrlPreview", startupScript);
+				Page.RegisterStartupScript("SetUrlPreview", startupScript);
 			}
 
 			this.txtApplication.Attributes["onkeyup"] = onChangeScript;

@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 
 #region Disclaimer/Info
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -26,7 +25,6 @@ namespace Subtext.Web.UI.Controls
 	public  class Footer : BaseControl
 	{
 		protected System.Web.UI.WebControls.Literal FooterText;
-        protected System.Web.UI.WebControls.Literal currentYear;
 
 		
 		/// <summary>
@@ -36,15 +34,7 @@ namespace Subtext.Web.UI.Controls
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad (e);
-            if (FooterText != null)
-            {
-                FooterText.Text = CurrentBlog.Author;
-            }
-		    
-		    if(currentYear != null)
-		    {
-                currentYear.Text = DateTime.Now.Year.ToString(CultureInfo.InvariantCulture);
-		    }
+			FooterText.Text = CurrentBlog.Author;
 		}
 	}
 }

@@ -14,21 +14,41 @@
 #endregion
 
 using System;
+using System.Web.UI.HtmlControls;
+using System.Web.UI.WebControls;
 using Subtext.Framework;
 using Subtext.Framework.Configuration;
+using Subtext.Web.Admin.WebUI;
 
 namespace Subtext.Web.Admin.Pages
 {
 	/// <summary>
 	/// Admin Page used to set syndication settings.
 	/// </summary>
-	public partial class Syndication : AdminOptionsPage
+	public class Syndication : AdminOptionsPage
 	{
 		// abstract out at a future point for i18n
 		private const string RES_SUCCESS = "Your syndication settings were successfully updated.";
 		private const string RES_FAILURE = "Syndication settings update failed.";
 
-		protected new void Page_Load(object sender, EventArgs e)
+		protected MessagePanel Messages;
+		protected CheckBox chkEnableSyndication;
+		protected CheckBox chkUseSyndicationCompression;
+		protected CheckBox chkUseDeltaEncoding;
+		protected TextBox txtLicenseUrl;
+		protected Button lkbPost;
+		protected AdvancedPanel Edit;
+		protected HtmlImage helpImg;
+		protected HtmlImage Img1;
+		protected HtmlImage Img2;
+		protected Subtext.Web.Controls.HelpToolTip HelpToolTip1;
+		protected Subtext.Web.Controls.HelpToolTip HelpToolTip2;
+		protected Subtext.Web.Controls.HelpToolTip Helptooltip4;
+		protected Subtext.Web.Controls.HelpToolTip HelpToolTip3;
+
+		protected HtmlImage Img3;
+		
+		private void Page_Load(object sender, EventArgs e)
 		{
 			if (!IsPostBack)
 			{
@@ -56,8 +76,7 @@ namespace Subtext.Web.Admin.Pages
 				+  Environment.NewLine + " toggleHideOnCheckbox(checkbox, 'otherSettings');"
 				+  Environment.NewLine +  "</script>";
 	
-			Type ctype = this.GetType();
-			Page.ClientScript.RegisterStartupScript(ctype,"startupScript", startupScript);
+			Page.RegisterStartupScript("startupScript", startupScript);
 		}
 
 		private void SaveSettings()
@@ -101,11 +120,13 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		private void InitializeComponent()
 		{    
+			this.lkbPost.Click += new System.EventHandler(this.lkbPost_Click);
+			this.Load += new System.EventHandler(this.Page_Load);
 
 		}
 		#endregion
 
-		protected void lkbPost_Click(object sender, EventArgs e)
+		private void lkbPost_Click(object sender, EventArgs e)
 		{
 			SaveSettings();
 		}

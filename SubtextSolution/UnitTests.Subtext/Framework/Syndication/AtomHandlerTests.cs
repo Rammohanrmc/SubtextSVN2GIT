@@ -24,7 +24,7 @@ namespace UnitTests.Subtext.Framework.Syndication
 		[RollBack]
 		public void AtomWriterProducesValidFeedFromDatabase()
 		{
-			string hostName = UnitTestHelper.GenerateRandomString();
+			string hostName = UnitTestHelper.GenerateRandomHostname();
 			Assert.IsTrue(Config.CreateBlog("Test", "username", "password", hostName, string.Empty));
 
 			StringBuilder sb = new StringBuilder();

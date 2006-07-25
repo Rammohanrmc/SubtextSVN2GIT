@@ -25,7 +25,6 @@ using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using MbUnit.Framework;
 using Subtext.Extensibility;
 using Subtext.Extensibility.Providers;
-using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Format;
@@ -36,30 +35,30 @@ namespace UnitTests.Subtext
 	/// <summary>
 	/// Contains helpful methods for packing and unpacking resources
 	/// </summary>
-	public static class UnitTestHelper
+	public sealed class UnitTestHelper
 	{
-        
+		private UnitTestHelper() {}
+
 		/// <summary>
 		/// Creates a provider info instance using the specified name and type.
 		/// </summary>
 		/// <param name="name">The name.</param>
 		/// <param name="type">The type.</param>
 		/// <returns></returns>
-        // NOT USED ANYMORE
-        //public static ProviderInfo CreateProviderInfoInstance(string name, string type)
-        //{
-        //    XmlDocument doc = new XmlDocument();
-        //    XmlElement element = doc.CreateElement("Root");
-        //    doc.AppendChild(element);
+		public static ProviderInfo CreateProviderInfoInstance(string name, string type)
+		{
+			XmlDocument doc = new XmlDocument();
+			XmlElement element = doc.CreateElement("Root");
+			doc.AppendChild(element);
 			
-        //    XmlAttribute nameAttribute = doc.CreateAttribute("name");
-        //    nameAttribute.Value = name;
-        //    XmlAttribute typeAttribute = doc.CreateAttribute("type");
-        //    typeAttribute.Value = type;
-        //    element.Attributes.Append(nameAttribute);
-        //    element.Attributes.Append(typeAttribute);
-        //    return new ProviderInfo(element.Attributes);
-        //}
+			XmlAttribute nameAttribute = doc.CreateAttribute("name");
+			nameAttribute.Value = name;
+			XmlAttribute typeAttribute = doc.CreateAttribute("type");
+			typeAttribute.Value = type;
+			element.Attributes.Append(nameAttribute);
+			element.Attributes.Append(typeAttribute);
+			return new ProviderInfo(element.Attributes);
+		}
 		
 		/// <summary>
 		/// Unpacks an embedded resource into the specified directory.
@@ -133,7 +132,7 @@ namespace UnitTests.Subtext
 		/// Generates a random hostname.
 		/// </summary>
 		/// <returns></returns>
-		public static string GenerateRandomString()
+		public static string GenerateRandomHostname()
 		{
 			return System.Guid.NewGuid().ToString().Replace("-", "") + ".com";
 		}
@@ -156,57 +155,39 @@ namespace UnitTests.Subtext
 		/// </summary>
 		/// <param name="host">Host.</param>
 		/// <param name="subfolder">Subfolder Name.</param>
-		/// <param name="applicationPath"></param>
-		public static SimulatedHttpRequest SetHttpContextWithBlogRequest(string host, string subfolder, string applicationPath)
+		/// <param name="virtualDir"></param>
+		public static SimulatedHttpRequest SetHttpContextWithBlogRequest(string host, string subfolder, string virtualDir)
 		{
-			return SetHttpContextWithBlogRequest(host, subfolder, applicationPath, "default.aspx");
+			return SetHttpContextWithBlogRequest(host, subfolder, virtualDir, "default.aspx");
 		}
-	    
-	    public static SimulatedHttpRequest SetHttpContextWithBlogRequest(string host, int port, string subfolder, string applicationPath)
-	    {
-            return SetHttpContextWithBlogRequest(host, port, subfolder, applicationPath, "default.aspx");
-	    }
 		
-	    public static SimulatedHttpRequest SetHttpContextWithBlogRequest(string host, string subfolder, string applicationPath, string page)
-	    {
-	        return SetHttpContextWithBlogRequest(host, 80, subfolder, applicationPath, page);
-	    }
-	    
-		public static SimulatedHttpRequest SetHttpContextWithBlogRequest(string host, int port, string subfolder, string applicationPath, string page)
+		public static SimulatedHttpRequest SetHttpContextWithBlogRequest(string host, string subfolder, string virtualDir, string page)
 		{
-			return SetHttpContextWithBlogRequest(host, port, subfolder, applicationPath, page, null, "GET");
+			return SetHttpContextWithBlogRequest(host, subfolder, virtualDir, page, null);
 		}
 
-		public static SimulatedHttpRequest SetHttpContextWithBlogRequest(string host, string subfolder, string applicationPath, string page, TextWriter output)
+		public static SimulatedHttpRequest SetHttpContextWithBlogRequest(string host, string subfolder, string virtualDir, string page, TextWriter output)
 		{
-			return SetHttpContextWithBlogRequest(host, subfolder, applicationPath, page, output, "GET");
+			return SetHttpContextWithBlogRequest(host, subfolder, virtualDir, page, output, "GET");
 		}
 		
-	    public static SimulatedHttpRequest SetHttpContextWithBlogRequest(string host, string subfolder, string applicationPath, string page, TextWriter output, string httpVerb)
-	    {
-            return SetHttpContextWithBlogRequest(host, 80, subfolder, applicationPath, page, output, httpVerb);
-	    }
-	    
-		public static SimulatedHttpRequest SetHttpContextWithBlogRequest(string host, int port, string subfolder, string applicationPath, string page, TextWriter output, string httpVerb)
+		public static SimulatedHttpRequest SetHttpContextWithBlogRequest(string host, string subfolder, string virtualDir, string page, TextWriter output, string httpVerb)
 		{
 			HttpContext.Current = null;
-		    	    
-			applicationPath = UrlFormats.StripSurroundingSlashes(applicationPath);	// Subtext.Web
+			virtualDir = UrlFormats.StripSurroundingSlashes(virtualDir);	// Subtext.Web
 			subfolder = StripSlashes(subfolder);		// MyBlog
 
 			string appPhysicalDir = @"c:\projects\SubtextSystem\";	
-			if(applicationPath.Length == 0)
+			if(virtualDir.Length == 0)
 			{
-				applicationPath = "/";
+				virtualDir = "/";
 			}
 			else
 			{
-				appPhysicalDir += applicationPath + @"\";	//	c:\projects\SubtextSystem\Subtext.Web\
-				applicationPath = "/" + applicationPath;			//	/Subtext.Web
+				appPhysicalDir += virtualDir + @"\";	//	c:\projects\SubtextSystem\Subtext.Web\
+				virtualDir = "/" + virtualDir;			//	/Subtext.Web
 			}
 
-            SetHttpRequestApplicationPath(applicationPath);
-		    
 			if(subfolder.Length > 0)
 			{
 				page = subfolder + "/" + page;			//	MyBlog/default.aspx
@@ -214,7 +195,7 @@ namespace UnitTests.Subtext
 
 			string query = string.Empty;
 
-            SimulatedHttpRequest workerRequest = new SimulatedHttpRequest(applicationPath, appPhysicalDir, page, query, output, host, port, httpVerb);
+			SimulatedHttpRequest workerRequest = new SimulatedHttpRequest(virtualDir, appPhysicalDir, page, query, output, host, httpVerb);
 			HttpContext.Current = new HttpContext(workerRequest);
 			HttpContext.Current.Items.Clear();
 			HttpContext.Current.Cache.Remove("BlogInfo-");
@@ -223,10 +204,10 @@ namespace UnitTests.Subtext
 			HttpContext.Current.Items["Subtext__CurrentRequest"] = new BlogRequest(host, subfolder);
 
 			#region Console Debug INfo
-			
+			/*
 			Console.WriteLine("host: " + host);
 			Console.WriteLine("blogName: " + subfolder);
-			Console.WriteLine("virtualDir: " + applicationPath);
+			Console.WriteLine("virtualDir: " + virtualDir);
 			Console.WriteLine("page: " + page);
 			Console.WriteLine("appPhysicalDir: " + appPhysicalDir);
 			Console.WriteLine("Request.Url.Host: " + HttpContext.Current.Request.Url.Host);
@@ -234,32 +215,13 @@ namespace UnitTests.Subtext
 			Console.WriteLine("Request.Path: " + HttpContext.Current.Request.Path);
 			Console.WriteLine("Request.RawUrl: " + HttpContext.Current.Request.RawUrl);
 			Console.WriteLine("Request.Url: " + HttpContext.Current.Request.Url);
-            Console.WriteLine("Request.Url.Port: " + HttpContext.Current.Request.Url.Port);
 			Console.WriteLine("Request.ApplicationPath: " + HttpContext.Current.Request.ApplicationPath);
 			Console.WriteLine("Request.PhysicalPath: " + HttpContext.Current.Request.PhysicalPath);
-
+			*/
 			#endregion
 
 			return workerRequest;
 		}
-	    
-	    static void SetHttpRequestApplicationPath(string applicationPath)
-	    {
-	        //We cheat by using reflection.
-	        FieldInfo runtimeField = typeof(HttpRuntime).GetField("_theRuntime", BindingFlags.NonPublic | BindingFlags.Static);
-	        Assert.IsNotNull(runtimeField);
-            HttpRuntime currentRuntime = runtimeField.GetValue(null) as HttpRuntime;
-            Assert.IsNotNull(currentRuntime);
-            FieldInfo appDomainAppVPathField = typeof(HttpRuntime).GetField("_appDomainAppVPath", BindingFlags.NonPublic | BindingFlags.Instance);
-            Assert.IsNotNull(appDomainAppVPathField);
-
-            Type virtualPathType = Type.GetType("System.Web.VirtualPath, System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", true);
-            Assert.IsNotNull(virtualPathType);
-            MethodInfo createMethod = virtualPathType.GetMethod("Create", BindingFlags.Static | BindingFlags.Public, null, new Type[] {typeof(string)}, null);
-            object virtualPath = createMethod.Invoke(null, new object[] { applicationPath });
-	        
-	        appDomainAppVPathField.SetValue(currentRuntime, virtualPath);
-	    }
 
 		/// <summary>
 		/// Strips the slashes from the target string.
@@ -310,7 +272,6 @@ namespace UnitTests.Subtext
 		{
 			if(original != expected)
 			{
-                int unequalPos = 0;
 				for(int i = 0; i < Math.Max(original.Length, expected.Length); i++)
 				{
 					char originalChar = (char)0;
@@ -324,9 +285,6 @@ namespace UnitTests.Subtext
 					{
 						expectedChar = expected[i];
 					}
-
-                    if (unequalPos == 0 && originalChar != expectedChar)
-				        unequalPos = i;
 
 					string originalCharDisplay = "" + originalChar;
 					if(char.IsWhiteSpace(originalChar))
@@ -342,7 +300,7 @@ namespace UnitTests.Subtext
 
 					Console.WriteLine("{0}:\t{1} ({2})\t{3} ({4})", i, originalCharDisplay, (int)originalChar, expectedCharDisplay, (int)expectedChar);
 				}
-				Assert.AreEqual(original, expected, "Strings are not equal starting at character {0}", unequalPos);
+				Assert.AreEqual(original, expected);
 			}
 		}
 
@@ -373,7 +331,7 @@ namespace UnitTests.Subtext
 			{
 				entry.EntryName = entryName;
 			}
-			entry.BlogId = Config.CurrentBlog.Id;
+			entry.BlogId = Config.CurrentBlog.BlogId;
 			entry.DateCreated = dateCreated;
 			entry.DateUpdated = entry.DateCreated;
 			entry.DateSyndicated = entry.DateCreated;
@@ -388,22 +346,6 @@ namespace UnitTests.Subtext
 			
 			return entry;
 		}
-	    
-	    /// <summary>
-	    /// Creates a blog post link category.
-	    /// </summary>
-	    /// <param name="blogId"></param>
-	    /// <param name="title"></param>
-	    /// <returns></returns>
-	    public static int CreateCategory(int blogId, string title)
-	    {
-            LinkCategory category = new LinkCategory();
-            category.BlogId = Config.CurrentBlog.Id;
-            category.Title = title;
-            category.CategoryType = CategoryType.PostCollection;
-	        category.IsActive = true;
-            return Links.CreateLinkCategory(category);
-	    }
 
 		public static string ExtractArchiveToString(Stream compressedArchive)
 		{
@@ -567,14 +509,6 @@ namespace UnitTests.Subtext
 		{
 			AssertAreNotEqual(first, compare, "");
 		}
-	    
-	    /// <summary>
-	    /// Makes sure we can read app settings
-	    /// </summary>
-	    public static void AssertAppSettings()
-	    {
-            Assert.AreEqual("UnitTestValue", System.Configuration.ConfigurationManager.AppSettings["UnitTestKey"], "Cannot read app settings");
-	    }
 
 		/// <summary>
 		/// Asserts that the two values are not equal.

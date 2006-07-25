@@ -14,8 +14,9 @@
 #endregion
 
 using System;
+using System.Security;
+using System.Security.Permissions;
 using System.Web;
-using System.Web.Compilation;
 using System.Web.UI;
 
 namespace Subtext.Common.UrlManager 
@@ -26,12 +27,31 @@ namespace Subtext.Common.UrlManager
 	/// documents will not be loaded. if no page is found, we will use attempt to load 
 	/// default.aspx in the current directory
 	/// </summary>
-	public static class PageHandlerFactory 
+	public sealed class PageHandlerFactory 
 	{
+		private static IStackWalk _stackwalk = new SecurityPermission(SecurityPermissionFlag.UnmanagedCode);
+
+		private PageHandlerFactory(){}
+
 		public static IHttpHandler GetHandler(HttpContext context, string requestType, string url, string path)
 		{
-            return BuildManager.CreateInstanceFromVirtualPath(url, typeof(Page)) as IHttpHandler;
+			StackWalk.Assert();
+
+			if(!path.ToLower(System.Globalization.CultureInfo.InvariantCulture).EndsWith(".aspx"))
+			{
+				path = System.IO.Path.Combine(path, "default.aspx");
+			}
+			return PageParser.GetCompiledPageInstance(url, path, context);
 		}
+
+		public static IStackWalk StackWalk
+		{
+			get
+			{
+				return _stackwalk;
+			}
+		}
+		
 	}
 }
 

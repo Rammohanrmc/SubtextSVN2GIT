@@ -16,10 +16,12 @@
 using System;
 using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Subtext.Framework.Data;
 using Subtext.Framework.Providers;
 
 namespace Subtext.Web
@@ -27,15 +29,30 @@ namespace Subtext.Web
 	/// <summary>
 	/// Summary description for _default.
 	/// </summary>
-	public partial class _default : Page
+	public class _default : Page
 	{
+		protected Repeater Bloggers;
+		protected Literal BlogCount;
+		protected Literal PostCount;
+		protected Literal StoryCount;
+		protected Literal CommentCount;
+		protected Literal PingtrackCount;
+		protected Repeater RecentPosts;
+		protected HyperLink HyperLink1;
+		protected HyperLink OpmlLink;
+		protected HyperLink RssLink;
+		protected HyperLink TitleLink;
+		protected Literal Style;
 		protected HyperLink Hyperlink6;
 		protected HyperLink Hyperlink7;
+		protected HyperLink Hyperlink4;
+		protected HyperLink Hyperlink5;
+		protected Literal TitleTag;
 
-		protected void Page_Load(object sender, EventArgs e)
+		private void Page_Load(object sender, EventArgs e)
 		{
-            TitleTag.Text = TitleLink.Text = ConfigurationManager.AppSettings["AggregateTitle"];
-            TitleLink.NavigateUrl = ConfigurationManager.AppSettings["AggregateUrl"];
+			TitleTag.Text = TitleLink.Text = ConfigurationSettings.AppSettings["AggregateTitle"];
+			TitleLink.NavigateUrl = ConfigurationSettings.AppSettings["AggregateUrl"];
 
 			//No postbacks on this page. It is output cached.
 			BindData();
@@ -83,8 +100,19 @@ namespace Subtext.Web
 				catch{}
 
 			}
+			string sql = "DNW_HomePageData";
 
-            DataSet ds = DbProvider.Instance().GetAggregateHomePageData(GroupID);
+			string conn = DbProvider.Instance().ConnectionString;
+
+			//TODO: This needs to be part of the object model.
+
+			SqlParameter[] p = 
+				{
+					SqlHelper.MakeInParam("@Host", SqlDbType.NVarChar, 100, ConfigurationSettings.AppSettings["AggregateHost"]),
+					SqlHelper.MakeInParam("@GroupID", SqlDbType.Int, 4, GroupID)
+				};
+
+					DataSet ds = SqlHelper.ExecuteDataset(conn,CommandType.StoredProcedure,sql,p);
 
 			Bloggers.DataSource = ds.Tables[0];
 			RecentPosts.DataSource = ds.Tables[1];

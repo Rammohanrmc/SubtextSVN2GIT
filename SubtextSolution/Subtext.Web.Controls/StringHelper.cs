@@ -23,8 +23,12 @@ namespace Subtext.Web.Controls
 	/// <summary>
 	/// Static class with useful string manipulation methods.
 	/// </summary>
-	public static class StringHelper
+	public sealed class StringHelper
 	{
+		private StringHelper()
+		{
+		}
+
 		/// <summary>
 		/// Compares the strings and returns true if they are equal.
 		/// </summary>

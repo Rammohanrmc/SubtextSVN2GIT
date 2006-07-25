@@ -16,8 +16,10 @@
 using System;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.Security.Principal;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Web.Security;
 using log4net;
 using log4net.Appender;
 using log4net.Repository.Hierarchy;
@@ -46,14 +48,14 @@ namespace Subtext
 		/// <param name="custom"></param>
 		/// <returns>
 		/// If the value of the <paramref name="custom"/> parameter is "browser", the browser's
-		/// <see cref="System.Web.HttpBrowserCapabilities.Type"/> ; otherwise,
+		/// <see cref="P:System.Web.HttpBrowserCapabilities.Type"/> ; otherwise,
 		/// <see langword="null"/> .
 		/// </returns>
 		public override string GetVaryByCustomString(HttpContext context, string custom)
 		{
 			if(custom == "Blogger" && !Security.IsAdmin && !Security.IsHostAdmin) // Do not cache admin.
 			{
-				return Config.CurrentBlog.Id.ToString(CultureInfo.InvariantCulture);
+				return Config.CurrentBlog.BlogId.ToString(CultureInfo.InvariantCulture);
 			}
 
 			return base.GetVaryByCustomString(context, custom);
@@ -74,12 +76,10 @@ namespace Subtext
 		/// <param name="e"></param>
 		protected void Application_Start(Object sender, EventArgs e)
 		{
-            log4net.Config.XmlConfigurator.Configure();
 			log4net.Repository.Hierarchy.Hierarchy h = LogManager.GetRepository() as log4net.Repository.Hierarchy.Hierarchy;
 			//get the ADO appender
 			h.ConfigurationChanged += new log4net.Repository.LoggerRepositoryConfigurationChangedEventHandler(log4Net_ConfigurationChanged);
 			EnsureLog4NetConnectionString(h);
-		    log.Info("Application_Start - This is not a malfunction.");
 		}
 
 		private static void EnsureLog4NetConnectionString(Hierarchy h)
@@ -124,7 +124,7 @@ namespace Subtext
 				HttpApplication application = (HttpApplication)sender;
 				HttpContext context = application.Context;
 
-				if(!Regex.IsMatch(context.Request.Path, @"(\.css$|\.js$)|rss|mainfeed|atom|services|opml|ftbwebresource|ashx|providers", RegexOptions.IgnoreCase))
+				if(!Regex.IsMatch(context.Request.Path,"rss|mainfeed|atom|services|opml|ftbwebresource|ashx|providers",RegexOptions.IgnoreCase))
 				{
 					Version v =  Subtext.Framework.VersionInfo.FrameworkVersion; //t.Assembly.GetName().Version;
 					string machineName = System.Environment.MachineName;
@@ -140,14 +140,15 @@ namespace Subtext
 							if(!InstallationManager.IsInHostAdminDirectory && !InstallationManager.IsInInstallDirectory && !InstallationManager.IsInSystemMessageDirectory)
 							{
 								userInfo += "<br />Is Admin: " + Subtext.Framework.Security.IsAdmin.ToString(CultureInfo.InvariantCulture);
-								userInfo += "<br />BlogId: " + Subtext.Framework.Configuration.Config.CurrentBlog.Id.ToString(CultureInfo.InvariantCulture);
+								userInfo += "<br />BlogId: " + Subtext.Framework.Configuration.Config.CurrentBlog.BlogId.ToString(CultureInfo.InvariantCulture);
 							}	
 						}
 					}
 					catch
 					{}
 
-					context.Response.Write(string.Format(message, @"<!-- ", lb, v, machineName, framework, userInfo, lb, "//-->"));
+					context.Response.Write(string.Format(message,"<center>",lb,v,machineName,framework,userInfo,lb,"</center>"));
+
 				}
 			#endif
 			#endregion
@@ -160,7 +161,42 @@ namespace Subtext
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		protected void Application_AuthenticateRequest(Object sender, EventArgs e)
 		{
-			//Handled by Subtext.Web.HttpModules.AuthenticationModule in Subtext.Framework.
+			string cookieName = FormsAuthentication.FormsCookieName;
+			HttpCookie authCookie = Context.Request.Cookies[cookieName];
+
+			if(null == authCookie)
+			{
+				// There is no authentication cookie.
+				return;
+			}
+			
+			FormsAuthenticationTicket authTicket;
+			try
+			{
+				authTicket = FormsAuthentication.Decrypt(authCookie.Value);
+			}
+			catch(Exception ex)
+			{
+				log.Error("Could not decrypt the authentication cookie.", ex);
+				return;
+			}
+
+			if (null == authTicket)
+			{
+				log.Warn("Could not decrypt the authentication cookie. No exception was thrown.");
+				return; 
+			}
+			
+			// When the ticket was created, the UserData property was assigned a
+			// pipe delimited string of role names.
+			string[] roles = authTicket.UserData.Split(new char[]{'|'});
+			// Create an Identity object
+			FormsIdentity id = new FormsIdentity( authTicket ); 
+
+			// This principal will flow throughout the request.
+			GenericPrincipal principal = new GenericPrincipal(id, roles);
+			// Attach the new principal object to the current HttpContext object
+			Context.User = principal;
 		}
 
 		protected void Application_Error(Object sender, EventArgs e)

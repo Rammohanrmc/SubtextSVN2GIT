@@ -26,8 +26,11 @@ namespace Subtext.Web.Controls
 	/// Static class containing helper methods for various controls 
 	/// that can't be placed within the control hierarchy.
 	/// </summary>
-	public static class ControlHelper
+	public sealed class ControlHelper
 	{
+		private ControlHelper()
+		{}
+
 		/// <summary>
 		/// If the URL is is the format ~/SomePath, this 
 		/// method expands the tilde using the app path.
@@ -112,27 +115,31 @@ namespace Subtext.Web.Controls
 		}
 
 		/// <summary>
-		/// Recursively searches for the server form's client id.
+		/// Recursively searches for the server form.
 		/// </summary>
 		/// <param name="parent">The parent.</param>
 		/// <returns></returns>
-		public static string GetPageFormClientId(Control parent)
+		public static HtmlForm FindServerForm(ControlCollection parent)
 		{
-		    string id;
-			foreach (Control child in parent.Controls)
+			foreach (Control child in parent)
 			{                        
-				if(child is HtmlForm)
+				HtmlForm childForm = child as HtmlForm;
+				if(childForm != null)
 				{
-					return child.ClientID;
+					return childForm;
 				}
-                id = GetPageFormClientId(child);
-			    if(id != null)
-			    {
-			        return id;
-			    }
+            
+				if (child.HasControls())
+				{
+					HtmlForm foundForm = FindServerForm(child.Controls);
+					if(foundForm != null)
+					{
+						return foundForm;
+					}
+				}
 			}
          
-			return null;
+			return new HtmlForm();
 		}
 
 		/// <summary>

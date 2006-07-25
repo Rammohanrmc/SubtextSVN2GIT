@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using Subtext.Common.Data;
 using Subtext.Framework;
 using Subtext.Framework.Components;
@@ -31,9 +30,9 @@ namespace Subtext.Common.Syndication
 	public class RssCategoryHandler : EntryCollectionHandler
 	{
 		protected LinkCategory Category;
-        IList<Entry> posts;
+		EntryCollection posts;
 
-        protected override IList<Entry> GetFeedEntries()
+		protected override EntryCollection GetFeedEntries()
 		{
 			if(Category == null)
 			{

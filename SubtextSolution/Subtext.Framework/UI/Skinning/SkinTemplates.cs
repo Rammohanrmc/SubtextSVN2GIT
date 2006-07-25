@@ -14,10 +14,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.IO;
+using System.Collections;
 using System.Web;
-using System.Web.Hosting;
+using System.Web.Caching;
 using System.Xml.Serialization;
 using Subtext.Framework.Util;
 
@@ -31,80 +30,58 @@ namespace Subtext.Framework.UI.Skinning
 	{
 		public static SkinTemplates Instance()
 		{
-			SkinTemplates skinTemplates = (SkinTemplates)HttpContext.Current.Cache["SkinTemplates"];
-			if(skinTemplates == null)
+			SkinTemplates st = (SkinTemplates)HttpContext.Current.Cache["SkinTemplates"];
+			if(st == null)
 			{
-				VirtualPathProvider vpathProvider = HostingEnvironment.VirtualPathProvider;
-				skinTemplates = GetSkinTemplates(vpathProvider, "~/Admin/Skins.config");
-
-				if (vpathProvider.FileExists("~/Admin/Skins.User.config"))
+				string filename = HttpContext.Current.Request.MapPath("~/Admin/Skins.config");
+				st = (SkinTemplates)SerializationHelper.Load(typeof(SkinTemplates),filename);
+				if(st != null)
 				{
-					SkinTemplates userSpecificTemplates = GetSkinTemplates(vpathProvider, "~/Admin/Skins.User.config");
-					if (userSpecificTemplates != null)
-					{
-						foreach(SkinTemplate template in userSpecificTemplates.Templates)
-						{
-							skinTemplates.Templates.Add(template);
-						}
-					}
-				}
-
-				if(skinTemplates != null)
-				{
-					HttpContext.Current.Cache.Insert("SkinTemplates", skinTemplates, vpathProvider.GetCacheDependency("~/Admin/Skins.config", null, DateTime.Now.ToUniversalTime()));
+					HttpContext.Current.Cache.Insert("SkinTemplates", st, new CacheDependency(filename));
 				}
 			}
-			return skinTemplates;
-		}
-
-		private static SkinTemplates GetSkinTemplates(VirtualPathProvider virtualPathProvider, string path)
-		{
-			VirtualFile virtualConfigFile = virtualPathProvider.GetFile(path);
-				
-			using (Stream configStream = virtualConfigFile.Open())
-			{
-				return SerializationHelper.Load<SkinTemplates>(configStream);
-			}
+			return st;
 		}
 
 		public SkinTemplates()
 		{
+			//
+			// TODO: Add constructor logic here
+			//
 		}
 
-		private Dictionary<string, SkinTemplate> _ht;
-
+		private Hashtable _ht;
 		/// <summary>
 		/// Gets the template based on the skin id.
 		/// </summary>
-		/// <param name="skinKey">The id.</param>
+		/// <param name="id">The id.</param>
 		/// <returns></returns>
-		public SkinTemplate GetTemplate(string skinKey)
+		public SkinTemplate GetTemplate(string id)
 		{
 			if(_ht == null)
 			{
-				_ht = new Dictionary<string, SkinTemplate>();
-				for(int i = 0; i < Templates.Count; i++)
+				_ht = new Hashtable();
+				for(int i = 0; i < Templates.Length; i++)
 				{
 					_ht.Add(Templates[i].SkinKey, Templates[i]);
 				}
 			}
 
-			if(_ht.ContainsKey(skinKey.ToUpper(System.Globalization.CultureInfo.InvariantCulture)))
+			if(_ht.Contains(id.ToUpper(System.Globalization.CultureInfo.InvariantCulture)))
 			{
-				return _ht[skinKey.ToUpper(System.Globalization.CultureInfo.InvariantCulture)];
+				return (SkinTemplate)_ht[id.ToUpper(System.Globalization.CultureInfo.InvariantCulture)];
 			}
 			return null;
 
 		}
 
+		private SkinTemplate[] _skinTemplates;
 		[XmlArray("Skins")]
-		public List<SkinTemplate> Templates
+		public SkinTemplate[] Templates
 		{
 			get {return this._skinTemplates;}
 			set {this._skinTemplates = value;}
 		}
-
-		private List<SkinTemplate> _skinTemplates;
 	}
 }
 

@@ -25,12 +25,21 @@ namespace Subtext.Web.Pages
 	/// <summary>
 	/// Summary description for login.
 	/// </summary>
-	public partial class login : System.Web.UI.Page
+	public class login : System.Web.UI.Page
 	{
 		#region Declared Controls
+		protected System.Web.UI.WebControls.Label Message;
+		protected System.Web.UI.WebControls.TextBox tbUserName;
+		protected System.Web.UI.WebControls.TextBox tbPassword;
+		protected System.Web.UI.WebControls.CheckBox chkRemember;
+		protected System.Web.UI.WebControls.Button btnLogin;
+		protected System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator1;
+		protected MetaBuilders.WebControls.DefaultButtons DefaultButtons1;
+		protected System.Web.UI.HtmlControls.HtmlImage headerLogoImg;
+		protected System.Web.UI.WebControls.LinkButton lbSendPassword;
 		#endregion
 	
-		protected void Page_Load(object sender, System.EventArgs e)
+		private void Page_Load(object sender, System.EventArgs e)
 		{
 		}
 
@@ -50,11 +59,14 @@ namespace Subtext.Web.Pages
 		/// </summary>
 		private void InitializeComponent()
 		{    
+			this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
+			this.lbSendPassword.Click += new System.EventHandler(this.lbSendPassword_Click);
+			this.Load += new System.EventHandler(this.Page_Load);
 
 		}
 		#endregion
 
-		protected void lbSendPassword_Click(object sender, System.EventArgs e)
+		private void lbSendPassword_Click(object sender, System.EventArgs e)
 		{
 			BlogInfo info = Config.CurrentBlog;
 			bool messageSent = false;
@@ -98,7 +110,7 @@ namespace Subtext.Web.Pages
 				string message = "Here is your Host Admin Login information:\nUserName: {0}\nPassword: {1}\n\nPlease disregard this message if you did not request it.";
 				EmailProvider mail = Subtext.Extensibility.Providers.EmailProvider.Instance();
 			
-				string hostAdminEmail = ConfigurationManager.AppSettings["HostEmailAddress"];
+				string hostAdminEmail = ConfigurationSettings.AppSettings["HostEmailAddress"];
 				if(hostAdminEmail == null || hostAdminEmail.Length == 0 || hostAdminEmail.IndexOf('@') <= 0) //Need better email validation. I know!
 				{
 					Message.Text = "Sorry, but I don&#8217;t know where to send the email.  Please specify a Host Email Address in Web.config. It is the AppSetting &#8220;HostEmailAddress&#8221;";
@@ -119,7 +131,7 @@ namespace Subtext.Web.Pages
 			}
 		}
 
-		protected void btnLogin_Click(object sender, System.EventArgs e)
+		private void btnLogin_Click(object sender, System.EventArgs e)
 		{
 			BlogInfo currentBlog = Config.CurrentBlog;
 			string returnUrl = Request.QueryString["ReturnURL"];

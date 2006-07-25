@@ -302,7 +302,7 @@ hr
 	display:block;
 }
 
-.comment h4
+.CommentEntry h4
 {
 	display:block;
 	width: 100%;
@@ -310,7 +310,7 @@ hr
 	margin-bottom: 4px;
 }
 
-.comment span
+.CommentEntry span
 {
 	display:block;
 	/*border-top: 1px solid #555555;
@@ -321,33 +321,33 @@ hr
 	height: 14px;
 }
 
-.comment a:link
+.CommentEntry a:link
 {
 	color: #999999;
 	font-size: 10px;
 }
-.comment a:visited
+.CommentEntry a:visited
 {
 	color: #999999;
 	font-size: 10px;
 }
-.comment h4 a:link
+.CommentEntry h4 a:link
 {
 	color: #B80000;
 	font-size: 10px;
 }
-.comment h4 a:visited
+.CommentEntry h4 a:visited
 {
 	color: #B80000;
 	font-size: 10px;
 }
-.comment cite
+.CommentEntry cite
 {
 	color: #ffffff;
 }
 
 
-.comment blockquote
+.CommentEntry blockquote
 {
 	margin-left:8px;
 	padding:0;
@@ -460,7 +460,14 @@ legend
 	color:#666666;
 }
 
-div.debug
+a.printIcon
 {
-	display: none;
+	background: url('images/printer.gif') no-repeat top left;
+	padding-bottom: 4px;
+}
+
+a.printIcon span
+{
+	background: url('images/printer.gif') no-repeat top left;
+	padding-left: 17px;
 }

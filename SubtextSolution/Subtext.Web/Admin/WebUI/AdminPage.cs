@@ -14,15 +14,12 @@
 #endregion
 
 using System;
-using System.ComponentModel;
 using System.Globalization;
 using System.Web;
 using System.Web.UI;
-using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using Subtext.Framework;
 using Subtext.Framework.Configuration;
-using Subtext.Web.Admin.WebUI;
 using Subtext.Web.Controls;
 
 namespace Subtext.Web.Admin.Pages
@@ -42,50 +39,23 @@ namespace Subtext.Web.Admin.Pages
 	{
 		private const string TESTCOOKIE_NAME = "TestCookie";
 
-        private HtmlGenericControl body;
 		private ConfirmCommand _command;
 		
 		protected override void OnLoad(EventArgs e)
 		{		
-			if(!Security.IsAdmin)
+			if(!ValidateUser)
 			{
-				Response.Redirect(Config.CurrentBlog.VirtualUrl + "Login.aspx?ReturnUrl=" + Request.Path, false);
-			    return;
+				Response.Redirect(Config.CurrentBlog.VirtualUrl + "Login.aspx?ReturnUrl=" + Request.Path);
 			}
 
-            if (this.Page.Master != null)
-            {
-                this.body = this.Page.Master.FindControl("AdminSection") as HtmlGenericControl;
-            }
-            
 			// REFACTOR: we really need a singleton indicator per session or run this initial 
 			// dummy run in OnSessionStart. But we'll add the overhead for now. We can look at
 			// putting it in the default.aspx, but that fails to work on direct url access.
 			AreCookiesAllowed();
 
-		    if(!IsPostBack)
-		    {
-                ControlHelper.ApplyRecursively(new ControlAction(SetTextBoxStyle), this);
-		        DataBind();
-		    }
+			ControlHelper.ApplyRecursively(new ControlAction(SetTextBoxStyle), this);
 			base.OnLoad(e);
 		}
-	    
-	    protected override void OnPreRender(EventArgs e)
-	    {
-	        if(this.body != null)
-            {
-                this.body.Attributes["class"] = this.TabSectionId;
-            }
-	    }
-	    
-	    protected AdminPageTemplate AdminMasterPage
-	    {
-	        get
-	        {
-                return (AdminPageTemplate)this.Page.Master;
-	        }
-	    }
 
 		void SetTextBoxStyle(Control control)
 		{
@@ -93,25 +63,19 @@ namespace Subtext.Web.Admin.Pages
 			if(textBox != null)
 			{
 				if(textBox.TextMode == TextBoxMode.SingleLine || textBox.TextMode == TextBoxMode.Password)
-                    AddCssClass(textBox, "textinput");
-                if (textBox.TextMode == TextBoxMode.MultiLine)
-                {
-                    AddCssClass(textBox, "textarea");
-                }
+					textBox.CssClass = "textinput";
+				if(textBox.TextMode == TextBoxMode.MultiLine)
+					textBox.CssClass = "textarea";
 			}
 		}
-	    
-	    private void AddCssClass(WebControl control, string cssClass)
-	    {
-            if (control.CssClass != null && control.CssClass.Length > 0 && !StringHelper.AreEqualIgnoringCase(cssClass, control.CssClass))
-            {
-                control.CssClass += " " + cssClass;
-            }
-            else
-            {
-                control.CssClass = cssClass;
-            }
-	    }
+
+		private bool ValidateUser
+		{
+			get
+			{
+				return Security.IsAdmin || Security.IsHostAdmin;
+			}
+		}
 
 		protected bool AreCookiesAllowed()
 		{
@@ -182,17 +146,6 @@ namespace Subtext.Web.Admin.Pages
 			get { return _command; }
 			set { _command = value; }
 		}
-
-        [Category("Page")]
-        [Description("Page tab section identifier")]
-        [Browsable(true)]
-        public string TabSectionId
-        {
-            get { return tabSectionId; }
-            protected set { tabSectionId = value;}
-        }
-        string tabSectionId;
-
 	}
 }
 

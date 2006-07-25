@@ -40,9 +40,12 @@ namespace Subtext.Framework.Tracking
 	/// <summary>
 	/// Contains static helper methods for dealing with Trackbacks and PingBacks.
 	/// </summary>
-	public static class TrackHelpers
+	public sealed class TrackHelpers
 	{
-	    //Text to insert into a file with pinkback service location
+		private TrackHelpers()
+		{}
+
+		//Text to insert into a file with pinkback service location
 		public static string PingPackTag
 		{
 			get
@@ -66,7 +69,7 @@ namespace Subtext.Framework.Tracking
 							"trackback:ping=\"{3}services/trackbacks/{4}.aspx\" />" + nl + 
 							"</rdf:RDF>" + nl + 
 							"-->" + nl;
-			return string.Format(tag, entry.FullyQualifiedUrl, entry.FullyQualifiedUrl, entry.Title, Config.CurrentBlog.RootUrl, entry.Id.ToString(CultureInfo.InvariantCulture));
+			return string.Format(tag, entry.FullyQualifiedUrl, entry.FullyQualifiedUrl, entry.Title, Config.CurrentBlog.RootUrl, entry.EntryID.ToString(CultureInfo.InvariantCulture));
 
 		}
 	}

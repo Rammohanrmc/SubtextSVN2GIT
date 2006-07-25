@@ -58,8 +58,7 @@ namespace UnitTests.Subtext.Framework.Text
 		[Row("<a title=\"one\" title=\"two\"></a>", "<a title=\"one,two\"></a>")]
 		public void StripsNonAllowedHtml(string text, string expected)
 		{
-			//NameValueCollection allowedTags = new NameValueCollection(new System.Collections.CaseInsensitiveHashCodeProvider(), new System.Collections.CaseInsensitiveComparer());
-            NameValueCollection allowedTags = new NameValueCollection(StringComparer.InvariantCultureIgnoreCase);
+			NameValueCollection allowedTags = new NameValueCollection(new System.Collections.CaseInsensitiveHashCodeProvider(), new System.Collections.CaseInsensitiveComparer());
 			allowedTags.Add("a", "href,title");
 			allowedTags.Add("strong", "");
 			UnitTestHelper.AssertStringsEqualCharacterByCharacter(expected, HtmlHelper.ConvertToAllowedHtml(allowedTags, text));

@@ -44,8 +44,7 @@ namespace Subtext.Web.Admin.Pages
 			//If we are in edit mode, register the script
 			if(IsInEdit)
 			{
-                Type ctype = this.GetType();
-				Page.ClientScript.RegisterClientScriptBlock(ctype,"ConfirmationBeforeLeaving", string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}{1}{2}",scriptStart,Message,scriptEnd));
+				Page.RegisterClientScriptBlock("ConfirmationBeforeLeaving", string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}{1}{2}",scriptStart,Message,scriptEnd));
 			}
 			base.OnPreRender (e);
 		}

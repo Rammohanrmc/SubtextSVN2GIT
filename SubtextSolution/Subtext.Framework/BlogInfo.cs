@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Web;
 using System.Xml.Serialization;
 using Subtext.Framework.Components;
@@ -22,7 +21,7 @@ using Subtext.Framework.Configuration;
 using Subtext.Framework.Format;
 using Subtext.Framework.Providers;
 using Subtext.Framework.Text;
-using Subtext.Framework.Web.HttpModules;
+using Subtext.Framework.Threading;
 
 namespace Subtext.Framework
 {
@@ -35,6 +34,8 @@ namespace Subtext.Framework
 	public class BlogInfo
 	{
 		const int DefaultRecentCommentsLength = 50;
+
+		private object urlLock = new object();
 		private UrlFormats _urlFormats = null;
 
 		/// <summary>
@@ -44,30 +45,29 @@ namespace Subtext.Framework
 		/// <returns></returns>
 		public static string NormalizeHostName(string host)
 		{
-			return StringHelper.LeftBefore(
-			    StringHelper.RightAfter(host, "www.", ComparisonType.CaseInsensitive), ":");
+			return StringHelper.RightAfter(host, "www.", ComparisonType.CaseInsensitive);
 		}
 
 		/// <summary>
-		/// Returns a <see cref="IPagedCollection{T}"/> containing the <see cref="BlogInfo"/> 
+		/// Returns a <see cref="BlogInfoCollection"/> containing the <see cref="BlogInfo"/> 
 		/// instances within the specified range.
 		/// </summary>
 		/// <param name="pageIndex">Page index.</param>
 		/// <param name="pageSize">Size of the page.</param>
 		/// <param name="sortDescending">Sort descending.</param>
 		/// <returns></returns>
-        public static IPagedCollection<BlogInfo> GetBlogs(int pageIndex, int pageSize, bool sortDescending)
+		public static BlogInfoCollection GetBlogs(int pageIndex, int pageSize, bool sortDescending)
 		{
 			return ObjectProvider.Instance().GetPagedBlogs(pageIndex, pageSize, sortDescending);
 		}
 
 		/// <summary>
-		/// Returns a <see cref="IPagedCollection"/> containing the <see cref="BlogInfo"/> 
+		/// Returns a <see cref="BlogInfoCollection"/> containing the <see cref="BlogInfo"/> 
 		/// instances that have the specified hostname.
 		/// </summary>
 		/// <param name="host">host.</param>
 		/// <returns></returns>
-        public static IPagedCollection<BlogInfo> GetBlogsByHost(string host)
+		public static BlogInfoCollection GetBlogsByHost(string host)
 		{
 			return ObjectProvider.Instance().GetBlogsByHost(host);
 		}
@@ -77,9 +77,9 @@ namespace Subtext.Framework
 		/// </summary>
 		/// <param name="host">The host.</param>
 		/// <returns></returns>
-        public static IPagedCollection<BlogInfo> GetActiveBlogsByHost(string host)
+		public static BlogInfoCollection GetActiveBlogsByHost(string host)
 		{
-            IPagedCollection<BlogInfo> blogsWithHost = BlogInfo.GetBlogsByHost(host);
+			BlogInfoCollection blogsWithHost = BlogInfo.GetBlogsByHost(host);
 			for(int i = blogsWithHost.Count - 1; i >= 0; i--)
 			{
 				if(!blogsWithHost[i].IsActive)
@@ -89,7 +89,7 @@ namespace Subtext.Framework
 		}
 
 		/// <summary>
-		/// Returns a <see cref="IList{T}"/> containing ACTIVE the <see cref="BlogInfo"/> 
+		/// Returns a <see cref="BlogInfoCollection"/> containing ACTIVE the <see cref="BlogInfo"/> 
 		/// instances within the specified range.
 		/// </summary>
 		/// <param name="pageIndex">Page index.</param>
@@ -97,9 +97,9 @@ namespace Subtext.Framework
 		/// <param name="sortDescending">Sort descending.</param>
 		/// <param name="totalBlogs">Indicates the total number of blogs</param>
 		/// <returns></returns>
-        public static IPagedCollection<BlogInfo> GetActiveBlogs(int pageIndex, int pageSize, bool sortDescending, out int totalBlogs)
+		public static BlogInfoCollection GetActiveBlogs(int pageIndex, int pageSize, bool sortDescending, out int totalBlogs)
 		{
-            IPagedCollection<BlogInfo> blogs = ObjectProvider.Instance().GetPagedBlogs(pageIndex, pageSize, sortDescending);
+			BlogInfoCollection blogs = ObjectProvider.Instance().GetPagedBlogs(pageIndex, pageSize, sortDescending);
 			// the ObjectProvider puts the returned TotalRecords value in the MaxItems property.
 			totalBlogs = blogs.MaxItems;
 			for (int i = blogs.Count - 1; i > -1; i--)
@@ -113,14 +113,14 @@ namespace Subtext.Framework
 		}
 
 		/// <summary>
-		/// Returns a <see cref="IPagedCollection"/> containing ACTIVE the <see cref="BlogInfo"/> 
+		/// Returns a <see cref="BlogInfoCollection"/> containing ACTIVE the <see cref="BlogInfo"/> 
 		/// instances within the specified range.
 		/// </summary>
 		/// <param name="pageIndex">Page index.</param>
 		/// <param name="pageSize">Size of the page.</param>
 		/// <param name="sortDescending">Sort descending.</param>
 		/// <returns></returns>
-        public static IPagedCollection<BlogInfo> GetActiveBlogs(int pageIndex, int pageSize, bool sortDescending)
+		public static BlogInfoCollection GetActiveBlogs(int pageIndex, int pageSize, bool sortDescending)
 		{
 			int totalCount;
 			return GetActiveBlogs(pageIndex, pageSize, sortDescending, out totalCount);
@@ -147,7 +147,13 @@ namespace Subtext.Framework
 			{
 				if(_urlFormats == null)
 				{
-					_urlFormats = new UrlFormats(this.RootUrl);
+					using(TimedLock.Lock(urlLock))
+					{
+						if(_urlFormats == null)
+						{
+							_urlFormats = new UrlFormats(this.RootUrl);
+						}
+					}
 				}
 				return _urlFormats;
 			}
@@ -199,7 +205,7 @@ namespace Subtext.Framework
 		/// primary key in the blog_config table.
 		/// </summary>
 		/// <value></value>
-		public int Id
+		public int BlogId
 		{
 			get{return _blogID;}
 			set{_blogID = value;}
@@ -280,7 +286,7 @@ namespace Subtext.Framework
 		public string Host
 		{
 			get
-			{   
+			{
 				return _host;
 			}
 			set
@@ -288,21 +294,6 @@ namespace Subtext.Framework
 				_host = NormalizeHostName(value);
 			}
 		}
-
-	    /// <summary>
-	    /// The port the blog is listening on.
-	    /// </summary>
-	    public int Port
-	    {
-	        get
-	        {
-	            if(HttpContext.Current != null)
-	            {
-                    return HttpContext.Current.Request.Url.Port;
-	            }
-                return 80;
-	        }
-	    }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this site can 
@@ -677,12 +668,7 @@ namespace Subtext.Framework
 			{
 				if(_rootUrl == null)
 				{
-                    string host = this._host;
-                    if (this.Port != BlogRequest.DefaultPort)
-                    {
-                        host += ":" + this.Port;
-                    }
-                    _rootUrl = "http://" + host + VirtualUrl;					
+					_rootUrl = "http://" + this.Host + VirtualUrl;					
 				}
 				return _rootUrl;
 			}
@@ -906,7 +892,7 @@ namespace Subtext.Framework
 			if(obj == null || GetType() != obj.GetType())
 				return false;
 
-			return ((BlogInfo)obj).Id == this.Id;
+			return ((BlogInfo)obj).BlogId == this.BlogId;
 		}
 
 		/// <summary>

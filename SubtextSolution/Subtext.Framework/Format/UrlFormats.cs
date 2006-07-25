@@ -31,17 +31,17 @@ namespace Subtext.Framework.Format
 	/// </summary>
 	public class UrlFormats
 	{
-        protected string fullyQualifiedUrl = null;
+		protected string fullyQualifiedUrl = null;
 
-        /// <summary>
-        /// Creates a new <see cref="UrlFormats"/> instance.
-        /// </summary>
-        /// <param name="fullyQualifiedUrl">Fully qualified URL.</param>
-	    public UrlFormats(string fullyQualifiedUrl)
-	    {
-            this.fullyQualifiedUrl = fullyQualifiedUrl;
-	    }
-	    
+		/// <summary>
+		/// Creates a new <see cref="UrlFormats"/> instance.
+		/// </summary>
+		/// <param name="fullyQualifiedUrl">Fully qualified URL.</param>
+		public UrlFormats(string fullyQualifiedUrl)
+		{
+			this.fullyQualifiedUrl = fullyQualifiedUrl;
+		}
+
 		public virtual string PostCategoryUrl(string categoryName, int categoryID)
 		{
 			return GetUrl("category/{0}.aspx", categoryID);
@@ -54,12 +54,12 @@ namespace Subtext.Framework.Format
 
 		public virtual string EntryUrl(Entry entry)
 		{
-			return GetUrl("archive/{0:yyyy/MM/dd}/{1}.aspx", entry.DateCreated, entry.HasEntryName ? entry.EntryName : entry.Id.ToString(CultureInfo.InvariantCulture));
+			return GetUrl("archive/{0:yyyy/MM/dd}/{1}.aspx", entry.DateCreated, entry.HasEntryName ? entry.EntryName : entry.EntryID.ToString(CultureInfo.InvariantCulture));
 		}
 
 		public virtual string EntryFullyQualifiedUrl(Entry entry)
 		{
-			return EntryFullyQualifiedUrl(entry.DateCreated, entry.HasEntryName ? entry.EntryName : entry.Id.ToString(CultureInfo.InvariantCulture));
+			return EntryFullyQualifiedUrl(entry.DateCreated, entry.HasEntryName ? entry.EntryName : entry.EntryID.ToString(CultureInfo.InvariantCulture));
 		}
 
 		public virtual string EntryFullyQualifiedUrl(DateTime dateCreated, string entryID)
@@ -94,7 +94,7 @@ namespace Subtext.Framework.Format
 				return GetUrl("articles/{0}.aspx",entry.EntryName);
 			}
 
-			return GetUrl("articles/{0}.aspx",entry.Id);
+			return GetUrl("articles/{0}.aspx",entry.EntryID);
 		}
 
 		public virtual string MonthUrl(DateTime dt)
@@ -109,12 +109,12 @@ namespace Subtext.Framework.Format
 
 		public virtual string CommentUrl(Entry parentEntry, Entry childEntry)
 		{
-			return string.Format(CultureInfo.InvariantCulture, "{0}#{1}", parentEntry.Url, childEntry.Id);
+			return string.Format(CultureInfo.InvariantCulture, "{0}#{1}", parentEntry.Url, childEntry.EntryID);
 		}
 
 		public virtual string CommentUrl(Entry entry)
 		{
-			return GetUrl("archive/{0:yyyy/MM/dd}/{1}.aspx#{2}", entry.DateCreated, entry.HasEntryName ? entry.EntryName : entry.ParentID.ToString(CultureInfo.InvariantCulture), entry.Id);
+			return GetUrl("archive/{0:yyyy/MM/dd}/{1}.aspx#{2}", entry.DateCreated, entry.HasEntryName ? entry.EntryName : entry.ParentID.ToString(CultureInfo.InvariantCulture), entry.EntryID);
 		}
 
 		public virtual string CommentApiUrl(int EntryID)
@@ -294,9 +294,9 @@ namespace Subtext.Framework.Format
 			
 			string url = (app.Equals(String.Empty)) ? "~" : "~/" + app;
 			if(entry.PostType == PostType.BlogPost)
-				url += "/Admin/EditPosts.aspx?PostID=" + entry.Id;
+				url += "/Admin/EditPosts.aspx?PostID=" + entry.EntryID;
 			else if(entry.PostType == PostType.Story)
-				url += "/Admin/EditArticles.aspx?PostID=" + entry.Id;
+				url += "/Admin/EditArticles.aspx?PostID=" + entry.EntryID;
 			else
 				throw new InvalidOperationException(String.Format(CultureInfo.InvariantCulture, "Post type {0} not expected to have an edit link.", entry.PostType));
 			return url;
@@ -392,7 +392,7 @@ namespace Subtext.Framework.Format
 				// it's not a full url, so it must by some type of local url 		
 				// so add the siteRoot in front of it.
 				imageUrl = StripSurroundingSlashes(imageUrl);
-				imageUrl = string.Format("http://{0}/{1}", Config.CurrentBlog.Host, imageUrl) ;
+				imageUrl = "http://" + Config.CurrentBlog.Host + "/" + imageUrl ;
 			}
 			return imageUrl ;
 		}
@@ -404,19 +404,11 @@ namespace Subtext.Framework.Format
 		/// <returns></returns>
 		public static string StripHostFromUrl(string url)
 		{
-			string fullHost = string.Format("{0}://{1}", HttpContext.Current.Request.Url.Scheme, Config.CurrentBlog.Host);
-			
+			string fullHost = "http://" + Config.CurrentBlog.Host;
 			if(url.StartsWith(fullHost))
 			{
-				// use Length b/c we want to leave the beginning "/" character on newUrl
+				// use Lenght b/c we want to leave the beginning "/" character on newUrl
 				url = url.Substring(fullHost.Length);
-
-                //Remove port number is present
-                if (url.StartsWith(":"))
-                {
-                    int firstSlash = url.IndexOf('/');
-                    url = url.Substring(firstSlash, url.Length - firstSlash);
-                }
 			}
 			return url;
 		}

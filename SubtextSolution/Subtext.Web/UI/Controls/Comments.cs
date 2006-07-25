@@ -44,17 +44,17 @@ namespace Subtext.Web.UI.Controls
 
 			try
 			{
-                gravatarEnabled = Convert.ToBoolean(ConfigurationManager.AppSettings["GravatarEnabled"]);
+				gravatarEnabled = Convert.ToBoolean(ConfigurationSettings.AppSettings["GravatarEnabled"]);
 			}
-			catch(Exception) 
+			catch(FormatException) 
 			{
 				gravatarEnabled = false;
 			}
 			
 			if(gravatarEnabled) 
 			{
-                gravatarUrlFormatString = ConfigurationManager.AppSettings["GravatarUrlFormatString"];
-                gravatarEmailFormat = ConfigurationManager.AppSettings["GravatarEmailFormat"];
+				gravatarUrlFormatString = ConfigurationSettings.AppSettings["GravatarUrlFormatString"];
+				gravatarEmailFormat = ConfigurationSettings.AppSettings["GravatarEmailFormat"];
 			}
 
 			if(CurrentBlog.CommentsEnabled)
@@ -97,7 +97,7 @@ namespace Subtext.Web.UI.Controls
 					{
 						// we should probably change skin format to dynamically wire up to 
 						// skin located title and permalinks at some point
-						title.Text = string.Format(System.Globalization.CultureInfo.InvariantCulture, "{2}&nbsp;{0}{1}", Anchor(entry.Id), 
+						title.Text = string.Format(System.Globalization.CultureInfo.InvariantCulture, "{2}&nbsp;{0}{1}", Anchor(entry.EntryID), 
 							entry.Title, Link(entry.Title, entry.Url));
 					}
 
@@ -138,23 +138,19 @@ namespace Subtext.Web.UI.Controls
 							}
 						}
 					}
-					
+					System.Web.UI.WebControls.Image Gravatar = e.Item.FindControl("GravatarImg") as System.Web.UI.WebControls.Image;
+
 					if(gravatarEnabled)
 					{
-						System.Web.UI.WebControls.Image Gravatar = e.Item.FindControl("GravatarImg") as System.Web.UI.WebControls.Image;
-						if(Gravatar != null) 
+						if(Gravatar!=null) 
 						{
-							string gravatarUrl = Gravatar.Attributes["PlaceHolderImage"];
-							
-							if (!String.IsNullOrEmpty(entry.Email))
-								gravatarUrl = BuildGravatarUrl(entry.Email);
-							
-							if(!String.IsNullOrEmpty(gravatarUrl))
+							if(entry.Email.Length!=0)
 							{
-								if(gravatarUrl.Length != 0)
+								string gravatarUrl=BuildGravatarUrl(entry.Email);
+								if(gravatarUrl.Length!=0)
 								{
-									Gravatar.ImageUrl = gravatarUrl;
-									Gravatar.Visible = true;
+									Gravatar.ImageUrl=gravatarUrl;
+									Gravatar.Visible=true;
 								}
 							}
 						}
@@ -166,11 +162,11 @@ namespace Subtext.Web.UI.Controls
 						if(editlink != null)
 						{
 							//editlink.CommandName = "Remove";
-							editlink.Text = "Remove Comment " + entry.Id.ToString(CultureInfo.InvariantCulture);
-							editlink.CommandName = entry.Id.ToString(CultureInfo.InvariantCulture);
-							editlink.Attributes.Add("onclick","return confirm(\"Are you sure you want to delete comment " + entry.Id.ToString(CultureInfo.InvariantCulture) + "?\");");
+							editlink.Text = "Remove Comment " + entry.EntryID.ToString(CultureInfo.InvariantCulture);
+							editlink.CommandName = entry.EntryID.ToString(CultureInfo.InvariantCulture);
+							editlink.Attributes.Add("onclick","return confirm(\"Are you sure you want to delete comment " + entry.EntryID.ToString(CultureInfo.InvariantCulture) + "?\");");
 							editlink.Visible = true;
-							editlink.CommandArgument = entry.Id.ToString(CultureInfo.InvariantCulture);
+							editlink.CommandArgument = entry.EntryID.ToString(CultureInfo.InvariantCulture);
 
 							ControlHelper.SetTitleIfNone(editlink, "Click to remove this entry.");
 						}
@@ -198,17 +194,17 @@ namespace Subtext.Web.UI.Controls
 
 		private string BuildGravatarUrl(string email) 
 		{
-			string processedEmail = string.Empty;
+			string processedEmail=string.Empty;
 			if(gravatarEmailFormat.Equals("plain"))
 			{
-				processedEmail = email;
+				processedEmail=email;
 			}
 			else if(gravatarEmailFormat.Equals("MD5")) 
 			{
-				processedEmail=System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(email, "md5");
+				processedEmail=System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(email,"md5");
 			}
-			if(processedEmail.Length != 0)
-				return String.Format(gravatarUrlFormatString, processedEmail);
+			if(processedEmail.Length!=0)
+				return String.Format(gravatarUrlFormatString,processedEmail);
 			else
 				return string.Empty;
 		}
@@ -219,7 +215,7 @@ namespace Subtext.Web.UI.Controls
 				{
 					if(Request.QueryString["Pending"] != null)
 					{
-						Cacher.ClearCommentCache(entry.Id);
+						Cacher.ClearCommentCache(entry.EntryID);
 					}
 					CommentList.DataSource = Cacher.GetComments(entry, CacheDuration.Short);
 					CommentList.DataBind();

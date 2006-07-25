@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.Text.RegularExpressions;
@@ -35,10 +34,14 @@ namespace Subtext.Framework
 	/// Static class used to get entries (blog posts, comments, etc...) 
 	/// from the data store.
 	/// </summary>
-	public static class Entries
+	public sealed class Entries
 	{
-		private readonly static ILog log = new Logging.Log();		
-	
+		private readonly static ILog log = new Logging.Log();
+		
+		private Entries()
+		{
+		}
+		
 		#region Paged Posts
 
 		/// <summary>
@@ -50,13 +53,13 @@ namespace Subtext.Framework
 		/// <param name="pageSize"></param>
 		/// <param name="sortDescending"></param>
 		/// <returns></returns>
-        public static IPagedCollection<Entry> GetPagedEntries(PostType postType, int categoryID, int pageIndex, int pageSize, bool sortDescending)
+		public static PagedEntryCollection GetPagedEntries(PostType postType, int categoryID, int pageIndex, int pageSize, bool sortDescending)
 		{
 			return ObjectProvider.Instance().GetPagedEntries(postType,categoryID,pageIndex,pageSize,sortDescending);
 		}
 
 
-        public static IPagedCollection<Entry> GetPagedFeedback(int pageIndex, int pageSize, bool sortDescending)
+		public static PagedEntryCollection GetPagedFeedback(int pageIndex, int pageSize, bool sortDescending)
 		{
 			return ObjectProvider.Instance().GetPagedFeedback(pageIndex,pageSize,sortDescending);
 		}
@@ -68,17 +71,18 @@ namespace Subtext.Framework
 
 		public static EntryDay GetSingleDay(DateTime dt)
 		{
-			return ObjectProvider.Instance().GetEntryDay(dt);
+			return ObjectProvider.Instance().GetSingleDay(dt);
+
 		}
 
 		/// <summary>
 		/// Gets the entries to display on the home page.
 		/// </summary>
-		/// <param name="itemCount">Item count.</param>
+		/// <param name="ItemCount">Item count.</param>
 		/// <returns></returns>
-        public static ICollection<EntryDay> GetHomePageEntries(int itemCount)
+		public static EntryDayCollection GetHomePageEntries(int ItemCount)
 		{
-			return GetBlogPosts(itemCount, PostConfig.DisplayOnHomePage | PostConfig.IsActive);
+			return GetBlogPosts(ItemCount, PostConfig.DisplayOnHomePage | PostConfig.IsActive);
 		}
 
 		/// <summary>
@@ -88,22 +92,34 @@ namespace Subtext.Framework
 		/// <remarks>
 		/// This is used to get the posts displayed on the home page.
 		/// </remarks>
-		/// <param name="itemCount">Item count.</param>
+		/// <param name="ItemCount">Item count.</param>
 		/// <param name="pc">Pc.</param>
 		/// <returns></returns>
-        public static ICollection<EntryDay> GetBlogPosts(int itemCount, PostConfig pc)
+		public static EntryDayCollection GetBlogPosts(int ItemCount, PostConfig pc)
 		{
-			return ObjectProvider.Instance().GetBlogPosts(itemCount, pc);
+			return ObjectProvider.Instance().GetBlogPosts(ItemCount, pc);
 		}
 
-		public static ICollection<EntryDay> GetPostsByMonth(int month, int year)
+		/// <summary>
+		/// Returns a collection of Entries grouped by Day
+		/// </summary>
+		/// <param name="ItemCount">Number of entries total</param>
+		/// <param name="ActiveOnly">Return only Active Posts</param>
+		/// <returns></returns>
+		public static EntryDayCollection GetRecentDayPosts(int ItemCount, bool ActiveOnly)
+		{
+			return ObjectProvider.Instance().GetRecentDayPosts(ItemCount,ActiveOnly);
+
+		}
+
+		public static EntryDayCollection GetPostsByMonth(int month, int year)
 		{
 			return ObjectProvider.Instance().GetPostsByMonth(month,year);
 		}
 
-        public static ICollection<EntryDay> GetPostsByCategoryID(int itemCount, int catID)
+		public static EntryDayCollection GetPostsByCategoryID(int ItemCount, int catID)
 		{
-			return ObjectProvider.Instance().GetPostsByCategoryID(itemCount,catID);
+			return ObjectProvider.Instance().GetPostsByCategoryID(ItemCount,catID);
 		}
 
 		#endregion
@@ -113,11 +129,11 @@ namespace Subtext.Framework
 		/// <summary>
 		/// Gets the main syndicated entries.
 		/// </summary>
-		/// <param name="itemCount">Item count.</param>
+		/// <param name="ItemCount">Item count.</param>
 		/// <returns></returns>
-		public static IList<Entry> GetMainSyndicationEntries(int itemCount)
+		public static EntryCollection GetMainSyndicationEntries(int ItemCount)
 		{
-            return GetRecentPosts(itemCount, PostType.BlogPost, PostConfig.IncludeInMainSyndication | PostConfig.IsActive, true);
+			return ObjectProvider.Instance().GetConditionalEntries(ItemCount, PostType.BlogPost, PostConfig.IncludeInMainSyndication | PostConfig.IsActive);
 		}
 
 		/// <summary>
@@ -125,38 +141,47 @@ namespace Subtext.Framework
 		/// </summary>
 		/// <param name="parentEntry">Parent entry.</param>
 		/// <returns></returns>
-        public static IList<Entry> GetFeedBack(Entry parentEntry)
+		public static EntryCollection GetFeedBack(Entry parentEntry)
 		{
 			return ObjectProvider.Instance().GetFeedBack(parentEntry);
 		}
 
-	    /// <summary>
-	    /// Returns the itemCount most recent posts.  
-	    /// This is used to support MetaBlogAPI...
-	    /// </summary>
-	    /// <param name="itemCount"></param>
-	    /// <param name="postType"></param>
-	    /// <param name="postConfig"></param>
-	    /// <param name="includeCategories"></param>
-	    /// <returns></returns>
-        public static IList<Entry> GetRecentPosts(int itemCount, PostType postType, PostConfig postConfig, bool includeCategories)
+		public static EntryCollection GetRecentPostsWithCategories(int ItemCount, bool ActiveOnly)
 		{
-            return ObjectProvider.Instance().GetConditionalEntries(itemCount, postType, postConfig, includeCategories);
+			return ObjectProvider.Instance().GetRecentPostsWithCategories(ItemCount,ActiveOnly);
 		}
 
-		public static IList<Entry> GetPostCollectionByMonth(int month, int year)
+		/// <summary>
+		/// Gets recent posts used to support the MetaBlogAPI. 
+		/// Could be used for a Recent Posts control as well.
+		/// </summary>
+		/// <param name="ItemCount">Item count.</param>
+		/// <param name="postType">Post type.</param>
+		/// <param name="ActiveOnly">Active only.</param>
+		/// <returns></returns>
+		public static EntryCollection GetRecentPosts(int ItemCount, PostType postType, bool ActiveOnly)
+		{
+			return ObjectProvider.Instance().GetRecentPosts(ItemCount,postType,ActiveOnly);
+		}
+
+		public static EntryCollection GetRecentPosts(int ItemCount, PostType postType, bool ActiveOnly, DateTime DateUpdated)
+		{
+			return ObjectProvider.Instance().GetRecentPosts(ItemCount,postType,ActiveOnly,DateUpdated);
+		}
+
+		public static EntryCollection GetPostCollectionByMonth(int month, int year)
 		{
 			return ObjectProvider.Instance().GetPostCollectionByMonth(month,year);
 		}
 
-        public static IList<Entry> GetPostsByDayRange(DateTime start, DateTime stop, PostType postType, bool activeOnly)
+		public static EntryCollection GetPostsByDayRange(DateTime start, DateTime stop, PostType postType, bool ActiveOnly)
 		{
-			return  ObjectProvider.Instance().GetPostsByDayRange(start,stop,postType, activeOnly);
+			return  ObjectProvider.Instance().GetPostsByDayRange(start,stop,postType,ActiveOnly);
 		}
 
-        public static IList<Entry> GetEntriesByCategory(int itemCount, int catID, bool activeOnly)
+		public static EntryCollection GetEntriesByCategory(int ItemCount,int catID,bool ActiveOnly)
 		{
-			return ObjectProvider.Instance().GetEntriesByCategory(itemCount,catID, activeOnly);
+			return ObjectProvider.Instance().GetEntriesByCategory(ItemCount,catID,ActiveOnly);
 		}
 		#endregion
 
@@ -177,26 +202,33 @@ namespace Subtext.Framework
 		/// Gets the entry from the data store by id.
 		/// </summary>
 		/// <param name="entryId">The ID of the entry.</param>
-		/// <param name="postConfig">The entry option used to constrain the search.</param>
-		/// <param name="includeCategories">Whether the returned entry should have its categories collection populated.</param>
+		/// <param name="entryOption">The entry option used to constrain the search.</param>
 		/// <returns></returns>
-		public static Entry GetEntry(int entryId, PostConfig postConfig, bool includeCategories)
+		public static Entry GetEntry(int entryId, EntryGetOption entryOption)
 		{
-            bool isActive = ((postConfig & PostConfig.IsActive) == PostConfig.IsActive);
-            return ObjectProvider.Instance().GetEntry(entryId, isActive, includeCategories);
+			return ObjectProvider.Instance().GetEntry(entryId, (entryOption == EntryGetOption.ActiveOnly));
 		}
 
 		/// <summary>
 		/// Gets the entry from the data store by entry name.
 		/// </summary>
 		/// <param name="EntryName">Name of the entry.</param>
-		/// <param name="postConfig">The entry option used to constrain the search.</param>
-        /// <param name="includeCategories">Whether the returned entry should have its categories collection populated.</param>
+		/// <param name="entryOption">The entry option used to constrain the search.</param>
 		/// <returns></returns>
-        public static Entry GetEntry(string EntryName, PostConfig postConfig, bool includeCategories)
+		public static Entry GetEntry(string EntryName, EntryGetOption entryOption)
 		{
-            bool isActive = ((postConfig & PostConfig.IsActive) == PostConfig.IsActive);
-            return ObjectProvider.Instance().GetEntry(EntryName, isActive, includeCategories);
+			return ObjectProvider.Instance().GetEntry(EntryName, (entryOption == EntryGetOption.ActiveOnly));
+		}
+
+		/// <summary>
+		/// Gets the category entry by id.
+		/// </summary>
+		/// <param name="entryId">The entryId.</param>
+		/// <param name="entryOption">The entry option used to constrain the search.</param>
+		/// <returns></returns>
+		public static CategoryEntry GetCategoryEntry(int entryId, EntryGetOption entryOption)
+		{
+			return ObjectProvider.Instance().GetCategoryEntry(entryId, (entryOption == EntryGetOption.ActiveOnly));
 		}
 		#endregion
 
@@ -210,13 +242,24 @@ namespace Subtext.Framework
 		#endregion
 
 		#region Create
+
 		/// <summary>
 		/// Creates the specified entry and returns its ID.
 		/// </summary>
 		/// <param name="entry">Entry.</param>
-		/// <param name="categoryIDs">The ids of the categories this entry belongs to.</param>
 		/// <returns></returns>
-		public static int Create(Entry entry, params int[] categoryIDs)
+		public static int Create(Entry entry)
+		{
+			return Create(entry, null);
+		}
+
+		/// <summary>
+		/// Creates the specified entry and returns its ID.
+		/// </summary>
+		/// <param name="entry">Entry.</param>
+		/// <param name="CategoryIDs">The ids of the categories this entry belongs to.</param>
+		/// <returns></returns>
+		public static int Create(Entry entry, int[] CategoryIDs)
 		{
 			// check if we're admin, if not filter the comment. We do this to help when Importing 
 			// a blog using the BlogML import process. A better solution may be developing a way to 
@@ -245,7 +288,7 @@ namespace Subtext.Framework
 			else
 				entry.DateSyndicated = NullValue.NullDateTime;
 			
-			int id = ObjectProvider.Instance().Create(entry, categoryIDs);
+			int id = ObjectProvider.Instance().Create(entry, CategoryIDs);
 			NotificationServices.Run(entry);
 			return id;
 		}
@@ -260,7 +303,7 @@ namespace Subtext.Framework
 			if(title == null)
 				throw new ArgumentNullException("title", "Cannot generate friendly url from null title.");
 
-            NameValueCollection friendlyUrlSettings = (NameValueCollection)ConfigurationManager.GetSection("FriendlyUrlSettings");
+			   NameValueCollection friendlyUrlSettings = (NameValueCollection)ConfigurationSettings.GetConfig("FriendlyUrlSettings");
 			if(friendlyUrlSettings == null)
 			{
 				//Default to old behavior.
@@ -333,7 +376,7 @@ namespace Subtext.Framework
 
 			string newEntryName = entryName;
 			int tryCount = 0;
-			while(ObjectProvider.Instance().GetEntry(newEntryName, false, false) != null)
+			while(ObjectProvider.Instance().GetEntry(newEntryName, false) != null)
 			{
 				if(tryCount == 1)
 					newEntryName = entryName + "Again";
@@ -426,12 +469,12 @@ namespace Subtext.Framework
 		/// and attaches the specified categories.
 		/// </summary>
 		/// <param name="entry">Entry.</param>
-		/// <param name="categoryIDs">Category Ids this entry belongs to.</param>
+		/// <param name="CategoryIDs">Category Ids this entry belongs to.</param>
 		/// <returns></returns>
-		public static bool Update(Entry entry, params int[] categoryIDs)
+		public static bool Update(Entry entry, int[] CategoryIDs)
 		{
 			entry.DateUpdated = DateTime.Now;
-			return ObjectProvider.Instance().Update(entry, categoryIDs);
+			return ObjectProvider.Instance().Update(entry, CategoryIDs);
 		}
 
 		#endregion
@@ -504,6 +547,16 @@ namespace Subtext.Framework
 				}
 			}
 		}
+	}
+
+	/// <summary>
+	/// Enum used to determine which type of entries to retrieve.
+	/// </summary>
+	public enum EntryGetOption
+	{
+		All = 0,
+		ActiveOnly = 1,
+		//TODO: At some point let's add InactiveOnly = 2,
 	}
 }
 

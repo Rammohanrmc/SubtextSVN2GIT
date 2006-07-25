@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Web;
 using MbUnit.Framework;
 using Subtext.Framework;
@@ -43,36 +42,12 @@ namespace UnitTests.Subtext.Framework
 
 			// Create some categories
 			CreateSomeLinkCategories();
-            ICollection<LinkCategory> linkCategoryCollection = Links.GetCategories(CategoryType.LinkCollection, ActiveFilter.None);
+			LinkCategoryCollection linkCategoryCollection = Links.GetCategories(CategoryType.LinkCollection, false);
 
-            LinkCategory first = null;
-            LinkCategory second = null;
-            LinkCategory third = null;
-		    foreach(LinkCategory linkCategory in linkCategoryCollection)
-		    {
-                if (first == null)
-                {
-                    first = linkCategory;
-                    continue;
-                }
-
-		        if(second == null)
-		        {
-                    second = linkCategory;
-                    continue;
-		        }
-
-                if (third == null)
-                {
-                    third = linkCategory;
-                    continue;
-                }
-		    }
-		    
 			// Ensure the CategoryIDs are unique
-			UnitTestHelper.AssertAreNotEqual(first.CategoryID, second.CategoryID);
-            UnitTestHelper.AssertAreNotEqual(first.CategoryID, third.CategoryID);
-            UnitTestHelper.AssertAreNotEqual(second.CategoryID, third.CategoryID);
+			UnitTestHelper.AssertAreNotEqual(linkCategoryCollection[0].CategoryID, linkCategoryCollection[1].CategoryID);
+			UnitTestHelper.AssertAreNotEqual(linkCategoryCollection[0].CategoryID, linkCategoryCollection[2].CategoryID);
+			UnitTestHelper.AssertAreNotEqual(linkCategoryCollection[1].CategoryID, linkCategoryCollection[2].CategoryID);
 		}
 
 		/// <summary>
@@ -88,20 +63,14 @@ namespace UnitTests.Subtext.Framework
 			CreateSomeLinkCategories();
 
 			// Retrieve the categories, grab the first one and update it
-            ICollection<LinkCategory> originalCategories = Links.GetCategories(CategoryType.LinkCollection, ActiveFilter.None);
-		    LinkCategory linkCat = null;
-            foreach (LinkCategory linkCategory in originalCategories)
-		    {
-                linkCat = linkCategory;
-		        break;
-		    }
-            LinkCategory originalCategory = linkCat;
+			LinkCategoryCollection originalCategories = Links.GetCategories(CategoryType.LinkCollection, false);
+			LinkCategory originalCategory = originalCategories[0];
 			originalCategory.Description = "New Description";
 			originalCategory.IsActive = false;
 			bool updated = Links.UpdateLinkCategory(originalCategory);
 
 			// Retrieve the categories and find the one we updated
-            ICollection<LinkCategory> updatedCategories = Links.GetCategories(CategoryType.LinkCollection, ActiveFilter.None);
+			LinkCategoryCollection updatedCategories = Links.GetCategories(CategoryType.LinkCollection, false);
 			LinkCategory updatedCategory = null;
 			foreach(LinkCategory lc in updatedCategories)
 				if (lc.CategoryID == originalCategory.CategoryID)
@@ -124,7 +93,7 @@ namespace UnitTests.Subtext.Framework
 		LinkCategory CreateCategory(string title, string description, CategoryType categoryType, bool isActive)
 		{
 			LinkCategory linkCategory = new LinkCategory();
-			linkCategory.BlogId = Config.CurrentBlog.Id;
+			linkCategory.BlogId = Config.CurrentBlog.BlogId;
 			linkCategory.Title = title;
 			linkCategory.Description = description;
 			linkCategory.CategoryType = categoryType;
@@ -134,13 +103,15 @@ namespace UnitTests.Subtext.Framework
 
 		/// <summary>
 		/// Sets the up test fixture.  This is called once for 
-		/// this test fixture before all the tests run.
+		/// this test fixture before all the tests run.  It 
+		/// essentially copies the App.config file to the 
+		/// run directory.
 		/// </summary>
 		[TestFixtureSetUp]
 		public void SetUpTestFixture()
 		{
 			//Confirm app settings
-            UnitTestHelper.AssertAppSettings();
+			Assert.AreEqual("~/Admin/Resources/PageTemplate.ascx", System.Configuration.ConfigurationSettings.AppSettings["Admin.DefaultTemplate"]) ;
 		}
 		
 		/// <summary>

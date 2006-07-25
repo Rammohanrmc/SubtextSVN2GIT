@@ -31,10 +31,8 @@ namespace Subtext.Framework
 		static object _synchBlock = new object();
 		static HostInfo _instance = LoadHost(true);
 		
-	    private HostInfo()
-	    {
-	    }
-	    
+		private HostInfo() {}
+
 		/// <summary>
 		/// Returns an instance of <see cref="HostInfo"/> used to 
 		/// describe this installation of Subtext.

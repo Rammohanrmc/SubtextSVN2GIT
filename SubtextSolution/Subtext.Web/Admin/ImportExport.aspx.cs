@@ -15,10 +15,13 @@
 
 using System;
 using System.IO;
+using System.Web.UI.WebControls;
 using log4net;
+using Subtext.Framework.Configuration;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Import;
 using Subtext.Framework.Logging;
+using Subtext.Web.Admin.WebUI;
 
 namespace Subtext.Web.Admin.Pages
 {
@@ -27,16 +30,21 @@ namespace Subtext.Web.Admin.Pages
 	/// the BlogML format proposed in 
 	/// <see href="http://markitup.com/Posts/PostsByCategory.aspx?categoryId=5751cee9-5b20-4db1-93bd-7e7c66208236">this blog</see>
 	/// </summary>
-	public partial class ImportExportPage : AdminPage
+	public class ImportExportPage : AdminPage
 	{
+		protected Page PageContainer;
+		protected HyperLink hypBlogMLFile;
+		protected CheckBox chkEmbedAttach;
+		protected Button btnSave;
+		protected AdvancedPanel Action;
+		protected MessagePanel Messages;
+
+		protected System.Web.UI.WebControls.Button btnLoad;
+		protected System.Web.UI.WebControls.RequiredFieldValidator blogMLFileRequired;
+		protected System.Web.UI.HtmlControls.HtmlInputFile importBlogMLFile;
 		private readonly static ILog log = new Log();
 	
-	    public ImportExportPage() : base()
-	    {
-            this.TabSectionId = "ImportExport";
-	    }
-	    
-		protected void Page_Load(object sender, EventArgs e)
+		private void Page_Load(object sender, EventArgs e)
 		{
 		}
 
@@ -56,16 +64,19 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+			this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
+			this.Load += new System.EventHandler(this.Page_Load);
 
 		}
 		#endregion
 
-		protected void btnSave_Click(object sender, EventArgs e)
+		private void btnSave_Click(object sender, EventArgs e)
 		{
 			Response.Redirect("Handlers/BlogMLExport.ashx?embed=" + this.chkEmbedAttach.Checked);
 		}
 
-		protected void btnLoad_Click(object sender, System.EventArgs e)
+		private void btnLoad_Click(object sender, System.EventArgs e)
 		{
 			if(Page.IsValid)
 				LoadBlogML();
@@ -75,19 +86,20 @@ namespace Subtext.Web.Admin.Pages
 		{
 			SubtextBlogMLReader bmlReader = new SubtextBlogMLReader();
 			bool errOccured = false;
-			
+
+			StreamReader sReader = new StreamReader(this.importBlogMLFile.PostedFile.InputStream);
 			try
 			{
-                bmlReader.ReadBlog(this.importBlogMLFile.PostedFile.InputStream, BlogMlReaderOption.None);
+				bmlReader.ReadBlog(sReader.ReadToEnd(), false);
 			}
 			catch(BlogImportException bie)
 			{
 				log.Error("Import of BlogML file failed.", bie);
 				Messages.ShowError(bie.Message, true);
 			}
-		    finally
+			finally
 			{
-			    this.importBlogMLFile.PostedFile.InputStream.Close();
+				sReader.Close();
 			}
 
 			if(!errOccured)

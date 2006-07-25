@@ -15,7 +15,6 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
 using CookComputing.XmlRpc;
 using Subtext.Extensibility;
@@ -29,7 +28,7 @@ using Subtext.Framework.Util;
 namespace Subtext.Framework.XmlRpc
 {
 	/// <summary>
-	/// Implements the MetaBlog API.
+	/// Summary description for MetaWeblog.
 	/// </summary>
 	public class MetaWeblog : XmlRpcService, Subtext.Framework.XmlRpc.IMetaWeblog
 	{
@@ -51,7 +50,7 @@ namespace Subtext.Framework.XmlRpc
 			
 			BlogInfo[] bi = new BlogInfo[1];
 			BlogInfo b = new BlogInfo();
-			b.blogid = info.Id.ToString(CultureInfo.InvariantCulture);
+			b.blogid = info.BlogId.ToString(CultureInfo.InvariantCulture);
 			b.blogName = info.Title;
 			b.url = info.HomeFullyQualifiedUrl;
 			bi[0] = b;
@@ -76,12 +75,12 @@ namespace Subtext.Framework.XmlRpc
 
 		#endregion
 
-		public bool editPost(string postid,	string username, string password, Post post, bool publish)
+		public bool editPost(string postid,	string username,string password,Post post,bool publish)
 		{
 			Framework.BlogInfo info = Config.CurrentBlog;
 			ValidateUser(username,password,info.AllowServiceAccess);
 			
-			Entry entry = Entries.GetEntry(Int32.Parse(postid), PostConfig.None, true);
+			CategoryEntry entry = Entries.GetCategoryEntry(Int32.Parse(postid), EntryGetOption.All);
 			if(entry != null)
 			{
 				entry.Author = info.Author;
@@ -93,7 +92,7 @@ namespace Subtext.Framework.XmlRpc
 				entry.SourceUrl = string.Empty;
 				entry.Description = string.Empty;
 
-                entry.Categories.AddRange(post.categories);
+				entry.Categories = post.categories;
 				entry.PostType = PostType.BlogPost;
 				entry.IsXHMTL = false;
 				entry.IsActive = publish;
@@ -109,16 +108,15 @@ namespace Subtext.Framework.XmlRpc
 			Framework.BlogInfo info = Config.CurrentBlog;
 			ValidateUser(username,password,info.AllowServiceAccess);
 			
-			Entry entry = Entries.GetEntry(Int32.Parse(postid), PostConfig.None, true);
+			CategoryEntry entry = Entries.GetCategoryEntry(Int32.Parse(postid), EntryGetOption.All);
 			Post post = new Post();
 			post.link = entry.TitleUrl;
 			post.description = entry.Body;
 			post.dateCreated = entry.DateCreated;
-			post.postid = entry.Id;
+			post.postid = entry.EntryID;
 			post.title = entry.Title;
 			post.permalink = entry.FullyQualifiedUrl.ToString();
-            post.categories = new string[entry.Categories.Count] ;
-			entry.Categories.CopyTo(post.categories, 0);
+			post.categories = entry.Categories;
 
 			return post;
 		}
@@ -127,55 +125,52 @@ namespace Subtext.Framework.XmlRpc
 		{
 			ValidateUser(username, password, Config.CurrentBlog.AllowServiceAccess);
 			
-			ICollection<Entry> ec = Entries.GetRecentPosts(numberOfPosts, PostType.BlogPost, PostConfig.IsActive, true);
+			EntryCollection ec = Entries.GetRecentPostsWithCategories(numberOfPosts,false);
 			//int i = 0;
 			int count = ec.Count;
 			Post[] posts = new Post[count];
-            int i = 0;
-			foreach(Entry entry in ec)
+			for(int i=0;i<count;i++)
 			{
+				CategoryEntry entry = (CategoryEntry)ec[i];
 				Post post = new Post();
 				post.dateCreated = entry.DateCreated;
 				post.description = entry.Body;
 				post.link = entry.TitleUrl;
 				post.permalink = entry.FullyQualifiedUrl.ToString();
 				post.title = entry.Title;
-				post.postid = entry.Id.ToString(CultureInfo.InvariantCulture);
+				post.postid = entry.EntryID.ToString(CultureInfo.InvariantCulture);
 				post.userid = entry.Body.GetHashCode().ToString(CultureInfo.InvariantCulture);
-				if(entry.Categories != null && entry.Categories.Count > 0)
+				if(entry.Categories != null && entry.Categories.Length > 0)
 				{
-                    post.categories = new string[entry.Categories.Count];
-					entry.Categories.CopyTo(post.categories, 0);
+					post.categories = entry.Categories;
 				}
 				posts[i] = post;
-                i++;
 			}
 			return posts;
 		}
 
-		public CategoryInfo[] getCategories(string blogid, string username, string password)
+		public CategoryInfo[] getCategories(string blogid,string username,string password)
 		{
 			Framework.BlogInfo info = Config.CurrentBlog;
 			ValidateUser(username,password,info.AllowServiceAccess);
-
-            ICollection<LinkCategory> lcc = Links.GetCategories(CategoryType.PostCollection, ActiveFilter.None);
+			
+			LinkCategoryCollection lcc = Links.GetCategories(CategoryType.PostCollection,false);
 			if(lcc == null)
 			{
 				throw new XmlRpcFaultException(0,"No categories exist");
 			}
 			CategoryInfo[] categories = new CategoryInfo[lcc.Count];
-            int i = 0;
-			foreach(LinkCategory linkCategory in lcc)
+			CategoryInfo _category;
+			for(int i=0; i<lcc.Count; i++)
 			{
-				CategoryInfo category = new CategoryInfo();
-                category.categoryid = linkCategory.CategoryID.ToString(CultureInfo.InvariantCulture);
-                category.title = linkCategory.Title;
-				category.htmlUrl = info.RootUrl + "Category/" + linkCategory.CategoryID.ToString(CultureInfo.InvariantCulture) + ".aspx";
-                category.rssUrl = info.RootUrl + "rss.aspx?catid=" + linkCategory.CategoryID.ToString(CultureInfo.InvariantCulture);
-                category.description = linkCategory.Title;
-
-				categories[i] = category;
-                i++;
+				_category = new CategoryInfo();
+				_category.categoryid = lcc[i].CategoryID.ToString(CultureInfo.InvariantCulture);
+				_category.title = lcc[i].Title;
+				_category.htmlUrl = info.RootUrl + "Category/" + lcc[i].CategoryID.ToString(CultureInfo.InvariantCulture) + ".aspx";
+				_category.rssUrl = info.RootUrl + "rss.aspx?catid=" + lcc[i].CategoryID.ToString(CultureInfo.InvariantCulture);
+				_category.description = lcc[i].Title;
+				
+				categories[i] = _category;
 			}
 			return categories;
 		}
@@ -195,7 +190,7 @@ namespace Subtext.Framework.XmlRpc
 			Framework.BlogInfo info = Config.CurrentBlog;
 			ValidateUser(username,password,info.AllowServiceAccess);
 			
-			Entry entry = new Entry(PostType.BlogPost);
+			CategoryEntry entry = new CategoryEntry();
 			entry.Author = info.Author;
 			entry.Email = info.Email;
 			entry.Body = post.description;
@@ -214,8 +209,7 @@ namespace Subtext.Framework.XmlRpc
 				entry.DateCreated = BlogTime.CurrentBloggerTime;
 				entry.DateUpdated = entry.DateCreated;
 			}
-
-		    entry.Categories.AddRange(post.categories);
+			entry.Categories = post.categories;
 			entry.PostType = PostType.BlogPost;
 			
 			entry.IsActive = publish;
@@ -225,7 +219,7 @@ namespace Subtext.Framework.XmlRpc
 			entry.IsAggregated = true;
 			entry.SyndicateDescriptionOnly = false;
 
-			int postID;
+			int postID = NullValue.NullInt32;
 			try
 			{
 				postID = Entries.Create(entry);
@@ -324,8 +318,8 @@ namespace Subtext.Framework.XmlRpc
 		public MtCategory[] GetCategoryList(string blogid, string username, string password)
 		{
 			ValidateUser(username,password,Config.CurrentBlog.AllowServiceAccess);
-
-            ICollection<LinkCategory> lcc = Links.GetCategories(CategoryType.PostCollection, ActiveFilter.None);
+			
+			LinkCategoryCollection lcc = Links.GetCategories(CategoryType.PostCollection,false);
 			if(lcc == null)
 			{
 				throw new XmlRpcFaultException(0, "No categories exist");
@@ -333,12 +327,10 @@ namespace Subtext.Framework.XmlRpc
 
 			MtCategory[] categories = new MtCategory[lcc.Count];
 			MtCategory _category;
-            int i = 0;
-			foreach(LinkCategory linkCategory in lcc)
+			for(int i=0; i<lcc.Count; i++)
 			{
-                _category = new MtCategory(linkCategory.CategoryID.ToString(CultureInfo.InvariantCulture), linkCategory.Title);
+				_category = new MtCategory(lcc[i].CategoryID.ToString(CultureInfo.InvariantCulture), lcc[i].Title);				
 				categories[i] = _category;
-                i++;
 			}
 			return categories;
 		}
@@ -378,26 +370,25 @@ namespace Subtext.Framework.XmlRpc
 			ValidateUser(username, password, Config.CurrentBlog.AllowServiceAccess);
 
 			int postID = Int32.Parse(postid);
-			ICollection<Link> postCategories = Links.GetLinkCollectionByPostID(postID);
+			LinkCollection postCategories = Links.GetLinkCollectionByPostID(postID);
 			MtCategory[] categories = new MtCategory[postCategories.Count];
 			if (postCategories.Count > 0)
 			{
 				// REFACTOR: Might prefer seeing a dictionary come back straight from the provider.
 				// for now we'll build our own catid->catTitle lookup--we need it below bc collection
 				// from post is going to be null for title.
-                ICollection<LinkCategory> cats = Links.GetCategories(CategoryType.PostCollection, ActiveFilter.None);
+				LinkCategoryCollection cats = Links.GetCategories(CategoryType.PostCollection, false);
 				Hashtable catLookup = new Hashtable(cats.Count);
 				foreach (LinkCategory currentCat in cats)
 					catLookup.Add(currentCat.CategoryID, currentCat.Title);
 
 				MtCategory _category;
-                int i = 0;
-				foreach(Link link in postCategories)
+				for (int i = 0; i < postCategories.Count; i++)
 				{						
-					_category = new MtCategory(link.CategoryID.ToString(CultureInfo.InvariantCulture), (string)catLookup[link.CategoryID]);				
+					_category = new MtCategory(postCategories[i].CategoryID.ToString(CultureInfo.InvariantCulture), 
+						(string)catLookup[postCategories[i].CategoryID]);				
 
 					categories[i] = _category;
-                    i++;
 				}
 			}				
 			

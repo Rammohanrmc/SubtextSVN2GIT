@@ -1,54 +1,50 @@
 <?xml version="1.0"?>
 <project xmlns="http://nant.sf.net/schemas/nant.xsd" name="SubText">
 	
-	<property name="nant.settings.currentframework" value="net-2.0"/>
+	<property name="nant.settings.currentframework" value="net-1.1"/>
 
 	
 	<target name="get-publishing-properties">
 	
-		<if test="${not property::exists('CCNetBuildDate')}"> 
+		<ifnot test="${property::exists('CCNetBuildDate')}"> 
 			<fail message="CCNetBuildDate property not set, so can't create distribution files" />
-		</if>	
+		</ifnot>	
 
-		<if test="${not property::exists('CCNetBuildTime')}"> 
+		<ifnot test="${property::exists('CCNetBuildTime')}"> 
 			<fail message="CCNetBuildTime property not set, so can't create distribution files" />
-		</if>
+		</ifnot>
 		
-		<if test="${not property::exists('CCNetArtifactDirectory')}"> 
+		<ifnot test="${property::exists('CCNetArtifactDirectory')}"> 
 			<fail message="CCNetArtifactDirectory property not set, so can't create distribution files" />
-		</if>
+		</ifnot>
 
-		<if test="${not property::exists('CCNetWorkingDirectory')}"> 
+		<ifnot test="${property::exists('CCNetWorkingDirectory')}"> 
 			<fail message="CCNetWorkingDirectory property not set, so can't create distribution files" />
-		</if>
+		</ifnot>
 
-		<if test="${not property::exists('CCNetLabel')}"> 
+		<ifnot test="${property::exists('CCNetLabel')}"> 
 			<fail message="CCNetLabel property not set, so can't create distribution files" />
-		</if>
+		</ifnot>
 
-		<if test="${not property::exists('MbUnit.exe')}"> 
+		<ifnot test="${property::exists('MbUnit.exe')}"> 
 			<fail message="MbUnit.exe property not set, so cannot test" />
-		</if>
+		</ifnot>
 
-		<if test="${not property::exists('NCover.exe')}"> 
+		<ifnot test="${property::exists('NCover.exe')}"> 
 			<fail message="NCover.exe property not set, so cannot test" />
-		</if>
+		</ifnot>
 		
-		<if test="${not property::exists('fxcop.exe')}"> 
+		<ifnot test="${property::exists('fxcop.exe')}"> 
 			<fail message="fxcop.exe property not set, so cannot test" />
-		</if>
+		</ifnot>
 		
-		<if test="${not property::exists('ncoverexplorer.exe')}"> 
+		<ifnot test="${property::exists('ncoverexplorer.exe')}"> 
 			<fail message="ncoverexplorer.exe property not set, so cannot test" />
-		</if>
+		</ifnot>
 
-		<if test="${not property::exists('vil.exe')}"> 
+		<ifnot test="${property::exists('vil.exe')}"> 
 			<fail message="vil.exe property not set, so cannot test" />
-		</if>
-		
-		<if test="${not property::exists('msbuild.exe')}"> 
-			<fail message="msbuild.exe property not set, so cannot test" />
-		</if>
+		</ifnot>
 		
 		<property name="vil.assemblies" value="${CCNetWorkingDirectory}\SubtextSolution\Subtext.Web\bin\Subtext.Common.dll" />
 	
@@ -98,7 +94,6 @@
 				<delete dir="${foldername}" />
 			</do>
 		</foreach>
-		<mkdir dir="Subtext.Web\bin" />
 	</target>
 
 
@@ -114,16 +109,42 @@
 
 
 	<target name="compile">
-		<exec program="${msbuild.exe}">
-			<arg value="SubtextSolution.sln"/>
-			<arg value="/nologo"/>
-			<arg value="/verbosity:normal"/>
-			<arg value="/t:Build"/>
-			<arg value="/p:Configuration=${configuration}"/>
-		</exec>
+		<solution configuration="${configuration}">
+			<projects>
+				<include name="Subtext.Common\SubText.Common.csproj" />
+				<include name="Subtext.Extensibility\Subtext.Extensibility.csproj" />
+				<include name="Subtext.Framework\Subtext.Framework.csproj" />
+				<include name="Subtext.Installation\Subtext.Installation.csproj" />
+				<include name="Subtext.Scripting\Subtext.Scripting.csproj" />
+				<include name="Subtext.Web\Subtext.Web.csproj" />
+				<include name="Subtext.Web.Controls\Subtext.Web.Controls.csproj" />
+				<include name="Subtext.Providers.RichTextEditor.FCKeditor\Subtext.Providers.RichTextEditor.FCKeditor.csproj" />
+			</projects>
+		</solution>
 	</target>
 
-	<target name="testAndCover" depends="get-publishing-properties,compile-debug">
+	<target name="compile-UnitTesting" depends="compile-debug">
+		<solution configuration="debug">
+			<projects>
+				<include name="UnitTests.Subtext\UnitTests.SubText.csproj" />
+				<include name="Subtext.UnitTesting.Servers\Subtext.UnitTesting.Servers.csproj" />
+			</projects>
+			<referenceprojects>
+				<include name="Subtext.Common\SubText.Common.csproj" />
+				<include name="Subtext.DotTextUpgrader\Subtext.DotTextUpgrader.csproj" />
+				<include name="Subtext.Extensibility\Subtext.Extensibility.csproj" />
+				<include name="Subtext.Framework\Subtext.Framework.csproj" />
+				<include name="Subtext.Installation\Subtext.Installation.csproj" />
+				<include name="Subtext.Scripting\Subtext.Scripting.csproj" />
+				<include name="Subtext.Web\Subtext.Web.csproj" />
+				<include name="Subtext.Web.Controls\Subtext.Web.Controls.csproj" />
+				<include name="Subtext.Providers.RichTextEditor.FCKeditor\Subtext.Providers.RichTextEditor.FCKeditor.csproj" />
+			</referenceprojects>
+		</solution>
+	</target>
+
+
+	<target name="testAndCover" depends="get-publishing-properties,compile-UnitTesting">
 		
 		<exec program="${NCover.exe}" workingdir="UnitTests.Subtext\bin\${configuration}" commandline="&quot;${MbUnit.exe}&quot; /rnf:unittest /rt:xml /rf:${log.dir} UnitTests.Subtext.dll //x ${log.dir}\ncover-temp.xml" failonerror="true"/>
 		

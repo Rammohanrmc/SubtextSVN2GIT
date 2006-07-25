@@ -63,7 +63,7 @@ namespace Subtext.Web.UI.Controls
 				DisplayEditLink(entry);
 
 				//Track this entry
-				EntryTracker.Track(Context, entry.Id, CurrentBlog.Id);
+				EntryTracker.Track(Context, entry.EntryID, CurrentBlog.BlogId);
 
 				//Set the page title
 				Globals.SetTitle(entry.Title, Context);
@@ -115,12 +115,10 @@ namespace Subtext.Web.UI.Controls
 				{
 					PingBack = Page.FindControl("pinbackLinkTag") as Literal;
 				}
-				
 				if(PingBack != null)
 				{
 					PingBack.Text = TrackHelpers.PingPackTag;
 				}
-				
 				if(TrackBack != null)
 				{
 					TrackBack.Text = TrackHelpers.TrackBackTag(entry);

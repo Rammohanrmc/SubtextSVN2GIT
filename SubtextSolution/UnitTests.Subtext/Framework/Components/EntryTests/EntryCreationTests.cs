@@ -44,7 +44,7 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		[RollBack]
 		public void CreatedEntryHasCorrectFullyQualifiedLink(string subfolder, string virtualDir, string expectedUrlPrefix)
 		{
-			string hostname = UnitTestHelper.GenerateRandomString();
+			string hostname = UnitTestHelper.GenerateRandomHostname();
 			Assert.IsTrue(Config.CreateBlog("", "username", "password", hostname, subfolder));
 			
 			UnitTestHelper.SetHttpContextWithBlogRequest(hostname, subfolder, virtualDir);
@@ -57,8 +57,8 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 
 			string expectedLink = string.Format("{0}/archive/2005/01/23/{1}.aspx", expectedUrlPrefix, id);
 			string expectedFullyQualifiedLink = "http://" + hostname + expectedLink;
-
-            Entry savedEntry = Entries.GetEntry(id, PostConfig.None, false);
+			
+			Entry savedEntry = Entries.GetEntry(id, EntryGetOption.All);
 			Assert.AreEqual(savedEntry.Url, expectedLink, "The link was not what we expected.");
 			Assert.AreEqual(savedEntry.FullyQualifiedUrl, expectedFullyQualifiedLink, "The link was not what we expected.");
 		}
@@ -74,12 +74,12 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 
 			Entry entry = new Entry(PostType.PingTrack);
 			entry.DateCreated = DateTime.Now;
-			entry.SourceUrl = "http://" + UnitTestHelper.GenerateRandomString() + "/ThisUrl/";
+			entry.SourceUrl = "http://" + UnitTestHelper.GenerateRandomHostname() + "/ThisUrl/";
 			entry.Title = "Some Title";
 			entry.Body = "Some Body";
 			int id = Entries.Create(entry);
 
-            Entry savedEntry = Entries.GetEntry(id, PostConfig.None, false);
+			Entry savedEntry = Entries.GetEntry(id, EntryGetOption.All);
 			Assert.IsTrue(savedEntry.ContentChecksumHash.Length > 0, "The Content Checksum should be larger than 0.");
 		}
 		
@@ -92,12 +92,12 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 			Entry entry = new Entry(PostType.BlogPost);
 			
 			entry.DateCreated = DateTime.Now;
-			entry.SourceUrl = "http://" + UnitTestHelper.GenerateRandomString() + "/ThisUrl/";
+			entry.SourceUrl = "http://" + UnitTestHelper.GenerateRandomHostname() + "/ThisUrl/";
 			entry.Title = "Some Title";
 			entry.Body = "Some Body";
 			
 			int id = Entries.Create(entry);
-            Entry savedEntry = Entries.GetEntry(id, PostConfig.None, false);
+			Entry savedEntry = Entries.GetEntry(id, EntryGetOption.All);
 			
 			Assert.AreEqual(NullValue.NullDateTime, savedEntry.DateSyndicated, "DateSyndicated should be null since it was not syndicated.");
 			
@@ -107,27 +107,29 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 			Entries.Update(savedEntry);
 					
 			Assert.IsTrue(savedEntry.DateSyndicated > savedEntry.DateCreated, string.Format("DateSyndicated '{0}' should larger than date created '{1}'.", savedEntry.DateSyndicated, savedEntry.DateCreated));
-
-            savedEntry = Entries.GetEntry(id, PostConfig.None, false);
+			
+			savedEntry = Entries.GetEntry(id, EntryGetOption.All);
 			Assert.IsTrue(savedEntry.DateSyndicated > savedEntry.DateCreated, string.Format("After reloading from DB, DateSyndicated '{0}' should larger than date created '{1}'.", savedEntry.DateSyndicated, savedEntry.DateCreated));
 		}
 
 
 		/// <summary>
 		/// Sets the up test fixture.  This is called once for 
-		/// this test fixture before all the tests run.
+		/// this test fixture before all the tests run.  It 
+		/// essentially copies the App.config file to the 
+		/// run directory.
 		/// </summary>
 		[TestFixtureSetUp]
 		public void SetUpTestFixture()
 		{		
 			//Confirm app settings
-            UnitTestHelper.AssertAppSettings();
+			Assert.AreEqual("~/Admin/Resources/PageTemplate.ascx", System.Configuration.ConfigurationSettings.AppSettings["Admin.DefaultTemplate"]) ;
 		}
 
 		[SetUp]
 		public void SetUp()
 		{
-			_hostName = UnitTestHelper.GenerateRandomString();
+			_hostName = UnitTestHelper.GenerateRandomHostname();
 			UnitTestHelper.SetHttpContextWithBlogRequest(_hostName, string.Empty);
 			CommentFilter.ClearCommentCache();
 		}

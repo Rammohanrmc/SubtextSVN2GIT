@@ -14,8 +14,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
+using System.Web.UI;
 using System.Web.UI.WebControls;
 using Subtext.Framework;
 using Subtext.Framework.Components;
@@ -26,7 +26,7 @@ namespace Subtext.Web.Admin.Pages
 	// TODO: import - reconcile duplicates
 	// TODO: CheckAll client-side, confirm bulk delete (add cmd)
 
-	public partial class EditLinks : AdminPage
+	public class EditLinks : AdminPage
 	{
 		private const string VSKEY_LINKID = "LinkID";
 
@@ -51,7 +51,28 @@ namespace Subtext.Web.Admin.Pages
 		private int _resultsPageNumber = 1;
 		private bool _isListHidden = false;
 
+		protected System.Web.UI.WebControls.Repeater rprSelectionList;
+		protected Subtext.Web.Admin.WebUI.Pager ResultsPager;
+		protected Subtext.Web.Admin.WebUI.AdvancedPanel Results;
+		protected Subtext.Web.Admin.WebUI.AdvancedPanel ImportExport;
+		protected System.Web.UI.HtmlControls.HtmlInputFile OpmlImportFile;
+		protected System.Web.UI.WebControls.Button lkbImportOpml;
+		protected System.Web.UI.WebControls.Label lblEntryID;
+		protected System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator1;
+		protected System.Web.UI.WebControls.TextBox txbTitle;
+		protected System.Web.UI.WebControls.RequiredFieldValidator Requiredfieldvalidator2;
+		protected System.Web.UI.WebControls.TextBox txbUrl;
 		protected System.Web.UI.WebControls.CheckBoxList cklCategories;
+		protected System.Web.UI.WebControls.Button lkbPost;
+		protected System.Web.UI.WebControls.Button lkbCancel;
+		protected Subtext.Web.Admin.WebUI.AdvancedPanel Edit;
+		protected System.Web.UI.WebControls.CheckBox ckbIsActive;
+		protected System.Web.UI.WebControls.TextBox txbRss;
+		protected System.Web.UI.WebControls.DropDownList ddlCategories;
+		protected Subtext.Web.Admin.WebUI.MessagePanel Messages;
+		protected Subtext.Web.Admin.WebUI.Page PageContainer;
+		protected System.Web.UI.WebControls.CheckBox chkNewWindow;
+		protected System.Web.UI.WebControls.DropDownList ddlImportExportCategories;
 	
 		#region Accessors
 		public int LinkID
@@ -67,13 +88,8 @@ namespace Subtext.Web.Admin.Pages
 		}
 	
 		#endregion
-	    
-	    public EditLinks()
-	    {
-            this.TabSectionId = "Links";
-	    }
 
-		protected void Page_Load(object sender, System.EventArgs e)
+		private void Page_Load(object sender, System.EventArgs e)
 		{
 			BindLocalUI();
 
@@ -103,17 +119,16 @@ namespace Subtext.Web.Admin.Pages
 			LinkButton lkbNewLink = Utilities.CreateLinkButton("New Link");
 			lkbNewLink.Click += new System.EventHandler(lkbNewLink_Click);
 			lkbNewLink.CausesValidation =false;
-			AdminMasterPage.AddToActions(lkbNewLink);
-            HyperLink lnkEditCategories = Utilities.CreateHyperLink("Edit Categories",
-                string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}?{1}={2}", Constants.URL_EDITCATEGORIES, Keys.QRYSTR_CATEGORYTYPE, CategoryType.LinkCollection));
-            AdminMasterPage.AddToActions(lnkEditCategories);
+			PageContainer.AddToActions(lkbNewLink);
+			HyperLink hlEditCategories = Utilities.CreateHyperLink("Edit Categories","EditCategories.aspx");
+			PageContainer.AddToActions(hlEditCategories);
 		}
 
 		private void BindList()
 		{
 			Edit.Visible = false;
 
-            IPagedCollection<Link> selectionList = Links.GetPagedLinks(_filterCategoryID, _resultsPageNumber,
+			PagedLinkCollection selectionList = Links.GetPagedLinks(_filterCategoryID, _resultsPageNumber,
 				ResultsPager.PageSize,true);
 			
 			if (selectionList.Count > 0)
@@ -148,18 +163,20 @@ namespace Subtext.Web.Admin.Pages
 			BindLinkCategories();
 			ddlCategories.Items.FindByValue(currentLink.CategoryID.ToString(CultureInfo.InvariantCulture)).Selected = true;
 
-			if(AdminMasterPage != null && AdminMasterPage.BreadCrumb != null)
+			Control container = Page.FindControl("PageContainer");
+			if (null != container && container is Subtext.Web.Admin.WebUI.Page)
 			{	
+				Subtext.Web.Admin.WebUI.Page page = (Subtext.Web.Admin.WebUI.Page)container;
 				string title = string.Format(System.Globalization.CultureInfo.InvariantCulture, "Editing Link \"{0}\"", currentLink.Title);
 
-				AdminMasterPage.BreadCrumb.AddLastItem(title);
-                AdminMasterPage.Title = title;
+				page.BreadCrumbs.AddLastItem(title);
+				page.Title = title;
 			}
 		}
 
 		public void BindLinkCategories()
 		{
-            ICollection<LinkCategory> selectionList = Links.GetCategories(CategoryType.LinkCollection, ActiveFilter.None);
+			LinkCategoryCollection selectionList = Links.GetCategories(CategoryType.LinkCollection, false);
 			if(selectionList != null && selectionList.Count != 0)
 			{
 				ddlCategories.DataSource = selectionList;
@@ -189,7 +206,7 @@ namespace Subtext.Web.Admin.Pages
 				link.IsActive = ckbIsActive.Checked;
 				link.CategoryID = Convert.ToInt32(ddlCategories.SelectedItem.Value);
 				link.NewWindow = chkNewWindow.Checked;
-				link.LinkID = Config.CurrentBlog.Id;
+				link.LinkID = Config.CurrentBlog.BlogId;
 				
 				if (LinkID > 0)
 				{
@@ -295,11 +312,15 @@ namespace Subtext.Web.Admin.Pages
 		private void InitializeComponent()
 		{   
 			this.rprSelectionList.ItemCommand += new System.Web.UI.WebControls.RepeaterCommandEventHandler(this.rprSelectionList_ItemCommand);
+			this.lkbImportOpml.Click += new System.EventHandler(this.lkbImportOpml_Click);
+			this.lkbPost.Click += new System.EventHandler(this.lkbPost_Click);
+			this.lkbCancel.Click += new System.EventHandler(this.lkbCancel_Click);
+			this.Load += new System.EventHandler(this.Page_Load);
 
 		}
 		#endregion 
 
-		protected void lkbImportOpml_Click(object sender, System.EventArgs e)
+		private void lkbImportOpml_Click(object sender, System.EventArgs e)
 		{
 			if (Page.IsValid) ImportOpml();
 		}
@@ -322,12 +343,12 @@ namespace Subtext.Web.Admin.Pages
 			}			
 		}
 
-		protected void lkbCancel_Click(object sender, System.EventArgs e)
+		private void lkbCancel_Click(object sender, System.EventArgs e)
 		{
 			ResetPostEdit(false);
 		}
 
-		protected void lkbPost_Click(object sender, System.EventArgs e)
+		private void lkbPost_Click(object sender, System.EventArgs e)
 		{
 			UpdateLink();
 		}

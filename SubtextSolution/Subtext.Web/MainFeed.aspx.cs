@@ -16,11 +16,12 @@
 using System;
 using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Xml;
 using Subtext.Framework.Configuration;
-using Subtext.Framework.Providers;
+using Subtext.Framework.Data;
 
 namespace Subtext.Web
 {
@@ -32,25 +33,58 @@ namespace Subtext.Web
 	{
 		private void Page_Load(object sender, System.EventArgs e)
 		{
-			int groupId = 1;
+			int GroupID = 1;
 
 			if(Request.QueryString["GroupID"] !=null)
 			{
 				try
 				{
-					groupId = Int32.Parse(Request.QueryString["GroupID"]);
+					GroupID = Int32.Parse(Request.QueryString["GroupID"]);
 				}
 				catch{}
 
-			}
+			}			
+			string sql = "DNW_GetRecentPosts";
+			string conn = Subtext.Framework.Providers.DbProvider.Instance().ConnectionString;
 
-            DataTable feedData = DbProvider.Instance().GetAggregateRecentPosts(groupId);
+			SqlParameter[] p = 
+				{
+					SqlHelper.MakeInParam("@Host",SqlDbType.NVarChar,100,ConfigurationSettings.AppSettings["AggregateHost"] as string),
+					SqlHelper.MakeInParam("@GroupID",SqlDbType.Int,4,GroupID)
+				};
+
+			DataTable feedData = SqlHelper.ExecuteDataTable(conn,CommandType.StoredProcedure,sql,p);
+
 			
-		    //TODO: Use our other feed generation code.
 			if(feedData != null && feedData.Rows.Count > 0)
 			{
-				string rssXml = GetRSS(feedData,Request.ApplicationPath);		
-				Response.ContentEncoding = System.Text.Encoding.UTF8;
+				string rssXml = GetRSS(feedData,Request.ApplicationPath);
+			
+				/* CHANGE: I had to comment out these lines - GY
+				 * TODO: Is it possible to add Config.Settings.UseSyndicationCompression
+				 * for all the blogs in general.
+				 */
+//				string encoding = null;
+//
+//				if(Config.Settings.UseSyndicationCompression && this.AcceptEncoding != null)
+//				{
+//					SyndicationCompressionFilter filter = null;
+//		
+//					filter = SyndicationCompressionHelper.GetFilterForScheme(this.AcceptEncoding, Response.Filter);
+//
+//					if(filter != null)
+//					{
+//						encoding = filter.ContentEncoding;
+//						Response.Filter = filter.Filter;
+//						Response.AppendHeader("Content-Encoding", encoding);
+//					}
+//				}
+//
+//				if(encoding == null)
+//				{
+					Response.ContentEncoding = System.Text.Encoding.UTF8;
+//				}
+
 				Response.ContentType = "text/xml";
 				Response.Write(rssXml);
 			}
@@ -67,6 +101,8 @@ namespace Subtext.Web
 				StringWriter sw = new StringWriter();
 				XmlTextWriter writer = new XmlTextWriter(sw);
 
+				//writer.WriteStartDocument();
+
 				//RSS ROOT
 				writer.WriteStartElement("rss");
 				writer.WriteAttributeString("version","2.0");
@@ -78,9 +114,9 @@ namespace Subtext.Web
 				//Channel
 				writer.WriteStartElement("channel");
 				//Channel Description
-                writer.WriteElementString("title", ConfigurationManager.AppSettings["AggregateTitle"]);
+				writer.WriteElementString("title",ConfigurationSettings.AppSettings["AggregateTitle"] as string);
 				writer.WriteElementString("link",Context.Request.Url.ToString());
-                writer.WriteElementString("description", ConfigurationManager.AppSettings["AggregateDescription"]);
+				writer.WriteElementString("description",ConfigurationSettings.AppSettings["AggregateDescription"] as string);
 				
 				//CHANGE: FrameworkVersion used insted of Version which is not exist.
 				writer.WriteElementString("generator",Subtext.Framework.VersionInfo.FrameworkVersion.ToString());
@@ -98,7 +134,7 @@ namespace Subtext.Web
 					writer.WriteStartElement("item");
 					writer.WriteElementString("title", (string)dr["Title"]);
 
-					string baselink = string.Format(baseUrl, dr["Host"], dr["Application"]);
+					string baselink = string.Format(baseUrl,(string)dr["Host"],(string)dr["Application"]);
 					string link = string.Format(CultureInfo.InvariantCulture, baselink + "archive/{0:yyyy/MM/dd}/{1}.aspx", ((DateTime)dr["DateAdded"]), dr["EntryName"]);
 					writer.WriteElementString("link",link);
 

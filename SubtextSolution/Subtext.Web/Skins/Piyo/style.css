@@ -661,13 +661,14 @@ Will later merge with the rest of the CSS
               background: none;
       }
       
-div.debug
+a.printIcon
 {
-	display: none;
+	background: url('images/printer.gif') no-repeat top left;
+	padding-bottom: 4px;
 }
 
-div.previousNext
+a.printIcon span
 {
-	width: 550px;
-	margin-bottom: 10px;
+	background: url('images/printer.gif') no-repeat top left;
+	padding-left: 17px;
 }

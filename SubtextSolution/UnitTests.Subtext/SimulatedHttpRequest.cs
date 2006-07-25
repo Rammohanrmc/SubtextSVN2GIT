@@ -28,21 +28,7 @@ namespace UnitTests.Subtext
 	{
 		string _host;
 		string _verb;
-        int port;
 
-	    public SimulatedHttpRequest(string appVirtualDir, string appPhysicalDir, string page, string query, TextWriter output, string host, int port, string verb) : base(appVirtualDir, appPhysicalDir, page, query, output)
-	    {
-            if (host == null || host.Length == 0)
-                throw new ArgumentNullException("host", "Host cannot be null nor empty.");
-
-            if (appVirtualDir == null)
-                throw new ArgumentNullException("appVirtualDir", "Can't create a request with a null virtual dir. Try empty string.");
-
-            _host = host;
-            _verb = verb;
-	        this.port = port;
-	    }
-	    
 		/// <summary>
 		/// Creates a new <see cref="SimulatedHttpRequest"/> instance.
 		/// </summary>
@@ -52,7 +38,7 @@ namespace UnitTests.Subtext
 		/// <param name="query">Query.</param>
 		/// <param name="output">Output.</param>
 		/// <param name="host">Host.</param>
-		public SimulatedHttpRequest(string appVirtualDir, string appPhysicalDir, string page, string query, TextWriter output, string host, string verb) : this(appVirtualDir, appPhysicalDir, page, query, output, host, 80, "GET")
+		public SimulatedHttpRequest(string appVirtualDir, string appPhysicalDir, string page, string query, TextWriter output, string host, string verb) : base(appVirtualDir, appPhysicalDir, page, query, output)
 		{
 			if(host == null || host.Length == 0)
 				throw new ArgumentNullException("host", "Host cannot be null nor empty.");
@@ -84,11 +70,6 @@ namespace UnitTests.Subtext
 		{
 			return _host;
 		}
-	    
-	    public override int GetLocalPort()
-	    {
-            return this.port;
-	    }
 
 		/// <summary>
 		/// Gets the headers.

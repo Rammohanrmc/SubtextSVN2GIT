@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using Subtext.Framework;
 using Subtext.Framework.Components;
@@ -25,8 +24,10 @@ namespace Subtext.Common.Data
 	/// <summary>
 	/// Common Subtext object transformations
 	/// </summary>
-	public static class Transformer
+	public sealed class Transformer
 	{
+		private Transformer(){}
+
 		/// <summary>
 		/// Converts a LinkCategoryCollection into a single LinkCategory with its own LinkCollection.
 		/// </summary>
@@ -36,32 +37,33 @@ namespace Subtext.Common.Data
 		/// <returns></returns>
 		public static LinkCategory BuildLinks(string title, CategoryType catType, UrlFormats formats)
 		{
-            ICollection<LinkCategory> lcc = Links.GetCategories(catType, ActiveFilter.ActiveOnly);
+			LinkCategoryCollection lcc = Links.GetCategories(catType,true);
 			LinkCategory lc = null;
 			if(lcc != null && lcc.Count > 0)
 			{
 				lc = new LinkCategory();
+				int count = lcc.Count;
 				lc.Title = title;
-				lc.Links = new List<Link>();
+				lc.Links = new LinkCollection();
 				Link link;
-				foreach(LinkCategory linkCategory in lcc)
+				for(int i = 0; i < count; i++)
 				{
 					link = new Link();
-
-                    link.Title = linkCategory.Title;
+					
+					link.Title = lcc[i].Title;
 					switch(catType)
 					{
 						case CategoryType.StoryCollection:
-                            link.Url = formats.ArticleCategoryUrl(link.Title, linkCategory.CategoryID);
+							link.Url =  formats.ArticleCategoryUrl(link.Title, lcc[i].CategoryID);
 							break;
 						
 						case CategoryType.PostCollection:
-                            link.Url = formats.PostCategoryUrl(link.Title, linkCategory.CategoryID);
+							link.Url = formats.PostCategoryUrl(link.Title, lcc[i].CategoryID);
 							link.Rss = link.Url + "/rss";
 							break;
 						
 						case CategoryType.ImageCollection:
-                            link.Url = formats.GalleryUrl(link.Title, linkCategory.CategoryID);
+							link.Url = formats.GalleryUrl(link.Title, lcc[i].CategoryID);
 							break;
 
 					}
@@ -81,11 +83,11 @@ namespace Subtext.Common.Data
 		/// <returns>A LinkCategory object with a Link (via LinkCollection) for each month in ArchiveCountCollection</returns>
 		public static LinkCategory BuildMonthLinks(string title, UrlFormats formats)
 		{
-            ICollection<ArchiveCount> acc = Archives.GetPostsByMonthArchive();
+			ArchiveCountCollection acc = Archives.GetPostsByMonthArchive();
 
 			LinkCategory lc = new LinkCategory();
 			lc.Title = title;
-			lc.Links = new List<Link>();
+			lc.Links = new LinkCollection();
 			foreach(ArchiveCount ac in acc)
 			{
 				Link link = new Link();

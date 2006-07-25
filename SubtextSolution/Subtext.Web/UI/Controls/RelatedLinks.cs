@@ -29,8 +29,8 @@ namespace Subtext.Web.UI.Controls
 			string applikasyon;
 
 			//fix for the blogs where only one installed
-			if (CurrentBlog.Id >= 1)
-				BlogId = CurrentBlog.Id;
+			if (CurrentBlog.BlogId >= 1)
+				BlogId = CurrentBlog.BlogId;
 			else
 				BlogId = 0;
 
@@ -41,15 +41,15 @@ namespace Subtext.Web.UI.Controls
 
 			Entry entry = Cacher.GetEntryFromRequest(CacheDuration.Short);
 
-			int entryid = entry.Id;
+			int entryid = entry.EntryID;
 
 			SqlParameter[] p =
 				{
-					DataHelper.MakeInParam("@EntryID", SqlDbType.Int, 4, entryid),
-					DataHelper.MakeInParam("@BlogID", SqlDbType.Int, 4, BlogId)
+					SqlHelper.MakeInParam("@EntryID", SqlDbType.Int, 4, entryid),
+					SqlHelper.MakeInParam("@BlogID", SqlDbType.Int, 4, BlogId)
 				};
 
-			DataTable dt = DataHelper.ExecuteDataTable(conn, CommandType.StoredProcedure, sql, p);
+			DataTable dt = SqlHelper.ExecuteDataTable(conn, CommandType.StoredProcedure, sql, p);
 
 			int count = dt.Rows.Count;
 

@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using Subtext.Framework;
 using Subtext.Framework.Components;
@@ -28,7 +27,12 @@ namespace Subtext.Web.UI.Controls
 	/// Control used to display a list of entries.
 	/// </summary>
 	public class EntryList : BaseControl
-	{	
+	{
+		protected System.Web.UI.WebControls.Repeater Entries;
+		protected System.Web.UI.WebControls.Literal EntryCollectionTitle;
+		protected System.Web.UI.WebControls.Literal EntryCollectionDescription;
+		protected System.Web.UI.WebControls.HyperLink EntryCollectionReadMoreLink;
+
 		const string linkToComments = "<a href=\"{0}#feedback\" title=\"View and Add Comments\">{1}{2}</a>";
 		const string postdescWithComments = "posted @ <a href=\"{0}\" title = \"Permanent link to this post\">{1}</a> | <a href=\"{2}#feedback\" title = \"comments, pingbacks, trackbacks\">Feedback ({3})</a>";
 		const string postdescWithNoComments = "posted @ <a href=\"{0}\" title = \"Permanent link to this post\">{1}</a>";
@@ -203,8 +207,8 @@ namespace Subtext.Web.UI.Controls
 			}
 		}
 
-        private IList<Entry> entries;
-        public IList<Entry> EntryListItems
+		private EntryCollection entries;
+		public EntryCollection EntryListItems
 		{
 			get{return entries;}
 			set{entries = value;}
@@ -251,46 +255,29 @@ namespace Subtext.Web.UI.Controls
 
 			if(EntryListItems != null)
 			{
-                Literal entryCollectionTitle = this.FindControl("EntryCollectionTitle") as Literal;
-                if(entryCollectionTitle != null)
-                {
-                    entryCollectionTitle.Text = EntryListTitle;
-                }
+				EntryCollectionTitle.Text = EntryListTitle;
 
-                Literal entryCollectionDescription = this.FindControl("EntryCollectionDescription") as Literal;
-                if(entryCollectionDescription != null)
-                {
-                    if(EntryListDescription != null)
-                    {
-                        entryCollectionDescription.Text = EntryListDescription;
-                    }
-                    else
-                    {
-                        entryCollectionDescription.Visible = false;
-                    }
-                }
+				if(EntryListDescription != null)
+				{
+					this.EntryCollectionDescription.Text = EntryListDescription;
+				}
+				else
+				{
+					EntryCollectionDescription.Visible = false;
+				}
 
-                HyperLink entryListReadMoreUrl = this.FindControl("EntryListReadMoreUrl") as HyperLink;
+				if(EntryListReadMoreUrl != null && EntryListReadMoreText != null)
+				{
+					this.EntryCollectionReadMoreLink.Text = EntryListReadMoreText;
+					this.EntryCollectionReadMoreLink.NavigateUrl = EntryListReadMoreUrl;
+				}
+				else
+				{
+					EntryCollectionReadMoreLink.Visible = false;
+				}
 
-                if(entryListReadMoreUrl != null)
-                {
-                    if(EntryListReadMoreText != null)
-                    {
-                        entryListReadMoreUrl.Text = EntryListReadMoreText;
-                        entryListReadMoreUrl.NavigateUrl = EntryListReadMoreUrl;
-                    }
-                    else
-                    {
-                        entryListReadMoreUrl.Visible = false;
-                    }
-                }
-
-                Repeater entryRepeater = this.FindControl("Entries") as Repeater;
-                if(entryRepeater != null)
-                {
-                    entryRepeater.DataSource = EntryListItems;
-                    entryRepeater.DataBind();
-                }
+				Entries.DataSource = EntryListItems;
+				Entries.DataBind();
 			}
 		}
 	}

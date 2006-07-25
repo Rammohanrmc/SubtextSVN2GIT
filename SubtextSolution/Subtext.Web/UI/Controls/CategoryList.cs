@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using Subtext.Framework.Components;
-using Subtext.Framework.Configuration;
 
 #region Disclaimer/Info
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -31,8 +29,8 @@ namespace Subtext.Web.UI.Controls
 	{
 		protected System.Web.UI.WebControls.Repeater CatList;
 
-        private ICollection<LinkCategory> lcc;
-        public ICollection<LinkCategory> LinkCategories
+		private LinkCategoryCollection lcc;
+		public LinkCategoryCollection LinkCategories
 		{
 			get{return lcc;}
 			set{lcc = value;}
@@ -89,14 +87,9 @@ namespace Subtext.Web.UI.Controls
 						Link.Attributes["title"] = "Category Link";
 					}
 					Link.Text = link.Title;
-
-					if (link.NewWindow)
+					if(link.NewWindow)
 					{
-						if (!String.IsNullOrEmpty(Link.Attributes["rel"]))
-						{
-							Link.Attributes["rel"] += " ";
-						}
-						Link.Attributes["rel"] += "external";
+						Link.Target = "_blank";
 					}
 
 					if(link.HasRss)

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using MbUnit.Framework;
@@ -24,7 +23,7 @@ namespace UnitTests.Subtext.Framework.Data
 		[RollBack]
 		public void GetActiveCategoriesHandlesLocale()
 		{
-			string hostName = UnitTestHelper.GenerateRandomString();
+			string hostName = UnitTestHelper.GenerateRandomHostname();
 			UnitTestHelper.SetHttpContextWithBlogRequest(hostName, "");
 			Config.CreateBlog("", "username", "thePassword", hostName, "");
 
@@ -32,27 +31,27 @@ namespace UnitTests.Subtext.Framework.Data
 			Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
 
 			// Add categories to cache.
-			ICollection<LinkCategory> cachedCategories = new List<LinkCategory>();
+			LinkCategoryCollection cachedCategories = new LinkCategoryCollection();
 			cachedCategories.Add(new LinkCategory(1, "Test 1"));
 			cachedCategories.Add(new LinkCategory(2, "Test 2"));
 
 			//Note, this corresponds to a private var in Cacher.
 			string ActiveLCCKey = "ActiveLinkCategoryCollection:Blog{0}";
-			ActiveLCCKey = String.Format(ActiveLCCKey, Config.CurrentBlog.Id);
+			ActiveLCCKey = String.Format(ActiveLCCKey, Config.CurrentBlog.BlogId);
 			ContentCache cache = ContentCache.Instantiate();
 			cache[ActiveLCCKey] = cachedCategories;
 
-			ICollection<LinkCategory> categories = Cacher.GetActiveCategories(CacheDuration.Short);
+			LinkCategoryCollection categories = Cacher.GetActiveCategories(CacheDuration.Short);
 			Assert.AreEqual(2, categories.Count, "Expected to get the cached categories.");
 			Assert.AreSame(cachedCategories, categories, "Categories should have been pulled from cache.");
 
 			//Change to spanish
 			Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("es");
-			ICollection<LinkCategory> spanishCachedCategories = new List<LinkCategory>();
+			LinkCategoryCollection spanishCachedCategories = new LinkCategoryCollection();
 			spanishCachedCategories.Add(new LinkCategory(1, "prueba numero uno"));
 			cache[ActiveLCCKey] = spanishCachedCategories;
 
-            ICollection<LinkCategory> spanishCategories = Cacher.GetActiveCategories(CacheDuration.Short);
+			LinkCategoryCollection spanishCategories = Cacher.GetActiveCategories(CacheDuration.Short);
 			Assert.AreEqual(1, spanishCategories.Count, "Only expected one category for spanish.");
 		}
 	}

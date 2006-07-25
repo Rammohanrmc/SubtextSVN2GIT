@@ -24,8 +24,12 @@ namespace Subtext.Web.Controls
 	/// Contains helper methods for unpacking scripts 
 	/// embedded as assembly resources.
 	/// </summary>
-	public static class ScriptHelper
+	public sealed class ScriptHelper
 	{
+		private ScriptHelper()
+		{
+		}
+
 		/// <summary>
 		/// Returns a string representation of the specified embedded 
 		/// script file.  The script is wrapped with script start and end tags 

@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using Subtext.Extensibility;
 using Subtext.Framework;
@@ -32,16 +31,21 @@ namespace Subtext.Web.UI.Controls
 	{
 		private const int DefaultRecentPostCount = 5;
 		protected Repeater feedList;
-        private IList<Entry> comments;
+		private EntryCollection comments;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RecentComments"/> class.
 		/// </summary>
 		public RecentComments()
 		{
-            int commentCount = Config.CurrentBlog.NumberOfRecentComments > 0 ? Config.CurrentBlog.NumberOfRecentComments : DefaultRecentPostCount;
-			
-		    comments = Entries.GetRecentPosts(commentCount, PostType.Comment, PostConfig.IsActive, false);
+			if(Config.CurrentBlog.NumberOfRecentComments > 0)
+			{
+				comments = Entries.GetRecentPosts(Config.CurrentBlog.NumberOfRecentComments, PostType.Comment, true);
+			}
+			else
+			{
+				comments = Entries.GetRecentPosts(DefaultRecentPostCount, PostType.Comment, true);
+			}
 
 			for(int i = 0; i < comments.Count; i++)
 			{
@@ -53,7 +57,7 @@ namespace Subtext.Web.UI.Controls
 		}
 
 		/// <summary>
-		/// Binds the comments <see cref="List{T}"/> to the comment list repeater.
+		/// Binds the comments <see cref="EntryCollection"/> to the comment list repeater.
 		/// Raises the <see cref="E:System.Web.UI.Control.Load"/>
 		/// event.
 		/// </summary>

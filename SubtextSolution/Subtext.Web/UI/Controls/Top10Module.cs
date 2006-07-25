@@ -28,8 +28,8 @@ namespace Subtext.Web.UI.Controls
 			ArrayList myLastItems = new ArrayList();
 
 			//fix for the blogs where only one installed
-			if (CurrentBlog.Id >= 1)
-				BlogId = CurrentBlog.Id;
+			if (CurrentBlog.BlogId >= 1)
+				BlogId = CurrentBlog.BlogId;
 			else
 				BlogId = 0;
 
@@ -37,10 +37,10 @@ namespace Subtext.Web.UI.Controls
 
 			SqlParameter[] p =
 				{
-					DataHelper.MakeInParam("@BlogID", SqlDbType.Int, 4, BlogId)
+					SqlHelper.MakeInParam("@BlogID", SqlDbType.Int, 4, BlogId)
 				};
 
-			DataTable dt = DataHelper.ExecuteDataTable(conn, CommandType.StoredProcedure, sql, p);
+			DataTable dt = SqlHelper.ExecuteDataTable(conn, CommandType.StoredProcedure, sql, p);
 
 			int count = dt.Rows.Count;
 

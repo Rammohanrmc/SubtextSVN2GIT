@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using Subtext.Extensibility;
 using Subtext.Framework;
 using Subtext.Framework.Components;
 using MbUnit.Framework;
@@ -23,7 +21,7 @@ namespace UnitTests.Subtext.Framework.Components.TrackbackTests
 		[RollBack]
 		public void CreateTrackbackSetsPostConfigCorrectly()
 		{
-			string hostname = UnitTestHelper.GenerateRandomString();
+			string hostname = UnitTestHelper.GenerateRandomHostname();
 			Assert.IsTrue(Config.CreateBlog("", "username", "password", hostname, string.Empty));
 			UnitTestHelper.SetHttpContextWithBlogRequest(hostname, string.Empty, string.Empty);
 			
@@ -33,12 +31,12 @@ namespace UnitTests.Subtext.Framework.Components.TrackbackTests
 			Trackback trackback = new Trackback(parentId, "title", "titleUrl", "phil", "body");
 			int id = Entries.Create(trackback);
 			
-			Entry loadedTrackback = Entries.GetEntry(id, PostConfig.IsActive, false);
+			Entry loadedTrackback = Entries.GetEntry(id, EntryGetOption.All);
 			Assert.IsNotNull(loadedTrackback, "Was not able to load trackback from storage.");
 			Assert.IsTrue(loadedTrackback.IsActive, "This item is active");
 			Assert.IsTrue(loadedTrackback.PostConfig > 0, "PostConfig was 0");
-
-            Entry activeTrackback = Entries.GetEntry(id, PostConfig.IsActive, false);
+			
+			Entry activeTrackback = Entries.GetEntry(id, EntryGetOption.ActiveOnly);
 			Assert.IsNotNull(activeTrackback, "The trackback was not active.");
 		}
 		
@@ -49,14 +47,14 @@ namespace UnitTests.Subtext.Framework.Components.TrackbackTests
 		[RollBack]
 		public void TrackbackShowsUpInFeedbackList()
 		{
-			string hostname = UnitTestHelper.GenerateRandomString();
+			string hostname = UnitTestHelper.GenerateRandomHostname();
 			Assert.IsTrue(Config.CreateBlog("", "username", "password", hostname, "blog"));
 			UnitTestHelper.SetHttpContextWithBlogRequest(hostname, "blog", string.Empty);
 			
 			Entry parentEntry = UnitTestHelper.CreateEntryInstanceForSyndication("philsath aeuoa asoeuhtoensth", "sntoehu title aoeuao eu", "snaot hu aensaoehtu body");
 			int parentId = Entries.Create(parentEntry);
-
-            IList<Entry> entries = Entries.GetFeedBack(parentEntry);
+			
+			EntryCollection entries = Entries.GetFeedBack(parentEntry);
 			Assert.AreEqual(0, entries.Count, "Did not expect any feedback yet.");
 			
 			Trackback trackback = new Trackback(parentId, "title", "titleUrl", "phil", "body");
@@ -65,7 +63,7 @@ namespace UnitTests.Subtext.Framework.Components.TrackbackTests
 			
 			entries = Entries.GetFeedBack(parentEntry);
 			Assert.AreEqual(1, entries.Count, "Expected a trackback.");
-			Assert.AreEqual(trackbackId, entries[0].Id, "The feedback was not the same one we expected. The IDs do not match.");
+			Assert.AreEqual(trackbackId, entries[0].EntryID, "The feedback was not the same one we expected. The IDs do not match.");
 		}
 	}
 }

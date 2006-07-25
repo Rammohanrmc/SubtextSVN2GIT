@@ -17,8 +17,10 @@ using System;
 using MbUnit.Framework;
 using System.Web.UI.WebControls;
 using FreeTextBoxControls;
+using Subtext.Framework;
+using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
-using Subtext.Web.Providers.BlogEntryEditor.FTB;
+using Subtext.Web.Providers.RichTextEditor.FTB;
 
 namespace UnitTests.Subtext.SubtextWeb.Providers.RichTextEditor
 {
@@ -30,13 +32,13 @@ namespace UnitTests.Subtext.SubtextWeb.Providers.RichTextEditor
 	public class FtbProviderTests
 	{
 		string _hostName = System.Guid.NewGuid().ToString().Replace("-", string.Empty) + ".com";
-		string _testToolbarLayout = "Bold,Italic,Underline,Strikethrough;Superscript,Subscript,RemoveFormat|FontFacesMenu,FontSizesMenu,FontForeColorsMenu|InsertTable|JustifyLeft,JustifyRight,JustifyCenter,JustifyFull;BulletedList,NumberedList,Indent,Outdent;CreateLink,Unlink,Insert,InsertRule|Cut,Copy,Paste;Undo,Redo|ieSpellCheck,WordClean|InsertImage,InsertImageFromGallery";
-		FtbBlogEntryEditorProvider frtep;
+		string _testToolbarLayout="Bold,Italic,Underline,Strikethrough;Superscript,Subscript,RemoveFormat|FontFacesMenu,FontSizesMenu,FontForeColorsMenu|InsertTable|JustifyLeft,JustifyRight,JustifyCenter,JustifyFull;BulletedList,NumberedList,Indent,Outdent;CreateLink,Unlink,Insert,InsertRule|Cut,Copy,Paste;Undo,Redo|ieSpellCheck,WordClean|InsertImage,InsertImageFromGallery";
+		FtbRichTextEditorProvider frtep;
 
 		[SetUp]
 		public void SetUp()
 		{
-            frtep = new FtbBlogEntryEditorProvider();
+			frtep = new FtbRichTextEditorProvider();
 			UnitTestHelper.SetHttpContextWithBlogRequest(_hostName, "MyBlog", "Subtext.Web");
 		}
 
@@ -44,8 +46,8 @@ namespace UnitTests.Subtext.SubtextWeb.Providers.RichTextEditor
 		public void SetControlID() 
 		{
 			string test="MyTestControlID";
-			frtep.ControlId=test;
-			Assert.AreEqual(test,frtep.ControlId);
+			frtep.ControlID=test;
+			Assert.AreEqual(test,frtep.ControlID);
 		}
 
 		[Test]

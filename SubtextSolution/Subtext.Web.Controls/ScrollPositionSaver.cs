@@ -26,13 +26,12 @@ namespace Subtext.Web.Controls
 		/// <param name="e"></param>
 		protected override void OnInit(EventArgs e)
 		{
-            Page.ClientScript.RegisterHiddenField("__scrollLeft", Page.Request["__scrollLeft"]);
-            Page.ClientScript.RegisterHiddenField("__scrollTop", Page.Request["__scrollTop"]);
-
-            if (!Page.ClientScript.IsStartupScriptRegistered(ClientScriptKey))
+            Page.RegisterHiddenField("__scrollLeft", Page.Request["__scrollLeft"]);
+			Page.RegisterHiddenField("__scrollTop", Page.Request["__scrollTop"]);
+			
+			if(!Page.IsStartupScriptRegistered(ClientScriptKey))
 			{
-                Type cstype = this.GetType();
-                Page.ClientScript.RegisterClientScriptBlock(cstype,ClientScriptKey, ScriptHelper.UnpackScript("ScrollPositionSaver.js"));
+				Page.RegisterClientScriptBlock(ClientScriptKey, ScriptHelper.UnpackScript("ScrollPositionSaver.js"));
 			}
 
 			base.OnInit (e);

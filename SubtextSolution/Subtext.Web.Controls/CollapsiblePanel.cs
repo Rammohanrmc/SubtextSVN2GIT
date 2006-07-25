@@ -267,10 +267,9 @@ namespace Subtext.Web.Controls
 
 		void RegisterClientScript()
 		{
-            if (Page.ClientScript.IsClientScriptBlockRegistered(CLIENT_SCRIPT_KEY))
+			if(Page.IsClientScriptBlockRegistered(CLIENT_SCRIPT_KEY))
 			{
-                Type cstype = this.GetType();
-                Page.ClientScript.RegisterClientScriptBlock(cstype,CLIENT_SCRIPT_KEY, ScriptHelper.UnpackScript("CollapsiblePanel.js"));
+				Page.RegisterClientScriptBlock(CLIENT_SCRIPT_KEY, ScriptHelper.UnpackScript("CollapsiblePanel.js"));
 			}
 		}
 

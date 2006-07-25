@@ -15,7 +15,6 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
@@ -24,9 +23,14 @@ using Subtext.Framework.Components;
 
 namespace Subtext.Web.Admin
 {
-	public static class OpmlProvider
+	public sealed class OpmlProvider
 	{
-		public static XmlDocument Export(ICollection<Link> items)
+		private OpmlProvider()
+		{
+			//
+		}
+
+		public static XmlDocument Export(LinkCollection items)
 		{
 			#region	DEP: writer		
 //			StringWriter sw = new StringWriter();

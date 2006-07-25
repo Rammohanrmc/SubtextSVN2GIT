@@ -34,10 +34,9 @@ namespace Subtext.Web.UI.Controls
 			base.Render (writer);
 			#if DEBUG
 			   
-				writer.Write(@"<div class=""debug"">");
-				writer.Write("<p>Cached @ " + DateTime.Now.ToString(CultureInfo.CurrentCulture) + "</p> ");
-				writer.Write("<p>Control " + this.GetType().ToString() + "</p>");
-				writer.Write("</div>");
+				writer.Write("<font size = \"1\">Cached @ " + DateTime.Now.ToString(CultureInfo.CurrentCulture) + "</font> ");
+				writer.Write("<font size = \"1\">Control " + this.GetType().ToString() + "</font>");
+			
 			#endif
 		}
 	}

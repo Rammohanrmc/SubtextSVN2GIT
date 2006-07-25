@@ -15,6 +15,7 @@
 
 using System;
 using System.Web.UI;
+using System.Web.UI.WebControls;
 using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Util;
@@ -24,12 +25,34 @@ namespace Subtext.Web.Admin.Pages
 	// TODO: import - reconcile duplicates
 	// TODO: CheckAll client-side, confirm bulk delete (add cmd)
 
-	public partial class EditKeyWords : AdminOptionsPage
+	public class EditKeyWords : AdminOptionsPage
 	{
 		private const string VSKEY_KEYWORDID = "LinkID";
 
 		private int _resultsPageNumber = 1;
 		private bool _isListHidden = false;
+
+		protected System.Web.UI.WebControls.Repeater rprSelectionList;
+		protected Subtext.Web.Admin.WebUI.Pager ResultsPager;
+		protected System.Web.UI.WebControls.Label lblEntryID;
+		protected System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator1;
+		protected System.Web.UI.WebControls.TextBox txbTitle;
+		protected System.Web.UI.WebControls.RequiredFieldValidator Requiredfieldvalidator2;
+		protected System.Web.UI.WebControls.TextBox txbUrl;
+		protected System.Web.UI.WebControls.CheckBoxList cklCategories;
+		protected System.Web.UI.WebControls.Button lkbPost;
+		protected System.Web.UI.WebControls.Button lkbCancel;
+		protected Subtext.Web.Admin.WebUI.AdvancedPanel Edit;
+
+
+		protected Subtext.Web.Admin.WebUI.MessagePanel Messages;
+		protected System.Web.UI.WebControls.TextBox txbWord;
+		protected System.Web.UI.WebControls.TextBox txbText;
+		protected System.Web.UI.WebControls.RequiredFieldValidator Requiredfieldvalidator3;
+		protected System.Web.UI.WebControls.CheckBox chkFirstOnly;
+		protected System.Web.UI.WebControls.CheckBox chkCaseSensitive;
+		protected System.Web.UI.WebControls.Button btnCreate;
+		protected System.Web.UI.WebControls.CheckBox chkNewWindow;
 	
 		#region Accessors
 
@@ -47,7 +70,7 @@ namespace Subtext.Web.Admin.Pages
 	
 		#endregion
 
-		private new void Page_Load(object sender, System.EventArgs e)
+		private void Page_Load(object sender, System.EventArgs e)
 		{
 			//BindLocalUI(); //no need to call
 
@@ -80,7 +103,7 @@ namespace Subtext.Web.Admin.Pages
 		{
 			Edit.Visible = false;
 
-            IPagedCollection<KeyWord> selectionList = KeyWords.GetPagedKeyWords(_resultsPageNumber, ResultsPager.PageSize, true);
+			PagedKeyWordCollection selectionList = KeyWords.GetPagedKeyWords(_resultsPageNumber,ResultsPager.PageSize,true);
 			
 			if (selectionList.Count > 0)
 			{
@@ -112,12 +135,15 @@ namespace Subtext.Web.Admin.Pages
 			chkFirstOnly.Checked = kw.ReplaceFirstTimeOnly;
 			chkCaseSensitive.Checked = kw.CaseSensitive;
 
-            if(AdminMasterPage != null && AdminMasterPage.BreadCrumb != null)
+
+			Control container = Page.FindControl("PageContainer");
+			if (null != container && container is Subtext.Web.Admin.WebUI.Page)
 			{	
+				Subtext.Web.Admin.WebUI.Page page = (Subtext.Web.Admin.WebUI.Page)container;
 				string title = string.Format(System.Globalization.CultureInfo.InvariantCulture, "Editing KeyWord \"{0}\"", kw.Title);
 
-				AdminMasterPage.BreadCrumb.AddLastItem(title);
-				AdminMasterPage.Title = title;
+				page.BreadCrumbs.AddLastItem(title);
+				page.Title = title;
 			}
 		}
 
@@ -222,13 +248,17 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		private void InitializeComponent()
 		{   
+			this.rprSelectionList.ItemCommand += new System.Web.UI.WebControls.RepeaterCommandEventHandler(this.rprSelectionList_ItemCommand);
+			this.btnCreate.Click += new System.EventHandler(this.btnCreate_Click);
+			this.lkbPost.Click += new System.EventHandler(this.lkbPost_Click);
+			this.lkbCancel.Click += new System.EventHandler(this.lkbCancel_Click);
 			this.Load += new System.EventHandler(this.Page_Load);
 
 		}
 		#endregion 
 
 
-		protected void rprSelectionList_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
+		private void rprSelectionList_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
 		{
 			switch (e.CommandName.ToLower(System.Globalization.CultureInfo.InvariantCulture)) 
 			{
@@ -246,17 +276,17 @@ namespace Subtext.Web.Admin.Pages
 			}			
 		}
 
-		protected void lkbCancel_Click(object sender, System.EventArgs e)
+		private void lkbCancel_Click(object sender, System.EventArgs e)
 		{
 			ResetPostEdit(false);
 		}
 
-		protected void lkbPost_Click(object sender, System.EventArgs e)
+		private void lkbPost_Click(object sender, System.EventArgs e)
 		{
 			UpdateLink();
 		}
 
-		protected void btnCreate_Click(object sender, System.EventArgs e)
+		private void btnCreate_Click(object sender, System.EventArgs e)
 		{
 			ResetPostEdit(true);
 		}

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Subtext.Framework.Components;
 
 #region Disclaimer/Info
@@ -25,7 +24,7 @@ namespace Subtext.Web.UI.Controls
 	/// <summary>
 	///		Summary description for CategoryDisplayByColumn.
 	/// </summary>
-	public class ArchiveLinks : CachedColumnControl
+	public  class ArchiveLinks : CachedColumnControl
 	{
 		protected Subtext.Web.UI.Controls.CategoryList Categories;
 
@@ -35,9 +34,9 @@ namespace Subtext.Web.UI.Controls
 			Categories.LinkCategories = GetArchiveCategories();
 		}
 
-		protected ICollection<LinkCategory> GetArchiveCategories()
+		protected LinkCategoryCollection GetArchiveCategories()
 		{
-            List<LinkCategory> lcc = new List<LinkCategory>();
+			LinkCategoryCollection lcc = new LinkCategoryCollection();
 
 			lcc.Add(UIData.Links(CategoryType.PostCollection,CurrentBlog.UrlFormats));
 			lcc.Add(UIData.Links(CategoryType.StoryCollection,CurrentBlog.UrlFormats));

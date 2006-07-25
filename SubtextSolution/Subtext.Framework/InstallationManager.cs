@@ -26,8 +26,12 @@ namespace Subtext.Framework
 	/// <summary>
 	/// Class used to help make determine whether an installation is required or not.
 	/// </summary>
-	public static class InstallationManager
+	public sealed class InstallationManager
 	{
+		private InstallationManager()
+		{
+		}
+		
 		/// <summary>
 		/// Gets a value indicating whether this instance is installation action required.
 		/// </summary>

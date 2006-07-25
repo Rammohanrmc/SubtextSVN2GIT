@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Text;
 using Subtext.Framework.Components;
 using Subtext.Framework.Providers;
@@ -22,9 +21,13 @@ using Subtext.Framework.Text;
 
 namespace Subtext.Framework.Util
 {
-	public static class KeyWords
+	public sealed class KeyWords
 	{
-	    #region Readers/Writers
+		private KeyWords()
+		{
+		}
+
+		#region Readers/Writers
 
 		private enum ScanState : byte { Replace, InTag, InAnchor };
 
@@ -204,12 +207,14 @@ namespace Subtext.Framework.Util
 
 		public static void Format(Entry entry)
 		{
-			ICollection<KeyWord> kwc = GetKeyWords();
+			KeyWordCollection kwc = GetKeyWords();
 			if(kwc != null && kwc.Count > 0)
 			{
-				foreach(KeyWord keyword in kwc)
+				KeyWord kw;
+				for(int i =0; i<kwc.Count;i++)
 				{
-                    entry.Body = ReplaceFormat(entry.Body, keyword.Word, keyword.GetFormat, keyword.ReplaceFirstTimeOnly);
+					kw = kwc[i];
+					entry.Body = ReplaceFormat(entry.Body, kw.Word, kw.GetFormat, kw.ReplaceFirstTimeOnly);
 				}
 			}
 		}
@@ -219,12 +224,12 @@ namespace Subtext.Framework.Util
 			return ObjectProvider.Instance().GetKeyWord(KeyWordID);
 		}
 
-        public static ICollection<KeyWord> GetKeyWords()
+		public static KeyWordCollection GetKeyWords()
 		{
 			return ObjectProvider.Instance().GetKeyWords();
 		}
 
-        public static IPagedCollection<KeyWord> GetPagedKeyWords(int pageIndex, int pageSize, bool sortDescending)
+		public static PagedKeyWordCollection GetPagedKeyWords(int pageIndex, int pageSize,bool sortDescending)
 		{
 			return ObjectProvider.Instance().GetPagedKeyWords(pageIndex,pageSize,sortDescending);
 		}

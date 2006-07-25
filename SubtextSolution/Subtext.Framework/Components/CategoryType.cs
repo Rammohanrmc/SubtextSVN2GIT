@@ -17,14 +17,15 @@ using System;
 
 namespace Subtext.Framework.Components
 {
-	public enum CategoryType
-	{
-		None = 0,
-		PostCollection = 1,
-		StoryCollection = 2,
-		ImageCollection = 3,
-		ArchiveMonthCollection = 4,
-        LinkCollection = 5,
-	}
+		public enum CategoryType
+		{
+			LinkCollection = 0,
+			PostCollection =1,
+			StoryCollection =2,
+			ImageCollection =3,
+			ArchiveMonthCollection = 4,
+			Undeclared = 999
+		}
+	
 }
 

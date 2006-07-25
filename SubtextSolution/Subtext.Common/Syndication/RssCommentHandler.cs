@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using Subtext.Common.Data;
 using Subtext.Framework;
 using Subtext.Framework.Components;
@@ -30,14 +29,14 @@ namespace Subtext.Common.Syndication
 	public class RssCommentHandler : EntryCollectionHandler
 	{
 		protected Entry ParentEntry;
-        protected IList<Entry> Comments;
-        IList<Entry> comments;
+		protected EntryCollection Comments;
+		EntryCollection comments;
 
 		/// <summary>
 		/// Gets the feed entries.
 		/// </summary>
 		/// <returns></returns>
-        protected override IList<Entry> GetFeedEntries()
+		protected override EntryCollection GetFeedEntries()
 		{
 			if(ParentEntry == null)
 			{
@@ -63,7 +62,7 @@ namespace Subtext.Common.Syndication
 
 			comments = GetFeedEntries();
 			if(comments == null)
-				comments = new List<Entry>();
+				comments = new EntryCollection();
 
 		
 			feed = new CachedFeed();

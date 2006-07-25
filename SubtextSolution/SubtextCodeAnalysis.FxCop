@@ -3870,13 +3870,13 @@
            </Member>
           </Members>
          </Type>
-         <Type Name="List">
+         <Type Name="EntryViewCollection">
           <Members>
            <Member Name=".ctor(Subtext.Framework.Components.EntryView[])">
             <Messages>
              <Message Id="System.ArgumentNullException.#ctor(System.String,System.String)" TypeName="DoNotPassLiteralsAsLocalizedParameters" Category="Microsoft.Globalization" CheckId="CA1303" Created="2006-05-10 07:31:04Z">
               <Issue>
-               <Item>List.List(EntryView[])</Item>
+               <Item>EntryViewCollection.EntryViewCollection(EntryView[])</Item>
                <Item>2</Item>
                <Item>ArgumentNullException.ArgumentNullException(String, String)</Item>
                <Item>Cannot add a range from null.</Item>
@@ -3884,11 +3884,11 @@
              </Message>
             </Messages>
            </Member>
-           <Member Name=".ctor(Subtext.Framework.Components.List)">
+           <Member Name=".ctor(Subtext.Framework.Components.EntryViewCollection)">
             <Messages>
              <Message Id="System.ArgumentNullException.#ctor(System.String,System.String)" TypeName="DoNotPassLiteralsAsLocalizedParameters" Category="Microsoft.Globalization" CheckId="CA1303" Created="2006-05-10 07:31:04Z">
               <Issue>
-               <Item>List.List(List)</Item>
+               <Item>EntryViewCollection.EntryViewCollection(EntryViewCollection)</Item>
                <Item>2</Item>
                <Item>ArgumentNullException.ArgumentNullException(String, String)</Item>
                <Item>Cannot add a range from null.</Item>
@@ -3900,7 +3900,7 @@
             <Messages>
              <Message Id="System.ArgumentNullException.#ctor(System.String,System.String)" TypeName="DoNotPassLiteralsAsLocalizedParameters" Category="Microsoft.Globalization" CheckId="CA1303" Created="2006-05-10 07:31:04Z">
               <Issue>
-               <Item>List.AddRange(EntryView[]):Void</Item>
+               <Item>EntryViewCollection.AddRange(EntryView[]):Void</Item>
                <Item>2</Item>
                <Item>ArgumentNullException.ArgumentNullException(String, String)</Item>
                <Item>Cannot add a range from null.</Item>
@@ -3908,11 +3908,11 @@
              </Message>
             </Messages>
            </Member>
-           <Member Name="AddRange(Subtext.Framework.Components.List):System.Void">
+           <Member Name="AddRange(Subtext.Framework.Components.EntryViewCollection):System.Void">
             <Messages>
              <Message Id="System.ArgumentNullException.#ctor(System.String,System.String)" TypeName="DoNotPassLiteralsAsLocalizedParameters" Category="Microsoft.Globalization" CheckId="CA1303" Created="2006-05-10 07:31:04Z">
               <Issue>
-               <Item>List.AddRange(List):Void</Item>
+               <Item>EntryViewCollection.AddRange(EntryViewCollection):Void</Item>
                <Item>2</Item>
                <Item>ArgumentNullException.ArgumentNullException(String, String)</Item>
                <Item>Cannot add a range from null.</Item>
@@ -3922,14 +3922,14 @@
            </Member>
           </Members>
          </Type>
-         <Type Name="List+ListEnumerator">
+         <Type Name="EntryViewCollection+EntryViewCollectionEnumerator">
           <Members>
-           <Member Name=".ctor(Subtext.Framework.Components.List)">
+           <Member Name=".ctor(Subtext.Framework.Components.EntryViewCollection)">
             <Messages>
              <Message TypeName="ValidateArgumentsOfPublicMethods" Category="Microsoft.Design" CheckId="CA1062" Created="2006-05-10 07:31:04Z">
               <Issue>
                <Item>'mappings'</Item>
-               <Item>ListEnumerator.ListEnumerator(List)</Item>
+               <Item>EntryViewCollectionEnumerator.EntryViewCollectionEnumerator(EntryViewCollection)</Item>
               </Issue>
              </Message>
             </Messages>
@@ -5451,7 +5451,7 @@
              <Message Id="obj" TypeName="ReviewUnusedParameters" Category="Microsoft.Usage" CheckId="CA1801" Created="2006-05-10 07:31:04Z" FixCategory="Breaking">
               <Issue>
                <Item>obj</Item>
-               <Item>DataHelper.CheckNull(DBNull):String</Item>
+               <Item>SqlHelper.CheckNull(DBNull):String</Item>
               </Issue>
              </Message>
             </Messages>
@@ -5487,7 +5487,7 @@
              <Message TypeName="SetLocaleForDataTypes" Category="Microsoft.Globalization" CheckId="CA1306" Created="2006-05-10 07:31:04Z">
               <Issue>
                <Item>DataTable</Item>
-               <Item>DataHelper.ExecuteDataTable(SqlConnection, CommandType, String, SqlParameter[]):DataTable</Item>
+               <Item>SqlHelper.ExecuteDataTable(SqlConnection, CommandType, String, SqlParameter[]):DataTable</Item>
               </Issue>
              </Message>
             </Messages>
@@ -5497,13 +5497,13 @@
              <Message TypeName="SetLocaleForDataTypes" Category="Microsoft.Globalization" CheckId="CA1306" Created="2006-05-10 07:31:04Z">
               <Issue>
                <Item>DataTable</Item>
-               <Item>DataHelper.ExecuteDataTable(SqlTransaction, CommandType, String, SqlParameter[]):DataTable</Item>
+               <Item>SqlHelper.ExecuteDataTable(SqlTransaction, CommandType, String, SqlParameter[]):DataTable</Item>
               </Issue>
              </Message>
              <Message TypeName="ValidateArgumentsOfPublicMethods" Category="Microsoft.Design" CheckId="CA1062" Created="2006-05-10 07:31:04Z">
               <Issue>
                <Item>'transaction'</Item>
-               <Item>DataHelper.ExecuteDataTable(SqlTransaction, CommandType, String, SqlParameter[]):DataTable</Item>
+               <Item>SqlHelper.ExecuteDataTable(SqlTransaction, CommandType, String, SqlParameter[]):DataTable</Item>
               </Issue>
              </Message>
             </Messages>

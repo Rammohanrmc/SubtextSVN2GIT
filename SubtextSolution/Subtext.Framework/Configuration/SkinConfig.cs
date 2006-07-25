@@ -34,31 +34,22 @@ namespace Subtext.Framework.Configuration
 			return _defaultSkin;
 		}
 
-		/// <summary>
-		/// Creates the default skin to be used if none is specified.
-		/// </summary>
-		/// <returns></returns>
 		static SkinConfig CreateDefaultSkin()
 		{
 			SkinConfig defaultSkin = new SkinConfig();
-			defaultSkin.TemplateFolder = "RedBook";
-			defaultSkin.SkinStyleSheet = "Blue.css";
+			defaultSkin.SkinName = "RedBook";
+			defaultSkin.SkinCssFile = "Blue.css";
 			return defaultSkin;
 		}
 
-		/// <summary>
-		/// This is the skin template folder. Note that multiple "Skins" can 
-		/// share the same template folder. The template folder contains the 
-		/// *.ascx files for the skins.
-		/// </summary>
-		public string TemplateFolder
+		private string _skinName;
+		public string SkinName
 		{
-			get{return this.templateFolder;}
-			set{this.templateFolder = value;}
+			get{return _skinName;}
+			set{_skinName = value;}
 		}
 
-		private string templateFolder;
-		
+		private string _skinCssFile;
 		/// <summary>
 		/// Gets or sets the skin's primary CSS file, if any.  
 		/// Some Skins have multiple flavors based on different CSS files.  
@@ -66,61 +57,45 @@ namespace Subtext.Framework.Configuration
 		/// of the skin Redbook.  They vary by the skin css file.
 		/// </summary>
 		/// <value>The skin CSS file.</value>
-		public string SkinStyleSheet
+		public string SkinCssFile
 		{
-			get{return this.skinStyleSheet;}
-			set{this.skinStyleSheet = value;}
+			get{return _skinCssFile;}
+			set{_skinCssFile = value;}
 		}
 
-		private string skinStyleSheet;
-
-		/// <summary>
-		/// This is CSS text that is entered within the admin section.
-		/// </summary>
-		public string CustomCssText
+		private string _skinCssText;
+		public string SkinCssText
 		{
-			get{return this.customCssText;}
-			set{this.customCssText = value;}
+			get{return _skinCssText;}
+			set{_skinCssText = value;}
 		}
-		
-		private string customCssText;
 
-		/// <summary>
-		/// Returns true if the skin has a skin specific css file 
-		/// that is applied after style.css (there is one style.css 
-		/// per template folder).
-		/// </summary>
-		public bool HasStyleSheet
+		public bool HasSecondaryFile
 		{
 			get
 			{
-				return this.SkinStyleSheet != null && this.SkinStyleSheet.Trim().Length > 0;
+				return SkinCssFile != null && SkinCssFile.Trim().Length > 0;
 			}
 		}
 
-		/// <summary>
-		/// Returns true if the user specified some custom CSS in the admin section.
-		/// </summary>
-		public bool HasCustomCssText
+		public bool HasSecondaryText
 		{
 			get
 			{
-				return this.CustomCssText != null && this.CustomCssText.Trim().Length > 0;
+				return SkinCssText != null && SkinCssText.Trim().Length > 0;
 			}
 		}
 
-		/// <summary>
-		/// A lookup key for a skin.
-		/// </summary>
-		public string SkinKey
+		//TODO: Subject to change. Do not rely on this for anything
+		public string SkinID
 		{
 			get
 			{
-				if(this.HasStyleSheet)
+				if(HasSecondaryFile)
 				{
-					return this.TemplateFolder + "-" + this.SkinStyleSheet;
+					return SkinName + "-" + SkinCssFile;
 				}
-				return this.TemplateFolder;
+				return SkinName;
 			}
 		}
 	}

@@ -106,14 +106,14 @@ namespace Subtext.Framework.Configuration
 				{
 					//Not found in the cache
 					bool strict = true; //strict implies 
-                    info = Subtext.Framework.Configuration.Config.GetBlogInfo(blogRequest.Host, blogRequest.Subfolder, !strict);
+					info = Subtext.Framework.Configuration.Config.GetBlogInfo(blogRequest.Host, blogRequest.Subfolder, !strict);
 					if(info == null)
 					{
 						int totalBlogs;
 						BlogInfo.GetActiveBlogs(1, 10, true, out totalBlogs);
 						bool anyBlogsExist = totalBlogs > 0;
 
-                        if (anyBlogsExist && ConfigurationManager.AppSettings["AggregateEnabled"] == "true")
+						if(anyBlogsExist && ConfigurationSettings.AppSettings["AggregateEnabled"] == "true")
 						{
 							return GetAggregateBlog();
 						}
@@ -157,7 +157,7 @@ namespace Subtext.Framework.Configuration
 					{
 						info.ImageDirectory = HttpContext.Current.Request.MapPath("~/" + virtualPath);
 					}
-					catch(ArgumentNullException nullException)
+					catch(NullReferenceException nullException)
 					{
 						log.Warn("Could not map the image directory.", nullException);
 					}
@@ -168,7 +168,7 @@ namespace Subtext.Framework.Configuration
 					if(!InstallationManager.IsInHostAdminDirectory)
 					{
 						// Set the BlogId context for the current request.
-						Log.SetBlogIdContext(info.Id);
+						Log.SetBlogIdContext(info.BlogId);
 					}
 					else
 					{
@@ -180,16 +180,16 @@ namespace Subtext.Framework.Configuration
 					HttpContext.Current.Items.Add(cacheKey, info);
 				}
 			}
-		    
+
 			return info;
 		}
 
 		private BlogInfo GetAggregateBlog()
 		{
 			BlogInfo aggregateBlog = new BlogInfo();
-            aggregateBlog.Title = System.Configuration.ConfigurationManager.AppSettings["AggregateTitle"];
+			aggregateBlog.Title = System.Configuration.ConfigurationSettings.AppSettings["AggregateTitle"];
 			aggregateBlog.Skin = SkinConfig.GetDefaultSkin();
-            aggregateBlog.Host = System.Configuration.ConfigurationManager.AppSettings["AggregateHost"];
+			aggregateBlog.Host = System.Configuration.ConfigurationSettings.AppSettings["AggregateHost"];
 			aggregateBlog.Subfolder = "";
 			aggregateBlog.UserName = HostInfo.Instance.HostUserName;
 			

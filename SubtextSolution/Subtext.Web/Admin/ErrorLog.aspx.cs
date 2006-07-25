@@ -14,27 +14,31 @@
 #endregion
 
 using System;
+using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using Subtext.Framework.Components;
+using Subtext.Framework.Data;
 using Subtext.Framework.Logging;
 using Subtext.Web.Admin.WebUI;
 using Subtext.Web.Controls;
 
 namespace Subtext.Web.Admin.Pages
 {
-	public partial class ErrorLog : StatsPage
+	public class ErrorLog : AdminPage
 	{
+		protected AdvancedPanel Log;
+		protected Page PageContainer;
+		protected RepeaterWithEmptyDataTemplate LogPage;
+		protected HtmlGenericControl NoMessagesLabel;
+		protected Pager LogPager;
+		protected Button btnExportToExcel;
+		protected Button btnClearLog;
+
 		private int logPageNumber;
 	
-	    public ErrorLog() : base()
-	    {
-            this.TabSectionId = "Stats";
-	    }
-	    
 		protected override void OnLoad(EventArgs e)
 		{
 			LoadPage();
-			base.OnLoad(e);
+			base.OnLoad (e);
 		}
 
 		private void LoadPage()
@@ -45,17 +49,30 @@ namespace Subtext.Web.Admin.Pages
 			LogPager.PageSize = Preferences.ListingItemCount;
 			LogPager.PageIndex = this.logPageNumber;
 
+			BindLocalUI();
 			BindList();
 		}
 
 		private void BindList()
 		{
-            IPagedCollection<LogEntry> logEntries = LoggingProvider.Instance().GetPagedLogEntries(LogPager.PageIndex, LogPager.PageSize, Subtext.Framework.Data.SortDirection.Descending);
+			PagedLogEntryCollection logEntries = LoggingProvider.Instance().GetPagedLogEntries(LogPager.PageIndex, LogPager.PageSize, SortDirection.Descending);
 			LogPager.ItemCount = logEntries.MaxItems;
 			LogPage.DataSource = logEntries;
 			LogPage.DataBind();		
 		}
 		
+		private void BindLocalUI()
+		{
+			HyperLink lnkReferrals = Utilities.CreateHyperLink("Referrals", "Referrers.aspx");
+			HyperLink lnkViews = Utilities.CreateHyperLink("Views", "StatsView.aspx");
+			HyperLink lnkErrorLog = Utilities.CreateHyperLink("Error Log", "ErrorLog.aspx");
+
+			// Add the buttons to the PageContainer.
+			PageContainer.AddToActions(lnkReferrals);
+			PageContainer.AddToActions(lnkViews);
+			PageContainer.AddToActions(lnkErrorLog);
+		}
+
 		#region Web Form Designer generated code
 		override protected void OnInit(EventArgs e)
 		{
@@ -86,7 +103,7 @@ namespace Subtext.Web.Admin.Pages
 
 		private void BindListForExcel()
 		{
-            IPagedCollection<LogEntry> logEntries = LoggingProvider.Instance().GetPagedLogEntries(1, int.MaxValue - 1, Subtext.Framework.Data.SortDirection.Descending);
+			PagedLogEntryCollection logEntries = LoggingProvider.Instance().GetPagedLogEntries(1, int.MaxValue - 1, SortDirection.Descending);
 			LogPage.DataSource = logEntries;
 			LogPage.DataBind();
 		}

@@ -254,12 +254,6 @@ namespace Subtext.Framework.Syndication
 		{
 			//core
 			this.WriteElementString("title", entry.Title);
-		    
-	        foreach (string category in entry.Categories)
-            {
-                this.WriteElementString("category", category);
-            }
-		    
 			this.WriteElementString("link", entry.FullyQualifiedUrl.ToString());
 			this.WriteElementString
 			(
@@ -268,27 +262,20 @@ namespace Subtext.Framework.Syndication
 				(
 					"{0}{1}", //tag def
 					entry.SyndicateDescriptionOnly ? entry.Description : entry.Body,  //use desc or full post
-					(UseAggBugs && settings.Tracking.EnableAggBugs) ? TrackingUrls.AggBugImage(urlFormats.AggBugkUrl(entry.Id)) : null //use aggbugs
+					(UseAggBugs && settings.Tracking.EnableAggBugs) ? TrackingUrls.AggBugImage(urlFormats.AggBugkUrl(entry.EntryID)) : null //use aggbugs
 				)
 			);
-
-		    if(!String.IsNullOrEmpty(entry.Email) && entry.Email.IndexOf('@') > 0 && entry.Email.IndexOf(".") > 0)
-		    {
-		        this.WriteElementString("author", entry.Email);
-		    }
-
-            if (!String.IsNullOrEmpty(entry.Author))
-            {
-                this.WriteElementString("dc:creator", entry.Author);
-            }
-		    
+			//TODO: Perform real email auth.
+			if(entry.Email != null && entry.Email.Length > 0 && entry.Email.IndexOf('@') > 0)
+				this.WriteElementString("author", entry.Email);
 			this.WriteElementString("guid", entry.FullyQualifiedUrl.ToString());
 			this.WriteElementString("pubDate", entry.DateCreated.ToString("r"));			
+			
 
 			if(AllowComments && info.CommentsEnabled && entry.AllowComments && !entry.CommentingClosed)
 			{
 				// Comment API (http://wellformedweb.org/story/9)
-				this.WriteElementString("wfw:comment", urlFormats.CommentApiUrl(entry.Id));
+				this.WriteElementString("wfw:comment", urlFormats.CommentApiUrl(entry.EntryID));
 			}
 
 			this.WriteElementString("comments", entry.FullyQualifiedUrl + "#feedback");
@@ -296,10 +283,29 @@ namespace Subtext.Framework.Syndication
 			if(entry.FeedBackCount > 0)
 				this.WriteElementString("slash:comments", entry.FeedBackCount.ToString(CultureInfo.InvariantCulture));
 			
-			this.WriteElementString("wfw:commentRss", urlFormats.CommentRssUrl(entry.Id));
+			this.WriteElementString("wfw:commentRss", urlFormats.CommentRssUrl(entry.EntryID));
 			
 			if(info.TrackbacksEnabled)
-				this.WriteElementString("trackback:ping", urlFormats.TrackBackUrl(entry.Id));
+				this.WriteElementString("trackback:ping", urlFormats.TrackBackUrl(entry.EntryID));
+
+			//optional
+			if(settings.UseXHTML && entry.IsXHMTL)
+			{
+				this.WriteStartElement("body");
+				this.WriteAttributeString("xmlns", "http://www.w3.org/1999/xhtml");
+				//If Syndicate Description Only was checked, write out the description to the
+				//body tag rather than the full text of the post
+				// - Robb Allen
+				if (entry.SyndicateDescriptionOnly)
+				{
+					this.WriteRaw(entry.Description + ((UseAggBugs && settings.Tracking.EnableAggBugs)  ? TrackingUrls.AggBugImage(urlFormats.AggBugkUrl(entry.EntryID)) : null));
+				}
+				else
+				{
+					this.WriteRaw(entry.Body + ((UseAggBugs && settings.Tracking.EnableAggBugs)  ? TrackingUrls.AggBugImage(urlFormats.AggBugkUrl(entry.EntryID)) : null));
+				}
+				this.WriteEndElement();
+			}			
 		}
 	}
 }

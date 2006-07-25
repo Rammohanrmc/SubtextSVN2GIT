@@ -98,7 +98,7 @@ namespace UnitTests.Subtext.Installation
 		public void TestFixtureSetUp()
 		{
 			//Confirm app settings
-			UnitTestHelper.AssertAppSettings();
+			Assert.AreEqual("~/Admin/Resources/PageTemplate.ascx", System.Configuration.ConfigurationSettings.AppSettings["Admin.DefaultTemplate"]) ;
 		}
 	}
 }

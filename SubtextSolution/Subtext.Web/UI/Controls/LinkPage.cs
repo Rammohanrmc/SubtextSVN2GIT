@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Web.UI.WebControls;
 
 using Subtext.Framework;
@@ -18,12 +17,13 @@ namespace Subtext.Web.UI.Controls
 
 		private void Page_Load(object sender, System.EventArgs e)
 		{
+			// Put user code to initialize the page here
 		}
 
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad (e);
-            List<LinkCategory> lcc = new List<LinkCategory>();
+			LinkCategoryCollection lcc = new LinkCategoryCollection();
 			lcc.AddRange(Links.GetActiveCategories());
 			CatList.DataSource = lcc;
 			CatList.DataBind();
@@ -62,11 +62,10 @@ namespace Subtext.Web.UI.Controls
 					ControlHelper.SetTitleIfNone(Link, link.Title);
 					if(link.NewWindow)
 					{
-						if(!String.IsNullOrEmpty(Link.Attributes["rel"]))
+						if(!Config.Settings.UseXHTML)
 						{
-							Link.Attributes["rel"] += " ";
+							Link.Target = "_blank";
 						}
-						Link.Attributes["rel"] += "external";
 					}
 
 					if(link.HasRss)

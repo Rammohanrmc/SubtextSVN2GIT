@@ -31,8 +31,19 @@ namespace Subtext.Web.UI.Controls
 	/// <summary>
 	///		Summary description for Comments.
 	/// </summary>
-	public partial class PostComment : BaseControl
-	{	
+	public class PostComment : BaseControl
+	{
+		protected System.Web.UI.WebControls.TextBox tbTitle;
+		protected System.Web.UI.WebControls.TextBox tbName;
+		protected System.Web.UI.WebControls.TextBox tbUrl;
+		protected System.Web.UI.WebControls.TextBox tbComment;
+		protected System.Web.UI.WebControls.TextBox tbEmail;
+		protected System.Web.UI.WebControls.Button btnSubmit;
+		protected Subtext.Web.Controls.CompliantButton btnCompliantSubmit;
+		protected System.Web.UI.WebControls.Label Message;
+		protected System.Web.UI.WebControls.CheckBox chkRemember;
+		protected SubtextCoComment coComment;
+		
 		/// <summary>
 		/// Handles the OnLoad event.  Attempts to prepopulate comment 
 		/// fields based on the user's cookie.
@@ -41,8 +52,6 @@ namespace Subtext.Web.UI.Controls
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad (e);
-
-			//DisableClientValidation();
 
 			tbComment.MaxLength = 4000;
 		
@@ -85,7 +94,7 @@ namespace Subtext.Web.UI.Controls
 					}
 					else
 					{
-						tbTitle.Text = "re: " + HttpUtility.HtmlDecode(entry.Title);
+						tbTitle.Text = "re: " + entry.Title;
 					}
 				}
 				else
@@ -159,7 +168,7 @@ namespace Subtext.Web.UI.Controls
 						entry.TitleUrl =  HtmlHelper.CheckForUrl(tbUrl.Text);
 						entry.Body = tbComment.Text;
 						entry.Title = tbTitle.Text;
-						entry.ParentID = currentEntry.Id;
+						entry.ParentID = currentEntry.EntryID;
 						entry.SourceName = HttpHelper.GetUserIpAddress(Context);
 						entry.SourceUrl = currentEntry.Url;
 

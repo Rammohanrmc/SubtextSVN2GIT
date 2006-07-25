@@ -27,9 +27,10 @@ namespace Subtext.Framework.Configuration
 	/// Static helper class used to access various configuration 
 	/// settings.
 	/// </summary>
-	public static class Config
+	public sealed class Config
 	{
-	    static UrlBasedBlogInfoProvider _configProvider = null;
+		static UrlBasedBlogInfoProvider _configProvider = null;
+		private Config() {}
 
 		/// <summary>
 		/// Returns an instance of <see cref="BlogConfigurationSettings"/> which 
@@ -40,7 +41,7 @@ namespace Subtext.Framework.Configuration
 		{
 			get
 			{
-				return ((BlogConfigurationSettings)ConfigurationManager.GetSection("BlogConfigurationSettings"));
+				return ((BlogConfigurationSettings)ConfigurationSettings.GetConfig("BlogConfigurationSettings"));
 			}
 		}
 
@@ -115,18 +116,18 @@ namespace Subtext.Framework.Configuration
 			}
 		}
 
-        /// <summary>
-        /// Returns a <see cref="BlogInfo"/> instance containing 
-        /// the configuration settings for the blog specified by the 
-        /// Hostname and Application.
-        /// </summary>
-        /// <param name="hostName">Hostname.</param>
-        /// <param name="subfolder">Subfolder Name.</param>
-        /// <returns></returns>
-	    public static BlogInfo GetBlogInfo(string hostName, string subfolder)
-	    {
-            return GetBlogInfo(hostName, subfolder, false);
-	    }
+		/// <summary>
+		/// Returns a <see cref="BlogInfo"/> instance containing 
+		/// the configuration settings for the blog specified by the 
+		/// Hostname and Application.
+		/// </summary>
+		/// <param name="hostName">Hostname.</param>
+		/// <param name="subfolder">Subfolder Name.</param>
+		/// <returns></returns>
+		public static BlogInfo GetBlogInfo(string hostName, string subfolder)
+		{
+			return GetBlogInfo(hostName, subfolder, true);
+		}
 
 		/// <summary>
 		/// Returns a <see cref="BlogInfo"/> instance containing 
@@ -153,7 +154,6 @@ namespace Subtext.Framework.Configuration
 		/// allowing a user with a freshly installed blog to immediately gain access 
 		/// to the admin section to edit the blog.
 		/// </summary>
-		/// <param name="title">Title of the blog</param>
 		/// <param name="userName">Name of the user.</param>
 		/// <param name="password">Password.</param>
 		/// <param name="subfolder"></param>
@@ -183,25 +183,20 @@ namespace Subtext.Framework.Configuration
 			host = BlogInfo.NormalizeHostName(host);
 
 			//Check for duplicate
-			BlogInfo potentialDuplicate = Subtext.Framework.Configuration.Config.GetBlogInfo(host, subfolder, true);
+			BlogInfo potentialDuplicate = Subtext.Framework.Configuration.Config.GetBlogInfo(host, subfolder);
 			if(potentialDuplicate != null)
 			{
 				//we found a duplicate!
 				throw new BlogDuplicationException(potentialDuplicate);
 			}
 
-		    //If the subfolder is null, this next check is redundant as it is 
-		    //equivalent to the check we just made.
-			if (subfolder != null && subfolder.Length > 0)
-            {
-                //Check to see if we're going to end up hiding another blog.
-                BlogInfo potentialHidden = Subtext.Framework.Configuration.Config.GetBlogInfo(host, string.Empty, true);
-                if (potentialHidden != null)
-                {
-                    //We found a blog that would be hidden by this one.
-                    throw new BlogHiddenException(potentialHidden);
-                }
-            }
+			//Check to see if we're going to end up hiding another blog.
+			BlogInfo potentialHidden = Subtext.Framework.Configuration.Config.GetBlogInfo(host, string.Empty);
+			if(potentialHidden != null)
+			{
+				//We found a blog that would be hidden by this one.
+				throw new BlogHiddenException(potentialHidden);
+			}
 			
 			subfolder = UrlFormats.StripSurroundingSlashes(subfolder);
 			Console.WriteLine("Creating a blog with subfolder '" + subfolder + "'");
@@ -227,7 +222,7 @@ namespace Subtext.Framework.Configuration
 			if(!passwordAlreadyHashed && Config.Settings.UseHashedPasswords)
 				password = Security.HashPassword(password);
 
-            return (ObjectProvider.Instance().CreateBlog(title, userName, password, host, subfolder));
+			return (ObjectProvider.Instance().CreateBlog(title, userName, password, host, subfolder));
 		}
 
 		/// <summary>
@@ -260,7 +255,7 @@ namespace Subtext.Framework.Configuration
 			{
 				//Check to see if this blog requires a Subfolder value
 				//This would occur if another blog has the same host already.
-                IPagedCollection<BlogInfo> blogsWithHost = BlogInfo.GetActiveBlogsByHost(info.Host);
+				BlogInfoCollection blogsWithHost = BlogInfo.GetActiveBlogsByHost(info.Host);
 				if(blogsWithHost.Count > 0)
 				{
 					if(blogsWithHost.Count > 1 || !blogsWithHost[0].Equals(info))

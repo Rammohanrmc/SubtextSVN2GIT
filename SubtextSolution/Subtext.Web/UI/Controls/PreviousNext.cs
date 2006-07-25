@@ -1,13 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Web;
+using System.Data.SqlClient;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Subtext.Common.Data;
-using Subtext.Extensibility;
 using Subtext.Framework;
 using Subtext.Framework.Components;
+using Subtext.Framework.Configuration;
+using Subtext.Framework.Data;
 using Subtext.Framework.Providers;
 
 namespace Subtext.Web.UI.Controls
@@ -20,12 +20,16 @@ namespace Subtext.Web.UI.Controls
 		protected HyperLink NextLink;
 		protected HyperLink PrevLink;
 		protected HyperLink MainLink;
-		protected Control LeftPipe;
-		protected Control RightPipe;
+		protected Label LeftPipe;
+		protected Label RightPipe;
 		
 		public PreviousNext()
 		{
+			//
+			// TODO: Add constructor logic here
+			//
 		}
+
 
 		protected override void OnLoad(EventArgs e)
 		{
@@ -40,11 +44,24 @@ namespace Subtext.Web.UI.Controls
 				//Sent entry properties
 				MainLink.NavigateUrl = CurrentBlog.HomeVirtualUrl;
 
-				IList<Entry> entries = ObjectProvider.Instance().GetPreviousAndNextEntries(entry.Id, PostType.BlogPost);
+				string ConnectionString = DbProvider.Instance().ConnectionString;
+				SqlParameter[] p =
+					{
+						SqlHelper.MakeInParam("@ID",SqlDbType.Int,4,entry.EntryID),
+						SqlHelper.MakeInParam("@BlogID",SqlDbType.Int,4,Config.CurrentBlog.BlogId)
+					};
 
-				//Remember, the NEXT entry is the MORE RECENT entry.
-				
-				switch (entries.Count)
+				//System.Data.SqlClient.SqlDataReader sdr = SqlHelper.ExecuteReader(ConnectionString,CommandType.StoredProcedure,"blog_GetEntry_PreviousNext",p);
+				DataSet ds;
+				using (SqlConnection cn = new SqlConnection(ConnectionString))
+				{
+					cn.Open();
+
+					//call the overload that takes a connection in place of the connection string
+					ds = SqlHelper.ExecuteDataset(cn, CommandType.StoredProcedure,"Subtext_GetEntry_PreviousNext",p);
+					cn.Close();
+				}
+				switch(ds.Tables[0].Rows.Count)
 				{
 					case 0:
 					{
@@ -58,19 +75,21 @@ namespace Subtext.Web.UI.Controls
 						//since there is only one record, you are at an end
 						//Check EntryID to see if it is greater or less than
 						//the current ID
-						if (entries[0].DateSyndicated > entry.DateSyndicated)
+						if ((int)ds.Tables[0].Rows[0]["EntryID"] > entry.EntryID)
 						{
 							//this is the oldest blog
 							PrevLink.Visible = false;
 							LeftPipe.Visible = false;							
-							SetNav(NextLink, entries[0]);
+							SetNav(NextLink, ds.Tables[0].Rows[0]);
+							NextLink.Text = NextLink.Text + " >>";
 						}
 						else
 						{
 							//this is the latest blog
 							NextLink.Visible = false;
 							RightPipe.Visible = false;
-							SetNav(PrevLink, entries[0]);
+							SetNav(PrevLink, ds.Tables[0].Rows[0]);
+							PrevLink.Text = "<< " + PrevLink.Text;
 						}
 						break;
 					}
@@ -79,11 +98,15 @@ namespace Subtext.Web.UI.Controls
 						//two records found. The first record will be NEXT
 						//the second record will be PREVIOUS
 						//This is because the query is sorted by EntryID
-						SetNav(NextLink, entries[0]);
-						SetNav(PrevLink, entries[1]);
+						SetNav(PrevLink, ds.Tables[0].Rows[0]);
+						PrevLink.Text = "<< " + PrevLink.Text;							
+						SetNav(NextLink, ds.Tables[0].Rows[1]);
+						NextLink.Text = NextLink.Text + " >>";
 						break;
 					}
 				}
+				
+
 			}
 			else 
 			{
@@ -94,14 +117,20 @@ namespace Subtext.Web.UI.Controls
 		}
 
 
-		private void SetNav(HyperLink navLink, Entry entry)
+		private void SetNav(HyperLink navLink, DataRow dr)
 		{
-			string format = navLink.Attributes["Format"];
-			if (format == null)
-				format = "{0}";
-			
-			navLink.Text = HttpUtility.HtmlEncode(string.Format(format, entry.Title));
-			navLink.NavigateUrl = entry.FullyQualifiedUrl.ToString();
+			string linkName;
+			navLink.Text = (string)dr["EntryTitle"];
+			if (dr["EntryName"] != DBNull.Value)
+			{
+				linkName = (string)dr["EntryName"];
+			}
+			else
+			{
+				linkName = dr["EntryID"].ToString();
+			}
+			navLink.NavigateUrl = string.Format(CurrentBlog.RootUrl + "archive/{0}/{1}.aspx",((DateTime)dr["EntryDate"]).ToString("yyyy/MM/dd"),linkName);
+
 		}
 	}
 

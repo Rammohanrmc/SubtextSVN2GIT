@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Web.UI.WebControls;
 using Subtext.Framework;
@@ -24,11 +23,30 @@ using Subtext.Framework.UI.Skinning;
 
 namespace Subtext.Web.Admin.Pages
 {
-	public partial class Configure : AdminOptionsPage
+	public class Configure : AdminOptionsPage
 	{
 		// abstract out at a future point for i18n
 		private const string RES_SUCCESS = "Your configuration was successfully updated.";
 		private const string RES_FAILURE = "Configuration update failed.";
+
+		protected Subtext.Web.Admin.WebUI.AdvancedPanel Edit;
+		protected System.Web.UI.WebControls.Button lkbPost;
+		protected System.Web.UI.WebControls.TextBox txbTitle;
+		protected System.Web.UI.WebControls.TextBox txbSubtitle;
+		protected System.Web.UI.WebControls.TextBox txbAuthor;
+		protected System.Web.UI.WebControls.TextBox txbAuthorEmail;
+		protected System.Web.UI.WebControls.DropDownList ddlSkin;
+		protected System.Web.UI.WebControls.DropDownList ddlItemCount;
+		protected System.Web.UI.WebControls.DropDownList ddlTimezone;
+		protected System.Web.UI.WebControls.DropDownList ddlLangLocale;
+		protected System.Web.UI.WebControls.CheckBox ckbAllowServiceAccess;
+		protected System.Web.UI.WebControls.TextBox txbNews;
+		protected System.Web.UI.WebControls.TextBox txbUser;
+		protected System.Web.UI.WebControls.TextBox txbSecondaryCss;
+		protected Subtext.Web.Admin.WebUI.MessagePanel Messages;
+		protected Subtext.Web.Controls.HelpToolTip HelpToolTip1;
+		protected Subtext.Web.Controls.HelpToolTip HelpToolTip2;
+		//protected Subtext.Web.Admin.WebUI.Page PageContainer;
 	
 		#region Accessors
 		public CategoryType CategoryType
@@ -39,7 +57,15 @@ namespace Subtext.Web.Admin.Pages
 		
 		#endregion
 
-		protected override void BindLocalUI()
+		private void Page_Load(object sender, System.EventArgs e)
+		{		
+			if (!IsPostBack)
+			{
+				BindForm();
+			}
+		}
+
+		private void BindForm()
 		{
 			BlogInfo info = Config.CurrentBlog;
 			txbTitle.Text = info.Title;
@@ -57,18 +83,18 @@ namespace Subtext.Web.Admin.Pages
 				languageItem.Selected = true;
 			}		
 			
-			if(info.Skin.HasCustomCssText)
+			if(info.Skin.HasSecondaryText)
 			{
-				txbSecondaryCss.Text = info.Skin.CustomCssText;
+				txbSecondaryCss.Text = info.Skin.SkinCssText;
 			}
 
-			IList<SkinTemplate> templates = SkinTemplates.Instance().Templates;
+			SkinTemplate[] templates = SkinTemplates.Instance().Templates;
 			foreach(SkinTemplate template in templates)
 			{
-				ddlSkin.Items.Add(new ListItem(template.Name, template.SkinKey));
+				ddlSkin.Items.Add(new ListItem(template.SkinID, template.SkinKey));
 			}
 
-			ListItem skinItem = ddlSkin.Items.FindByValue(info.Skin.SkinKey.ToUpper(CultureInfo.InvariantCulture));
+			ListItem skinItem = ddlSkin.Items.FindByValue(info.Skin.SkinID.ToUpper(CultureInfo.InvariantCulture));
 			if(skinItem != null)
 			{
 				skinItem.Selected = true;
@@ -101,21 +127,24 @@ namespace Subtext.Web.Admin.Pages
 				info.TimeZone = Int32.Parse(ddlTimezone.SelectedItem.Value);
 				info.Subfolder = Config.CurrentBlog.Subfolder;
 				info.Host = Config.CurrentBlog.Host;
-				info.Id = Config.CurrentBlog.Id;
+				info.BlogId = Config.CurrentBlog.BlogId;
 
 				info.ItemCount = Int32.Parse(ddlItemCount.SelectedItem.Value);
 				info.Language = ddlLangLocale.SelectedItem.Value;
 				
 				info.AllowServiceAccess = ckbAllowServiceAccess.Checked;
 
-				info.Skin.CustomCssText = txbSecondaryCss.Text.Trim();
+				info.Skin.SkinCssText = txbSecondaryCss.Text.Trim();
 
 				string news = txbNews.Text.Trim();
 				info.News = news.Length == 0 ? null : news;
 
 				SkinTemplate skinTemplate = SkinTemplates.Instance().GetTemplate(ddlSkin.SelectedItem.Value);
-				info.Skin.TemplateFolder = skinTemplate.TemplateFolder;
-				info.Skin.SkinStyleSheet = skinTemplate.StyleSheet;
+				info.Skin.SkinName = skinTemplate.Skin;
+				if(skinTemplate.UseSecondaryCss)
+				{
+					info.Skin.SkinCssFile = skinTemplate.SecondaryCss;
+				}
 				Config.UpdateConfigData(info);
 
 				this.Messages.ShowMessage(RES_SUCCESS);
@@ -144,11 +173,13 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		private void InitializeComponent()
 		{    
+			this.lkbPost.Click += new System.EventHandler(this.lkbPost_Click);
+			this.Load += new System.EventHandler(this.Page_Load);
 
 		}
 		#endregion
 
-		protected void lkbPost_Click(object sender, System.EventArgs e)
+		private void lkbPost_Click(object sender, System.EventArgs e)
 		{
 			BindPost();
 		}

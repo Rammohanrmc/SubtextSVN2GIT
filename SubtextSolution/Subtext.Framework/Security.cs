@@ -27,8 +27,11 @@ namespace Subtext.Framework
 	/// <summary>
 	/// Handles blog logins/passwords/tickets
 	/// </summary>
-	public static class Security
+	public sealed class Security
 	{
+		//Can not instantiate this object
+		private Security(){}
+
 		/// <summary>
 		/// Check to see if the supplied credentials are valid for the current blog. 
 		/// If so, Set the user's FormsAuthentication Ticket This method will handle 

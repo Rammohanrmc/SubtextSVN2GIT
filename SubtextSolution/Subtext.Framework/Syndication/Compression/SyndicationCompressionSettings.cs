@@ -86,8 +86,8 @@ namespace Subtext.Framework.Syndication.Compression
 		public static SyndicationCompressionSettings GetSettings()
 		{
 			SyndicationCompressionSettings settings;
-
-            settings = (SyndicationCompressionSettings)ConfigurationManager.GetSection("SyndicationCompression");
+			
+			settings = (SyndicationCompressionSettings)ConfigurationSettings.GetConfig("SyndicationCompression");
 
 			if(settings == null)
 			{

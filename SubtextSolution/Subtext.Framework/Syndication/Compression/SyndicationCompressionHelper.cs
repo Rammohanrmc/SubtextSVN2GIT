@@ -19,8 +19,19 @@ using blowery.Web.HttpCompress;
 
 namespace Subtext.Framework.Syndication.Compression
 {
-	public static class SyndicationCompressionHelper
+	public sealed class SyndicationCompressionHelper
 	{
+		/*-- Constructors --*/
+
+		#region -- Constructor() --
+		private SyndicationCompressionHelper()
+		{
+			
+		}
+		#endregion
+
+		/*-- Static Methods --*/
+
 		#region -- GetFilterForScheme(schemes, Stream) Method --
 		public static SyndicationCompressionFilter GetFilterForScheme(string schemes, Stream contextFilter) 
 		{

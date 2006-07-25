@@ -15,9 +15,7 @@
 using System;
 using System.Configuration;
 using System.Web;
-using System.Web.Compilation;
 using System.Web.UI;
-using Subtext.Framework;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Text;
 
@@ -34,7 +32,7 @@ namespace Subtext.Common.UrlManager
 	{
 		public UrlReWriteHandlerFactory(){} //Nothing to do in the cnstr
 		
-		protected virtual HttpHandler[] GetHttpHandlers()
+		protected virtual HttpHandler[] GetHttpHandlers(HttpContext context)
 		{
 			return HandlerConfiguration.Instance().HttpHandlers;
 		}
@@ -51,23 +49,19 @@ namespace Subtext.Common.UrlManager
 		/// to exist (Passed along to other IHttpHandlerFactory's)</param>
 		/// <returns>
 		/// Returns an Instance of IHttpHandler either by loading an instance of IHttpHandler 
-		/// or by returning another IHttpHandlerFactory.GetHandler(HttpContext context, string requestType, string url, string path) 
+		/// or by returning an other 
+		/// IHttpHandlerFactory.GetHandlder(HttpContext context, string requestType, string url, string path) 
 		/// method
 		/// </returns>
 		public virtual IHttpHandler GetHandler(HttpContext context, string requestType, string url, string path)
 		{
-			if (IsRequestForAggregateBlog) //This line calls the db.
+			if((Config.CurrentBlog == null || Config.CurrentBlog.BlogId == int.MinValue) && ConfigurationSettings.AppSettings["AggregateEnabled"] == "true")
 			{
-				string handlerUrl = context.Request.ApplicationPath;
-				if (!handlerUrl.EndsWith("/"))
-					handlerUrl += "/";
-
-				handlerUrl += "Default.aspx";
-				return BuildManager.CreateInstanceFromVirtualPath(handlerUrl, typeof(Page)) as IHttpHandler;
+				return PageParser.GetCompiledPageInstance("/Default.aspx", context.Server.MapPath("~/Default.aspx"), context);
 			}
 			
 			//Get the Handlers to process. By default, we grab them from the blog.config
-			HttpHandler[] items = GetHttpHandlers();
+			HttpHandler[] items = GetHttpHandlers(context);
 			
 			//Do we have any?
 			if(items != null)
@@ -81,7 +75,7 @@ namespace Subtext.Common.UrlManager
 						switch(handler.HandlerType)
 						{
 							case HandlerType.Page:
-								return ProcessHandlerTypePage(handler, context);
+								return ProcessHandlerTypePage(handler, context, url);
 						
 							case HandlerType.Direct:
 								HandlerConfiguration.SetControls(context, handler.BlogControls);
@@ -92,7 +86,7 @@ namespace Subtext.Common.UrlManager
 								return ((IHttpHandlerFactory)handler.Instance()).GetHandler(context, requestType, url, path);
 						
 							case HandlerType.Directory:
-								return ProcessHandlerTypeDirectory(context, url);
+								return ProcessHandlerTypeDirectory(handler, context, url);
 
 							default:
 								throw new Exception("Invalid HandlerType: Unknown");
@@ -104,49 +98,36 @@ namespace Subtext.Common.UrlManager
 			//If we do not find the page, just let ASP.NET take over
 			return PageHandlerFactory.GetHandler(context, requestType, url, path);
 		}
-		
-		private static bool IsRequestForAggregateBlog
-		{
-			get
-			{
-				return (Config.CurrentBlog == null || Config.CurrentBlog.Id == NullValue.NullInt32) && ConfigurationManager.AppSettings["AggregateEnabled"] == "true";
-			}
-		}
 
-		private IHttpHandler ProcessHandlerTypePage(HttpHandler item, HttpContext context)
+		private IHttpHandler ProcessHandlerTypePage(HttpHandler item, HttpContext context, string url)
 		{
-			string pagepath = item.PageLocation;
+			string pagepath = item.FullPageLocation;
 			if(pagepath == null)
 			{
-				pagepath = HandlerConfiguration.Instance().DefaultPageLocation;
+				pagepath = HandlerConfiguration.Instance().FullPageLocation;
 			}
 			HandlerConfiguration.SetControls(context, item.BlogControls);
-			string url = context.Request.ApplicationPath;
-			if (!url.EndsWith("/"))
-				url += "/";
-			url += pagepath;
 			
-            return BuildManager.CreateInstanceFromVirtualPath(url, typeof(Page)) as IHttpHandler;
-        }
+			// When setting the debug flag to false in Web.config --- 
+			// <compilation defaultLanguage="c#" debug="false" /> 
+			// An initial request for http://domain/default.aspx will 
+			// return a compiled "default.aspx" instead of "DTP.aspx" 
+			// as it should be.
+			// The following hack fixes it.
+			if(StringHelper.EndsWith(url, "/default.aspx", ComparisonType.CaseInsensitive))
+			{
+				url = StringHelper.LeftBefore(url, "default.aspx", ComparisonType.CaseInsensitive);
+			}
+			
+			return PageParser.GetCompiledPageInstance(url, pagepath, context);
+		}
 
-		private IHttpHandler ProcessHandlerTypeDirectory(HttpContext context, string url)
+		private IHttpHandler ProcessHandlerTypeDirectory(HttpHandler item, HttpContext context, string url)
 		{
-		    //Need to strip the blog subfolder part of url.
-		    if(Config.CurrentBlog != null && Config.CurrentBlog.Subfolder != null && Config.CurrentBlog.Subfolder.Length > 0)
-		    {
-                url = StringHelper.RightAfter(url, "/" + Config.CurrentBlog.Subfolder, ComparisonType.CaseInsensitive);
-                if (context.Request.ApplicationPath.Length > 0 && context.Request.ApplicationPath != "/")
-		        {
-		            //A bit ugly, but easily fixed later.
-                    url = ("/" + context.Request.ApplicationPath + "/" + url).Replace("//", "/");
-		        }
-		        if(url.EndsWith("/"))
-		        {
-                    url += "default.aspx";
-		        }
-		    }
-		    
-            return BuildManager.CreateInstanceFromVirtualPath(url, typeof(Page)) as IHttpHandler;
+			string directory = item.DirectoryLocation;
+			string requestPath = StringHelper.RightAfter(url, directory, ComparisonType.CaseInsensitive);
+			string physicalPath = HttpContext.Current.Request.MapPath("~/" + directory + "/" + requestPath);
+			return PageParser.GetCompiledPageInstance(url, physicalPath, context);
 		}
 
 

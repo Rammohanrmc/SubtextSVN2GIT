@@ -171,9 +171,9 @@ dd
 		line-height: 1.35em;
 	}
 	
-	/* dl.blogStats */
+	/* dl.BlogStats */
 	
-	dl.blogStats 
+	dl.BlogStats 
 	{
 		display: none;
 	}
@@ -550,17 +550,14 @@ dd
 	
 /* /table.Layout td.c3 */
 
-div.debug
+a.printIcon
 {
-	display: none;
+	background: url('images/printer.gif') no-repeat top left;
+	padding-bottom: 4px;
 }
 
-div.previousNext a
+a.printIcon span
 {
-	color: #9F1414;	
-}
-
-div.previousNext a:hover
-{
-	color: #7A794D;
+	background: url('images/printer.gif') no-repeat top left;
+	padding-left: 17px;
 }

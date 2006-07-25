@@ -33,13 +33,12 @@ namespace Subtext.Web.UI.Pages
 	public class SubtextMasterPage : System.Web.UI.Page
 	{
 		#region Declared Controls in DTP.aspx
-		private static readonly ScriptElementCollectionRenderer scriptRenderer = new ScriptElementCollectionRenderer();
-		private static readonly StyleSheetElementCollectionRenderer styleRenderer = new StyleSheetElementCollectionRenderer();
+		private static readonly ScriptElementCollectionRenderer __scriptRenderer = new ScriptElementCollectionRenderer();
+		private static readonly StyleSheetElementCollectionRenderer __styleRenderer = new StyleSheetElementCollectionRenderer();
 		protected System.Web.UI.WebControls.Literal pageTitle;
 		protected System.Web.UI.WebControls.Literal docTypeDeclaration;
 		protected System.Web.UI.HtmlControls.HtmlGenericControl MainStyle;
 		protected System.Web.UI.HtmlControls.HtmlGenericControl SecondaryCss;
-		protected System.Web.UI.HtmlControls.HtmlGenericControl CustomCss;
 		protected System.Web.UI.HtmlControls.HtmlGenericControl RSSLink;
 		protected System.Web.UI.HtmlControls.HtmlGenericControl AtomLink;
 		protected System.Web.UI.WebControls.PlaceHolder CenterBodyControl;
@@ -58,40 +57,35 @@ namespace Subtext.Web.UI.Pages
 		{
 			CurrentBlog = Config.CurrentBlog;
 
-			string skinFolder = Config.CurrentBlog.Skin.TemplateFolder;
+			string skin = Globals.Skin(Context);
+
+			SpecifyDocType();
 
 			string[] controls = Subtext.Common.UrlManager.HandlerConfiguration.GetControls(Context);
-            if (controls != null)
-            {
-                foreach (string control in controls)
-                {
-                    Control c = LoadControl(string.Format(ControlLocation, skinFolder, control));
-                    c.ID = control.Replace(".", "_");
-                    CenterBodyControl.Controls.Add(c);
-                }
-            }
+			foreach(string control in controls)
+			{
+				Control c = LoadControl(string.Format(ControlLocation, skin, control));
+				c.ID = control;
+				CenterBodyControl.Controls.Add(c);
+			}
 
-			string path = (HttpContext.Current.Request.ApplicationPath + "/skins/" + skinFolder + "/").Replace("//","/");
+			string path = (HttpContext.Current.Request.ApplicationPath + "/skins/" + skin + "/").Replace("//","/");
 
 			MainStyle.Attributes.Add("href", path + "style.css");
 
-			if(CurrentBlog.Skin.HasStyleSheet)
+			if(CurrentBlog.Skin.HasSecondaryFile)
 			{
-				SecondaryCss.Attributes.Add("href", path + CurrentBlog.Skin.SkinStyleSheet);
+				SecondaryCss.Attributes.Add("href", path + CurrentBlog.Skin.SkinCssFile);
 			}
-			else
+			else if(CurrentBlog.Skin.HasSecondaryText)
 			{
-				SecondaryCss.Visible = false;
-			}
-			
-			if(CurrentBlog.Skin.HasCustomCssText)
-			{
-				CustomCss.Attributes.Add("href", CurrentBlog.RootUrl + "customcss.aspx");
+				SecondaryCss.Attributes.Add("href", CurrentBlog.RootUrl  + "customcss.aspx");
 			}
 			else
 			{
 				//MAC IE does not like the empy CSS file..plus its a waste :)
-				CustomCss.Visible = false;
+				SecondaryCss.Visible = false;
+
 			}
 			
 			if(RSSLink != null)
@@ -107,15 +101,37 @@ namespace Subtext.Web.UI.Pages
 			// if specified, add script elements
 			if (scripts != null)
 			{
-				scripts.Text = scriptRenderer.RenderScriptElementCollection(skinFolder);
+				scripts.Text = __scriptRenderer.RenderScriptElementCollection(skin);
 			}
 
 			if(styles != null)
 			{
-				styles.Text = styleRenderer.RenderStyleElementCollection(Config.CurrentBlog.Skin.SkinKey);
+				styles.Text = __styleRenderer.RenderStyleElementCollection(skin);
 			}
 		}
 
+		//	Renders the DocType tag and specifies an xmlns for the HTML 
+		//	tag if using XHTML.
+		private void SpecifyDocType()
+		{
+			if(docTypeDeclaration != null)
+			{
+				docTypeDeclaration.Text = string.Empty;
+				if(Config.Settings.DocTypeDeclaration != null && Config.Settings.DocTypeDeclaration.Length > 0)
+				{
+					docTypeDeclaration.Text += "<" + Config.Settings.DocTypeDeclaration + ">" + Environment.NewLine;
+					docTypeDeclaration.Text += "<html";
+					
+					if(Config.Settings.UseXHTML)
+					{
+						docTypeDeclaration.Text += " xmlns=\"http://www.w3.org/1999/xhtml\"";
+						docTypeDeclaration.Text += String.Format(" lang=\"{0}\"", Config.CurrentBlog.LanguageCode);
+						docTypeDeclaration.Text += String.Format(" xml:lang=\"{0}\"", Config.CurrentBlog.LanguageCode);
+					}
+					docTypeDeclaration.Text += ">";
+				}
+			}
+		}
 
 		/// <summary>
 		/// Before rendering, turns off ViewState again (why? not sure),  
@@ -204,15 +220,15 @@ namespace Subtext.Web.UI.Pages
 				return (applicationPath == "/" ? String.Empty : applicationPath) + "/Skins/" + skinName + "/";
 			}
 
-			public string RenderScriptElementCollection(string skinKey)
+			public string RenderScriptElementCollection(string skinName)
 			{
 				string result = String.Empty;
 
 				SkinTemplates skinTemplates = SkinTemplates.Instance();
-				SkinTemplate skinTemplate = skinTemplates.GetTemplate(skinKey);
+				SkinTemplate skinTemplate = skinTemplates.GetTemplate(skinName);
 				if (skinTemplate != null && skinTemplate.Scripts != null)
 				{
-					string skinPath = GetSkinPath(skinKey);
+					string skinPath = GetSkinPath(skinName);
 					foreach(Script script in skinTemplate.Scripts)
 					{
 						result += RenderScriptElement(skinPath, script);
@@ -236,30 +252,16 @@ namespace Subtext.Web.UI.Pages
 
 			private static string RenderStyleElement(string skinPath, Style style)
 			{
-                string element = string.Empty;
-			    
-                if (!String.IsNullOrEmpty(style.Conditional))
-                {
-                    element = string.Format("<!--[{0}]>{1}", style.Conditional, Environment.NewLine);
-                }
-			    
-                element += "<link";
-                    if (style.Media != null && style.Media.Length > 0)
-                        element += RenderStyleAttribute("media", style.Media);
-
-				element +=
+				string element = "<link";
+				if(style.Media != null && style.Media.Length > 0)
+					element += RenderStyleAttribute("media", style.Media);
+ 
+				return element +
 					RenderStyleAttribute("type", "text/css") + 
 					RenderStyleAttribute("rel", "stylesheet") + 
 					RenderStyleAttribute("title", style.Title) + 
 					RenderStyleAttribute("href", GetStylesheetHrefPath(skinPath, style)) + //TODO: Look at this line again.
 					"></link>" + Environment.NewLine;
-
-                if (!String.IsNullOrEmpty(style.Conditional))
-                {
-                    element += "<![endif]-->" + Environment.NewLine;
-                }
-			    
-			    return element;
 			}
 
 			public static string GetStylesheetHrefPath(string skinPath, Style style)

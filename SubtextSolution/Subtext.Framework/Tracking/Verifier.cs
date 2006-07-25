@@ -41,8 +41,12 @@ namespace Subtext.Framework.Tracking
 	/// <summary>
 	/// Used to verify that a trackback or pingback source actually contains a link to this site.
 	/// </summary>
-	public static class Verifier
+	public sealed class Verifier
 	{
+		private Verifier()
+		{
+		}
+		
 		/// <summary>
 		/// Checks that the contents of the source url contains the target URL.
 		/// </summary>

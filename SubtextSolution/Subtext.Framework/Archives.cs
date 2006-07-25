@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using Subtext.Framework.Components;
 using Subtext.Framework.Providers;
 
@@ -24,13 +23,17 @@ namespace Subtext.Framework
 	/// Static class used to get collections of archived posts 
 	/// (by month and year) from the data provider.
 	/// </summary>
-	public static class Archives
+	public sealed class Archives
 	{
+		private Archives()
+		{
+		}
+
 		/// <summary>
 		/// Gets archived posts by month.
 		/// </summary>
 		/// <returns></returns>
-		public static ICollection<ArchiveCount> GetPostsByMonthArchive()
+		public static ArchiveCountCollection GetPostsByMonthArchive()
 		{
 			return ObjectProvider.Instance().GetPostsByMonthArchive();
 		}
@@ -39,7 +42,7 @@ namespace Subtext.Framework
 		/// Gets archived posts by year.
 		/// </summary>
 		/// <returns></returns>
-        public static ICollection<ArchiveCount> GetPostsByYearArchive()
+		public static ArchiveCountCollection GetPostsByYearArchive()
 		{
 			return ObjectProvider.Instance().GetPostsByYearArchive();
 		}

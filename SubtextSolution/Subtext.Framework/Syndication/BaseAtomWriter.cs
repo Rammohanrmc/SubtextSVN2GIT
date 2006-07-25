@@ -23,7 +23,7 @@ using Subtext.Framework.Tracking;
 namespace Subtext.Framework.Syndication
 {
 	/// <summary>
-	/// Generates an Atom feed.
+	/// Generates RSS
 	/// </summary>
 	public class BaseAtomWriter : BaseSyndicationWriter
 	{
@@ -184,9 +184,9 @@ namespace Subtext.Framework.Syndication
 					this.clientHasAllFeedItems = false;
 					
 					//Update the latest publish date.
-					if(entry.DateSyndicated > latestPublishDate)
+					if(entry.DateSyndicated > base.latestPublishDate)
 					{
-						latestPublishDate = entry.DateSyndicated;
+						base.latestPublishDate = entry.DateSyndicated;
 					}
 				}
 			}
@@ -231,7 +231,7 @@ namespace Subtext.Framework.Syndication
 					string.Format
 					("{0}{1}", //tag def
 						entry.SyndicateDescriptionOnly ? entry.Description : entry.Body,  //use desc or full post
-						(UseAggBugs && settings.Tracking.EnableAggBugs) ? TrackingUrls.AggBugImage(urlFormats.AggBugkUrl(entry.Id)) : null //use aggbugs
+						(UseAggBugs && settings.Tracking.EnableAggBugs) ? TrackingUrls.AggBugImage(urlFormats.AggBugkUrl(entry.EntryID)) : null //use aggbugs
 					)
 				);		
 				this.WriteEndElement();
@@ -239,15 +239,15 @@ namespace Subtext.Framework.Syndication
 			if(AllowComments && info.CommentsEnabled && entry.AllowComments && !entry.CommentingClosed)
 			{
 				//optional for CommentApi Post location
-				this.WriteElementString("wfw:comment", urlFormats.CommentApiUrl(entry.Id));
+				this.WriteElementString("wfw:comment", urlFormats.CommentApiUrl(entry.EntryID));
 				//optional url for comments
 				//this.WriteElementString("comments",entry.Link + "#feedback");
 				//optional comment count
 				this.WriteElementString("slash:comments", entry.FeedBackCount.ToString(CultureInfo.InvariantCulture));
 				//optional commentRss feed location
-				this.WriteElementString("wfw:commentRss", urlFormats.CommentRssUrl(entry.Id));
+				this.WriteElementString("wfw:commentRss", urlFormats.CommentRssUrl(entry.EntryID));
 				//optional trackback location
-				this.WriteElementString("trackback:ping", urlFormats.TrackBackUrl(entry.Id));
+				this.WriteElementString("trackback:ping", urlFormats.TrackBackUrl(entry.EntryID));
 				//core 
 			}
 		}

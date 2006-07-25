@@ -22,8 +22,12 @@ namespace Subtext.Web.UI
 	/// <summary>
 	/// Summary description for Globals.
 	/// </summary>
-	public static class Globals
+	public sealed class Globals
 	{
+		private Globals()
+		{
+		}
+
 		/// <summary>
 		/// Returns the current skin for the current context.
 		/// </summary>
@@ -40,11 +44,11 @@ namespace Subtext.Web.UI
 		/// <returns></returns>
 		public static string Skin(HttpContext context)
 		{
-			if(Config.CurrentBlog.Skin.TemplateFolder == null)
+			if(Config.CurrentBlog.Skin.SkinName == null)
 			{
 				Config.CurrentBlog.Skin = SkinConfig.GetDefaultSkin();
 			}
-			return Config.CurrentBlog.Skin.TemplateFolder;
+			return Config.CurrentBlog.Skin.SkinName;
 		}
 
 		private static readonly string BlogPageTitle = "BlogPageTitle";

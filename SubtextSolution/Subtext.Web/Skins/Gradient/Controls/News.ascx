@@ -1,3 +1,7 @@
 <%@ Control Language="c#" Inherits="Subtext.Web.UI.Controls.News" %>
-<strong><a name="top">News Flash</a></strong> - <asp:Literal ID="NewsItem" Runat = "server" />
-	
+<div id="aboutMe" class="box">
+	<div class="innerBox">
+		<h3>About</h3>
+		<p><asp:Literal ID="NewsItem" Runat = "server" /></p>
+	</div>
+</div>

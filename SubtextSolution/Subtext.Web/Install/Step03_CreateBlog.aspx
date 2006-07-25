@@ -11,7 +11,7 @@
 			<strong>Create a Blog</strong>
 		</li>
 	</ol>
-	<p>
+	<P>
 		<table border="0">
 			<tr valign="top">
 				<td>
@@ -52,5 +52,5 @@
 				</td>
 			</tr>
 		</table>
-	</p>
+	</P>
 </MP:MasterPage>

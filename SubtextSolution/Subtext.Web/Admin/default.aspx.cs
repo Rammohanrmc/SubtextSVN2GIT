@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using Subtext.Framework.Configuration;
 
 namespace Subtext.Web.Admin.Pages
 {
@@ -25,7 +24,7 @@ namespace Subtext.Web.Admin.Pages
 	{
 		private void Page_Load(object sender, System.EventArgs e)
 		{
-			Response.Redirect(Config.CurrentBlog.AdminDirectoryVirtualUrl + "/EditPosts.aspx");
+			Response.Redirect("EditPosts.aspx");
 		}
 
 		#region Web Form Designer generated code

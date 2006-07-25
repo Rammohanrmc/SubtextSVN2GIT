@@ -29,9 +29,10 @@ namespace Subtext.Framework.Util
 	/// Class used to provide various transforms such as the 
 	/// Emoticon transforms.
 	/// </summary>
-	public static class Transform
+	public sealed class Transform
 	{
 		private static ILog Log = new Log();
+		private Transform() {}
 
 		/// <summary>
 		/// Transforms emoticons into image references based on the 
@@ -73,8 +74,6 @@ namespace Subtext.Framework.Util
 
 		private static ArrayList LoadTransformFile(string filename) 
 		{
-            if (filename == null)
-                throw new ArgumentNullException("filename", "The transform filename is null.");
 			string cacheKey = "transformTable-" + filename;
 			ArrayList tranforms;
 			string filenameOfTransformFile;
@@ -97,7 +96,7 @@ namespace Subtext.Framework.Util
 				{
 					filenameOfTransformFile = context.Request.MapPath("~/" + filename);
 				}
-				catch(System.ArgumentNullException)
+				catch(System.NullReferenceException)
 				{
 					//This exception can be thrown from the bowels of MapPath...
 					return null;

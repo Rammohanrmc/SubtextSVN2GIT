@@ -14,20 +14,21 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using Subtext.Framework.Components;
 using Subtext.Framework.Providers;
 
 namespace Subtext.Framework
-{ 
+{
 	/// <summary>
 	/// Summary description for Links.
 	/// </summary>
-	public static class Links
+	public sealed class Links
 	{
+		private Links(){}
+
 		#region Paged Links
 
-        public static IPagedCollection<Link> GetPagedLinks(int categoryTypeID, int pageIndex, int pageSize, bool sortDescending)
+		public static PagedLinkCollection GetPagedLinks(int categoryTypeID, int pageIndex, int pageSize, bool sortDescending)
 		{
 			return ObjectProvider.Instance().GetPagedLinks(categoryTypeID,pageIndex,pageSize,sortDescending);
 		}
@@ -36,14 +37,14 @@ namespace Subtext.Framework
 
 		#region LinkCollection
 
-        public static ICollection<Link> GetLinkCollectionByPostID(int PostID)
+		public static LinkCollection GetLinkCollectionByPostID(int PostID)
 		{
 			return ObjectProvider.Instance().GetLinkCollectionByPostID(PostID);
 		}
 
-		public static ICollection<Link> GetLinksByCategoryID(int catID, bool activeOnly)
+		public static LinkCollection GetLinksByCategoryID(int catID, bool ActiveOnly)
 		{
-			return ObjectProvider.Instance().GetLinksByCategoryID(catID, activeOnly);
+			return ObjectProvider.Instance().GetLinksByCategoryID(catID,ActiveOnly);
 		}
 
 		#endregion
@@ -52,19 +53,19 @@ namespace Subtext.Framework
 
 		public static Link GetSingleLink(int linkID)
 		{
-			return ObjectProvider.Instance().GetLink(linkID);
+			return ObjectProvider.Instance().GetSingleLink(linkID);
 		}
 
 		#endregion
 
-        #region ICollection<LinkCategory>
+		#region LinkCategoryCollection
 
-        public static ICollection<LinkCategory> GetCategories(CategoryType catType, ActiveFilter status)
+		public static LinkCategoryCollection GetCategories(CategoryType catType, bool ActiveOnly)
 		{
-            return ObjectProvider.Instance().GetCategories(catType, status == ActiveFilter.ActiveOnly);
+			return ObjectProvider.Instance().GetCategories(catType, ActiveOnly);
 		}
 
-        public static ICollection<LinkCategory> GetActiveCategories()
+		public static LinkCategoryCollection GetActiveCategories()
 		{
 			return ObjectProvider.Instance().GetActiveCategories();
 		}
@@ -121,14 +122,9 @@ namespace Subtext.Framework
 			return ObjectProvider.Instance().DeleteLink(LinkID);
 		}
 
-		#endregion	
+		#endregion
+
+		
 	}
-    
-    public enum ActiveFilter
-    {
-        None,
-        ActiveOnly,
-        InactiveOnly,
-    }
 }
 

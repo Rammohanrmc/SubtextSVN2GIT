@@ -26,9 +26,14 @@ namespace Subtext.Framework.Tracking
 	/// <summary>
 	/// Summary description for TrackEntry.
 	/// </summary>
-	public static class EntryTracker
+	public sealed class EntryTracker
 	{
 		static Log Log = new Log();
+
+		private EntryTracker()
+		{
+
+		}
 
 		static EntryTracker()
 		{

@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Collections.ObjectModel;
 
 namespace Subtext.Framework.Components
 {
@@ -22,18 +21,15 @@ namespace Subtext.Framework.Components
 	/// Represents a collection of <see cref="Entry">Entry</see> Components.
 	/// </summary>
 	[Serializable]
-	public class EntryDay : Collection<Entry>
+	public class EntryDay: EntryCollection
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EntryDay">EntryDay</see> class.
 		/// </summary>
-		public EntryDay() : base()
+		public EntryDay() 
 		{
 		}
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EntryDay">EntryDay</see> class.
-        /// </summary>
 		public EntryDay(DateTime dt)
 		{
 			BlogDay = dt;

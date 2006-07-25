@@ -14,13 +14,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Data;
 using Subtext.Extensibility;
 using Subtext.Extensibility.Providers;
 using Subtext.Framework.Components;
 using Subtext.Framework.Data;
-using System.Configuration.Provider;
 
 namespace Subtext.Framework.Providers
 {
@@ -29,29 +27,17 @@ namespace Subtext.Framework.Providers
 	/// Subtext, then this provider is used to configure the underlying database 
 	/// used. One example of a class that implements this provider is the <see cref="SqlDataProvider"/>.
 	/// </summary>
-    public abstract class DbProvider : ProviderBase
+	public abstract class DbProvider : ProviderBase
 	{
-		private static DbProvider provider = null;
-		private static GenericProviderCollection<DbProvider> providers = ProviderConfigurationHelper.LoadProviderCollection<DbProvider>("Database", out provider);
+		string _name;
 
 		/// <summary>
-		/// Returns the currently configured DbProvider.
+		/// Returns the configured concrete instance of a <see cref="DbProvider"/>.
 		/// </summary>
 		/// <returns></returns>
 		public static DbProvider Instance()
 		{
-			return provider;
-		}
-
-		/// <summary>
-		/// Returns all the configured DbProvider.
-		/// </summary>
-		public static GenericProviderCollection<DbProvider> Providers
-		{
-			get
-			{
-				return providers;
-			}
+			return (DbProvider)ProviderBase.Instance("Database");
 		}
 
 		/// <summary>
@@ -61,8 +47,20 @@ namespace Subtext.Framework.Providers
 		/// <param name="configValue">Config value.</param>
 		public override void Initialize(string name, System.Collections.Specialized.NameValueCollection configValue)
 		{
-            _connectionString = ProviderConfigurationHelper.GetSettingValue("connectionStringName", configValue);
-            base.Initialize(name, configValue);
+			_name = name;
+			_connectionString = GetSettingValue("connectionString", configValue);
+		}
+
+		/// <summary>
+		/// Returns the friendly name of the provider when the provider is initialized.
+		/// </summary>
+		/// <value></value>
+		public override string Name
+		{
+			get
+			{
+				return _name;
+			}
 		}
 
 		private string _connectionString;
@@ -72,7 +70,6 @@ namespace Subtext.Framework.Providers
 		/// <value></value>
 		public string ConnectionString
 		{
-			//TODO: Make this protected.
 			get {return this._connectionString;}
 			set {this._connectionString = value;}
 		}
@@ -92,42 +89,35 @@ namespace Subtext.Framework.Providers
 		public abstract bool UpdateHost(HostInfo host);
 		#endregion Host Data
 
-        #region Aggregate HomePage Data
-        /// <summary>
-        /// Returns data displayed on an aggregate blog's home page.
-        /// </summary>
-        /// <returns></returns>
-	    public abstract DataSet GetAggregateHomePageData(int groupId);
-
-        public abstract DataTable GetAggregateRecentPosts(int groupId);
-        
-	    /// <summary>
-	    /// Returns a data set with the previous and next entries.
-	    /// </summary>
-	    /// <param name="entryId"></param>
-	    /// <returns></returns>
-	    public abstract IDataReader GetPreviousNext(int entryId);
-        #endregion
-
-        #region Get Blog Data
-        /// <summary>
+		#region Get Blog Data
+		/// <summary>
 		/// Returns the specified number of blog entries
 		/// </summary>
-		/// <param name="itemCount"></param>
-		/// <param name="postType"></param>
-		/// <param name="postConfiguration"></param>
-        /// <param name="includeCategories">Whether or not to include categories</param>
+		/// <param name="ItemCount"></param>
+		/// <param name="pt"></param>
+		/// <param name="pc"></param>
 		/// <returns></returns>
-		public abstract IDataReader GetConditionalEntries(int itemCount, PostType postType, PostConfig postConfiguration, bool includeCategories);
-		public abstract IDataReader GetEntriesByDateRange(DateTime start, DateTime stop, PostType postType, bool activeOnly);
+		public abstract IDataReader GetConditionalEntries(int ItemCount, PostType pt, PostConfig pc);
+		public abstract IDataReader GetEntriesByDateRangle(DateTime start, DateTime stop, PostType postType, bool ActiveOnly);
 
-		public abstract IDataReader GetFeedBack(int postId);
-        public abstract IDataReader GetEntryDayReader(DateTime dt);
+		//Maybe under the hood only one call here? 
+		//Good Canidate for service/dataset? 
+		//Used a lot, maybe it should be both dataset and DataReader?
+		public abstract IDataReader GetRecentPosts(int ItemCount, PostType postType, bool ActiveOnly);
+		public abstract IDataReader GetRecentPosts(int ItemCount, PostType postType, bool ActiveOnly, DateTime DateUpdated);
 
-		//Should Power both List<EntryDay> and EntryCollection
+		public abstract IDataReader GetFeedBack(int PostID);
+
+		public abstract IDataReader GetSingleDay(DateTime dt);
+
+		//move other EntryDay Helper
+		public abstract IDataReader GetPostsByCategoryID(int ItemCount, int catID);
+		public abstract IDataReader GetRecentDayPosts(int ItemCount, bool ActiveOnly);
+
+		//Should Power both EntryDayCollection and EntryCollection
 		public abstract IDataReader GetPostCollectionByMonth(int month, int year);
 		
-		public abstract IDataReader GetEntriesByCategory(int itemCount, int catID, bool activeOnly);
+		public abstract IDataReader GetEntriesByCategory(int ItemCount, int catID, bool ActiveOnly);
 		
 		/// <summary>
 		/// Searches the data store for the first comment with a 
@@ -136,75 +126,48 @@ namespace Subtext.Framework.Providers
 		/// <param name="checksumHash">Checksum hash.</param>
 		/// <returns></returns>
 		public abstract IDataReader GetCommentByChecksumHash(string checksumHash);
-	    
-	    /// <summary>
-	    /// Returns a Data Reader pointing to the entry specified by the entry id.
-	    /// </summary>
-	    /// <param name="id"></param>
-	    /// <param name="activeOnly"></param>
-	    /// <param name="includeCategories"></param>
-	    /// <returns></returns>
-        public abstract IDataReader GetEntryReader(int id, bool activeOnly, bool includeCategories);
-        
-	    /// <summary>
-        /// Returns a Data Reader pointing to the entry specified by the entry name.
-        /// </summary>
-        /// <param name="entryName">Url friendly entry name.</param>
-        /// <param name="activeOnly"></param>
-        /// <param name="includeCategories"></param>
-        /// <returns></returns>
-	    public abstract IDataReader GetEntryReader(string entryName, bool activeOnly, bool includeCategories);
+		public abstract IDataReader GetEntry(int postID, bool ActiveOnly);
+		public abstract IDataReader GetEntry(string EntryName, bool ActiveOnly);
+		public abstract IDataReader GetCategoryEntry(int postID, bool ActiveOnly);
+
+		public abstract DataSet GetRecentPostsWithCategories(int ItemCount, bool ActiveOnly);
 		#endregion
 
 		#region Update Blog Data
-	    /// <summary>
-	    /// Deletes an entry with the specified id.
-	    /// </summary>
-	    /// <param name="id"></param>
-	    /// <returns></returns>
-		public abstract bool DeleteEntry(int id);
-	    
-	    /// <summary>
-	    /// Adds a new entry in the database.
-	    /// </summary>
-	    /// <param name="entry"></param>
-	    /// <returns></returns>
-		public abstract int InsertEntry(Entry entry);
-		
-	    /// <summary>
-	    /// Updates an existing entry.
-	    /// </summary>
-	    /// <param name="entry"></param>
-	    /// <returns></returns>
-	    public abstract bool UpdateEntry(Entry entry);
-		
-	    /// <summary>
-	    /// Adds a ping/trackback of an entry in the database.
-	    /// </summary>
-	    /// <param name="entry"></param>
-	    /// <returns></returns>
-	    public abstract int InsertPingTrackEntry(Entry entry); //Create and add check for PostType. 
+		public abstract bool DeleteEntry(int EntryID);
+
+		//Should just be Entry and check is CategoryEntry?
+		public abstract int InsertCategoryEntry(CategoryEntry ce);
+		public abstract bool UpdateCategoryEntry(CategoryEntry ce);
+
+		public abstract int InsertEntry(Entry entry); //change to create?
+		public abstract bool UpdateEntry(Entry entry);
+
+		public abstract int InsertPingTrackEntry(Entry entry); //Create and add check for PostType. 
 		#endregion
 
 		#region Links
 
-		public abstract IDataReader GetLinkCollectionByPostID(int postId);
+		public abstract IDataReader GetLinkCollectionByPostID(int PostID);
 
-		public abstract bool SetEntryCategoryList(int postId, int[] categoryIds);
+		//use charlist_to_table
+		public abstract bool AddEntryToCategories(int PostID, LinkCollection lc);
 
-		public abstract bool DeleteLink(int linkId);
+		public abstract bool SetEntryCategoryList(int PostID, int[] Categories);
 
-		public abstract IDataReader GetLinkReader(int linkID);
+		public abstract bool DeleteLink(int LinkID);
+
+		public abstract IDataReader GetSingleLink(int linkID);
 
 		public abstract int InsertLink(Link link); //Create?
 
 		public abstract bool UpdateLink(Link link); 
 
-		public abstract IDataReader GetCategories(CategoryType catType, bool activeOnly);
+		public abstract IDataReader GetCategories(CategoryType catType, bool ActiveOnly);
 
 		public abstract DataSet GetActiveCategories(); //Rename, since it includes LinkCollection as well
 
-		public abstract IDataReader GetLinksByCategoryID(int catID, bool activeOnly); //Add another method for by name
+		public abstract IDataReader GetLinksByCategoryID(int catID, bool ActiveOnly); //Add another method for by name
 
 
 
@@ -212,8 +175,8 @@ namespace Subtext.Framework.Providers
 
 		#region Categories
 
-		public abstract bool DeleteCategory(int catId);
-		public abstract IDataReader GetLinkCategory(int catID, bool isActive);
+		public abstract bool DeleteCategory(int CatID);
+		public abstract IDataReader GetLinkCategory(int catID, bool IsActive);
 		public abstract IDataReader GetLinkCategory(string categoryName, bool IsActive);
 
 		public abstract bool UpdateCategory(LinkCategory lc);
@@ -267,10 +230,10 @@ namespace Subtext.Framework.Providers
 		#endregion
 
 		#region KeyWord
-		public abstract IDataReader GetKeyWord(int keyWordID);
+		public abstract IDataReader GetKeyWord(int KeyWordID);
 		public abstract IDataReader GetPagedKeyWords(int pageIndex, int pageSize,bool sortDescending);
 
-		public abstract bool DeleteKeyWord(int keywordId);
+		public abstract bool DeleteKeyWord(int KeyWordID);
 
 		public abstract int InsertKeyWord(KeyWord kw);
 
@@ -283,17 +246,20 @@ namespace Subtext.Framework.Providers
 		#region Statistics
 
 		public abstract bool TrackEntry(EntryView ev);
-		public abstract bool TrackEntry(IEnumerable<EntryView> evc);
+		public abstract bool TrackEntry(EntryViewCollection evc);
+
+		//		bool TrackPages(Referrer[] _feferrers);
+		//		bool TrackPage(PageType PageType, int PostID, string Referral);
 
 		#endregion
 
 		#region Images
 
-		public abstract IDataReader GetImagesByCategoryID(int catID, bool activeOnly);
-		public abstract IDataReader GetImage(int imageID, bool activeOnly);
+		public abstract IDataReader GetImagesByCategoryID(int catID, bool ActiveOnly);
+		public abstract IDataReader GetSingleImage(int imageID, bool ActiveOnly);
 
-		public abstract int InsertImage(Image image);
-		public abstract bool UpdateImage(Image image);
+		public abstract int InsertImage(Image _image);
+		public abstract bool UpdateImage(Image _image);
 		public abstract bool DeleteImage(int imageID);
 
 		#endregion
@@ -353,3 +319,4 @@ namespace Subtext.Framework.Providers
 		#endregion
 	}
 }
+ 

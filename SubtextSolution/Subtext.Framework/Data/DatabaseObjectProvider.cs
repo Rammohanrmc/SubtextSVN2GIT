@@ -14,7 +14,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
 using Subtext.Extensibility;
 using Subtext.Framework.Components;
@@ -22,6 +22,7 @@ using Subtext.Framework.Configuration;
 using Subtext.Framework.Format;
 using Subtext.Framework.Providers;
 using Subtext.Framework.Text;
+using Subtext.Framework.Tracking;
 using Subtext.Framework.Util;
 
 namespace Subtext.Framework.Data
@@ -33,6 +34,7 @@ namespace Subtext.Framework.Data
 	/// </summary>
 	public class DatabaseObjectProvider : ObjectProvider
 	{	
+		string _name;
 
 		#region Host
 		/// <summary>
@@ -68,18 +70,18 @@ namespace Subtext.Framework.Data
 
 		#region Blogs
 		/// <summary>
-		/// Gets a pageable <see cref="IList"/> of <see cref="BlogInfo"/> instances.
+		/// Gets a pageable <see cref="BlogInfoCollection"/> of <see cref="BlogInfo"/> instances.
 		/// </summary>
 		/// <param name="pageIndex">Page index.</param>
 		/// <param name="pageSize">Size of the page.</param>
 		/// <param name="sortDescending">Sort descending.</param>
 		/// <returns></returns>
-        public override PagedCollection<BlogInfo> GetPagedBlogs(int pageIndex, int pageSize, bool sortDescending)
+		public override BlogInfoCollection GetPagedBlogs(int pageIndex, int pageSize, bool sortDescending)
 		{
 			IDataReader reader = DbProvider.Instance().GetPagedBlogs(pageIndex, pageSize, sortDescending);
 			try
 			{
-                PagedCollection<BlogInfo> pec = new PagedCollection<BlogInfo>();
+				BlogInfoCollection pec = new BlogInfoCollection();
 				while(reader.Read())
 				{
 					pec.Add(DataHelper.LoadConfigData(reader));
@@ -116,17 +118,17 @@ namespace Subtext.Framework.Data
 		}
 
 		/// <summary>
-        /// Returns <see cref="IPagedCollection"/> with the blogs that 
+		/// Returns <see cref="BlogInfoCollection"/> with the blogs that 
 		/// have the specified host.
 		/// </summary>
 		/// <param name="host">Host.</param>
 		/// <returns></returns>
-        public override IPagedCollection<BlogInfo> GetBlogsByHost(string host)
+		public override BlogInfoCollection GetBlogsByHost(string host)
 		{
 			IDataReader reader = DbProvider.Instance().GetBlogsByHost(host);
 			try
 			{
-                IPagedCollection<BlogInfo> pec = new PagedCollection<BlogInfo>();
+				BlogInfoCollection pec = new BlogInfoCollection();
 				while(reader.Read())
 				{
 					pec.Add(DataHelper.LoadConfigData(reader));
@@ -156,15 +158,15 @@ namespace Subtext.Framework.Data
 		/// <param name="pageSize">Size of the page.</param>
 		/// <param name="sortDescending">if set to <c>true</c> [sort descending].</param>
 		/// <returns></returns>
-        public override IPagedCollection<Entry> GetPagedEntries(PostType postType, int categoryID, int pageIndex, int pageSize, bool sortDescending)
+		public override PagedEntryCollection GetPagedEntries(PostType postType, int categoryID, int pageIndex, int pageSize, bool sortDescending)
 		{
 			IDataReader reader = DbProvider.Instance().GetPagedEntries(postType,categoryID,pageIndex,pageSize,sortDescending);
 			try
 			{
-                PagedCollection<Entry> pec = new PagedCollection<Entry>();
+				PagedEntryCollection pec = new PagedEntryCollection();
 				while(reader.Read())
 				{
-					pec.Add(DataHelper.LoadEntryStatsView(reader));
+					pec.Add(DataHelper.LoadSingleEntryStatsView(reader));
 				}
 				reader.NextResult();
 				pec.MaxItems = DataHelper.GetMaxItems(reader);
@@ -184,13 +186,13 @@ namespace Subtext.Framework.Data
 		/// <param name="pageSize">Size of the page.</param>
 		/// <param name="sortDescending">if set to <c>true</c> [sort descending].</param>
 		/// <returns></returns>
-        public override IPagedCollection<Entry> GetPagedFeedback(int pageIndex, int pageSize, bool sortDescending)
+		public override PagedEntryCollection GetPagedFeedback(int pageIndex, int pageSize, bool sortDescending)
 		{
 			IDataReader reader = DbProvider.Instance().GetPagedFeedback(pageIndex, pageSize, sortDescending);
-            IPagedCollection<Entry> pec = new PagedCollection<Entry>();
+			PagedEntryCollection pec = new PagedEntryCollection();
 			while(reader.Read())
 			{
-				pec.Add(DataHelper.LoadEntry(reader));
+				pec.Add(DataHelper.LoadSingleEntry(reader));
 			}
 			reader.NextResult();
 			pec.MaxItems = DataHelper.GetMaxItems(reader);
@@ -201,15 +203,15 @@ namespace Subtext.Framework.Data
 
 		#region EntryDays
 
-		public override EntryDay GetEntryDay(DateTime dt)
+		public override EntryDay GetSingleDay(DateTime dt)
 		{
-			IDataReader reader = DbProvider.Instance().GetEntryDayReader(dt);
+			IDataReader reader = DbProvider.Instance().GetSingleDay(dt);
 			try
 			{
 				EntryDay ed = new EntryDay(dt);
 				while(reader.Read())
 				{
-					ed.Add(DataHelper.LoadEntry(reader));
+					ed.Add(DataHelper.LoadSingleEntry(reader));
 				}
 				return ed;
 			}
@@ -222,15 +224,15 @@ namespace Subtext.Framework.Data
 		/// <summary>
 		/// Returns blog posts that meet the criteria specified in the <see cref="PostConfig"/> flags.
 		/// </summary>
-		/// <param name="itemCount">Item count.</param>
+		/// <param name="ItemCount">Item count.</param>
 		/// <param name="pc">Pc.</param>
 		/// <returns></returns>
-        public override ICollection<EntryDay> GetBlogPosts(int itemCount, PostConfig pc)
+		public override EntryDayCollection GetBlogPosts(int ItemCount, PostConfig pc)
 		{
-			IDataReader reader = DbProvider.Instance().GetConditionalEntries(itemCount, PostType.BlogPost, pc, false);
+			IDataReader reader = DbProvider.Instance().GetConditionalEntries(ItemCount, PostType.BlogPost, pc);
 			try
 			{
-                ICollection<EntryDay> edc = DataHelper.LoadEntryDayCollection(reader);
+				EntryDayCollection edc = DataHelper.LoadEntryDayCollection(reader);
 				return edc;
 			}
 			finally
@@ -239,12 +241,26 @@ namespace Subtext.Framework.Data
 			}
 		}
 
-        public override ICollection<EntryDay> GetPostsByMonth(int month, int year)
+		public override EntryDayCollection GetRecentDayPosts(int ItemCount, bool ActiveOnly)
+		{
+			IDataReader reader = DbProvider.Instance().GetRecentDayPosts(ItemCount,ActiveOnly);
+			try
+			{
+				EntryDayCollection edc = DataHelper.LoadEntryDayCollection(reader);
+				return edc;
+			}
+			finally
+			{
+				reader.Close();
+			}
+		}
+
+		public override EntryDayCollection GetPostsByMonth(int month, int year)
 		{
 			IDataReader reader = DbProvider.Instance().GetPostCollectionByMonth(month,year);
 			try
 			{
-                ICollection<EntryDay> edc = DataHelper.LoadEntryDayCollection(reader);
+				EntryDayCollection edc = DataHelper.LoadEntryDayCollection(reader);
 				return edc;
 			}
 			finally
@@ -253,12 +269,12 @@ namespace Subtext.Framework.Data
 			}
 		}
 
-        public override ICollection<EntryDay> GetPostsByCategoryID(int itemCount, int catID)
+		public override EntryDayCollection GetPostsByCategoryID(int ItemCount, int catID)
 		{
-			IDataReader reader = DbProvider.Instance().GetEntriesByCategory(itemCount, catID, true);
+			IDataReader reader = DbProvider.Instance().GetPostsByCategoryID(ItemCount,catID);
 			try
 			{
-                ICollection<EntryDay> edc = DataHelper.LoadEntryDayCollection(reader);
+				EntryDayCollection edc = DataHelper.LoadEntryDayCollection(reader);
 				return edc;
 			}
 			finally
@@ -270,19 +286,7 @@ namespace Subtext.Framework.Data
 		#endregion
 
 		#region EntryCollections
-		/// <summary>
-		/// Returns the previous and next entry to the specified entry.
-		/// </summary>
-		/// <param name="entryId"></param>
-		/// <returns></returns>
-		public override IList<Entry> GetPreviousAndNextEntries(int entryId, PostType postType)
-		{
-			using(IDataReader reader = DbProvider.Instance().GetPreviousNext(entryId))
-			{
-				return DataHelper.LoadEntryCollectionFromDataReader(reader);
-			}
-		}
-		
+
 		/// <summary>
 		/// Gets the entries that meet the specific <see cref="PostType"/> 
 		/// and the <see cref="PostConfig"/> flags.
@@ -290,32 +294,29 @@ namespace Subtext.Framework.Data
 		/// <remarks>
 		/// This is called to get the main syndicated entries.
 		/// </remarks>
-		/// <param name="itemCount">Item count.</param>
-		/// <param name="postType">The type of post to retrieve.</param>
-		/// <param name="postConfig">Post configuration options.</param>
-		/// <param name="includeCategories">Whether or not to include categories</param>
+		/// <param name="ItemCount">Item count.</param>
+		/// <param name="pt">Pt.</param>
+		/// <param name="pc">Pc.</param>
 		/// <returns></returns>
-		public override IList<Entry> GetConditionalEntries(int itemCount, PostType postType, PostConfig postConfig, bool includeCategories)
+		public override EntryCollection GetConditionalEntries(int ItemCount, PostType pt, PostConfig pc)
 		{
-            using(IDataReader reader = DbProvider.Instance().GetConditionalEntries(itemCount, postType, postConfig, includeCategories))
-            {
-                return DataHelper.LoadEntryCollectionFromDataReader(reader);
-            }
+			IDataReader reader = DbProvider.Instance().GetConditionalEntries(ItemCount, pt, pc);
+			return LoadEntryCollectionFromDataReader(reader);
 		}
 
-		public override IList<Entry> GetFeedBack(Entry parentEntry)
+		public override EntryCollection GetFeedBack(Entry parentEntry)
 		{
-			IDataReader reader = DbProvider.Instance().GetFeedBack(parentEntry.Id);
+			IDataReader reader = DbProvider.Instance().GetFeedBack(parentEntry.EntryID);
 			UrlFormats formats = Config.CurrentBlog.UrlFormats;
 			const bool buildLinks = true;
 			try
 			{
-				List<Entry> ec = new List<Entry>();
+				EntryCollection ec = new EntryCollection();
 				Entry entry;
 				while(reader.Read())
 				{
 					//Don't build links.
-					entry = DataHelper.LoadEntry(reader, !buildLinks);
+					entry = DataHelper.LoadSingleEntry(reader, !buildLinks);
 					entry.Url = formats.CommentUrl(parentEntry, entry);
 					ec.Add(entry);
 				}
@@ -327,41 +328,101 @@ namespace Subtext.Framework.Data
 			}
 		}
 
-        public override IList<Entry> GetPostCollectionByMonth(int month, int year)
+		public override EntryCollection GetRecentPostsWithCategories(int ItemCount, bool ActiveOnly)
 		{
-            using(IDataReader reader = DbProvider.Instance().GetPostCollectionByMonth(month, year))
-            {
-                return DataHelper.LoadEntryCollectionFromDataReader(reader);
-            }
+			DataSet ds = DbProvider.Instance().GetRecentPostsWithCategories(ItemCount, ActiveOnly);
+			EntryCollection ec = new EntryCollection();
+			int count = ds.Tables[0].Rows.Count;
+			for(int i =0;i<count;i++)
+			{
+				DataRow row = ds.Tables[0].Rows[i];
+				CategoryEntry ce = DataHelper.LoadSingleCategoryEntry(row);
+				ec.Add(ce);
+			}
+			return ec;
 		}
 
-		public override IList<Entry> GetPostsByDayRange(DateTime start, DateTime stop, PostType postType, bool activeOnly)
+		public override EntryCollection GetRecentPosts(int ItemCount, PostType postType, bool ActiveOnly)
 		{
-            DateTime min = start;
-            DateTime max = stop;
-		    
-		    if(stop < start)
-		    {
-		        min = stop;
-		        max = start;
-		    }
-
-            using(IDataReader reader = DbProvider.Instance().GetEntriesByDateRange(min, max, postType, activeOnly))
-            {
-                return DataHelper.LoadEntryCollectionFromDataReader(reader);
-            }
+			IDataReader reader = DbProvider.Instance().GetRecentPosts(ItemCount,postType,ActiveOnly);
+			return LoadEntryCollectionFromDataReader(reader);
 		}
 
-		public override IList<Entry> GetEntriesByCategory(int itemCount, int catID, bool activeOnly)
+		public override EntryCollection GetRecentPosts(int ItemCount, PostType postType, bool ActiveOnly, DateTime DateUpdated)
 		{
-            using(IDataReader reader = DbProvider.Instance().GetEntriesByCategory(itemCount, catID, activeOnly))
-            {
-                return DataHelper.LoadEntryCollectionFromDataReader(reader);
-            }
+			IDataReader reader = DbProvider.Instance().GetRecentPosts(ItemCount,postType,ActiveOnly,DateUpdated);
+			return LoadEntryCollectionFromDataReader(reader);
 		}
+
+		public override EntryCollection GetPostCollectionByMonth(int month, int year)
+		{
+			IDataReader reader = DbProvider.Instance().GetPostCollectionByMonth(month,year);
+			return LoadEntryCollectionFromDataReader(reader);
+		}
+
+		public override EntryCollection GetPostsByDayRange(DateTime start, DateTime stop, PostType postType, bool ActiveOnly)
+		{
+			IDataReader reader;
+			if(stop > start)
+			{
+				reader = DbProvider.Instance().GetEntriesByDateRangle(start,stop,postType,ActiveOnly);
+			}
+			else
+			{
+				reader = DbProvider.Instance().GetEntriesByDateRangle(stop,start,postType,ActiveOnly);
+			}
+
+			try
+			{
+				EntryCollection ec = DataHelper.LoadEntryCollection(reader);
+				return ec;
+			}
+			finally
+			{
+				reader.Close();
+			}
+		}
+
+		public override EntryCollection GetEntriesByCategory(int ItemCount, int catID, bool ActiveOnly)
+		{
+			IDataReader reader = DbProvider.Instance().GetEntriesByCategory(ItemCount,catID,ActiveOnly);
+			return LoadEntryCollectionFromDataReader(reader);
+		}
+
+		EntryCollection LoadEntryCollectionFromDataReader(IDataReader reader)
+		{
+			try
+			{
+				EntryCollection ec = DataHelper.LoadEntryCollection(reader);
+				return ec;
+			}
+			finally
+			{
+				reader.Close();
+			}
+		}
+
 		#endregion
 
 		#region Single Entry
+		Entry LoadEntryFromReader(IDataReader reader)
+		{
+			try
+			{
+				Entry entry = null;
+				while(reader.Read())
+				{
+					entry = DataHelper.LoadSingleEntry(reader);
+					break;
+				}
+				return entry;
+			}
+			finally
+			{
+				reader.Close();
+			}
+		}
+
 		/// <summary>
 		/// Searches the data store for the first comment with a 
 		/// matching checksum hash.
@@ -370,53 +431,41 @@ namespace Subtext.Framework.Data
 		/// <returns></returns>
 		public override Entry GetCommentByChecksumHash(string checksumHash)
 		{
-            using (IDataReader reader = DbProvider.Instance().GetCommentByChecksumHash(checksumHash))
-            {
-                if (reader.Read())
-                {
-                    return DataHelper.LoadEntry(reader);
-                }
-                return null;
-            }
+			IDataReader reader = DbProvider.Instance().GetCommentByChecksumHash(checksumHash);
+			return LoadEntryFromReader(reader);
 		}
 
-        /// <summary>
-        /// Returns an <see cref="Entry" /> with the specified id.
-        /// </summary>
-        /// <param name="id">Id of the entry</param>
-        /// <param name="activeOnly">Whether or not to only return the entry if it is active.</param>
-        /// <param name="includeCategories">Whether the entry should have its Categories property populated</param>
-        /// <returns></returns>
-        public override Entry GetEntry(int id, bool activeOnly, bool includeCategories)
+		public override Entry GetEntry(int postID, bool ActiveOnly)
 		{
-            using (IDataReader reader = DbProvider.Instance().GetEntryReader(id, activeOnly, includeCategories))
-            {
-                if (reader.Read())
-                {
-                    return DataHelper.LoadEntry(reader);
-                }
-                return null;
-            }
+			IDataReader reader = DbProvider.Instance().GetEntry(postID, ActiveOnly);
+			return LoadEntryFromReader(reader);
 		}
 
-        /// <summary>
-        /// Returns an <see cref="Entry" /> with the specified entry name.
-        /// </summary>
-        /// <param name="entryName">Url friendly entry name.</param>
-        /// <param name="activeOnly">Whether or not to only return the entry if it is active.</param>
-        /// <param name="includeCategories">Whether the entry should have its Categories property populated</param>
-        /// <returns></returns>
-        public override Entry GetEntry(string entryName, bool activeOnly, bool includeCategories)
+
+		public override Entry GetEntry(string EntryName, bool ActiveOnly)
 		{
-            using (IDataReader reader = DbProvider.Instance().GetEntryReader(entryName, activeOnly, includeCategories))
-            {
-                if (reader.Read())
-                {
-                    return DataHelper.LoadEntry(reader);
-                }
-                return null;
-            }
-		}		
+			IDataReader reader = DbProvider.Instance().GetEntry(EntryName,ActiveOnly);
+			return LoadEntryFromReader(reader);
+		}
+
+		public override CategoryEntry GetCategoryEntry(int postid, bool ActiveOnly)
+		{
+			IDataReader reader = DbProvider.Instance().GetCategoryEntry(postid,ActiveOnly);
+			try
+			{
+				CategoryEntry entry = null;
+				while(reader.Read())
+				{
+					entry = DataHelper.LoadSingleCategoryEntry(reader);
+					break;
+				}
+				return entry;
+			}
+			finally
+			{
+				reader.Close();
+			}
+		}
 		#endregion
 
 		#region Delete
@@ -449,53 +498,69 @@ namespace Subtext.Framework.Data
 				throw new BlogFailedPostException("Failed post exception");
 			}		
 
-		    entry.Id = DbProvider.Instance().InsertEntry(entry);	
-	
-			if(CategoryIDs != null)
+			if(entry is CategoryEntry)
 			{
-				DbProvider.Instance().SetEntryCategoryList(entry.Id,CategoryIDs);
+				entry.EntryID = DbProvider.Instance().InsertCategoryEntry(((CategoryEntry)entry));
+			}
+			else
+			{
+				entry.EntryID = DbProvider.Instance().InsertEntry(entry);	
+		
+				if(CategoryIDs != null)
+				{
+					DbProvider.Instance().SetEntryCategoryList(entry.EntryID,CategoryIDs);
+				}
 			}
 
-			if(entry.Id > -1 && Config.Settings.Tracking.UseTrackingServices)
+			if(entry.EntryID > -1 && Config.Settings.Tracking.UseTrackingServices)
 			{
 				entry.Url = Subtext.Framework.Configuration.Config.CurrentBlog.UrlFormats.EntryUrl(entry);
 			}
 
-			if(entry.Id > -1)
+			if(entry.EntryID > -1)
 			{
 				Config.CurrentBlog.LastUpdated = entry.DateCreated;
 			}
 
-			return entry.Id;
+			return entry.EntryID;
 		}
 
 		#endregion
 
 		#region Update
-        
-	    /// <summary>
-        /// Saves changes to the specified entry attaching the specified categories.
-        /// </summary>
-        /// <param name="entry">Entry.</param>
-        /// <param name="categoryIds">Category Ids.</param>
-        /// <returns></returns>
-	    public override bool Update(Entry entry, params int[] categoryIds)
+
+		public override bool Update(Entry entry)
 		{
-			if(!FormatEntry(entry, false))
+			return Update(entry,null);
+		}
+
+		public override bool Update(Entry entry, int[] CategoryIDs)
+		{
+			if(!FormatEntry(entry,false))
 			{
 				throw new BlogFailedPostException("Failed post exception");
 			}
 
-			if(!DbProvider.Instance().UpdateEntry(entry))
+			if(entry is CategoryEntry)
 			{
-				return false;
+				if(!DbProvider.Instance().UpdateCategoryEntry(((CategoryEntry)entry)))
+				{
+					return false;
+				}
 			}
-	
-			if(categoryIds != null && categoryIds.Length > 0)
+			else
 			{
-				DbProvider.Instance().SetEntryCategoryList(entry.Id,categoryIds);
-			}
+				if(!DbProvider.Instance().UpdateEntry(entry))
+				{
+					return false;
+				}
 		
+				if(CategoryIDs != null)
+				{
+					DbProvider.Instance().SetEntryCategoryList(entry.EntryID,CategoryIDs);
+				}
+			}
+
 			if(Config.Settings.Tracking.UseTrackingServices)
 			{
 				if(entry.PostType == PostType.BlogPost)
@@ -507,7 +572,7 @@ namespace Subtext.Framework.Data
 					entry.Url = Config.CurrentBlog.UrlFormats.ArticleUrl(entry);
 				}
 
-				if(entry.Id > -1)
+				if(entry.EntryID > -1)
 				{
 					Config.CurrentBlog.LastUpdated = entry.DateUpdated;
 				}
@@ -559,9 +624,12 @@ namespace Subtext.Framework.Data
 				return false;
 			}
 
-			if(!HtmlHelper.ConvertHtmlToXHtml(e))
+			if(Config.Settings.UseXHTML)
 			{
-				return false;
+				if(!HtmlHelper.ConvertHtmlToXHtml(e))
+				{
+					return false;
+				}
 			}
 
 			return true;
@@ -575,15 +643,15 @@ namespace Subtext.Framework.Data
 
 		#region Paged Links
 
-        public override IPagedCollection<Link> GetPagedLinks(int categoryTypeID, int pageIndex, int pageSize, bool sortDescending)
+		public override PagedLinkCollection GetPagedLinks(int categoryTypeID, int pageIndex, int pageSize, bool sortDescending)
 		{
 			IDataReader reader = DbProvider.Instance().GetPagedLinks(categoryTypeID, pageIndex, pageSize, sortDescending);
 			try
 			{
-                IPagedCollection<Link> plc = new PagedCollection<Link>();
+				PagedLinkCollection plc = new PagedLinkCollection();
 				while(reader.Read())
 				{
-					plc.Add(DataHelper.LoadLink(reader));
+					plc.Add(DataHelper.LoadSingleLink(reader));
 				}
 				reader.NextResult();
 				plc.MaxItems = DataHelper.GetMaxItems(reader);
@@ -600,15 +668,15 @@ namespace Subtext.Framework.Data
 
 		#region LinkCollection
 
-		public override ICollection<Link> GetLinkCollectionByPostID(int PostID)
+		public override LinkCollection GetLinkCollectionByPostID(int PostID)
 		{
 			IDataReader reader = DbProvider.Instance().GetLinkCollectionByPostID(PostID);
 			try
 			{
-				ICollection<Link> lc = new List<Link>();
+				LinkCollection lc = new LinkCollection();
 				while(reader.Read())
 				{
-					lc.Add(DataHelper.LoadLink(reader));
+					lc.Add(DataHelper.LoadSingleLink(reader));
 				}
 				return lc;
 			}
@@ -618,15 +686,15 @@ namespace Subtext.Framework.Data
 			}
 		}
 
-		public override ICollection<Link> GetLinksByCategoryID(int catID, bool activeOnly)
+		public override LinkCollection GetLinksByCategoryID(int catID, bool ActiveOnly)
 		{
-			IDataReader reader = DbProvider.Instance().GetLinksByCategoryID(catID, activeOnly);
-            List<Link> lc = new List<Link>();
+			IDataReader reader = DbProvider.Instance().GetLinksByCategoryID(catID,ActiveOnly);
+			LinkCollection lc = new LinkCollection();
 			try
 			{
 				while(reader.Read())
 				{
-					lc.Add(DataHelper.LoadLink(reader));
+					lc.Add(DataHelper.LoadSingleLink(reader));
 				}
 				return lc;
 			}
@@ -640,15 +708,15 @@ namespace Subtext.Framework.Data
 
 		#region Single Link
 
-		public override Link GetLink(int linkID)
+		public override Link GetSingleLink(int linkID)
 		{
-			IDataReader reader = DbProvider.Instance().GetLinkReader(linkID);
+			IDataReader reader = DbProvider.Instance().GetSingleLink(linkID);
 			try
 			{
 				Link link = null;
 				while(reader.Read())
 				{
-					link = DataHelper.LoadLink(reader);
+					link = DataHelper.LoadSingleLink(reader);
 					break;
 				}
 				return link;
@@ -661,17 +729,17 @@ namespace Subtext.Framework.Data
 
 		#endregion
 
-        #region ICollection<LinkCategory>
+		#region LinkCategoryCollection
 
-        public override ICollection<LinkCategory> GetCategories(CategoryType catType, bool activeOnly)
+		public override LinkCategoryCollection GetCategories(CategoryType catType, bool ActiveOnly)
 		{
-			IDataReader reader = DbProvider.Instance().GetCategories(catType, activeOnly);
-            ICollection<LinkCategory> lcc = new List<LinkCategory>();
+			IDataReader reader = DbProvider.Instance().GetCategories(catType,ActiveOnly);
+			LinkCategoryCollection lcc = new LinkCategoryCollection();
 			try
 			{
 				while(reader.Read())
 				{
-					lcc.Add(DataHelper.LoadLinkCategory(reader));
+					lcc.Add(DataHelper.LoadSingleLinkCategory(reader));
 				}
 				return lcc;
 			}
@@ -681,17 +749,17 @@ namespace Subtext.Framework.Data
 			}
 		}
 
-        public override ICollection<LinkCategory> GetActiveCategories()
+		public override LinkCategoryCollection GetActiveCategories()
 		{
 			DataSet ds = DbProvider.Instance().GetActiveCategories();
-            ICollection<LinkCategory> lcc = new List<LinkCategory>();
+			LinkCategoryCollection lcc = new LinkCategoryCollection();
 			foreach(DataRow dr in ds.Tables[0].Rows)
 			{
-				LinkCategory lc = DataHelper.LoadLinkCategory(dr);
-				lc.Links = new List<Link>();
+				LinkCategory lc = DataHelper.LoadSingleLinkCategory(dr);
+				lc.Links = new LinkCollection();
 				foreach(DataRow drLink in dr.GetChildRows("CategoryID"))
 				{
-					lc.Links.Add(DataHelper.LoadLink(drLink));
+					lc.Links.Add(DataHelper.LoadSingleLink(drLink));
 				}
 				lcc.Add(lc);				
 			}
@@ -709,7 +777,7 @@ namespace Subtext.Framework.Data
 			try
 			{
 				reader.Read();
-				LinkCategory lc = DataHelper.LoadLinkCategory(reader);
+				LinkCategory lc = DataHelper.LoadSingleLinkCategory(reader);
 				return lc;
 			}
 			finally
@@ -725,7 +793,7 @@ namespace Subtext.Framework.Data
 			try
 			{
 				reader.Read();
-				LinkCategory lc = DataHelper.LoadLinkCategory(reader);
+				LinkCategory lc = DataHelper.LoadSingleLinkCategory(reader);
 				return lc;
 			}
 			finally
@@ -774,15 +842,16 @@ namespace Subtext.Framework.Data
 
 		#region Stats
 
-        public override IPagedCollection<ViewStat> GetPagedViewStats(int pageIndex, int pageSize, DateTime beginDate, DateTime endDate)
+		public override PagedViewStatCollection GetPagedViewStats(int pageIndex, int pageSize, DateTime beginDate, DateTime endDate)
 		{
+
 			IDataReader reader = DbProvider.Instance().GetPagedViewStats(pageIndex,pageSize,beginDate,endDate);
 			try
 			{
-                IPagedCollection<ViewStat> vs = new PagedCollection<ViewStat>();
+				PagedViewStatCollection vs = new PagedViewStatCollection();
 				while(reader.Read())
 				{
-					vs.Add(DataHelper.LoadViewStat(reader));
+					vs.Add(DataHelper.LoadSingleViewStat(reader));
 				}
 				reader.NextResult();
 				vs.MaxItems = DataHelper.GetMaxItems(reader);
@@ -794,43 +863,52 @@ namespace Subtext.Framework.Data
 			}	
 		}
 
-        public override IPagedCollection<Referrer> GetPagedReferrers(int pageIndex, int pageSize)
+		public override PagedReferrerCollection GetPagedReferrers(int pageIndex, int pageSize)
 		{
-			IDataReader reader = DbProvider.Instance().GetPagedReferrers(pageIndex, pageSize);
-            return LoadPagedReferrersCollection(reader);
-        }
-
-        public override IPagedCollection<Referrer> GetPagedReferrers(int pageIndex, int pageSize, int entryId)
-		{
-			IDataReader reader = DbProvider.Instance().GetPagedReferrers(pageIndex, pageSize, entryId);
-            return LoadPagedReferrersCollection(reader);
+			IDataReader reader = DbProvider.Instance().GetPagedReferrers(pageIndex,pageSize);
+			try
+			{
+				PagedReferrerCollection prc = new PagedReferrerCollection();
+				while(reader.Read())
+				{
+					prc.Add(DataHelper.LoadSingleReferrer(reader));
+				}
+				reader.NextResult();
+				prc.MaxItems = DataHelper.GetMaxItems(reader);
+				return prc;
+			}
+			finally
+			{
+				reader.Close();
+			}	
 		}
-	    
-	    private IPagedCollection<Referrer> LoadPagedReferrersCollection(IDataReader reader)
-	    {
-            try
-            {
-                IPagedCollection<Referrer> prc = new PagedCollection<Referrer>();
-                while (reader.Read())
-                {
-                    prc.Add(DataHelper.LoadReferrer(reader));
-                }
-                reader.NextResult();
-                prc.MaxItems = DataHelper.GetMaxItems(reader);
-                return prc;
-            }
-            finally
-            {
-                reader.Close();
-            }
-	    }
+
+		public override PagedReferrerCollection GetPagedReferrers(int pageIndex, int pageSize, int EntryID)
+		{
+			IDataReader reader = DbProvider.Instance().GetPagedReferrers(pageIndex,pageSize,EntryID);
+			try
+			{
+				PagedReferrerCollection prc = new PagedReferrerCollection();
+				while(reader.Read())
+				{
+					prc.Add(DataHelper.LoadSingleReferrer(reader));
+				}
+				reader.NextResult();
+				prc.MaxItems = DataHelper.GetMaxItems(reader);
+				return prc;
+			}
+			finally
+			{
+				reader.Close();
+			}
+		}
 
 		public override bool TrackEntry(EntryView ev)
 		{
 			return DbProvider.Instance().TrackEntry(ev);
 		}
 
-		public override bool TrackEntry(IEnumerable<EntryView> evc)
+		public override bool TrackEntry(EntryViewCollection evc)
 		{
 			return DbProvider.Instance().TrackEntry(evc);
 		}
@@ -904,7 +982,7 @@ namespace Subtext.Framework.Data
 				KeyWord kw = null;
 				while(reader.Read())
 				{
-					kw = DataHelper.LoadKeyWord(reader);
+					kw = DataHelper.LoadSingleKeyWord(reader);
 					break;
 				}
 				return kw;
@@ -915,15 +993,15 @@ namespace Subtext.Framework.Data
 			}
 		}
 		
-		public override ICollection<KeyWord> GetKeyWords()
+		public override KeyWordCollection GetKeyWords()
 		{
 			IDataReader reader = DbProvider.Instance().GetKeyWords();
 			try
 			{
-				List<KeyWord> kwc = new List<KeyWord>();
+				KeyWordCollection kwc = new KeyWordCollection();
 				while(reader.Read())
 				{
-					kwc.Add(DataHelper.LoadKeyWord(reader));
+					kwc.Add(DataHelper.LoadSingleKeyWord(reader));
 				}
 				return kwc;
 			}
@@ -933,15 +1011,15 @@ namespace Subtext.Framework.Data
 			}
 		}
 
-        public override IPagedCollection<KeyWord> GetPagedKeyWords(int pageIndex, int pageSize, bool sortDescending)
+		public override PagedKeyWordCollection GetPagedKeyWords(int pageIndex, int pageSize,bool sortDescending)
 		{
 			IDataReader reader = DbProvider.Instance().GetPagedKeyWords(pageIndex,pageSize,sortDescending);
 			try
 			{
-                IPagedCollection<KeyWord> pkwc = new PagedCollection<KeyWord>();
+				PagedKeyWordCollection pkwc = new PagedKeyWordCollection();
 				while(reader.Read())
 				{
-					pkwc.Add(DataHelper.LoadKeyWord(reader));
+					pkwc.Add(DataHelper.LoadSingleKeyWord(reader));
 				}
 				reader.NextResult();
 				pkwc.MaxItems = DataHelper.GetMaxItems(reader);
@@ -973,21 +1051,21 @@ namespace Subtext.Framework.Data
 
 		#region Images
 
-        public override ImageCollection GetImagesByCategoryID(int catID, bool activeOnly)
+		public override ImageCollection GetImagesByCategoryID(int catID, bool ActiveOnly)
 		{
-			IDataReader reader = DbProvider.Instance().GetImagesByCategoryID(catID, activeOnly);
+			IDataReader reader = DbProvider.Instance().GetImagesByCategoryID(catID,ActiveOnly);
 			try
 			{
 				ImageCollection ic = new ImageCollection();
 				while(reader.Read())
 				{
-					ic.Category = DataHelper.LoadLinkCategory(reader);
+					ic.Category = DataHelper.LoadSingleLinkCategory(reader);
 					break;
 				}
 				reader.NextResult();
 				while(reader.Read())
 				{
-					ic.Add(DataHelper.LoadImage(reader));
+					ic.Add(DataHelper.LoadSingleImage(reader));
 				}
 				return ic;
 			}
@@ -997,15 +1075,15 @@ namespace Subtext.Framework.Data
 			}
 		}
 
-		public override Image GetImage(int imageID, bool activeOnly)
+		public override Image GetSingleImage(int imageID, bool ActiveOnly)
 		{
-			IDataReader reader = DbProvider.Instance().GetImage(imageID, activeOnly);
+			IDataReader reader = DbProvider.Instance().GetSingleImage(imageID,ActiveOnly);
 			try
 			{
 				Image image = null;
 				while(reader.Read())
 				{
-					image = DataHelper.LoadImage(reader);
+					image = DataHelper.LoadSingleImage(reader);
 				}
 				return image;
 			}
@@ -1020,9 +1098,9 @@ namespace Subtext.Framework.Data
 			return DbProvider.Instance().InsertImage(_image);
 		}
 
-		public override bool UpdateImage(Subtext.Framework.Components.Image image)
+		public override bool UpdateImage(Subtext.Framework.Components.Image _image)
 		{
-			return DbProvider.Instance().UpdateImage(image);
+			return DbProvider.Instance().UpdateImage(_image);
 		}
 
 		public override bool DeleteImage(int ImageID)
@@ -1034,12 +1112,12 @@ namespace Subtext.Framework.Data
 
 		#region Archives
 
-        public override ICollection<ArchiveCount> GetPostsByMonthArchive()
+		public override ArchiveCountCollection GetPostsByMonthArchive()
 		{
 			IDataReader reader = DbProvider.Instance().GetPostsByMonthArchive();
 			try
 			{
-                ICollection<ArchiveCount> acc = DataHelper.LoadArchiveCount(reader);
+				ArchiveCountCollection acc = DataHelper.LoadArchiveCount(reader);
 				return acc;
 			}
 			finally
@@ -1048,12 +1126,12 @@ namespace Subtext.Framework.Data
 			}
 		}
 
-        public override ICollection<ArchiveCount> GetPostsByYearArchive()
+		public override ArchiveCountCollection GetPostsByYearArchive()
 		{
 			IDataReader reader = DbProvider.Instance().GetPostsByYearArchive();
 			try
 			{
-                ICollection<ArchiveCount> acc = DataHelper.LoadArchiveCount(reader);
+				ArchiveCountCollection acc = DataHelper.LoadArchiveCount(reader);
 				return acc;
 			}
 			finally
@@ -1064,5 +1142,26 @@ namespace Subtext.Framework.Data
 
 		#endregion
 
+		/// <summary>
+		/// Initializes the specified provider.
+		/// </summary>
+		/// <param name="name">Friendly Name of the provider.</param>
+		/// <param name="configValue">Config value.</param>
+		public override void Initialize(string name, NameValueCollection configValue)
+		{
+			_name = name;
+		}
+
+		/// <summary>
+		/// Returns the friendly name of the provider when the provider is initialized.
+		/// </summary>
+		/// <value></value>
+		public override string Name
+		{
+			get
+			{
+				return _name;
+			}
+		}
 	}
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using System.Runtime.Remoting.Contexts;
 using Subtext.Extensibility;
 using Subtext.Framework;
 using Subtext.Framework.Format;
@@ -27,7 +26,7 @@ namespace Subtext.Web.UI.Controls
 	/// <summary>
 	///		Summary description for ArchiveDay.
 	/// </summary>
-	public class MonthList : BaseControl
+	public  class MonthList : BaseControl
 	{
 		protected Subtext.Web.UI.Controls.EntryList MonthListings;
 		protected override void OnLoad(EventArgs e)

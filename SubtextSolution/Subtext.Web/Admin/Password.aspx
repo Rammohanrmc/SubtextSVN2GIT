@@ -1,18 +1,8 @@
-<%@ Page language="c#" Title="Subtext Admin - Password" MasterPageFile="~/Admin/WebUI/AdminPageTemplate.Master" Codebehind="Password.aspx.cs" AutoEventWireup="True" Inherits="Subtext.Web.Admin.Pages.Password" %>
-<%@ Register TagPrefix="st" Namespace="Subtext.Web.Admin.WebUI" Assembly="Subtext.Web" %>
-
-<asp:Content ID="actions" ContentPlaceHolderID="actionsHeading" runat="server">
-</asp:Content>
-
-<asp:Content ID="categoryListTitle" ContentPlaceHolderID="categoryListHeading" runat="server">
-</asp:Content>
-
-<asp:Content ID="categoriesLinkListing" ContentPlaceHolderID="categoryListLinks" runat="server">
-</asp:Content>
-
-<asp:Content ID="passwordContent" ContentPlaceHolderID="pageContent" runat="server">
-	<st:MessagePanel id="Messages" runat="server"></st:MessagePanel>
-	<st:AdvancedPanel id="Results" runat="server" HeaderText="Password" LinkStyle="Image"
+<%@ Register TagPrefix="ANW" Namespace="Subtext.Web.Admin.WebUI" Assembly="Subtext.Web" %>
+<%@ Page language="c#" Codebehind="Password.aspx.cs" AutoEventWireup="false" Inherits="Subtext.Web.Admin.Pages.Password" %>
+<ANW:Page runat="server" id="PageContainer" TabSectionID="Options">
+	<ANW:MessagePanel id="Messages" runat="server"></ANW:MessagePanel>
+	<ANW:AdvancedPanel id="Results" runat="server" HeaderText="Password" LinkStyle="Image"
 		DisplayHeader="True" HeaderCssClass="CollapsibleHeader" Collapsible="False">
 		<div class="Edit">
 			<p>
@@ -41,8 +31,8 @@
 					<asp:TextBox id="tbPasswordConfirm" runat="server" CssClass="textinput" TextMode="Password"></asp:TextBox>
 			</p>
 			<div>
-					<asp:Button id="btnSave" runat="server" CssClass="buttonSubmit" Text="Save" onclick="btnSave_Click"></asp:Button><br /><br />
+					<asp:Button id="btnSave" runat="server" CssClass="buttonSubmit" Text="Save"></asp:Button><br /><br />
 			</div>
 		</div>
-	</st:AdvancedPanel>
-</asp:Content>
+	</ANW:AdvancedPanel>
+</ANW:Page>

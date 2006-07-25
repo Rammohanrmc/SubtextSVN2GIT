@@ -24,6 +24,7 @@ using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Format;
 using Subtext.Framework.Text;
+using Subtext.Framework.Util;
 
 namespace Subtext.Web.UI.Handlers
 {
@@ -80,15 +81,15 @@ namespace Subtext.Web.UI.Handlers
 			else if(Regex.IsMatch(uri,"/posts/|/story/",RegexOptions.IgnoreCase))
 			{
 				string entryName = Path.GetFileNameWithoutExtension(uri);
-				Entry entry;
+				Entry entry = null;
 				if(StringHelper.IsNumeric(entryName))
 				{
-					entry = Cacher.GetEntry(Int32.Parse(entryName), CacheDuration.Short);
+					entry = Cacher.GetSingleEntry(Int32.Parse(entryName), CacheDuration.Short);
 				}
 				else
 				{
 					//This is why EntryName must be unique.
-					entry = Cacher.GetEntry(entryName, CacheDuration.Short);
+					entry = Cacher.GetSingleEntry(entryName, CacheDuration.Short);
 				}
 				
 				if(entry != null)

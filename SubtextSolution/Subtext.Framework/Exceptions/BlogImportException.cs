@@ -23,7 +23,7 @@ namespace Subtext.Framework.Exceptions
 	/// subText blog. NOTE: this exception may need refactored/renamed 
 	/// so it can be used for both import & export failures.
 	/// </summary>
-	public class BlogImportException : Exception 
+	public class BlogImportException : BaseSubtextException 
 	{
 		string _importMessage;
 
@@ -44,7 +44,7 @@ namespace Subtext.Framework.Exceptions
 		/// and we threw the error. i.e.- Could not find the BlogML file, The BlogML file is not 
 		/// valid, etc...</param>
 		/// <param name="innerException"></param>
-		public BlogImportException(string importFailureReason, Exception innerException) : base(null, innerException)
+		public BlogImportException(string importFailureReason, Exception innerException) : base(innerException)
 		{
 			_importMessage = importFailureReason;
 		}
@@ -66,6 +66,15 @@ namespace Subtext.Framework.Exceptions
 		public string ImportMessage
 		{
 			get { return _importMessage; }
+		}
+
+		/// <summary>
+		/// Gets the message resource key.
+		/// </summary>
+		/// <value></value>
+		public override string MessageResourceKey
+		{
+			get { throw new NotImplementedException(); }
 		}
 	}
 }

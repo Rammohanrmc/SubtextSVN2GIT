@@ -1,21 +1,8 @@
-<%@ Page language="c#" Title="Subtext Admin - Edit Links" MasterPageFile="~/Admin/WebUI/AdminPageTemplate.Master" Codebehind="EditLinks.aspx.cs" AutoEventWireup="True" Inherits="Subtext.Web.Admin.Pages.EditLinks" %>
-<%@ Register TagPrefix="st" Namespace="Subtext.Web.Admin.WebUI" Assembly="Subtext.Web" %>
-<%@ Register TagPrefix="st" TagName="CategoryLinks" Src="~/Admin/UserControls/CategoryLinkList.ascx" %>
-
-<asp:Content ID="actions" ContentPlaceHolderID="actionsHeading" runat="server">
-</asp:Content>
-
-<asp:Content ID="categoryListTitle" ContentPlaceHolderID="categoryListHeading" runat="server">
-    Categories
-</asp:Content>
-
-<asp:Content ID="categoriesLinkListing" ContentPlaceHolderID="categoryListLinks" runat="server">
-    <st:CategoryLinks ID="categoryLinks" runat="server" CategoryType="StoryCollection" />
-</asp:Content>
-
-<asp:Content ID="linkContent" ContentPlaceHolderID="pageContent" runat="server">
-	<st:MessagePanel id="Messages" runat="server"></st:MessagePanel>
-	<st:AdvancedPanel id="Results" runat="server" LinkStyle="Image" LinkBeforeHeader="True" DisplayHeader="True"
+<%@ Register TagPrefix="ANW" Namespace="Subtext.Web.Admin.WebUI" Assembly="Subtext.Web" %>
+<%@ Page language="c#" Codebehind="EditLinks.aspx.cs" AutoEventWireup="false" Inherits="Subtext.Web.Admin.Pages.EditLinks" %>
+<ANW:Page runat="server" id="PageContainer" TabSectionID="Links" CategoryType="LinkCollection">
+	<ANW:MessagePanel id="Messages" runat="server"></ANW:MessagePanel>
+	<ANW:AdvancedPanel id="Results" runat="server" LinkStyle="Image" LinkBeforeHeader="True" DisplayHeader="True"
 		HeaderCssClass="CollapsibleHeader" HeaderText="Links" LinkText="[toggle]" Collapsible="True">
 		<ASP:Repeater id="rprSelectionList" runat="server">
 			<HeaderTemplate>
@@ -63,12 +50,12 @@
 				</table>
 			</FooterTemplate>
 		</ASP:Repeater>
-		<st:Pager id="ResultsPager" runat="server" UseSpacer="False" PrefixText="<div>Goto page</div>"
+		<ANW:Pager id="ResultsPager" runat="server" UseSpacer="False" PrefixText="<div>Goto page</div>"
 			LinkFormatActive='<a href="{0}" class="Current">{1}</a>' UrlFormat="EditLinks.aspx?pg={0}"
-			CssClass="Pager"></st:Pager>
+			CssClass="Pager"></ANW:Pager>
 		<BR class="clear">
-	</st:AdvancedPanel>
-	<st:AdvancedPanel id="ImportExport" runat="server" LinkStyle="Image" LinkBeforeHeader="True" DisplayHeader="True"
+	</ANW:AdvancedPanel>
+	<ANW:AdvancedPanel id="ImportExport" runat="server" LinkStyle="Image" LinkBeforeHeader="True" DisplayHeader="True"
 		HeaderCssClass="CollapsibleTitle" HeaderText="Import/Export" Collapsible="True" BodyCssClass="Edit"
 		visible="false">
 		<div style="HEIGHT: 0px"><!-- IE bug hides label in following div without this -->
@@ -81,14 +68,14 @@
 						<ASP:DropDownList id="ddlImportExportCategories" runat="server"></ASP:DropDownList></p>
 				</div>
 				<div style="MARGIN-TOP: 8px">
-					<asp:Button id="lkbImportOpml" runat="server" CssClass="Button" Text="Import" onclick="lkbImportOpml_Click"></asp:Button><A class="Button" href="Export.aspx?command=opml">Export</A>
+					<asp:Button id="lkbImportOpml" runat="server" CssClass="Button" Text="Import"></asp:Button><A class="Button" href="Export.aspx?command=opml">Export</A>
 					<BR class="clear">
 					&nbsp;
 				</div>
 			</div>
 		</div>
-	</st:AdvancedPanel>
-	<st:AdvancedPanel id="Edit" runat="server" LinkStyle="Image" DisplayHeader="True" HeaderCssClass="CollapsibleTitle"
+	</ANW:AdvancedPanel>
+	<ANW:AdvancedPanel id="Edit" runat="server" LinkStyle="Image" DisplayHeader="True" HeaderCssClass="CollapsibleTitle"
 		HeaderText="Edit Link" Collapsible="False">
 		<div class="Edit"><!-- DEBUG -->
 			<p>
@@ -118,10 +105,10 @@
 					<asp:CheckBox id="chkNewWindow" runat="server" textalign="Left" Text="New Window"></asp:CheckBox>
 				</p>
 			<div>
-				<asp:Button id="lkbPost" runat="server" CssClass="buttonSubmit" Text="Post" onclick="lkbPost_Click" />
-				<asp:Button id="lkbCancel" runat="server" CssClass="buttonSubmit" Text="Cancel" onclick="lkbCancel_Click" />
+				<asp:Button id="lkbPost" runat="server" CssClass="buttonSubmit" Text="Post" />
+				<asp:Button id="lkbCancel" runat="server" CssClass="buttonSubmit" Text="Cancel" />
 				&nbsp;
 			</div>
 		</div>
-	</st:AdvancedPanel>
-</asp:Content>
+	</ANW:AdvancedPanel>
+</ANW:Page>

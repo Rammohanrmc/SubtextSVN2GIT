@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Subtext.Framework;
 using Subtext.Framework.Components;
 
@@ -29,7 +28,7 @@ namespace Subtext.Web.UI.Controls
 	///	Makes use of the <see cref="CategoryList"/> control.
 	///	</para>
 	/// </summary>
-	public class SingleColumn : CachedColumnControl
+	public  class SingleColumn : CachedColumnControl
 	{
 		protected Subtext.Web.UI.Controls.CategoryList Categories;
 
@@ -45,9 +44,9 @@ namespace Subtext.Web.UI.Controls
 			Categories.LinkCategories = GetArchiveCategories();
 		}
 
-		protected ICollection<LinkCategory> GetArchiveCategories()
+		protected LinkCategoryCollection GetArchiveCategories()
 		{
-            List<LinkCategory> lcc = new List<LinkCategory>();
+			LinkCategoryCollection lcc = new LinkCategoryCollection();
 
 			lcc.Add(UIData.Links(CategoryType.StoryCollection, CurrentBlog.UrlFormats));			
 			lcc.Add(UIData.ArchiveMonth(CurrentBlog.UrlFormats));

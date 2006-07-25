@@ -53,12 +53,25 @@ namespace Subtext.Framework.Exceptions
 			{
 				if(_blogId == NullValue.NullInt32)
 				{
-					return "Oooh. A blog with the same host '" + _duplicateBlog.Host + "' and subfolder '" + _duplicateBlog.Subfolder + "' already exists.";
+					return "Oooh. A blog with the same host and subfolder name already exists.";
 				}
 				else
 				{
-                    return "Sorry, but changing this blog to use that host '" + _duplicateBlog.Host + "' and subfolder '" + _duplicateBlog.Subfolder + "' would conflict with another blog.";
+					return "Sorry, but changing this blog to use that host and subfolder name would conflict with another blog.";
 				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the message resource key.
+		/// </summary>
+		/// <value></value>
+		public override string MessageResourceKey
+		{
+			get
+			{
+				//TODO: Internationalize...
+				throw new NotImplementedException("We have not yet implemented I8N.");
 			}
 		}
 

@@ -31,8 +31,12 @@ namespace Subtext.Framework.Text
 	/// <summary>
 	/// Static class used for parseing, formatting, and validating HTML.
 	/// </summary>
-	public static class HtmlHelper
+	public sealed class HtmlHelper
 	{
+		private HtmlHelper()
+		{
+		}
+
 		/// <summary>
 		/// Strips HTML tags from the specified text.
 		/// </summary>
@@ -154,7 +158,12 @@ namespace Subtext.Framework.Text
 
 			stringToTransform = HttpContext.Current.Server.HtmlEncode(stringToTransform);
 			string brTag = "<br />";
-			return stringToTransform.Replace(Environment.NewLine, brTag);
+			if (!Config.Settings.UseXHTML)
+			{
+				brTag = "<br />";
+			}
+
+			return stringToTransform.Replace("\n", brTag);
 		}
 
 		/// <summary>
@@ -199,7 +208,7 @@ namespace Subtext.Framework.Text
 			
 #if DEBUG
 			//Assert that the NameValueCollection is case insensitive!
-			if(allowedHtmlTags != null && allowedHtmlTags.Get("strong") != null && allowedHtmlTags.Get("STRONG") == null)
+			if(allowedHtmlTags.Get("strong") != null && allowedHtmlTags.Get("STRONG") == null)
 			{
 				throw new InvalidOperationException("Darn it, it's case sensitive!" + allowedHtmlTags.Get("STRONG"));
 			}

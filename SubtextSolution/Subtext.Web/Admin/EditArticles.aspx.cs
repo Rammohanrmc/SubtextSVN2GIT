@@ -18,14 +18,13 @@ using System.Web.UI.WebControls;
 
 namespace Subtext.Web.Admin.Pages
 {
-	public partial class EditArticles : ConfirmationPage
+	public class EditArticles : ConfirmationPage
 	{
-        public EditArticles() : base()
-	    {
-            this.TabSectionId = "Articles";
-	    }
-	    
-		protected void Page_Load(object sender, System.EventArgs e)
+		protected Subtext.Web.Admin.WebUI.Page PageContainer;
+		protected Subtext.Web.Admin.WebUI.AdvancedPanel Edit;
+		protected Subtext.Web.Admin.UserControls.EntryEditor Editor;
+	
+		private void Page_Load(object sender, System.EventArgs e)
 		{
 			BindLocalUI();
 		}
@@ -39,12 +38,13 @@ namespace Subtext.Web.Admin.Pages
 			LinkButton lkbNewPost = Utilities.CreateLinkButton("New Article");
 			lkbNewPost.CausesValidation = false;
 			lkbNewPost.Click += new System.EventHandler(lkbNewPost_Click);
-            base.AdminMasterPage.AddToActions(lkbNewPost);
+			PageContainer.AddToActions(lkbNewPost);
 
 			// REFACTOR: Structural issue btw Page and Container.
-			HyperLink lnkEditCategories = Utilities.CreateHyperLink("Edit Categories",
-                string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}?{1}={2}", Constants.URL_EDITCATEGORIES, Keys.QRYSTR_CATEGORYTYPE, categoryLinks.CategoryType));
-            base.AdminMasterPage.AddToActions(lnkEditCategories);
+			HyperLink lnkEditCategories = Utilities.CreateHyperLink("Edit Categories", 
+				string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}?{1}={2}", Constants.URL_EDITCATEGORIES, Keys.QRYSTR_CATEGORYID, 
+				(int)PageContainer.CategoryType));
+			PageContainer.AddToActions(lnkEditCategories);
 		}
 
 
@@ -64,6 +64,7 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		private void InitializeComponent()
 		{    
+			this.Load += new System.EventHandler(this.Page_Load);
 
 		}
 		#endregion

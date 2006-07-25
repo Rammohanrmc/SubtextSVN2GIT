@@ -18,7 +18,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.ApplicationBlocks.Data;
 using Subtext.Scripting.Exceptions;
 
 namespace Subtext.Scripting
@@ -93,9 +92,6 @@ namespace Subtext.Scripting
 		/// </summary>
 		public int Execute(SqlTransaction transaction)
 		{
-            if (transaction == null)
-                throw new ArgumentNullException("transaction", "Transaction was null.");
-
 			int returnValue = 0;
 			try
 			{

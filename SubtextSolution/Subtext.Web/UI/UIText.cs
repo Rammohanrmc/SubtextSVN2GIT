@@ -25,9 +25,13 @@ namespace Subtext.Web.UI
 	/// <remarks>
 	/// This text ought to be configurable per-blog.
 	/// </remarks>
-	public static class UIText
+	public sealed class UIText
 	{
 		//TODO: Refactor this to use blog settings, not app settings.
+		private UIText()
+		{
+		}
+
 		/// <summary>
 		/// Gets the titel for the post categories.
 		/// </summary>
@@ -78,7 +82,7 @@ namespace Subtext.Web.UI
 
 		private static string GetSafeConfig(string name, string defaultValue)
 		{
-            string text = ConfigurationManager.AppSettings[name] as string;
+			string text = ConfigurationSettings.AppSettings[name] as string;
 			if(text == null)
 			{
 				return defaultValue;

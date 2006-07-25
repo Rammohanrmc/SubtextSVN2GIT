@@ -21,7 +21,6 @@ using System.IO;
 using System.Text;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Microsoft.ApplicationBlocks.Data;
 using Subtext.Extensibility.Providers;
 using Subtext.Framework.Configuration;
 using Subtext.Scripting;
@@ -39,10 +38,9 @@ namespace Subtext.Installation.Import
 		/// </summary>
 		/// <param name="name">Name.</param>
 		/// <param name="configValue">Config value.</param>
-        //public override void Initialize(string name, NameValueCollection configValue)
-        //{
-        //    base.Initialize(name, configValue);
-        //}
+		public override void Initialize(string name, NameValueCollection configValue)
+		{
+		}
 		/// <summary>
 		/// <p>
 		/// This method is called by the import engine in order to ask the 
@@ -144,8 +142,7 @@ namespace Subtext.Installation.Import
 
 			try
 			{
-			    ConnectionString connStr = ConnectionString.Parse(dotTextConnectionString);
-                if (!DoesTableExist("blog_config", connStr))
+				if(!DoesTableExist("blog_config", dotTextConnectionString))
 				{
 					string errorMessage = "I&#8217;m sorry, but it does not appear that " 
 						+ "there is a .TEXT database corresponding to the connection string provided. " 
@@ -185,19 +182,24 @@ namespace Subtext.Installation.Import
 
 		bool DoesTableExist(string tableName, string ownerName, ConnectionString connectionString)
 		{	
-			return DoesTableExist(ownerName+"."+tableName, connectionString);
+			return DoesTableExist(ownerName+"."+tableName, connectionString.ToString());
 		}
 
 		bool DoesTableExist(string tableName, ConnectionString connectionString)
 		{
-            return 0 < GetTableCount(tableName, connectionString);
+			return DoesTableExist(tableName, connectionString.ToString());
 		}
 
-		int GetTableCount(string tableName, ConnectionString connectionString)
+		bool DoesTableExist(string tableName, string connectionString)
 		{
-            const string TableExistsSql = "SELECT COUNT(1) FROM [INFORMATION_SCHEMA].[TABLES] WHERE [TABLE_TYPE]='BASE TABLE' AND [TABLE_NAME]='{0}'";
+			return 0 < GetTableCount(tableName, connectionString);
+		}
+
+		int GetTableCount(string tableName, string connectionString)
+		{
+			const string TableExistsSql = "SELECT COUNT(1) FROM dbo.sysobjects WHERE id = object_id(N'{0}') and OBJECTPROPERTY(id, N'IsUserTable') = 1";
 			string blogContentTableSql = String.Format(TableExistsSql, tableName);			
-			return (int)SqlHelper.ExecuteScalar(connectionString.ToString(), CommandType.Text, blogContentTableSql);
+			return (int)SqlHelper.ExecuteScalar(connectionString, CommandType.Text, blogContentTableSql);
 		}
 	}
 }

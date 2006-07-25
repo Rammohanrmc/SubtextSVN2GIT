@@ -14,8 +14,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
@@ -23,6 +21,7 @@ using Subtext.Framework.Providers;
 using Subtext.Framework.Text;
 using Subtext.Framework.Threading;
 using Subtext.Framework.Tracking;
+using Subtext.Framework.Util;
 using Subtext.Framework.Logging;
 using Subtext.Framework.Web;
 
@@ -32,11 +31,13 @@ namespace Subtext.Framework
 	/// Class used for managing stats. Provides facilities for queing stats. 
 	/// This is used for trackbacks and pingbacks.
 	/// </summary>
-	public static class Stats
+	public sealed class Stats
 	{
 		static Log Log = new Log();
 
-		static List<EntryView> queuedStatsList = null;
+		private Stats(){}
+
+		static EntryViewCollection queuedStatsList = null;
 		static int queuedAllowCount;
 
 		/// <summary>
@@ -46,7 +47,7 @@ namespace Subtext.Framework
 		{
 			if(Config.Settings.Tracking.QueueStats)
 			{
-				queuedStatsList = new List<EntryView>();
+				queuedStatsList = new EntryViewCollection();
 				queuedAllowCount = Config.Settings.Tracking.QueueStatsCount;
 
 			}
@@ -60,14 +61,14 @@ namespace Subtext.Framework
 		/// <returns></returns>
 		public static bool ClearQueue(bool save)
 		{
-			using(TimedLock.Lock(queuedStatsList))
+			using(TimedLock.Lock(queuedStatsList.SyncRoot))
 			{
 				if(save)
 				{
 					EntryView[] eva = new EntryView[queuedStatsList.Count];
 					queuedStatsList.CopyTo(eva, 0);
 
-					ClearTrackEntryQueue(new List<EntryView>(eva));
+					ClearTrackEntryQueue(new EntryViewCollection(eva));
 					
 				}
 				queuedStatsList.Clear();	
@@ -86,7 +87,7 @@ namespace Subtext.Framework
 			if(queuedStatsList.Count >= queuedAllowCount)
 			{
 				//aquire the lock
-				using(TimedLock.Lock(queuedStatsList))
+				using(TimedLock.Lock(queuedStatsList.SyncRoot))
 				{
 					//make sure the pool queue was not cleared during a wait for the lock
 					if(queuedStatsList.Count >= queuedAllowCount)
@@ -94,7 +95,7 @@ namespace Subtext.Framework
 						EntryView[] eva = new EntryView[queuedStatsList.Count];
 						queuedStatsList.CopyTo(eva, 0);
 
-						ClearTrackEntryQueue(new List<EntryView>(eva));
+						ClearTrackEntryQueue(new EntryViewCollection(eva));
 						queuedStatsList.Clear();	
 					
 					}
@@ -104,7 +105,7 @@ namespace Subtext.Framework
 			return true;
 		}
 
-		private static bool ClearTrackEntryQueue(IEnumerable<EntryView> evc)
+		private static bool ClearTrackEntryQueue(EntryViewCollection evc)
 		{
 			ProcessStats ps = new ProcessStats(evc);
 			ps.Enqueue();
@@ -114,11 +115,11 @@ namespace Subtext.Framework
 
 		private class ProcessStats
 		{
-			public ProcessStats(IEnumerable<EntryView> evc)
+			public ProcessStats(EntryViewCollection evc)
 			{
 				_evc = evc;
 			}
-			protected IEnumerable<EntryView> _evc;
+			protected EntryViewCollection _evc;
 
 			public void Enqueue()
 			{
@@ -133,17 +134,17 @@ namespace Subtext.Framework
 
 		#region Data
 
-        public static IPagedCollection<ViewStat> GetPagedViewStats(int pageIndex, int pageSize, DateTime beginDate, DateTime endDate)
+		public static PagedViewStatCollection GetPagedViewStats(int pageIndex, int pageSize, DateTime beginDate, DateTime endDate)
 		{
 			return ObjectProvider.Instance().GetPagedViewStats(pageIndex, pageSize, beginDate, endDate);
 		}
 
-        public static IPagedCollection<Referrer> GetPagedReferrers(int pageIndex, int pageSize)
+		public static PagedReferrerCollection GetPagedReferrers(int pageIndex, int pageSize)
 		{
 			return ObjectProvider.Instance().GetPagedReferrers(pageIndex, pageSize);
 		}
 
-        public static IPagedCollection<Referrer> GetPagedReferrers(int pageIndex, int pageSize, int EntryID)
+		public static PagedReferrerCollection GetPagedReferrers(int pageIndex, int pageSize, int EntryID)
 		{
 			return ObjectProvider.Instance().GetPagedReferrers(pageIndex, pageSize, EntryID);
 		}
@@ -164,11 +165,11 @@ namespace Subtext.Framework
 
 		/// <summary>
 		/// Calls out to the data provider to track the specified 
-		/// <see cref="Collection"/> instance.
+		/// <see cref="EntryViewCollection"/> instance.
 		/// </summary>
 		/// <param name="evc">Evc.</param>
 		/// <returns></returns>
-		public static bool TrackEntry(IEnumerable<EntryView> evc)
+		public static bool TrackEntry(EntryViewCollection evc)
 		{
 			return ObjectProvider.Instance().TrackEntry(evc);
 		}
