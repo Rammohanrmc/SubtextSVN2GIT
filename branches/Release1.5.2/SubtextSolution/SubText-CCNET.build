@@ -40,7 +40,7 @@
 	
 		<property name="log.dir" value="${CCNetWorkingDirectory}\logs" />
 
-		<property name="{MbUnit.exe}" value="${CCNetWorkingDirectory}\Tools\MbUnit"/>
+		<property name="MbUnit.exe" value="${CCNetWorkingDirectory}\Tools\MbUnit"/>
 
 		<property name="publish.dir.latest" value="${CCNetArtifactDirectory}\builds\latest" />
 		<property name="publish.dir.archive" value="${CCNetArtifactDirectory}\builds\archive" />
