@@ -41,12 +41,6 @@
 		<ifnot test="${property::exists('ncoverexplorer.exe')}"> 
 			<fail message="ncoverexplorer.exe property not set, so cannot test" />
 		</ifnot>
-
-		<ifnot test="${property::exists('vil.exe')}"> 
-			<fail message="vil.exe property not set, so cannot test" />
-		</ifnot>
-		
-		<property name="vil.assemblies" value="${CCNetWorkingDirectory}\SubtextSolution\Subtext.Web\bin\Subtext.Common.dll" />
 	
 		<property name="log.dir" value="${CCNetWorkingDirectory}\logs" />
 		
@@ -146,7 +140,10 @@
 
 	<target name="testAndCover" depends="get-publishing-properties,compile-UnitTesting">
 		
-		<exec program="${NCover.exe}" workingdir="UnitTests.Subtext\bin\${configuration}" commandline="&quot;${MbUnit.exe}&quot; /rnf:unittest /rt:xml /rf:${log.dir} UnitTests.Subtext.dll //x ${log.dir}\ncover-temp.xml" failonerror="true"/>
+		<exec program="${NCover.exe}" 
+			workingdir="UnitTests.Subtext\bin\${configuration}" 
+			commandline="&quot;${MbUnit.exe}&quot; /rnf:unittest /rt:xml /rf:${log.dir} UnitTests.Subtext.dll //x ${log.dir}\ncover-temp.xml" 
+			failonerror="true"/>
 		
 		<call target="util.ncoverexplorer.nant" />
 		
@@ -175,11 +172,6 @@
 				<include name="${log.dir}\ncover-temp.xml"/>
 			</fileset>
 		</ncoverexplorer>
-	</target>
-
-	<target name="vil" depends="compile-release">
-		<mkdir dir="${log.dir}" />
-		<exec program="${vil.exe}" commandline='/a="${vil.assemblies}" /outxml="${log.dir}\results-vil.xml" /m classes,enumerations,structs,types,LOC,events,impInterfaces,dead,WMC,DIT,CBO,RFC,NOC,CC,constructors,methods,imps,fields,properties' failonerror="false"/>
 	</target>
 	
 	<target name="release" depends="dist.archive">
