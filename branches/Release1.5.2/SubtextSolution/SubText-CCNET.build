@@ -26,10 +26,6 @@
 			<fail message="CCNetLabel property not set, so can't create distribution files" />
 		</if>
 
-		<if test="${not property::exists('MbUnit.exe')}"> 
-			<fail message="MbUnit.exe property not set, so cannot test" />
-		</if>
-
 		<if test="${not property::exists('NCover.exe')}"> 
 			<fail message="NCover.exe property not set, so cannot test" />
 		</if>
@@ -44,6 +40,7 @@
 	
 		<property name="log.dir" value="${CCNetWorkingDirectory}\logs" />
 
+		<property name="{MbUnit.exe}" value="${CCNetWorkingDirectory}\Tools\MbUnit"/>
 
 		<property name="publish.dir.latest" value="${CCNetArtifactDirectory}\builds\latest" />
 		<property name="publish.dir.archive" value="${CCNetArtifactDirectory}\builds\archive" />
