@@ -144,7 +144,7 @@
 	<target name="testAndCover" depends="get-publishing-properties,compile-UnitTesting">
 		<exec program="${NCover.exe}"
 			workingdir="UnitTests.Subtext\bin\${configuration}" 
-			commandline="&quot;${MbUnit.exe}&quot; /rnf:unittest /rt:xml /rf:${log.dir} UnitTests.Subtext.dll //x ${log.dir}\ncover-temp.xml" 
+			commandline="&quot;${MbUnit.exe}&quot; /rnf:unittest /rt:xml /rf:${log.dir} UnitTests.Subtext.dll //x ${log.dir}\ncover-temp.xml //v" 
 			failonerror="true"/>
 
 		<call target="util.ncoverexplorer.nant" />	
