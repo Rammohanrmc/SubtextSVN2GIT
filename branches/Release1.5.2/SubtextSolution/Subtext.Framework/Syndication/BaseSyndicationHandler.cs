@@ -45,7 +45,7 @@ namespace Subtext.Framework.Syndication
 		{
 			get
 			{
-				return Context.Request.Headers["If-Modified-Since"] as string;
+				return Context.Request.Headers["If-Modified-Since"];
 			}
 		}
 
@@ -59,7 +59,7 @@ namespace Subtext.Framework.Syndication
 		{
 			get
 			{
-				return Context.Request.Headers["If-None-Match"] as string;	
+				return Context.Request.Headers["If-None-Match"];
 			}
 		}
 
