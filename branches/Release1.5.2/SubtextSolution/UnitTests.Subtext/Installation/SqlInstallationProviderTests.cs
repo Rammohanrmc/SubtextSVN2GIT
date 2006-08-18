@@ -63,10 +63,9 @@ namespace UnitTests.Subtext.Installation
 			scripts = sqlProvider.ListInstallationScripts(null, new Version(0, 0, 3, 0));
 			Assert.AreEqual(0, scripts.Length, "We expected to see no scripts.");
 			
-			scripts = sqlProvider.ListInstallationScripts(new Version(1, 1, 0, 0), new Version(1, 4, 1, 0));
+			scripts = sqlProvider.ListInstallationScripts(new Version(1, 1, 0, 0), new Version(1, 5, 0, 0));
 			Assert.AreEqual(1, scripts.Length, "We expected to see one script.");
 			Assert.AreEqual("Installation.01.05.00.sql", scripts[0], "Expected the 1.5.0 installation file.");
-
 		}
 
 		/// <summary>
