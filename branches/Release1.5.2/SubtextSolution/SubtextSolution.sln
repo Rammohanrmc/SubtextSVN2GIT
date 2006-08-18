@@ -45,6 +45,8 @@ Global
 		Documentation = Documentation
 		Release = Release
 	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
 		{AFE766FE-5FC7-4B64-AE50-E54E9AFD77F0}.Debug.ActiveCfg = Debug|.NET
 		{AFE766FE-5FC7-4B64-AE50-E54E9AFD77F0}.Debug.Build.0 = Debug|.NET
@@ -109,6 +111,7 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionItems) = postSolution
 		Subtext.Web\AspNetWithoutWebProjects.txt = Subtext.Web\AspNetWithoutWebProjects.txt
+		..\Utilities\CCNET_Config\ccnet.config = ..\Utilities\CCNET_Config\ccnet.config
 		CVSReadMe.txt = CVSReadMe.txt
 		License.txt = License.txt
 		Subtext.Installation\Scripts\Migration_Notes.txt = Subtext.Installation\Scripts\Migration_Notes.txt
@@ -116,6 +119,7 @@ Global
 		Subtext.Web\ReleaseNotes.txt = Subtext.Web\ReleaseNotes.txt
 		SolutionInfo.cs = SolutionInfo.cs
 		SourceGuidelines.txt = SourceGuidelines.txt
+		SubText-CCNET.build = SubText-CCNET.build
 		SubText.build = SubText.build
 		SubtextCodeAnalysis.FxCop = SubtextCodeAnalysis.FxCop
 		SubtextDocs.ndoc = SubtextDocs.ndoc
