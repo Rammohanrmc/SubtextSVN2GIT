@@ -79,7 +79,7 @@
 				</items>
 			</in>
 			<do>
-				<delete dir="${foldername}" />
+				<delete dir="${foldername}" failonerror="false" />
 			</do>
 		</foreach>
 		<mkdir dir="Subtext.Web\bin" />
