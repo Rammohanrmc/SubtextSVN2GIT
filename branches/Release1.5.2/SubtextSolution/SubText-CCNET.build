@@ -71,7 +71,7 @@
 
 	
 	<target name="clean-vs">
-		<foreach item="Folder" property="foldername">
+		<foreach item="Folder" property="foldername" failonerror="false">
 			<in>
 				<items basedir=".">
 					<include name="*\bin" />
