@@ -71,7 +71,7 @@
 
 	
 	<target name="clean-vs">
-		<foreach item="Folder" property="foldername" failonerror="false">
+		<foreach item="Folder" property="foldername">
 			<in>
 				<items basedir=".">
 					<include name="*\bin" />
@@ -79,7 +79,7 @@
 				</items>
 			</in>
 			<do>
-				<delete dir="${foldername}" failonerror="false" />
+				<delete dir="${foldername}" />
 			</do>
 		</foreach>
 		<mkdir dir="Subtext.Web\bin" />
@@ -145,7 +145,6 @@
 		<exec program="${NCover.exe}"
 			workingdir="UnitTests.Subtext\bin\${configuration}" 
 			commandline="&quot;${MbUnit.exe}&quot; /rnf:unittest /rt:xml /rf:${log.dir} UnitTests.Subtext.dll //x ${log.dir}\ncover-temp.xml" 
-			verbose="true"
 			failonerror="true"/>
 
 		<call target="util.ncoverexplorer.nant" />	
