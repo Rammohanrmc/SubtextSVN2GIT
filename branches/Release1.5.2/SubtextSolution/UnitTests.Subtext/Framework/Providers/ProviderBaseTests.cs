@@ -68,7 +68,7 @@ namespace UnitTests.Subtext.Framework.Providers
 
 			UnitTestStubProvider provider = new UnitTestStubProvider();
 			string settingValue = provider.GetSettingValue("someSetting", collection);
-			Assert.AreEqual("Server=localhost;Database=SubtextData;Trusted_Connection=True", settingValue);
+			Assert.AreEqual("Server=localhost;Database=SubtextData_1.5;Trusted_Connection=True", settingValue);
 
 			settingValue = provider.GetSettingValue("anotherSetting", collection);
 			Assert.AreEqual("ConnectionString", settingValue);
