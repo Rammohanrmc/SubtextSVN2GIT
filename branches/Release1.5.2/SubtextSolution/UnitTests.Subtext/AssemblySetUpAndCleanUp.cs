@@ -6,8 +6,11 @@ using Subtext.Installation;
 
 namespace UnitTests.Subtext
 {
-	public static class AssemblySetUpAndCleanUp
+	public sealed class AssemblySetUpAndCleanUp
 	{
+		private AssemblySetUpAndCleanUp()
+		{}
+		
 		[SetUp]
 		public static void SetUp()
 		{
