@@ -49,7 +49,7 @@ namespace Subtext.Web
 		    //TODO: Use our other feed generation code.
 			if(feedData != null && feedData.Rows.Count > 0)
 			{
-				string rssXml = GetRSS(feedData,Request.ApplicationPath);		
+				string rssXml = GetRSS(feedData, Request.ApplicationPath);		
 				Response.ContentEncoding = System.Text.Encoding.UTF8;
 				Response.ContentType = "text/xml";
 				Response.Write(rssXml);
@@ -135,14 +135,14 @@ namespace Subtext.Web
 
 					string aggText = useAggBugs ? Subtext.Framework.Tracking.TrackingUrls.AggBugImage(string.Format(baselink + "aggbug/{0}.aspx",dr["ID"])) : string.Empty;
 
-					writer.WriteElementString("description",string.Format("{0}{1}",desc,aggText));
+					writer.WriteElementString("description", string.Format("{0}{1}", desc, aggText));
 			
 					if(dr["IsXHTML"] != DBNull.Value && (bool)dr["IsXHTML"])
 					{
 
 						writer.WriteStartElement("body");
 						writer.WriteAttributeString("xmlns","http://www.w3.org/1999/xhtml");
-						writer.WriteRaw((string)dr["Text"]);
+						writer.WriteRaw((string)dr["Description"]);
 						writer.WriteEndElement();
 
 					}
