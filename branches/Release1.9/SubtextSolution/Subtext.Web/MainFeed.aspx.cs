@@ -136,16 +136,6 @@ namespace Subtext.Web
 					string aggText = useAggBugs ? Subtext.Framework.Tracking.TrackingUrls.AggBugImage(string.Format(baselink + "aggbug/{0}.aspx",dr["ID"])) : string.Empty;
 
 					writer.WriteElementString("description", string.Format("{0}{1}", desc, aggText));
-			
-					if(dr["IsXHTML"] != DBNull.Value && (bool)dr["IsXHTML"])
-					{
-
-						writer.WriteStartElement("body");
-						writer.WriteAttributeString("xmlns","http://www.w3.org/1999/xhtml");
-						writer.WriteRaw((string)dr["Description"]);
-						writer.WriteEndElement();
-
-					}
 					writer.WriteElementString("dc:creator",(string)dr["Author"]);	
 					writer.WriteEndElement();
 				
