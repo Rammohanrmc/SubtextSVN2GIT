@@ -1981,9 +1981,6 @@
     <Content Include="SystemMessages\FileNotFound.aspx">
       <SubType>Form</SubType>
     </Content>
-    <Content Include="SystemMessages\PageTemplate.ascx">
-      <SubType>UserControl</SubType>
-    </Content>
     <Content Include="SystemMessages\Style\SystemMessageStyle.css" />
     <Content Include="SystemMessages\UpgradeInProgress.aspx">
       <SubType>Form</SubType>
