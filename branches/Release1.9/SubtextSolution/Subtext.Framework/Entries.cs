@@ -533,7 +533,7 @@ namespace Subtext.Framework
 			int entryId = Create(comment);
 
 			// if it's not the administrator commenting
-			if(!Security.IsAdmin)
+			if(!Security.IsAdmin && !String.IsNullOrEmpty(Config.CurrentBlog.Email))
 			{
 				try
 				{
