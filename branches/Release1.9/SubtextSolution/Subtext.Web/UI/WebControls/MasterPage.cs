@@ -37,7 +37,7 @@ namespace Subtext.Web.UI.WebControls
 	public class MasterPage : System.Web.UI.HtmlControls.HtmlContainerControl
 	{
 		Subtext.Framework.Logging.Log Log = new Subtext.Framework.Logging.Log();
-		private string templateFile = null;
+		private string templateFile;
 		private Control template = null;
 
 		private ArrayList contents = new ArrayList();

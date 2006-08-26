@@ -41,7 +41,7 @@ namespace Subtext.Web.Controls
 		/// </summary>
 		public MasterPage()
 		{
-			this._template = null;
+			this._template;
 			this._defaults = new ContentRegion();
 			this._contents = new ArrayList();
             this._templateFile = ConfigurationManager.AppSettings["Subtext.MasterPages.TemplateFile"];
