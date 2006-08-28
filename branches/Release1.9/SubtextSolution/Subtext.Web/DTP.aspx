@@ -15,6 +15,7 @@
 		<link id="SecondaryCss" type="text/css" rel="stylesheet" runat="Server" />
 		<link id="CustomCss" type="text/css" rel="stylesheet" runat="Server" />
 		<link id="Rsd" rel="EditURI" type="application/rsd+xml" title="RSD" runat="server" />
+		<link id="AtomLink" title="RSS" type="application/rss+xml" rel="alternate" runat="Server" />
 		<st:ScriptTag id="blogInfoScript" runat="server" src="~/scripts/BlogInfo.js" />
 		<script type="text/javascript">
 			<%= AllowedHtmlJavascriptDeclaration %>

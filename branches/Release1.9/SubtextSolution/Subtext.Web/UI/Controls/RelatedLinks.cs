@@ -33,7 +33,7 @@ namespace Subtext.Web.UI.Controls
 			else
 				BlogId = 0;
 
-			if (CurrentBlog.Subfolder != String.Empty)
+			if (!String.IsNullOrEmpty(CurrentBlog.Subfolder))
 				applikasyon = CurrentBlog.Subfolder;
 			else
 				applikasyon = String.Empty;
