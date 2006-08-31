@@ -18,14 +18,13 @@ using System;
 namespace Subtext.Extensibility
 {
 	/// <summary>
-	/// Think of PostConfig items as filters. These values are often used in the 
-	/// WHERE clause of stored procedures, for example.
+	/// Summary description for PostConfig.
 	/// </summary>
 	[Flags()]
 	public enum PostConfig
 	{
-		None = 0,	//no filter. Therefore if getting items, all items will be gotten.
-		IsActive = 1,	//filter returns only the active items
+		None = 0,
+		IsActive = 1,
 		IsXHTML = 2,
 		AllowComments = 4,
 		DisplayOnHomePage = 8,
