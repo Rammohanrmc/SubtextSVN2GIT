@@ -18,20 +18,18 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Configuration;
-using System.Globalization;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Web;
 using log4net;
 using Subtext.Extensibility;
 using Subtext.Extensibility.Interfaces;
-using Subtext.Extensibility.Providers;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Logging;
 using Subtext.Framework.Providers;
 using Subtext.Framework.Text;
 using Subtext.Framework.Tracking;
-using Subtext.Framework.Util;
 
 namespace Subtext.Framework
 {
@@ -57,19 +55,6 @@ namespace Subtext.Framework
 		{
 			return ObjectProvider.Instance().GetPagedEntries(postType, categoryID, pageIndex, pageSize);
 		}
-
-		/// <summary>
-		/// Returns a pageable collection of comments.
-		/// </summary>
-		/// <param name="pageIndex"></param>
-		/// <param name="pageSize"></param>
-		/// <param name="postConfig"></param>
-		/// <returns></returns>
-        public static IPagedCollection<Entry> GetPagedFeedback(int pageIndex, int pageSize, PostConfig postConfig)
-		{
-			return ObjectProvider.Instance().GetPagedFeedback(pageIndex, pageSize, postConfig);
-		}
-
 		#endregion
 
 		public static EntryDay GetSingleDay(DateTime dt)
@@ -131,26 +116,26 @@ namespace Subtext.Framework
 		/// </summary>
 		/// <param name="parentEntry">Parent entry.</param>
 		/// <returns></returns>
-        public static IList<Entry> GetFeedBack(Entry parentEntry)
+        public static IList<FeedbackItem> GetFeedBack(Entry parentEntry)
 		{
-			return ObjectProvider.Instance().GetFeedBack(parentEntry);
+			return ObjectProvider.Instance().GetFeedbackForEntry(parentEntry);
 		}
 
-	    /// <summary>
-	    /// Returns the itemCount most recent posts.  
-	    /// This is used to support MetaBlogAPI...
-	    /// </summary>
-	    /// <param name="itemCount"></param>
-	    /// <param name="postType"></param>
-	    /// <param name="postConfig"></param>
-	    /// <param name="includeCategories"></param>
-	    /// <returns></returns>
-        public static IList<Entry> GetRecentPosts(int itemCount, PostType postType, PostConfig postConfig, bool includeCategories)
+		/// <summary>
+		/// Returns the itemCount most recent posts.  
+		/// This is used to support MetaBlogAPI...
+		/// </summary>
+		/// <param name="itemCount"></param>
+		/// <param name="postType"></param>
+		/// <param name="postConfig"></param>
+		/// <param name="includeCategories"></param>
+		/// <returns></returns>
+		public static IList<Entry> GetRecentPosts(int itemCount, PostType postType, PostConfig postConfig, bool includeCategories)
 		{
-            return ObjectProvider.Instance().GetConditionalEntries(itemCount, postType, postConfig, includeCategories);
+			return ObjectProvider.Instance().GetConditionalEntries(itemCount, postType, postConfig, includeCategories);
 		}
 
-		public static IList<Entry> GetPostCollectionByMonth(int month, int year)
+	    public static IList<Entry> GetPostCollectionByMonth(int month, int year)
 		{
 			return ObjectProvider.Instance().GetPostCollectionByMonth(month,year);
 		}
@@ -217,26 +202,6 @@ namespace Subtext.Framework
 		{
 			return ObjectProvider.Instance().Delete(entryId);
 		}
-
-		/// <summary>
-		/// Approves the comment. Used in comment moderation.
-		/// </summary>
-		/// <param name="comment"></param>
-		/// <returns></returns>
-		public static void Approve(Entry comment)
-		{
-			if (comment == null)
-				throw new ArgumentNullException("comment", "Cannot approve a null comment.");
-
-			if (comment.PostType != PostType.Comment && comment.PostType != PostType.PingTrack)
-				throw new ArgumentException("This is not a comment, it's an entry!", "comment");
-			
-			comment.NeedsModeratorApproval = false;
-			comment.IsActive = true;
-
-			Update(comment);
-		}
-
 		#endregion
 
 		#region Create
@@ -247,17 +212,9 @@ namespace Subtext.Framework
 		/// <returns></returns>
 		public static int Create(Entry entry)
 		{
-			// check if we're admin, if not filter the comment. We do this to help when Importing 
-			// a blog using the BlogML import process. A better solution may be developing a way to 
-			// determine if we're currently in the BlogML import process and use that here.
-			if(!Security.IsAdmin
-				&& (entry.PostType == PostType.Comment || entry.PostType == PostType.PingTrack))
-			{
-			    CommentFilter.FilterComment(entry);
-			}
-
+			Debug.Assert(entry.PostType != PostType.None, "Posttype should never be null.");
+			
 			if(Config.CurrentBlog.AutoFriendlyUrlEnabled
-				&& (entry.PostType == PostType.BlogPost || entry.PostType == PostType.Story)
 				&& String.IsNullOrEmpty(entry.EntryName)
 				&& !String.IsNullOrEmpty(entry.Title))
 			{
@@ -281,6 +238,7 @@ namespace Subtext.Framework
 			}
 			
 			int id = ObjectProvider.Instance().Create(entry, categoryIds);
+			log.Debug("Created entry, running notification services.");
 			NotificationServices.Run(entry);
 			return id;
 		}
@@ -489,7 +447,7 @@ namespace Subtext.Framework
 		/// <returns></returns>
 		public static bool Update(Entry entry, params int[] categoryIDs)
 		{
-			entry.DateUpdated = DateTime.Now;
+			entry.DateModified = DateTime.Now;
 			return ObjectProvider.Instance().Update(entry, categoryIDs);
 		}
 
@@ -503,92 +461,6 @@ namespace Subtext.Framework
 		}
 
 		#endregion
-
-		/// <summary>
-		/// Inserts the entry as a comment.
-		/// </summary>
-		/// <remarks>
-		/// If it's not the admin posting the comment, an email is sent 
-		/// to the Admin with the contents of the comment.
-		/// </remarks>
-		/// <param name="comment">Entry.</param>
-		public static int CreateComment(Entry comment)
-		{
-			// what follows relies on context, so guard
-			if (null == HttpContext.Current) return NullValue.NullInt32;
-
-			comment.Author = HtmlHelper.SafeFormat(comment.Author);
-			comment.AlternativeTitleUrl =  HtmlHelper.SafeFormat(comment.AlternativeTitleUrl);
-			comment.Body = HtmlHelper.ConvertToAllowedHtml(comment.Body);
-			comment.Title = HtmlHelper.SafeFormat(comment.Title);
-			comment.IsXHMTL = false;
-			comment.IsActive = Security.IsAdmin || !Config.CurrentBlog.ModerationEnabled;
-			comment.NeedsModeratorApproval = !comment.IsActive;
-			comment.DateCreated = comment.DateUpdated = BlogTime.CurrentBloggerTime;
-			
-			if (String.IsNullOrEmpty(comment.SourceName))
-				comment.SourceName = "N/A";
-
-			// insert comment into backend, save the returned entryid for permalink anchor below
-			int entryId = Create(comment);
-
-			// if it's not the administrator commenting
-			if(!Security.IsAdmin && !String.IsNullOrEmpty(Config.CurrentBlog.Email))
-			{
-				try
-				{
-					EmailCommentToAdmin(comment, entryId);
-				}
-				catch(Exception e)
-				{
-					log.Error("Exception occurred while inserting comment", e);
-				}
-			}
-			return entryId;
-		}
-
-		private static void EmailCommentToAdmin(Entry comment, int entryId)
-		{
-			string blogTitle = Config.CurrentBlog.Title;
-
-			// create and format an email to the site admin with comment details
-			EmailProvider im = EmailProvider.Instance();
-
-			string fromEmail = comment.Email;
-			if(String.IsNullOrEmpty(fromEmail))
-				fromEmail = im.AdminEmail;
-
-			string To = Config.CurrentBlog.Email;
-			string From = fromEmail;
-			string Subject = String.Format(CultureInfo.InvariantCulture, "Comment: {0} (via {1})", comment.Title, blogTitle);
-
-			string bodyFormat = "Comment from {0}" + Environment.NewLine 
-			                    + "----------------------------------------------------" + Environment.NewLine
-			                    + "From:\t{1} <{2}>" + Environment.NewLine
-			                    + "Url:\t{3}" + Environment.NewLine
-			                    + "IP:\t{4}" + Environment.NewLine
-								+ "====================================================" + Environment.NewLine + Environment.NewLine
-								+ "{5}" + Environment.NewLine + Environment.NewLine
-								+ "Source: {6}#{7}";
-
-			string sourceUrl = Config.CurrentBlog.RootUrl.ToString();
-			if (!String.IsNullOrEmpty(sourceUrl) && sourceUrl.EndsWith("/"))
-				sourceUrl = sourceUrl.Substring(0, sourceUrl.Length - 1);
-			sourceUrl += comment.SourceUrl;
-			
-			string Body = string.Format(CultureInfo.InvariantCulture, bodyFormat, 
-			                            blogTitle,
-			                            comment.Author,
-										comment.Email,
-			                            comment.AlternativeTitleUrl,
-			                            comment.SourceName,
-			                            // we're sending plain text email by default, but body includes <br />s for crlf
-			                            comment.Body.Replace("<br />", Environment.NewLine),
-										sourceUrl,
-			                            entryId);			
-				
-			im.Send(To, From, Subject, Body);
-		}
 	}
 }
 
