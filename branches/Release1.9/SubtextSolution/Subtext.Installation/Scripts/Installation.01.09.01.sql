@@ -96,7 +96,7 @@ IF EXISTS
 			, Referrer = NULL
 			, IpAddress = SourceName
 			, UserAgent = NULL
-			, CommentChecksumHash = ContentChecksumHash
+			, FeedbackChecksumHash = ISNULL(ContentChecksumHash, '')
 			, DateCreated = DateAdded
 			, DateModified = getdate()
 		FROM [dbo].[subtext_Content]
