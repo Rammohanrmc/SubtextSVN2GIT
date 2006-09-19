@@ -73,33 +73,45 @@ IF NOT EXISTS
 GO
 
 
-IF EXISTS (SELECT * FROM [<dbUser,varchar,dbo>].[subtext_Content] WHERE PostType = 3 OR PostType = 4)
-BEGIN
+IF EXISTS 
+	(
+		SELECT	* FROM [information_schema].[columns] 
+		WHERE	table_name = 'subtext_Content' 
+		AND		table_schema = '<dbUser,varchar,dbo>'
+		AND		column_name = 'ParentId'
+	)
+	BEGIN
 	/* Transfer comments over to subtext_Feedback */
-	INSERT [<dbUser,varchar,dbo>].[subtext_Feedback]
-	SELECT Title
-		, Body = [Text]
-		, BlogId
-		, EntryId = ParentID
-		, Author
-		, Email
-		, Url = TitleUrl
-		, CommentType = CASE PostConfig WHEN 3 THEN 1 ELSE 2 END
-		, StatusFlag = 1
-		, CommentAPI = 0
-		, Referrer = NULL
-		, IpAddress = SourceName
-		, UserAgent = NULL
-		, CommentChecksumHash = ContentChecksumHash
-		, DateCreated = DateAdded
-		, DateModified = getdate()
-	FROM [dbo].[subtext_Content]
-	WHERE 
-		(PostType = 3 OR PostType = 4) -- Comment or PingBack
+		INSERT [<dbUser,varchar,dbo>].[subtext_Feedback]
+		SELECT Title
+			, Body = [Text]
+			, BlogId
+			, EntryId = ParentID
+			, Author
+			, Email
+			, Url = TitleUrl
+			, CommentType = CASE PostConfig WHEN 3 THEN 1 ELSE 2 END
+			, StatusFlag = 1
+			, CommentAPI = 0
+			, Referrer = NULL
+			, IpAddress = SourceName
+			, UserAgent = NULL
+			, CommentChecksumHash = ContentChecksumHash
+			, DateCreated = DateAdded
+			, DateModified = getdate()
+		FROM [dbo].[subtext_Content]
+		WHERE 
+			(PostType = 3 OR PostType = 4) -- Comment or PingBack
 
-	DELETE [<dbUser,varchar,dbo>].[subtext_Content]
-	WHERE (PostType = 3 OR PostType = 4) -- Comment or PingBack
-END
+	/* Delete comments from old table */
+		DELETE [<dbUser,varchar,dbo>].[subtext_Content]
+		WHERE (PostType = 3 OR PostType = 4) -- Comment or PingBack
+	
+	/* Drop the ParentID column */
+		ALTER TABLE [<dbUser,varchar,dbo>].[subtext_Content] 
+		DROP COLUMN [ParentId]
+	END
+GO
 
 /* Clean up the subtext_Content table by removing columns no longer needed! */
 IF EXISTS 
@@ -112,18 +124,6 @@ IF EXISTS
 	/* Add an URL column so we can see which URL caused the problem */
 	ALTER TABLE [<dbUser,varchar,dbo>].[subtext_Content] 
 	DROP COLUMN [ContentChecksumHash]
-GO
-
-/* Drop the ParentID column */
-IF EXISTS 
-	(
-		SELECT	* FROM [information_schema].[columns] 
-		WHERE	table_name = 'subtext_Content' 
-		AND		table_schema = '<dbUser,varchar,dbo>'
-		AND		column_name = 'ParentId'
-	)
-	ALTER TABLE [<dbUser,varchar,dbo>].[subtext_Content] 
-	DROP COLUMN [ParentId]
 GO
 
 /* Drop the TitleUrl column */
