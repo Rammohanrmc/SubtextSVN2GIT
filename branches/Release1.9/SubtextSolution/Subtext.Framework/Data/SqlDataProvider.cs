@@ -527,6 +527,11 @@ namespace Subtext.Framework.Data
 
 		#region Update Blog Data
 
+		/// <summary>
+		/// Deletes the entry from the database.
+		/// </summary>
+		/// <param name="PostID">The post ID.</param>
+		/// <returns></returns>
 		public override bool DeleteEntry(int PostID)
 		{
 			SqlParameter[] p =
@@ -536,7 +541,22 @@ namespace Subtext.Framework.Data
 			};
 			return NonQueryBool("subtext_DeletePost",p);
 		}
-
+		
+		/// <summary>
+		/// Deletes the entry from the database.
+		/// </summary>
+		/// <param name="id">The post ID.</param>
+		/// <returns></returns>
+		public override void DestroyFeedback(int id)
+		{
+			SqlParameter[] p =
+			{
+				DataHelper.MakeInParam("@Id", SqlDbType.Int, 4, id),
+				BlogIdParam
+			};
+			NonQueryBool("subtext_DeleteFeedback", p);
+		}
+		
 	    /// <summary>
 	    /// Saves the categories for the specified post.
 	    /// </summary>
@@ -687,7 +707,7 @@ namespace Subtext.Framework.Data
 			SqlParameter[] p =
 			{
 				DataHelper.MakeInParam("@Title", SqlDbType.NVarChar, 256, feedbackItem.Title), 
-				DataHelper.MakeInParam("@Body", SqlDbType.NText, 16, DataHelper.CheckNull(feedbackItem.Body)), 
+				DataHelper.MakeInParam("@Body", SqlDbType.NText, 0, DataHelper.CheckNull(feedbackItem.Body)), 
 				DataHelper.MakeInParam("@EntryId", SqlDbType.Int, 4, DataHelper.CheckNull(feedbackItem.EntryId)),
 				DataHelper.MakeInParam("@Author", SqlDbType.NVarChar, 128, DataHelper.CheckNull(feedbackItem.Author)), 
 				DataHelper.MakeInParam("@Email", SqlDbType.VarChar, 128, DataHelper.CheckNull(feedbackItem.Email)), 
@@ -909,6 +929,31 @@ namespace Subtext.Framework.Data
 				DataHelper.MakeInParam("@Id", SqlDbType.Int, 4, id),
 			};
 			return GetReader("subtext_GetFeedBack", p);
+		}
+
+		/// <summary>
+		/// Gets the feedback counts for the various top level statuses.
+		/// </summary>
+		/// <param name="approved">The approved.</param>
+		/// <param name="needsModeration">The needs moderation.</param>
+		/// <param name="flaggedAsSpam">The flagged as spam.</param>
+		/// <param name="deleted">The deleted.</param>
+		public override void GetFeedbackCounts(out int approved, out int needsModeration, out int flaggedAsSpam, out int deleted)
+		{
+			SqlParameter[] p =
+			{
+				BlogIdParam,
+				DataHelper.MakeOutParam("@ApprovedCount", SqlDbType.Int, 4),
+				DataHelper.MakeOutParam("@NeedsModerationCount", SqlDbType.Int, 4),
+				DataHelper.MakeOutParam("@FlaggedSpam", SqlDbType.Int, 4),
+				DataHelper.MakeOutParam("@Deleted", SqlDbType.Int, 4)
+			};
+			NonQueryBool("subtext_GetFeedbackCountsByStatus", p);
+
+			approved = (int)p[1].Value;
+			needsModeration = (int)p[2].Value;
+			flaggedAsSpam = (int)p[3].Value;
+			deleted = (int)p[4].Value;
 		}
 
 		//we could pass ParentID with the rest of the sprocs

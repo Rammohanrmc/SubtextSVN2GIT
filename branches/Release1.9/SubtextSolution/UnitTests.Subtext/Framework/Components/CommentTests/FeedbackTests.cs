@@ -57,7 +57,46 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 			FeedbackItem.ConfirmSpam(comment);
 			comment = FeedbackItem.Get(comment.Id);
 			Assert.IsFalse(comment.Approved, "Should not be approved now.");
-			Assert.IsTrue(comment.Deleted, "Should not be moved to deleted folder now.");	
+			Assert.IsTrue(comment.Deleted, "Should be moved to deleted folder now.");	
+		}
+
+		[Test]
+		[RollBack]
+		public void DeleteCommentSetsDeletedBit()
+		{
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
+			Config.CurrentBlog.CommentsEnabled = true;
+			Config.CurrentBlog.ModerationEnabled = false;
+
+			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("blah", "blah", "blah");
+			Entries.Create(entry);
+
+			FeedbackItem comment = CreateAndUpdateFeedbackWithExactStatus(entry, FeedbackType.Comment, FeedbackStatusFlag.Approved);
+			Assert.IsTrue(comment.Approved, "should be approved");
+
+			FeedbackItem.Delete(comment);
+			comment = FeedbackItem.Get(comment.Id);
+			Assert.IsFalse(comment.Approved, "Should not be approved now.");
+			Assert.IsTrue(comment.Deleted, "Should be moved to deleted folder now.");
+		}
+
+		[Test]
+		[RollBack]
+		public void DestroyCommentReallyGetsRidOfIt()
+		{
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
+			Config.CurrentBlog.CommentsEnabled = true;
+			Config.CurrentBlog.ModerationEnabled = false;
+
+			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("blah", "blah", "blah");
+			Entries.Create(entry);
+
+			FeedbackItem comment = CreateAndUpdateFeedbackWithExactStatus(entry, FeedbackType.Comment, FeedbackStatusFlag.Approved);
+			Assert.IsTrue(comment.Approved, "should be approved");
+
+			FeedbackItem.Delete(comment);
+			comment = FeedbackItem.Get(comment.Id);
+			Assert.IsNull(comment);
 		}
 
 		[Test]
@@ -201,6 +240,20 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		public void ConfirmSpamThrowsArgumentNull()
 		{
 			FeedbackItem.ConfirmSpam(null);
+		}
+
+		[Test]
+		[ExpectedArgumentNullException]
+		public void DeleteNullCommentThrowsArgumentNull()
+		{
+			FeedbackItem.Delete(null);
+		}
+
+		[Test]
+		[ExpectedArgumentNullException]
+		public void DestroyNullCommentThrowsArgumentNull()
+		{
+			FeedbackItem.Destroy(null);
 		}
 		#endregion
 

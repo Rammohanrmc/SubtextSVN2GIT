@@ -46,6 +46,16 @@ namespace Subtext.Framework.Components
 		{
 			return ObjectProvider.Instance().GetFeedback(feedbackId);
 		}
+		
+		/// <summary>
+		/// Gets the feedback counts for the various top level statuses.
+		/// </summary>
+		public static FeedbackCounts GetFeedbackCounts()
+		{
+			FeedbackCounts counts;
+			ObjectProvider.Instance().GetFeedbackCounts(out counts.ApprovedCount, out counts.NeedsModerationCount, out counts.FlaggedAsSpamCount, out counts.DeletedCount);
+			return counts;
+		}
 
 		/// <summary>
 		/// Returns a pageable collection of comments.
@@ -211,6 +221,33 @@ namespace Subtext.Framework.Components
 			feedback.SetStatus(FeedbackStatusFlag.ConfirmedSpam, true);
 
 			Update(feedback);
+		}
+
+		/// <summary>
+		/// Confirms the feedback as spam and moves it to the trash.
+		/// </summary>
+		/// <param name="feedback">The feedback.</param>
+		public static void Delete(FeedbackItem feedback)
+		{
+			if (feedback == null)
+				throw new ArgumentNullException("comment", "Cannot delete a null comment.");
+
+			feedback.SetStatus(FeedbackStatusFlag.Approved, false);
+			feedback.SetStatus(FeedbackStatusFlag.Deleted, true);
+
+			Update(feedback);
+		}
+
+		/// <summary>
+		/// Confirms the feedback as spam and moves it to the trash.
+		/// </summary>
+		/// <param name="feedback">The feedback.</param>
+		public static void Destroy(FeedbackItem feedback)
+		{
+			if (feedback == null)
+				throw new ArgumentNullException("comment", "Cannot destroy a null comment.");
+
+			ObjectProvider.Instance().DestroyFeedback(feedback.Id);
 		}
 
 		/// <summary>
@@ -587,6 +624,14 @@ namespace Subtext.Framework.Components
 		}
 
 		DateTime parentDateCreated;
+	}
+	
+	public struct FeedbackCounts
+	{
+		public int ApprovedCount;
+		public int NeedsModerationCount;
+		public int FlaggedAsSpamCount;
+		public int DeletedCount;
 	}
 	
 	/// <summary>

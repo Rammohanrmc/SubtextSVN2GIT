@@ -830,3 +830,10 @@ a.active
 {
 	text-decoration: underline;
 }
+
+div.LeftNavContent ul li a.active
+{
+	font-weight: bold;
+	font-size: larger;
+	text-decoration: none;
+}

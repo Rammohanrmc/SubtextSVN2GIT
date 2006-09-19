@@ -186,6 +186,10 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,
 drop procedure [<dbUser,varchar,dbo>].[subtext_GetFeedbackCollection]
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetFeedbackCountsByStatus]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetFeedbackCountsByStatus]
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetFeedback]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [<dbUser,varchar,dbo>].[subtext_GetFeedback]
 GO
@@ -603,6 +607,44 @@ GO
 
 GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_DeleteLinksByPostID]  TO [public]
 GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+/*
+Returns a count of feedback for the various statuses.
+*/
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetFeedbackCountsByStatus]
+(
+	@BlogId int,
+	@ApprovedCount int out,
+	@NeedsModerationCount int out,
+	@FlaggedSpam int out,
+	@Deleted int out	
+)
+AS
+
+SELECT @ApprovedCount = COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE BlogId = @BlogId AND StatusFlag & 1 = 1
+SELECT @NeedsModerationCount = COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE BlogId = @BlogId AND StatusFlag & 2 = 2 AND StatusFlag & 8 != 8 AND StatusFlag & 1 != 1
+SELECT @FlaggedSpam = COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE BlogId = @BlogId AND StatusFlag & 4 = 4 AND StatusFlag & 8 != 8 AND StatusFlag & 1 != 1
+SELECT @Deleted = COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE BlogId = @BlogId AND StatusFlag & 8 = 8 AND StatusFlag & 1 != 1
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetFeedbackCountsByStatus] TO [public]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
 
 SET QUOTED_IDENTIFIER ON 
 GO
