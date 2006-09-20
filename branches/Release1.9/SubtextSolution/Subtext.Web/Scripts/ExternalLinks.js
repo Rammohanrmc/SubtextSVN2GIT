@@ -18,14 +18,12 @@ function externalLinks()
 			if(anchor.getAttribute("rel").indexOf("external") >= 0)
 			{
 				anchor.target = "_blank";
+				addClass(anchor, 'newWindowStyle');
+				
 				if(anchor.title.length > 0)
 					anchor.title = anchor.title + ' (new window)';
 				else
 					anchor.title = '(new window)';
-				if(anchor.className.length > 0)
-					anchor.className += ' newWindowStyle';
-				else
-					anchor.className = 'newWindowStyle';
 			}
         }
     }
