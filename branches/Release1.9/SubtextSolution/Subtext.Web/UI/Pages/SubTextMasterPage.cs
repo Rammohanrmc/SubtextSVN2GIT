@@ -19,6 +19,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using MagicAjax.UI.Controls;
 using Subtext.Framework;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.UI.Skinning;
@@ -68,11 +69,27 @@ namespace Subtext.Web.UI.Pages
 			string[] controls = HandlerConfiguration.GetControls(Context);
             if (controls != null)
             {
+                AjaxPanel apnlCommentsWrapper = new AjaxPanel();
+                apnlCommentsWrapper.ID = "apnlCommentsWrapper";
+                
                 foreach (string control in controls)
                 {
                     Control c = LoadControl(string.Format(ControlLocation, skinFolder, control));
                     c.ID = control.Replace(".", "_");
-                    CenterBodyControl.Controls.Add(c);
+                    
+                    if (control.Equals("Comments.ascx"))
+                    {
+                        apnlCommentsWrapper.Controls.Add(c);
+                    }
+                    else if (control.Equals("PostComment.ascx"))
+                    {
+                        apnlCommentsWrapper.Controls.Add(c);
+                        CenterBodyControl.Controls.Add(apnlCommentsWrapper);
+                    }
+                    else
+                    {
+                        CenterBodyControl.Controls.Add(c);
+                    }
                 }
             }
 
@@ -138,7 +155,7 @@ namespace Subtext.Web.UI.Pages
 			Response.ContentType = "text/html"; //TODO: allow for per/blog config.
 
 			//Is this for extra security?
-			this.EnableViewState = false;
+			EnableViewState = false;
 			pageTitle.Text = Globals.CurrentTitle(Context);
 			if(Config.CurrentBlog.Author != null && Config.CurrentBlog.Author.Length > 0)
 				authorMetaTag.Text = String.Format("<meta name=\"author\" content=\"{0}\" />", Config.CurrentBlog.Author );
@@ -225,7 +242,7 @@ namespace Subtext.Web.UI.Pages
 			{
 				StringBuilder result = new StringBuilder();
 
-				SkinTemplate skinTemplate = this.templates.GetTemplate(skinKey);
+				SkinTemplate skinTemplate = templates.GetTemplate(skinKey);
 				if (skinTemplate != null && skinTemplate.Scripts != null)
 				{
 					string skinPath = GetSkinPath(skinTemplate.TemplateFolder);
@@ -312,7 +329,7 @@ namespace Subtext.Web.UI.Pages
 			{
 				StringBuilder result = new StringBuilder();
 
-				SkinTemplate skinTemplate = this.templates.GetTemplate(skinName);
+				SkinTemplate skinTemplate = templates.GetTemplate(skinName);
 				
 				if (skinTemplate != null && skinTemplate.Styles != null)
 				{

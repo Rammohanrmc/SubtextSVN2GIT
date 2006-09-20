@@ -17,11 +17,12 @@ using System;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Subtext.Framework.Data;
+using MagicAjax;
 using Subtext.Extensibility;
 using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
+using Subtext.Framework.Data;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Text;
 using Subtext.Framework.Web;
@@ -132,7 +133,7 @@ namespace Subtext.Web.UI.Controls
 		}
 		#endregion
 
-		private void btnSubmit_Click(object sender, System.EventArgs e)
+		private void btnSubmit_Click(object sender, EventArgs e)
 		{
 			if(Page.IsValid)
 			{
@@ -158,7 +159,7 @@ namespace Subtext.Web.UI.Controls
 							HttpCookie user = new HttpCookie("CommentUser");
 							user.Values["Name"] = tbName.Text;
 							user.Values["Url"] = tbUrl.Text;
-							if(this.tbEmail!=null)
+							if(tbEmail!=null)
 								user.Values["Email"] = tbEmail.Text;
 							user.Expires = DateTime.Now.AddDays(30);
 							Response.Cookies.Add(user);
@@ -168,10 +169,15 @@ namespace Subtext.Web.UI.Controls
 
 						if(Config.CurrentBlog.ModerationEnabled)
 						{
-							Response.Redirect(string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}?Moderation=true&#message", Request.Path));
+//							Response.Redirect(string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}?Moderation=true&#message", Request.Path));
 						}
+
+                        if (MagicAjaxContext.Current.IsAjaxCallForPage(Page))
+                        {
+                            AjaxCallHelper.SetAjaxCallTimerInterval(500);
+                        }
 					}
-					Response.Redirect(string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}?Pending=true", Request.Path));
+//					Response.Redirect(string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}?Pending=true", Request.Path));
 				}
 				catch(BaseCommentException exception)
 				{
