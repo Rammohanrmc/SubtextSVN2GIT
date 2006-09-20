@@ -905,7 +905,6 @@
     <Content Include="Admin\Resources\Scripts\labelFocus.js" />
     <Content Include="Admin\Resources\Scripts\niceforms-default.css" />
     <Content Include="Admin\Resources\Scripts\niceForms.js" />
-    <Content Include="Admin\Resources\Scripts\tableEffects.js" />
     <Content Include="Admin\Resources\toggle_gray_down.gif" />
     <Content Include="Admin\Resources\toggle_gray_up.gif" />
     <Content Include="Admin\Statistics.aspx" />
@@ -1287,11 +1286,13 @@
     <Content Include="ReverseDOS.config" />
     <Content Include="Scripts\AmazonTooltips.js" />
     <Content Include="Scripts\BlogInfo.js" />
+    <Content Include="Scripts\common.js" />
     <Content Include="Scripts\ExternalLinks.js" />
     <Content Include="Scripts\FormFocus.js" />
     <Content Include="Scripts\lightbox.css" />
     <Content Include="Scripts\lightbox.js" />
     <Content Include="Scripts\LiveCommentPreview.js" />
+    <Content Include="Scripts\tableEffects.js" />
     <Content Include="Scripts\XFNHighlighter.css" />
     <Content Include="Scripts\XFNHighlighter.js" />
     <Content Include="Skins\AnotherEon001\Controls\ArchiveCategory.ascx" />

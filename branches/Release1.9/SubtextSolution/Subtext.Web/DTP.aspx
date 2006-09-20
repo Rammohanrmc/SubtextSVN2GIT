@@ -15,7 +15,10 @@
 		<link id="SecondaryCss" type="text/css" rel="stylesheet" runat="Server" />
 		<link id="CustomCss" type="text/css" rel="stylesheet" runat="Server" />
 		<link id="Rsd" rel="EditURI" type="application/rsd+xml" title="RSD" runat="server" />
-		<st:ScriptTag id="blogInfoScript" runat="server" src="~/scripts/BlogInfo.js" />
+		<link id="AtomLink" title="RSS" type="application/rss+xml" rel="alternate" runat="Server" />
+		<st:ScriptTag id="commonJs" src="~/Scripts/common.js" runat="server" />
+		<st:ScriptTag id="tableEffectsJs" src="~/Scripts/tableEffects.js" runat="server" />
+		<st:ScriptTag id="blogInfoScript" runat="server" src="~/Scripts/BlogInfo.js" />
 		<script type="text/javascript">
 			<%= AllowedHtmlJavascriptDeclaration %>
 			var subtextBlogInfo = new blogInfo('<%= Config.CurrentBlog.VirtualDirectoryRoot %>', '<%= Config.CurrentBlog.VirtualUrl %>" />');
