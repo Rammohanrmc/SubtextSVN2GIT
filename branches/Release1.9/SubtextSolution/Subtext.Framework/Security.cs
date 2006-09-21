@@ -114,43 +114,38 @@ namespace Subtext.Framework
 			{
 				HttpCookie c = HttpContext.Current.Request.Cookies[i];
 				#region Logging
-				if (c == null)
+				if (log.IsDebugEnabled)
 				{
-					log.Debug("cookie was null");
-					continue;
+					if (c == null)
+					{
+						log.Debug("cookie was null");
+						continue;
+					}
+					if (c.Value == null)
+					{
+						log.Debug("cookie value was null");
+					}
+					else if (c.Value == "")
+					{
+						log.Debug("cookie value was empty string");
+					}
+					if (c.Name == null)
+					{
+						log.Debug("cookie name was null");//not a valid Subtext cookie
+						continue;
+					}
+					log.DebugFormat("Cookie named '{0}' found", c.Name);
 				}
-				if (c.Value == null)
-				{
-					log.Debug("cookie value was null");
-					//continue;
-				}
-				else if (c.Value == "")
-				{
-					log.Debug("cookie value was empty string");
-					//continue;
-				}
-				if (c.Name == null)
-				{
-					log.Debug("cookie name was null");//not a valid Subtext cookie
-					continue;
-				}
-				//if (string.IsNullOrEmpty(c.Domain))
-				//{
-				//    log.Debug("cookie domain was null");
-				//    c.Domain = "null";
-				//}
-				//if (string.IsNullOrEmpty(c.Path))
-				//{
-				//    log.Debug("cookie path was null - fixed");
-				//    c.Path = "/";
-				//}
-				log.DebugFormat("Cookie named '{0}' found", c.Name); 
 				#endregion
 
 				if (c.Name == GetFullCookieName())
 				{
 					authCookie = c;
 					log.Debug("Cookie selected = " + authCookie.Name);
+#if !DEBUG
+					//if in DEBUG, the loop does not break so all cookies can be logged
+					break;
+#endif
 				}
 			}
 			return authCookie;
@@ -216,16 +211,22 @@ namespace Subtext.Framework
 			authCookie.Value = FormsAuthentication.Encrypt(authTicket);
 			authCookie.Name = GetFullCookieName();//prevents login problems with some multiblog setups
 
-			//limit domain of host admin cookie
+			//it would be nice to limit domain of the cookies in multi-blog setups, but this code
+			//is not doing what it should.
 			string blogHost = Config.CurrentBlog == null ? "NullBlog" : Config.CurrentBlog.Host;
 			authCookie.Domain = blogHost; //this seems to have no effect at WH4L!
-			log.Debug("authCookie.Domain = " + authCookie.Domain);
+			//log.Debug("authCookie.Domain = " + authCookie.Domain);
 
 			HttpContext.Current.Response.Cookies.Add(authCookie);
-			log.Debug("the code MUST call a redirect after this");
-			log.DebugFormat("cookie '{3}' added to response for '{0}'; expires {1} and contains roles: {2}", 
-				username, authCookie.Expires, authTicket.UserData, authCookie.Name);
-			tempTicket = authTicket = null;//not necessary for memory management but used for security against reflection-based hacks. 
+			#region Logging
+			if (log.IsDebugEnabled)
+			{
+				log.Debug("the code must call a redirect after this");
+				log.DebugFormat("cookie '{3}' added to response for '{0}'; expires {1} and contains roles: {2}",
+					username, authCookie.Expires, authTicket.UserData, authCookie.Name);
+			} 
+			#endregion
+			tempTicket = authTicket = null;//might help make code more secure 
 		}
 
 				
@@ -234,8 +235,6 @@ namespace Subtext.Framework
 		/// </summary>
 		public static void LogOut()
 		{
-			//bool isHostAdmin = HttpContext.Current.User.IsInRole("HostAdmin");
-
 			HttpCookie authCookie = new HttpCookie(GetFullCookieName());
 			authCookie.Expires = DateTime.Now.AddYears(-30); //setting an expired cookie forces client to remove it
 			HttpContext.Current.Response.Cookies.Add(authCookie);
@@ -246,11 +245,8 @@ namespace Subtext.Framework
 				log.Debug("Logging out " + username);
 				log.Debug("the code MUST call a redirect after this");
 			} 
-			System.Web.Security.FormsAuthentication.SignOut();
-			
 			#endregion
-			//HttpContext.Current.Response.Status = "401 Unauthorized";
-			//HttpContext.Current.Response.End();
+			System.Web.Security.FormsAuthentication.SignOut();
 		}
 
 		//From Forums Source Code

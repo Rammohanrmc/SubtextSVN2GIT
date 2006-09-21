@@ -99,8 +99,7 @@ namespace Subtext.Web.Install
 				{
 					if(Config.BlogCount == 0)
 					{
-						//System.Web.Security.FormsAuthentication.SetAuthCookie("HostAdmin", false);
-						//consider using the following method. Doing so requires making it public.
+						//Changed the following method to public so all authentication tickets are handled by the same code.
 						Subtext.Framework.Security.SetAuthenticationTicket("HostAdmin", false, "HostAdmin");
 						Response.Redirect(InstallationBase.NextStepUrl);
 					}

@@ -27,8 +27,7 @@ namespace Subtext.Web.HttpModules
 
             if (null == authCookie)
             {
-                // There is no authentication cookie.
-				log.Debug("There is no authentication cookie.");
+                log.Debug("There is no authentication cookie.");
 				return;
             }
 
