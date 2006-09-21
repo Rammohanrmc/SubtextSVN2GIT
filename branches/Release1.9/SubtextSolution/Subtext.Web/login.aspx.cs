@@ -19,6 +19,7 @@ using Subtext.Extensibility.Providers;
 using Subtext.Framework;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Text;
+using log4net;
 
 namespace Subtext.Web.Pages
 {
@@ -27,6 +28,8 @@ namespace Subtext.Web.Pages
 	/// </summary>
 	public partial class login : System.Web.UI.Page
 	{
+		private readonly static ILog log = new Subtext.Framework.Logging.Log();
+
 		#region Declared Controls
 		#endregion
 	
@@ -73,8 +76,10 @@ namespace Subtext.Web.Pages
 					{
 						password = info.Password;
 					}
-
-					string message = "Here is your blog login information:\nUserName: {0}\nPassword: {1}\n\nPlease disregard this message if you did not request it.";
+					
+					log.Warn("Admin password was reset for " + info.UserName);
+					
+					string message = "Here is your blog login information:\nUserName: {0}\nPassword: {1}\n\nNote: your old password will no longer work.";
 					EmailProvider mail = Subtext.Extensibility.Providers.EmailProvider.Instance();
 			
 					string To = info.Email;
@@ -95,12 +100,15 @@ namespace Subtext.Web.Pages
 				else
 					password = HostInfo.Instance.Password;
 
+				log.Warn("HostAdmin password was reset for " + HostInfo.Instance.HostUserName);
+					
 				string message = "Here is your Host Admin Login information:\nUserName: {0}\nPassword: {1}\n\nPlease disregard this message if you did not request it.";
 				EmailProvider mail = Subtext.Extensibility.Providers.EmailProvider.Instance();
 			
 				string hostAdminEmail = ConfigurationManager.AppSettings["HostEmailAddress"];
 				if(hostAdminEmail == null || hostAdminEmail.Length == 0 || hostAdminEmail.IndexOf('@') <= 0) //Need better email validation. I know!
 				{
+					log.Debug("No Host Email Address specified in Web.config");
 					Message.Text = "Sorry, but I don&#8217;t know where to send the email.  Please specify a Host Email Address in Web.config. It is the AppSetting &#8220;HostEmailAddress&#8221;";
 					return;
 				}
@@ -115,6 +123,7 @@ namespace Subtext.Web.Pages
 			
 			if(!messageSent)
 			{
+				log.Warn("Failed request to reset password for " + tbUserName.Text);
 				Message.Text = "I don't know you";
 			}
 		}
@@ -127,6 +136,7 @@ namespace Subtext.Web.Pages
 			{
 				if(!AuthenticateHostAdmin())
 				{
+					log.Warn("HostAdmin login failure for " + tbUserName.Text);
 					Message.Text = "That&#8217;s not it<br />";
 					return;
 				}
@@ -145,6 +155,7 @@ namespace Subtext.Web.Pages
 				}
 				else
 				{
+					log.Warn("Admin login failure for " + tbUserName.Text);
 					Message.Text = "That&#8217;s not it<br />";
 				}
 			}
@@ -154,11 +165,13 @@ namespace Subtext.Web.Pages
 		{
 			if(Request.QueryString["ReturnURL"] != null && Request.QueryString["ReturnURL"].Length > 0)
 			{
+				log.Debug("redirecting to " + Request.QueryString["ReturnURL"]);
 				Response.Redirect(Request.QueryString["ReturnURL"], false);
 				return;
 			}
 			else
 			{
+				log.Debug("redirecting to " + defaultReturnUrl);
 				Response.Redirect(defaultReturnUrl, false);
 				return;
 			}
