@@ -997,6 +997,7 @@ BEGIN
 		, Author
 		, TimeZone
 		, ItemCount
+		, CategoryListPostCount
 		, [Language]
 		, News
 		, SecondaryCss
@@ -1029,6 +1030,7 @@ BEGIN
 		, Author
 		, TimeZone
 		, ItemCount
+		, CategoryListPostCount
 		, [Language]
 		, News
 		, SecondaryCss
@@ -2894,6 +2896,7 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateConfig]
 	, @Language nvarchar(10)
 	, @TimeZone int = NULL
 	, @ItemCount int
+	, @CategoryListPostCount int
 	, @News nText = NULL
 	, @LastUpdated datetime = NULL
 	, @SecondaryCss nText = NULL
@@ -2921,6 +2924,7 @@ Set
 	, [Language] = @Language
 	, TimeZone   = @TimeZone
 	, ItemCount = @ItemCount
+	, CategoryListPostCount = @CategoryListPostCount
 	, News      = @News
 	, LastUpdated = @LastUpdated
 	, Flag = @Flag

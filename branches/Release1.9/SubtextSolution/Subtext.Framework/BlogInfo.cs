@@ -175,6 +175,35 @@ namespace Subtext.Framework
 			set{_itemCount = value;}
 		}
 
+		private int _categoryListPostCount = 10;
+		/// <summary>
+		/// Gets or sets the count of posts displayed on the category pages. 
+		/// </summary>
+		/// <value></value>
+		public int CategoryListPostCount
+		{
+			get{return _categoryListPostCount;}
+			set
+			{
+				if (value < 0)
+				{
+					value = 0;//needed when upgrading from versions that did not have this column ("CategoryListPostCount") in the subtext_Config table.
+				}
+				_categoryListPostCount = value;
+			}
+		}
+		
+		private int _storyCount;
+		/// <summary>
+		/// Gets or sets the story count.
+		/// </summary>
+		/// <value></value>
+		public int StoryCount
+		{
+		    get {return this._storyCount;}
+		    set {this._storyCount = value;}
+		}
+
 		private string _language = "en-US";
 		/// <summary>
 		/// Gets or sets the language the blog is in..
@@ -821,17 +850,6 @@ namespace Subtext.Framework
 		{
 			get {return this._commentCount;}
 			set {this._commentCount = value;}
-		}
-
-		private int _storyCount;
-		/// <summary>
-		/// Gets or sets the story count.
-		/// </summary>
-		/// <value></value>
-		public int StoryCount
-		{
-			get {return this._storyCount;}
-			set {this._storyCount = value;}
 		}
 
 		private int _pingTrackCount;

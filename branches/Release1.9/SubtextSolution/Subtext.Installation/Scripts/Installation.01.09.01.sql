@@ -1,4 +1,18 @@
 IF NOT EXISTS 
+(
+    SELECT * FROM [information_schema].[columns] 
+    WHERE   table_name = 'subtext_Config' 
+    AND table_schema = 'dbo'
+    AND column_name = 'CategoryListPostCount'
+)
+BEGIN
+	ALTER TABLE [<dbUser,varchar,dbo>].[subtext_Config]
+		ADD [CategoryListPostCount] [int] NULL 
+		CONSTRAINT defaultCategoryListPostCount DEFAULT 10
+END
+GO
+
+IF NOT EXISTS 
 	(
 		SELECT	* FROM [information_schema].[tables] 
 		WHERE	table_name = 'subtext_Feedback' 

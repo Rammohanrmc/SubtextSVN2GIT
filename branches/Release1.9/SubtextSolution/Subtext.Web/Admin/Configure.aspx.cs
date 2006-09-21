@@ -75,14 +75,36 @@ namespace Subtext.Web.Admin.Pages
 			}
 			
 			int count = Config.Settings.ItemCount;
-			for (int i = 1; i <=count; i++)
+			int increment = 1;
+			for (int i = 1; i <= count; i = i + increment)//starting with 25, the list items increment by 5. Example: 1,2,3,...24,25,30,35,...,45,50.
 			{
 				ddlItemCount.Items.Add(new ListItem(i.ToString(CultureInfo.InvariantCulture), i.ToString(CultureInfo.InvariantCulture)));
+				if (i == 25) { increment = 5; }
 			}
 
 			if (info.ItemCount <= count)
 			{
 				ddlItemCount.Items.FindByValue(info.ItemCount.ToString(CultureInfo.InvariantCulture)).Selected = true;
+			}
+
+			//int 0 = "All" items
+			int categoryListPostCount = Config.Settings.CategoryListPostCount;
+			int maxDropDownItems = categoryListPostCount;
+			if (maxDropDownItems <= 0)
+			{
+				maxDropDownItems = 50;//since 0 represents "All", this provides some other options in the ddl.
+			}			
+			ddlCategoryListPostCount.Items.Add(new ListItem("All".ToString(CultureInfo.InvariantCulture), 0.ToString(CultureInfo.InvariantCulture)));
+			increment = 1;
+			for (int j = 1; j <= maxDropDownItems; j = j + increment)//starting with 25, the list items increment by 5. Example: 1,2,3,...24,25,30,35,...,45,50.
+			{
+				ddlCategoryListPostCount.Items.Add(new ListItem(j.ToString(CultureInfo.InvariantCulture), j.ToString(CultureInfo.InvariantCulture)));
+				if (j == 25) { increment = 5; }
+			}
+
+			if (info.CategoryListPostCount <= maxDropDownItems)
+			{
+				ddlCategoryListPostCount.Items.FindByValue(info.CategoryListPostCount.ToString(CultureInfo.InvariantCulture)).Selected = true;
 			}
 
 		}
@@ -104,6 +126,7 @@ namespace Subtext.Web.Admin.Pages
 				info.Id = Config.CurrentBlog.Id;
 
 				info.ItemCount = Int32.Parse(ddlItemCount.SelectedItem.Value);
+				info.CategoryListPostCount = Int32.Parse(ddlCategoryListPostCount.SelectedItem.Value);				
 				info.Language = ddlLangLocale.SelectedItem.Value;
 				
 				info.AllowServiceAccess = ckbAllowServiceAccess.Checked;

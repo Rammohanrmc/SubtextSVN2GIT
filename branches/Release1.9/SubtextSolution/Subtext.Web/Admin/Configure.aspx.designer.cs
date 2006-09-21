@@ -21,6 +21,7 @@ namespace Subtext.Web.Admin.Pages {
         protected System.Web.UI.WebControls.DropDownList ddlTimezone;
         protected System.Web.UI.WebControls.DropDownList ddlLangLocale;
         protected System.Web.UI.WebControls.DropDownList ddlItemCount;
+        protected System.Web.UI.WebControls.DropDownList ddlCategoryListPostCount;
         protected System.Web.UI.WebControls.DropDownList ddlSkin;
         protected Subtext.Web.Controls.HelpToolTip HelpToolTip1;
         protected System.Web.UI.WebControls.TextBox txbSecondaryCss;

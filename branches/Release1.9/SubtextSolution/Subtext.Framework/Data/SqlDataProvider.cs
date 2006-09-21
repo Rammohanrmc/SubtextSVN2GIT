@@ -1088,6 +1088,7 @@ namespace Subtext.Framework.Data
 					,DataHelper.MakeInParam("@Language", SqlDbType.NVarChar, 10, info.Language) 
 					,DataHelper.MakeInParam("@News", SqlDbType.NText, 0, DataHelper.CheckNull(info.News)) 
 					,DataHelper.MakeInParam("@ItemCount", SqlDbType.Int,  4, info.ItemCount) 
+					,DataHelper.MakeInParam("@CategoryListPostCount", SqlDbType.Int,  4, info.CategoryListPostCount) 
 					,DataHelper.MakeInParam("@Flag", SqlDbType.Int,  4, (int)info.Flag) 
 					,DataHelper.MakeInParam("@LastUpdated", SqlDbType.DateTime,  8, info.LastUpdated) 
 					,DataHelper.MakeInParam("@SecondaryCss", SqlDbType.Text, 0, DataHelper.CheckNull(info.Skin.CustomCssText)) 

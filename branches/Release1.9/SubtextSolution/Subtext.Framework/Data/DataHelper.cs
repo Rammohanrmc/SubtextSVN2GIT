@@ -505,6 +505,7 @@ namespace Subtext.Framework.Data
 			info.UserName = ReadString(reader, "UserName");
 			info.TimeZone = ReadInt32(reader, "TimeZone");
 			info.ItemCount = ReadInt32(reader, "ItemCount");
+			info.CategoryListPostCount = ReadInt32(reader, "CategoryListPostCount");
 			info.Language = ReadString(reader, "Language");
 			
 

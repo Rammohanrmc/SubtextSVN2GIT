@@ -275,6 +275,10 @@
 				<asp:DropDownList id="ddlItemCount" runat="server"></asp:DropDownList>
 			</p>
 			<p>
+				<label class="Block" accessKey="p" for="Edit_ddlCategoryListPostCount">Number of <u>P</u>osts in Category Lists</label>
+				<asp:DropDownList id="ddlCategoryListPostCount" runat="server"></asp:DropDownList>
+			</p>
+			<p>
 				<label class="Block" accessKey="s" for="Edit_ddlSkin">Display <u>S</u>kin</label>
 				<asp:DropDownList id="ddlSkin" runat="server"></asp:DropDownList></p>
 			<p>
