@@ -21,6 +21,8 @@ using System.Web;
 using System.Web.Security;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Text;
+using log4net;
+using System.Security.Principal;
 
 namespace Subtext.Framework
 {
@@ -29,6 +31,8 @@ namespace Subtext.Framework
 	/// </summary>
 	public static class Security
 	{
+		private readonly static ILog log = new Subtext.Framework.Logging.Log();
+
 		/// <summary>
 		/// Check to see if the supplied credentials are valid for the current blog. 
 		/// If so, Set the user's FormsAuthentication Ticket This method will handle 
@@ -53,55 +57,200 @@ namespace Subtext.Framework
 		/// <returns>bool indicating successful login</returns>
 		public static bool Authenticate(string username, string password, bool persist)
 		{
-			//if we don't match username, don't bother with password
-			if(!IsValidUser(username, password))
+			if (!IsValidUser(username, password))
+			{
 				return false;
+			}
 
+			log.Debug("SetAuthenticationTicket-Admins for " + username);
 			SetAuthenticationTicket(username, persist, "Admins");
 			return true;
 		}
 		
-		/// <summary>
-		/// Logs the user off the system.
-		/// </summary>
-		public static void LogOut()
-		{
-			HttpContext.Current.Response.Cookies.Clear();
-			System.Web.Security.FormsAuthentication.SignOut();
-		}
-		
 		public static bool AuthenticateHostAdmin(string username, string password, bool persist)
 		{
-			if(!StringHelper.AreEqualIgnoringCase(username, HostInfo.Instance.HostUserName))
+			if (!StringHelper.AreEqualIgnoringCase(username, HostInfo.Instance.HostUserName))
+			{
 				return false;
+			}
 			
 			if(Config.Settings.UseHashedPasswords)
 			{
 				password = Security.HashPassword(password, HostInfo.Instance.Salt);
 			}
-			
-			if(!StringHelper.AreEqualIgnoringCase(HostInfo.Instance.Password, password))
+
+			if (!StringHelper.AreEqualIgnoringCase(HostInfo.Instance.Password, password))
+			{
 				return false;
+			}
 			
+			log.Debug("SetAuthenticationTicket-HostAdmins for " + username);
 			SetAuthenticationTicket(username, persist, "HostAdmins");
 			
 			return true;
 		}
+
+		/// <summary>
+		/// Used to remove a cookie from the client.
+		/// </summary>
+		/// <returns>a correctly named cookie with Expires date set 30 years ago</returns>
+		public static HttpCookie GetExpiredCookie()
+		{
+			HttpCookie expiredCookie = new HttpCookie(GetFullCookieName());
+			expiredCookie.Expires = DateTime.Now.AddYears(-30);
+			return expiredCookie;
+		}
+
+		/// <summary>
+		/// Obtains the correct cookie for the current blog
+		/// </summary>
+		/// <returns>null if correct cookie was not found</returns>
+		public static HttpCookie SelectAuthenticationCookie()
+		{
+			HttpCookie authCookie = null;
+
+			log.Debug("cookie count = " + HttpContext.Current.Request.Cookies.Count);
+			for (int i = 0; i < HttpContext.Current.Request.Cookies.Count; ++i)
+			{
+				HttpCookie c = HttpContext.Current.Request.Cookies[i];
+				#region Logging
+				if (c == null)
+				{
+					log.Debug("cookie was null");
+					continue;
+				}
+				if (c.Value == null)
+				{
+					log.Debug("cookie value was null");
+					//continue;
+				}
+				else if (c.Value == "")
+				{
+					log.Debug("cookie value was empty string");
+					//continue;
+				}
+				if (c.Name == null)
+				{
+					log.Debug("cookie name was null");//not a valid Subtext cookie
+					continue;
+				}
+				//if (string.IsNullOrEmpty(c.Domain))
+				//{
+				//    log.Debug("cookie domain was null");
+				//    c.Domain = "null";
+				//}
+				//if (string.IsNullOrEmpty(c.Path))
+				//{
+				//    log.Debug("cookie path was null - fixed");
+				//    c.Path = "/";
+				//}
+				log.DebugFormat("Cookie named '{0}' found", c.Name); 
+				#endregion
+
+				if (c.Name == GetFullCookieName())
+				{
+					authCookie = c;
+					log.Debug("Cookie selected = " + authCookie.Name);
+				}
+			}
+			return authCookie;
+		}
+
+		/// <summary>
+		/// Identifies cookies by unique BlogHost names (rather than a single
+		/// name for all cookies in multiblog setups as the old code did).
+		/// </summary>
+		/// <returns></returns>
+		private static string GetFullCookieName() //this could be made public
+		{
+			return GetFullCookieName(false);
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="forceHostAdmin">true if the name shall be forced to comply with the HostAdmin cookie</param>
+		/// <returns></returns>
+		private static string GetFullCookieName(bool forceHostAdmin)
+		{
+			string cookieName = FormsAuthentication.FormsCookieName;
+
+			//See if we need to authenticate the HostAdmin
+			string path = HttpContext.Current.Request.Path;
+			string returnUrl = HttpContext.Current.Request.QueryString.ToString(); //["ReturnURL"];
+			
+			StringBuilder suffix = new StringBuilder(cookieName);
+			suffix.Append(".");
+			if (forceHostAdmin
+				|| StringHelper.Contains(path + returnUrl, "HostAdmin", 
+			    ComparisonType.CaseInsensitive))
+			{
+			    suffix.Append("HA.");
+			}
+			suffix.Append(Config.CurrentBlog == null ? "NullBlog" : Config.CurrentBlog.Host);
+			log.Debug("GetFullCookieName selected cookie named " + suffix.ToString());
+			return suffix.ToString();           
+		}
+
 		
 		/// <summary>
-		/// Private method to set FormsAuthentication Ticket. 
+		/// Used by methods in this class plus Install.Step02_ConfigureHost
 		/// </summary>
 		/// <param name="username">Username for the ticket</param>
 		/// <param name="persist">Should this ticket be persisted</param>
-		private static void SetAuthenticationTicket(string username, bool persist, params string[] roles)
+		public static void SetAuthenticationTicket(string username, bool persist, params string[] roles)
 		{
-			FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1, username, DateTime.Now, DateTime.Now.AddDays(60), persist, string.Join("|", roles));
-			string encryptedTicket = FormsAuthentication.Encrypt(ticket);
-			// Create a cookie and add the encrypted ticket to the
-			// cookie as data.
-			HttpCookie authCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket);
-			authCookie.Expires = DateTime.Now.AddDays(60);
+			//Getting a cookie this way and using a temp auth ticket 
+			//allows us to access the timeout value from web.config in partial trust.
+			HttpCookie authCookie = FormsAuthentication.GetAuthCookie(username, persist);
+			FormsAuthenticationTicket tempTicket = FormsAuthentication.Decrypt(authCookie.Value);
+			string userData = string.Join("|", roles);
+
+			FormsAuthenticationTicket authTicket = new FormsAuthenticationTicket(
+				tempTicket.Version,
+				tempTicket.Name,
+				tempTicket.IssueDate,
+				tempTicket.Expiration,//this is how we access the configured timeout value
+				persist,//the configured persistence value in web.config is not used. We use the checkbox value on the login page.
+				userData,//roles
+				tempTicket.CookiePath);
+			authCookie.Value = FormsAuthentication.Encrypt(authTicket);
+			authCookie.Name = GetFullCookieName();//prevents login problems with some multiblog setups
+
+			//limit domain of host admin cookie
+			string blogHost = Config.CurrentBlog == null ? "NullBlog" : Config.CurrentBlog.Host;
+			authCookie.Domain = blogHost; //this seems to have no effect at WH4L!
+			log.Debug("authCookie.Domain = " + authCookie.Domain);
+
 			HttpContext.Current.Response.Cookies.Add(authCookie);
+			log.Debug("the code MUST call a redirect after this");
+			log.DebugFormat("cookie '{3}' added to response for '{0}'; expires {1} and contains roles: {2}", 
+				username, authCookie.Expires, authTicket.UserData, authCookie.Name);
+			tempTicket = authTicket = null;//not necessary for memory management but used for security against reflection-based hacks. 
+		}
+
+				
+		/// <summary>
+		/// Logs the user off the system.
+		/// </summary>
+		public static void LogOut()
+		{
+			//bool isHostAdmin = HttpContext.Current.User.IsInRole("HostAdmin");
+
+			HttpCookie authCookie = new HttpCookie(GetFullCookieName());
+			authCookie.Expires = DateTime.Now.AddYears(-30); //setting an expired cookie forces client to remove it
+			HttpContext.Current.Response.Cookies.Add(authCookie);
+			#region Logging
+			if (log.IsDebugEnabled)
+			{
+				string username = HttpContext.Current.User.Identity.Name;
+				log.Debug("Logging out " + username);
+				log.Debug("the code MUST call a redirect after this");
+			} 
+			System.Web.Security.FormsAuthentication.SignOut();
+			
+			#endregion
+			//HttpContext.Current.Response.Status = "401 Unauthorized";
+			//HttpContext.Current.Response.End();
 		}
 
 		//From Forums Source Code
@@ -171,9 +320,13 @@ namespace Subtext.Framework
 		/// <returns>bool value indicating if the user is valid.</returns>
 		public static bool IsValidUser(string username, string password)
 		{
-			if(StringHelper.AreEqualIgnoringCase(username, Config.CurrentBlog.UserName))
+			if (StringHelper.AreEqualIgnoringCase(username, Config.CurrentBlog.UserName))
 			{
 				return IsValidPassword(password);
+			}
+			else
+			{
+				log.DebugFormat("The supplied username '{0}' does not equal the configured username of '{1}'.", username, Config.CurrentBlog.UserName);
 			}
 			return false;
 		}
@@ -210,7 +363,12 @@ namespace Subtext.Framework
 				}
 			}
 			
-			return StringHelper.AreEqual(password, storedPassword, ComparisonType.CaseSensitive);
+			bool areEqual = StringHelper.AreEqual(password, storedPassword, ComparisonType.CaseSensitive);
+			if (!areEqual)
+			{
+				log.Debug("The supplied password is incorrect.");
+			}
+			return areEqual;
 		}
 
 		/// <summary>
@@ -288,8 +446,15 @@ namespace Subtext.Framework
 		{
 			get
 			{
+				bool areNamesEqual = StringHelper.AreEqualIgnoringCase(CurrentUserName, Config.CurrentBlog.UserName);
+				#region temp logging code
+				if (!areNamesEqual)
+				{
+					log.DebugFormat("CurrentUserName '{0}'is not equal to Config.CurrentBlog.UserName '{1}'", CurrentUserName, Config.CurrentBlog.UserName);
+				}
+				#endregion
 				//TODO: Eventually just check for admin role.
-				return IsInRole("Admins") && StringHelper.AreEqualIgnoringCase(CurrentUserName, Config.CurrentBlog.UserName);
+				return IsInRole("Admins") && areNamesEqual;
 			}
 		}
 
@@ -338,9 +503,17 @@ namespace Subtext.Framework
 		/// <returns></returns>
 		public static bool IsInRole(string role)
 		{
-			if(HttpContext.Current.User == null)
-				return false;
-			return HttpContext.Current.User.IsInRole(role);
+			if (HttpContext.Current.User == null)
+			{
+				log.Debug("HttpContext.Current.User == null");
+                return false;
+			}
+			bool isInRole = HttpContext.Current.User.IsInRole(role);
+			if (!isInRole)
+			{
+				log.Debug(HttpContext.Current.User.Identity.Name + " is not in role " + role);
+			}
+			return isInRole;
 		}
 
 		/// <summary>
