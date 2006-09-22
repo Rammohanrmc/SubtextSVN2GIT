@@ -210,12 +210,6 @@ namespace Subtext.Framework
 			authCookie.Value = FormsAuthentication.Encrypt(authTicket);
 			authCookie.Name = GetFullCookieName();//prevents login problems with some multiblog setups
 
-			//it would be nice to limit domain of the cookies in multi-blog setups, but this code
-			//is not doing what it should.
-			string blogHost = Config.CurrentBlog == null ? "NullBlog" : Config.CurrentBlog.Host;
-			if(!String.Equals(blogHost, "localhost", StringComparison.InvariantCultureIgnoreCase) )
-				authCookie.Domain = blogHost; //this seems to have no effect at WH4L!
-			
 			HttpContext.Current.Response.Cookies.Add(authCookie);
 			#region Logging
 			if (log.IsDebugEnabled)
