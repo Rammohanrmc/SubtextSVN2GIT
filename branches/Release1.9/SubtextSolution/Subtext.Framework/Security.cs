@@ -214,9 +214,9 @@ namespace Subtext.Framework
 			//it would be nice to limit domain of the cookies in multi-blog setups, but this code
 			//is not doing what it should.
 			string blogHost = Config.CurrentBlog == null ? "NullBlog" : Config.CurrentBlog.Host;
-			authCookie.Domain = blogHost; //this seems to have no effect at WH4L!
-			//log.Debug("authCookie.Domain = " + authCookie.Domain);
-
+			if(!String.Equals(blogHost, "localhost", StringComparison.InvariantCultureIgnoreCase) )
+				authCookie.Domain = blogHost; //this seems to have no effect at WH4L!
+			
 			HttpContext.Current.Response.Cookies.Add(authCookie);
 			#region Logging
 			if (log.IsDebugEnabled)
@@ -226,7 +226,6 @@ namespace Subtext.Framework
 					username, authCookie.Expires, authTicket.UserData, authCookie.Name);
 			} 
 			#endregion
-			tempTicket = authTicket = null;//might help make code more secure 
 		}
 
 				
