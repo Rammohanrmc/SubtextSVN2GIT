@@ -166,23 +166,22 @@ namespace Subtext.Framework
 		/// <returns></returns>
 		private static string GetFullCookieName(bool forceHostAdmin)
 		{
-			string cookieName = FormsAuthentication.FormsCookieName;
-
+			StringBuilder name = new StringBuilder(FormsAuthentication.FormsCookieName);
+			name.Append(".");
+			
 			//See if we need to authenticate the HostAdmin
 			string path = HttpContext.Current.Request.Path;
 			string returnUrl = HttpContext.Current.Request.QueryString.ToString(); //["ReturnURL"];
-			
-			StringBuilder suffix = new StringBuilder(cookieName);
-			suffix.Append(".");
 			if (forceHostAdmin
 				|| StringHelper.Contains(path + returnUrl, "HostAdmin", 
 			    ComparisonType.CaseInsensitive))
 			{
-			    suffix.Append("HA.");
+			    name.Append("HA.");
 			}
-			suffix.Append(Config.CurrentBlog == null ? "NullBlog" : Config.CurrentBlog.Host);
-			log.Debug("GetFullCookieName selected cookie named " + suffix.ToString());
-			return suffix.ToString();           
+
+			name.Append(Config.CurrentBlog == null ? "null" : Config.CurrentBlog.Id.ToString());
+			log.Debug("GetFullCookieName selected cookie named " + name.ToString());
+			return name.ToString();           
 		}
 
 		
