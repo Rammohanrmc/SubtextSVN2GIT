@@ -22,7 +22,6 @@ using System.Web.Security;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Text;
 using log4net;
-using System.Security.Principal;
 
 namespace Subtext.Framework
 {
