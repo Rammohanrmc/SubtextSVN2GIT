@@ -17,7 +17,6 @@ using System;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using MagicAjax;
 using Subtext.Extensibility;
 using Subtext.Framework;
 using Subtext.Framework.Components;
@@ -33,7 +32,7 @@ namespace Subtext.Web.UI.Controls
 	///		Summary description for Comments.
 	/// </summary>
 	public partial class PostComment : BaseControl
-	{	
+	{
 		/// <summary>
 		/// Handles the OnLoad event.  Attempts to prepopulate comment 
 		/// fields based on the user's cookie.
@@ -76,11 +75,6 @@ namespace Subtext.Web.UI.Controls
 					return;
 				}
 				
-				if(Request.QueryString["Moderation"] == "true")
-				{
-					Message.Text = "Comments on this blog are moderated.  There may be a delay before your comment appears.";
-				}
-
 				ResetCommentFields(entry);
 
 				if(Config.CurrentBlog.CoCommentsEnabled)
@@ -103,6 +97,28 @@ namespace Subtext.Web.UI.Controls
 				}
 			}
 		}
+
+		/// <summary>
+		/// Called when an approved comment is added.
+		/// </summary>
+		protected virtual void OnCommentAdded()
+		{
+			for (int i = this.Controls.Count - 1; i >= 0; i--)
+			{
+				this.Controls.RemoveAt(i);
+			}
+			Message.Text = "Thanks for your comment!";
+			Message.CssClass = "success";
+			this.Controls.Add(Message);
+			
+			//TODO: Provide some means to add a new comment. For now they can click the title to refresh the page.
+			
+			EventHandler<EventArgs> theEvent = CommentPosted;
+			if (theEvent != null)
+				theEvent(this, EventArgs.Empty);
+		}
+		
+		public event EventHandler<EventArgs> CommentPosted;
 
 		#region Web Form Designer generated code
 		override protected void OnInit(EventArgs e)
@@ -128,8 +144,6 @@ namespace Subtext.Web.UI.Controls
 			{
 				this.btnCompliantSubmit.Click += new EventHandler(this.btnSubmit_Click);
 			}
-			//this.Load += new System.EventHandler(this.Page_Load);
-
 		}
 		#endregion
 
@@ -153,6 +167,11 @@ namespace Subtext.Web.UI.Controls
 						feedbackItem.IpAddress = HttpHelper.GetUserIpAddress(Context);
 
 						FeedbackItem.Create(feedbackItem);
+						CommentFilter filter = new CommentFilter(HttpContext.Current.Cache);
+						filter.DetermineFeedbackApproval(feedbackItem);
+
+						if (feedbackItem.Approved)
+							OnCommentAdded();
 
 						if(chkRemember == null || chkRemember.Checked)
 						{
@@ -169,15 +188,9 @@ namespace Subtext.Web.UI.Controls
 
 						if(Config.CurrentBlog.ModerationEnabled)
 						{
-//							Response.Redirect(string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}?Moderation=true&#message", Request.Path));
+							Message.Text = "Thank you for your comment.  It will be displayed soon.";
 						}
-
-                        if (MagicAjaxContext.Current.IsAjaxCallForPage(Page))
-                        {
-                            AjaxCallHelper.SetAjaxCallTimerInterval(500);
-                        }
 					}
-//					Response.Redirect(string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}?Pending=true", Request.Path));
 				}
 				catch(BaseCommentException exception)
 				{

@@ -171,6 +171,10 @@
       <Name>TestFu</Name>
       <HintPath>ExternalDependencies\TestFu.dll</HintPath>
     </Reference>
+    <ProjectReference Include="..\Subtext.Akismet\Subtext.Akismet.csproj">
+      <Project>{4B791A18-F723-4B4F-84D3-F9CCB4B250AB}</Project>
+      <Name>Subtext.Akismet</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Subtext.BlogMl\Subtext.BlogML.csproj">
       <Project>{830310DB-5D6A-453C-908A-058776D9C993}</Project>
       <Name>Subtext.BlogML</Name>
@@ -210,6 +214,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Akismet\AkismetApiTests.cs" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -230,6 +235,7 @@
     <Compile Include="Framework\Components\CollectionBookTests.cs" />
     <Compile Include="Framework\Components\CommentTests\CommentSettingsTests.cs" />
     <Compile Include="Framework\Components\CommentTests\FeedbackTests.cs" />
+    <Compile Include="Framework\Components\CommentTests\SpamServiceTests.cs" />
     <Compile Include="Framework\Components\EntryTests\AutoGenerateFriendlyUrlTests.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -354,6 +360,7 @@
     <Compile Include="UnitTestConfigProvider.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="UnitTestEmailProvider.cs" />
     <Compile Include="UnitTestHelper.cs">
       <SubType>Code</SubType>
     </Compile>

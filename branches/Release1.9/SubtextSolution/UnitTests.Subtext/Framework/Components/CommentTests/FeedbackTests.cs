@@ -94,7 +94,7 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 			FeedbackItem comment = CreateAndUpdateFeedbackWithExactStatus(entry, FeedbackType.Comment, FeedbackStatusFlag.Approved);
 			Assert.IsTrue(comment.Approved, "should be approved");
 
-			FeedbackItem.Delete(comment);
+			FeedbackItem.Destroy(comment);
 			comment = FeedbackItem.Get(comment.Id);
 			Assert.IsNull(comment);
 		}
@@ -262,7 +262,6 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		{
 			_hostName = UnitTestHelper.GenerateRandomString();
 			UnitTestHelper.SetHttpContextWithBlogRequest(_hostName, string.Empty);
-			CommentFilter.ClearCommentCache();
 		}
 
 		[TearDown]

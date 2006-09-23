@@ -837,3 +837,8 @@ div.LeftNavContent ul li a.active
 	font-size: larger;
 	text-decoration: none;
 }
+
+fieldset
+{
+	margin: 4px 0 8px 0;
+}

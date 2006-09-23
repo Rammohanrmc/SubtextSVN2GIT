@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading;
+using System.Web.Caching;
 using MbUnit.Framework;
 using Microsoft.ApplicationBlocks.Data;
 using Subtext.Extensibility;
@@ -157,7 +158,8 @@ namespace UnitTests.Subtext.Framework.Data
 		{
 			this.hostName = UnitTestHelper.GenerateRandomString();
 			UnitTestHelper.SetHttpContextWithBlogRequest(this.hostName, "blog");
-			CommentFilter.ClearCommentCache();	
+			CommentFilter filter = new CommentFilter(new Cache());
+			filter.ClearCommentCache();	
 		}
 
 		[TearDown]

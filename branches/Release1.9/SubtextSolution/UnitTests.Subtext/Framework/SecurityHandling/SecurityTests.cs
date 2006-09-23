@@ -17,6 +17,7 @@ using System;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using System.Web;
 using MbUnit.Framework;
 using Subtext.Framework;
 using Subtext.Framework.Configuration;
@@ -99,6 +100,26 @@ namespace UnitTests.Subtext.Framework.SecurityHandling
 			Config.CurrentBlog.Password = bitConvertedPassword;
 			
 			Assert.IsTrue(Security.IsValidPassword(password));
+		}
+		
+		[Test]
+		[RollBack]
+		public void CanSetAuthenticationCookie()
+		{
+			Config.CreateBlog("", "the-username", "thePassword", _hostName, "MyBlog");
+			Security.SetAuthenticationTicket("the-username", false, "Admins");
+			HttpCookie cookie = Security.SelectAuthenticationCookie();
+			Assert.IsNotNull(cookie, "Could not get authentication cookie.");
+		}
+
+		[Test]
+		[RollBack]
+		public void CanAuthenticateAdmin()
+		{
+			Config.CreateBlog("", "the-username", "thePassword", _hostName, "MyBlog");
+			Assert.IsTrue(Security.Authenticate("the-username", "thePassword", true), "We should be able to login.");
+			HttpCookie cookie = Security.SelectAuthenticationCookie();
+			Assert.IsNotNull(cookie, "Could not get authentication cookie.");
 		}
 
 		/// <summary>

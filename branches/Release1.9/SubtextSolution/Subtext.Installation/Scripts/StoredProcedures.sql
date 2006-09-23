@@ -1013,6 +1013,7 @@ BEGIN
 		, CommentDelayInMinutes
 		, NumberOfRecentComments
 		, RecentCommentsLength
+		, AkismetAPIKey
 	FROM [<dbUser,varchar,dbo>].[subtext_Config]
 END
 ELSE
@@ -1046,6 +1047,7 @@ BEGIN
 		, CommentDelayInMinutes
 		, NumberOfRecentComments
 		, RecentCommentsLength
+		, AkismetAPIKey
 	FROM [<dbUser,varchar,dbo>].[subtext_Config]
 	WHERE	Host = @Host
 		AND Application = @Application
@@ -2908,6 +2910,7 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateConfig]
 	, @CommentDelayInMinutes int = NULL
 	, @NumberOfRecentComments int = NULL
 	, @RecentCommentsLength int = NULL
+	, @AkismetAPIKey varchar(16) = NULL
 )
 AS
 UPDATE [<dbUser,varchar,dbo>].[subtext_Config]
@@ -2935,6 +2938,7 @@ Set
 	, CommentDelayInMinutes = @CommentDelayInMinutes
 	, NumberOfRecentComments = @NumberOfRecentComments
 	, RecentCommentsLength = @RecentCommentsLength
+	, AkismetAPIKey = @AkismetAPIKey
 WHERE BlogId = @BlogId
 
 GO
@@ -3267,6 +3271,7 @@ SELECT	blog.BlogId
 		, blog.CommentDelayInMinutes
 		, blog.NumberOfRecentComments
 		, blog.RecentCommentsLength
+		, blog.AkismetAPIKey
 		
 FROM [<dbUser,varchar,dbo>].[subtext_config] blog
 WHERE blog.BlogId <= @FirstId
@@ -3326,7 +3331,7 @@ SELECT	blog.BlogId
 		, blog.CommentDelayInMinutes
 		, blog.NumberOfRecentComments
 		, blog.RecentCommentsLength
-		
+		, blog.AkismetAPIKey
 FROM [<dbUser,varchar,dbo>].[subtext_config] blog
 WHERE	blog.BlogId = @BlogId
 GO

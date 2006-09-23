@@ -43,6 +43,8 @@ namespace Subtext.Web.Admin.Pages
 			this.chkEnableTrackbacks.Checked = info.TrackbacksEnabled;
 			this.chkCoCommentEnabled.Checked = info.CoCommentsEnabled;
 			this.chkAllowDuplicates.Checked = info.DuplicateCommentsEnabled;
+
+			this.txtAkismetAPIKey.Text = info.FeedbackSpamServiceKey;
 			
 			if(info.DaysTillCommentsClose > -1 && info.DaysTillCommentsClose < int.MaxValue)
                 this.txtDaysTillCommentsClosed.Text = info.DaysTillCommentsClose.ToString(CultureInfo.InvariantCulture);
@@ -151,6 +153,8 @@ namespace Subtext.Web.Admin.Pages
 				{
 					info.RecentCommentsLength = int.MaxValue;
 				}
+
+				info.FeedbackSpamServiceKey = this.txtAkismetAPIKey.Text;
 
 				Config.UpdateConfigData(info);
 			}

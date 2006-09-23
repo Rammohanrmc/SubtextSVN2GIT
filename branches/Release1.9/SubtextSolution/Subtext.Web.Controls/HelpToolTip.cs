@@ -14,6 +14,7 @@
 #endregion
 
 using System;
+using System.Globalization;
 using System.Web.UI.HtmlControls;
 
 namespace Subtext.Web.Controls
@@ -36,10 +37,19 @@ namespace Subtext.Web.Controls
 		protected override void Render(System.Web.UI.HtmlTextWriter writer)
 		{
 			string format = @"<a class=""helpLink"" onclick=""showHelpTip(event, '{0}'); return false;"" href=""?"">";
-			string helpText = HelpText.Replace("'", "\'");
-
+			string helpText = HelpText.Replace("'", "\\'");
 			writer.Write(string.Format(System.Globalization.CultureInfo.InvariantCulture, format, helpText));
 			this.RenderChildren(writer);
+			if(ImageUrl.Length > 0)
+			{
+				string imageUrl = ControlHelper.ExpandTildePath(ImageUrl);
+				writer.Write(String.Format("<img src=\"{0}\" ", imageUrl));
+				if(ImageWidth > 0)
+					writer.Write(string.Format("width=\"{0}\" ", ImageWidth));
+				if (ImageHeight > 0)
+					writer.Write(string.Format("height=\"{0}\" ", ImageHeight));
+				writer.Write("/>");
+			}
 			writer.Write("</a>");
 		}
 
@@ -52,10 +62,7 @@ namespace Subtext.Web.Controls
 		{
 			get
 			{
-				if(IsAttributeDefined("helptext"))
-					return Attributes["helptext"];
-				else
-					return string.Empty;
+				return Attributes["helptext"] ?? string.Empty;
 			}
 			set
 			{
@@ -63,9 +70,46 @@ namespace Subtext.Web.Controls
 			}
 		}
 
-		bool IsAttributeDefined(string name)
+		/// <summary>
+		/// Gets or sets the image URL.
+		/// </summary>
+		/// <value>The image URL.</value>
+		public string ImageUrl
 		{
-			return ControlHelper.IsAttributeDefined(this, name);
+			get { return Attributes["ImageUrl"] ?? string.Empty; }
+			set { Attributes["ImageUrl"] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the image URL.
+		/// </summary>
+		/// <value>The image URL.</value>
+		public int ImageHeight
+		{
+			get
+			{
+				int result;
+				if (!int.TryParse(Attributes["ImageHeight"], out result))
+					return int.MinValue;
+				return result;
+			}
+			set { Attributes["ImageHeight"] = value.ToString(CultureInfo.InvariantCulture); }
+		}
+
+		/// <summary>
+		/// Gets or sets the image URL.
+		/// </summary>
+		/// <value>The image URL.</value>
+		public int ImageWidth
+		{
+			get
+			{
+				int result;
+				if (!int.TryParse(Attributes["ImageWidth"], out result))
+					return int.MinValue;
+				return result;
+			}
+			set { Attributes["ImageWidth"] = value.ToString(CultureInfo.InvariantCulture); }
 		}
 	}
 }

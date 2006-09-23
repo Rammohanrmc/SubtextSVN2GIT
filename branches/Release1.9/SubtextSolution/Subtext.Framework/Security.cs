@@ -33,19 +33,6 @@ namespace Subtext.Framework
 		private readonly static ILog log = new Subtext.Framework.Logging.Log();
 
 		/// <summary>
-		/// Check to see if the supplied credentials are valid for the current blog. 
-		/// If so, Set the user's FormsAuthentication Ticket This method will handle 
-		/// passwords for both hashed and non-hashed configurations
-		/// </summary>
-		/// <param name="username">Supplied UserName</param>
-		/// <param name="password">Supplied Password</param>
-		/// <returns>bool indicating successful login</returns>
-		public static bool Authenticate(string username, string password)
-		{
-			return Authenticate(username, password, false);
-		}
-
-		/// <summary>
 		/// Check to see if the supplied credentials are valid for the current blog. If so, 
 		/// Set the user's FormsAuthentication Ticket This method will handle passwords for 
 		/// both hashed and non-hashed configurations
@@ -65,7 +52,14 @@ namespace Subtext.Framework
 			SetAuthenticationTicket(username, persist, "Admins");
 			return true;
 		}
-		
+
+		/// <summary>
+		/// Authenticates the host admin.
+		/// </summary>
+		/// <param name="username">The username.</param>
+		/// <param name="password">The password.</param>
+		/// <param name="persist">if set to <c>true</c> [persist].</param>
+		/// <returns></returns>
 		public static bool AuthenticateHostAdmin(string username, string password, bool persist)
 		{
 			if (!StringHelper.AreEqualIgnoringCase(username, HostInfo.Instance.HostUserName))
@@ -155,7 +149,7 @@ namespace Subtext.Framework
 		/// name for all cookies in multiblog setups as the old code did).
 		/// </summary>
 		/// <returns></returns>
-		private static string GetFullCookieName() //this could be made public
+		public static string GetFullCookieName() //this could be made public
 		{
 			return GetFullCookieName(false);
 		}

@@ -17,11 +17,13 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
+using System.Web;
 using log4net;
 using Subtext.Extensibility;
 using Subtext.Extensibility.Interfaces;
 using Subtext.Extensibility.Providers;
 using Subtext.Framework.Configuration;
+using Subtext.Framework.Exceptions;
 using Subtext.Framework.Logging;
 using Subtext.Framework.Providers;
 using Subtext.Framework.Text;
@@ -91,21 +93,17 @@ namespace Subtext.Framework.Components
 		/// <returns></returns>
 		public static int Create(FeedbackItem feedbackItem)
 		{
-			// check if we're admin, if not filter the comment. We do this to help when Importing 
-			// a blog using the BlogML import process. A better solution may be developing a way to 
-			// determine if we're currently in the BlogML import process and use that here.
-			if (!Security.IsAdmin)
+			if (HttpContext.Current != null && HttpContext.Current.Request != null)
 			{
-				CommentFilter.FilterComment(feedbackItem);
+				feedbackItem.UserAgent = HttpContext.Current.Request.UserAgent;
+				feedbackItem.IpAddress = IPAddress.Parse(HttpContext.Current.Request.UserHostAddress);
 			}
-
+			
+			feedbackItem.Approved = false;
 			feedbackItem.Author = HtmlHelper.SafeFormat(feedbackItem.Author);
 			feedbackItem.Body = HtmlHelper.ConvertToAllowedHtml(feedbackItem.Body);
 			feedbackItem.Title = HtmlHelper.SafeFormat(feedbackItem.Title);
-			feedbackItem.Approved = Security.IsAdmin || !Config.CurrentBlog.ModerationEnabled;
-			feedbackItem.NeedsModeratorApproval = !feedbackItem.Approved;
 			feedbackItem.DateCreated = feedbackItem.DateModified = BlogTime.CurrentBloggerTime;
-			
 			feedbackItem.Id = ObjectProvider.Instance().Create(feedbackItem);
 
 			// if it's not the administrator commenting and it's not a trackback.
@@ -204,6 +202,10 @@ namespace Subtext.Framework.Components
 
 			feedback.SetStatus(FeedbackStatusFlag.Approved, true);
 			feedback.SetStatus(FeedbackStatusFlag.Deleted, false);
+			if(Config.CurrentBlog.FeedbackSpamService != null)
+			{
+				Config.CurrentBlog.FeedbackSpamService.SubmitGoodFeedback(feedback);
+			}
 
 			Update(feedback);
 		}
@@ -219,6 +221,11 @@ namespace Subtext.Framework.Components
 
 			feedback.SetStatus(FeedbackStatusFlag.Approved, false);
 			feedback.SetStatus(FeedbackStatusFlag.ConfirmedSpam, true);
+
+			if (Config.CurrentBlog.FeedbackSpamService != null)
+			{
+				Config.CurrentBlog.FeedbackSpamService.SubmitGoodFeedback(feedback);
+			}
 
 			Update(feedback);
 		}
@@ -495,7 +502,7 @@ namespace Subtext.Framework.Components
 		/// <value>
 		/// 	<c>true</c> if this instance is approved; otherwise, <c>false</c>.
 		/// </value>
-		public bool IsFlaggedAsSpam
+		public bool FlaggedAsSpam
 		{
 			get { return IsStatusSet(FeedbackStatusFlag.FlaggedAsSpam); }
 			set { SetStatus(FeedbackStatusFlag.FlaggedAsSpam, value); }

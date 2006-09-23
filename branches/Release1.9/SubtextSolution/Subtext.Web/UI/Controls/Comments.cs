@@ -18,13 +18,14 @@ using System.Configuration;
 using System.Globalization;
 using System.Web.Security;
 using System.Web.UI.WebControls;
-using MagicAjax;
+using log4net;
 using Subtext.Extensibility;
 using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Data;
+using Subtext.Framework.Logging;
 using Subtext.Web.Controls;
-using Image=System.Web.UI.WebControls.Image;
+using Image = System.Web.UI.WebControls.Image;
 
 namespace Subtext.Web.UI.Controls
 {
@@ -33,6 +34,8 @@ namespace Subtext.Web.UI.Controls
 	/// </summary>
 	public class Comments : BaseControl
 	{
+		static ILog log = new Log();
+		
 		protected Repeater CommentList;
 		protected Literal NoCommentMessage;
 
@@ -61,22 +64,27 @@ namespace Subtext.Web.UI.Controls
 
 			if(CurrentBlog.CommentsEnabled)
 			{
-			    Entry entry = Cacher.GetEntryFromRequest(CacheDuration.Short);	
-
-				if(entry != null && entry.AllowComments)
-				{
-					BindComments(entry);
-				}
-				else
-				{
-					Visible = false;
-				}
+				BindFeedback(true);
 			}
 			else
 			{
 				Visible = false;
 			}
 			
+		}
+
+		internal void BindFeedback(bool fromCache)
+		{
+			Entry entry = Cacher.GetEntryFromRequest(CacheDuration.Short);	
+
+			if(entry != null && entry.AllowComments)
+			{
+				BindFeedback(entry, fromCache);
+			}
+			else
+			{
+				Visible = false;
+			}
 		}
 
 
@@ -111,17 +119,20 @@ namespace Subtext.Web.UI.Controls
 						if(feedbackItem.SourceUrl != null)
 						{
 							namelink.NavigateUrl = feedbackItem.SourceUrl.ToString();
-						}
+							ControlHelper.SetTitleIfNone(namelink, feedbackItem.SourceUrl.ToString());
+						}				
+						
 						if (feedbackItem.FeedbackType == FeedbackType.Comment)
 						{
 							namelink.Text = feedbackItem.Author;
+							ControlHelper.SetTitleIfNone(namelink, feedbackItem.Author);
 						}
 						else if (feedbackItem.FeedbackType == FeedbackType.PingTrack)
 						{
 							namelink.Text =  feedbackItem.Author != null ? feedbackItem.Author : "Pingback/TrackBack";
 							namelink.Attributes.Add("title", "PingBack/TrackBack");
 						}
-						ControlHelper.SetTitleIfNone(namelink, feedbackItem.SourceUrl.ToString());
+						
 					}
 
 					Literal PostDate = (Literal)(e.Item.FindControl("PostDate"));
@@ -196,6 +207,9 @@ namespace Subtext.Web.UI.Controls
 		const string linktag = "<a title=\"permalink: {0}\" href=\"{1}\">#</a>";
 		private string Link(string title, Uri link)
 		{
+			if (link == null)
+				return string.Empty;
+			
 			return string.Format(linktag, title, link.ToString());
 		}
 
@@ -229,21 +243,11 @@ namespace Subtext.Web.UI.Controls
 				return string.Empty;
 		}
 
-		void BindComments(Entry entry)
+		internal void BindFeedback(Entry entry, bool fromCache)
 		{
 			try
 			{
-                bool isAjaxCallTimer = MagicAjaxContext.Current.IsAjaxCallTimer;
-			    if (isAjaxCallTimer)
-			    {
-			        AjaxCallHelper.SetAjaxCallTimerInterval(0);
-			    }
-			    
-				if(isAjaxCallTimer || Request.QueryString["Pending"] != null)
-				{
-					Cacher.ClearCommentCache(entry.Id);
-				}
-				CommentList.DataSource = Cacher.GetFeedback(entry, CacheDuration.Short);
+				CommentList.DataSource = Cacher.GetFeedback(entry, CacheDuration.Short, fromCache);
 				CommentList.DataBind();
 
 				if(CommentList.Items.Count == 0)
@@ -258,10 +262,10 @@ namespace Subtext.Web.UI.Controls
 						NoCommentMessage.Text = "No comments posted yet.";
 					}
 				}
-
 			}
-			catch
+			catch(Exception e)
 			{
+				log.Error(e.Message, e);
 				Visible = false;
 			}
 		}

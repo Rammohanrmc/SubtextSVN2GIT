@@ -35,7 +35,6 @@ namespace UnitTests.Subtext.Framework.Components.TrackbackTests
 
 			FeedbackItem loadedTrackback = FeedbackItem.Get(id);
 			Assert.IsNotNull(loadedTrackback, "Was not able to load trackback from storage.");
-			Assert.IsTrue(loadedTrackback.Approved, "This item is active");
 			Assert.AreEqual(FeedbackType.PingTrack, loadedTrackback.FeedbackType, "Feedback should be a PingTrack");
 		}
 		

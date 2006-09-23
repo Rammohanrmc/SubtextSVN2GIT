@@ -3,6 +3,19 @@ IF NOT EXISTS
     SELECT * FROM [information_schema].[columns] 
     WHERE   table_name = 'subtext_Config' 
     AND table_schema = 'dbo'
+    AND column_name = 'AkismetAPIKey'
+)
+BEGIN
+	ALTER TABLE [<dbUser,varchar,dbo>].[subtext_Config]
+		ADD [AkismetAPIKey] VARCHAR(16) NULL
+END
+GO
+
+IF NOT EXISTS 
+(
+    SELECT * FROM [information_schema].[columns] 
+    WHERE   table_name = 'subtext_Config' 
+    AND table_schema = 'dbo'
     AND column_name = 'CategoryListPostCount'
 )
 BEGIN

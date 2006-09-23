@@ -25,6 +25,7 @@ using Subtext.Framework.Configuration;
 using Subtext.Framework.UI.Skinning;
 using Subtext.Framework.UrlManager;
 using Subtext.Web.Controls;
+using Subtext.Web.UI.Controls;
 using Style=Subtext.Framework.UI.Skinning.Style;
 
 namespace Subtext.Web.UI.Pages
@@ -36,7 +37,7 @@ namespace Subtext.Web.UI.Pages
 	/// each skin is loaded.
 	/// </summary>
 	public class SubtextMasterPage : Page
-	{
+	{	
 		#region Declared Controls in DTP.aspx
 		private static readonly ScriptElementCollectionRenderer scriptRenderer = new ScriptElementCollectionRenderer(SkinTemplates.Instance());
 		private static readonly StyleSheetElementCollectionRenderer styleRenderer = new StyleSheetElementCollectionRenderer(SkinTemplates.Instance());
@@ -57,11 +58,14 @@ namespace Subtext.Web.UI.Pages
 		#endregion
 		
 		protected BlogInfo CurrentBlog;
+		protected Comments commentsControl;
+		protected PostComment postCommentControl;
 		protected const string TemplateLocation = "~/Skins/{0}/{1}";
 		protected const string ControlLocation = "~/Skins/{0}/Controls/{1}";
 
 		private void InitializeBlogPage()
 		{
+			this.MaintainScrollPositionOnPostBack = true;
 			CurrentBlog = Config.CurrentBlog;
 
 			string skinFolder = Config.CurrentBlog.Skin.TemplateFolder;
@@ -69,26 +73,31 @@ namespace Subtext.Web.UI.Pages
 			string[] controls = HandlerConfiguration.GetControls(Context);
             if (controls != null)
             {
-                AjaxPanel apnlCommentsWrapper = new AjaxPanel();
-                apnlCommentsWrapper.ID = "apnlCommentsWrapper";
+				AjaxPanel apnlCommentsWrapper = new AjaxPanel();
+            	apnlCommentsWrapper.Visible = true;
+            	apnlCommentsWrapper.ID = "apnlCommentsWrapper";
                 
-                foreach (string control in controls)
+                foreach (string controlId in controls)
                 {
-                    Control c = LoadControl(string.Format(ControlLocation, skinFolder, control));
-                    c.ID = control.Replace(".", "_");
+                    Control control = LoadControl(string.Format(ControlLocation, skinFolder, controlId));
+                    control.ID = controlId.Replace(".", "_");
                     
-                    if (control.Equals("Comments.ascx"))
+                    if (controlId.Equals("Comments.ascx"))
                     {
-                        apnlCommentsWrapper.Controls.Add(c);
+                    	control.Visible = true;
+						this.commentsControl = control as Comments;
+                        apnlCommentsWrapper.Controls.Add(control);
                     }
-                    else if (control.Equals("PostComment.ascx"))
+                    else if (controlId.Equals("PostComment.ascx"))
                     {
-                        apnlCommentsWrapper.Controls.Add(c);
+                    	postCommentControl = (PostComment)control;
+						postCommentControl.CommentPosted += new EventHandler<EventArgs>(postCommentControl_CommentPosted);
+                        apnlCommentsWrapper.Controls.Add(control);
                         CenterBodyControl.Controls.Add(apnlCommentsWrapper);
                     }
                     else
                     {
-                        CenterBodyControl.Controls.Add(c);
+                        CenterBodyControl.Controls.Add(control);
                     }
                 }
             }
@@ -141,6 +150,11 @@ namespace Subtext.Web.UI.Pages
 			{
 				styles.Text = styleRenderer.RenderStyleElementCollection(Config.CurrentBlog.Skin.SkinKey);
 			}
+		}
+
+		void postCommentControl_CommentPosted(object sender, EventArgs e)
+		{
+			this.commentsControl.BindFeedback(false); //don't get it from cache.
 		}
 
 
@@ -368,3 +382,4 @@ namespace Subtext.Web.UI.Pages
 		}
 	}
 }
+

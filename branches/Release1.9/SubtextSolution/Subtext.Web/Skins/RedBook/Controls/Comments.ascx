@@ -1,11 +1,10 @@
 <%@ Control Language="c#" AutoEventWireup="false" Inherits="Subtext.Web.UI.Controls.Comments" %>
-<%@ Register TagPrefix="ajax" Namespace="MagicAjax.UI.Controls" Assembly="MagicAjax" %>
 <hr/>
 <a id="feedback" title="feedback anchor"></a>
 <div id="moreinfo">
 	<h2>Feedback</h2>
 
-	    <p><asp:Literal ID = "NoCommentMessage" Runat ="server" /></p>
+	    <p><asp:Literal ID="NoCommentMessage" Runat ="server" /></p>
 	    <asp:Repeater id="CommentList" runat="server" OnItemCreated="CommentsCreated" OnItemCommand="RemoveComment_ItemCommand">
 		    <ItemTemplate>
 			    <div class="comment">

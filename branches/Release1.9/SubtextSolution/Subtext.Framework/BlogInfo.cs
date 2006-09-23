@@ -20,6 +20,7 @@ using Subtext.Extensibility.Interfaces;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Format;
 using Subtext.Framework.Providers;
+using Subtext.Framework.Services;
 using Subtext.Framework.Text;
 using Subtext.Framework.Web.HttpModules;
 
@@ -653,6 +654,49 @@ namespace Subtext.Framework
 		}
 
 		string _licenseUrl;
+
+		/// <summary>
+		/// Gets or sets the Comment Service API key. This is for a comment spam filtering 
+		/// service such as http://akismet.com/
+		/// </summary>
+		/// <value>The akismet API key.</value>
+		public string FeedbackSpamServiceKey
+		{
+			get { return this.feedbackSpamServiceKey ?? String.Empty; }
+			set { this.feedbackSpamServiceKey = (value ?? string.Empty); }
+		}
+
+		string feedbackSpamServiceKey;
+
+		/// <summary>
+		/// Gets a value indicating whether [akismet enabled].
+		/// </summary>
+		/// <value><c>true</c> if [akismet enabled]; otherwise, <c>false</c>.</value>
+		public bool FeedbackSpamServiceEnabled
+		{
+			get
+			{
+				return feedbackSpamServiceKey.Length > 0;
+			}
+		}
+
+		/// <summary>
+		/// Gets the comment spam service.
+		/// </summary>
+		/// <value>The comment spam service.</value>
+		public IFeedbackSpamService FeedbackSpamService
+		{
+			get
+			{
+				return this.feedbackService;
+			}
+			set
+			{
+				this.feedbackService = value;
+			}
+		}
+
+		IFeedbackSpamService feedbackService;
 
 		/// <summary>
 		/// Gets the root URL for this blog.  For example, "http://example.com/" or "http://example.com/blog/".

@@ -109,6 +109,7 @@
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.84.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=227c66cf5503649a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.ApplicationBlocks.Data, Version=1.0.2379.25601, Culture=neutral" />
+    <Reference Include="msmdvbanet, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="SgmlReaderDll, Version=1.7.2383.20436, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System">
       <Name>System</Name>
@@ -133,6 +134,10 @@
       <Name>Velocit.RegularExpressions</Name>
       <HintPath>ExternalDependencies\Velocit.RegularExpressions.dll</HintPath>
     </Reference>
+    <ProjectReference Include="..\Subtext.Akismet\Subtext.Akismet.csproj">
+      <Project>{4B791A18-F723-4B4F-84D3-F9CCB4B250AB}</Project>
+      <Name>Subtext.Akismet</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Subtext.BlogMl\Subtext.BlogML.csproj">
       <Project>{830310DB-5D6A-453C-908A-058776D9C993}</Project>
       <Name>Subtext.BlogML</Name>
@@ -377,6 +382,8 @@
     <Compile Include="Security.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Services\AkismetSpamService.cs" />
+    <Compile Include="Services\IFeedbackSpamService.cs" />
     <Compile Include="Stats.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -535,7 +542,6 @@
     <Content Include="ExternalDependencies\Velocit.RegularExpressions.dll" />
     <Content Include="license.txt" />
     <Content Include="Logging\LoggingConfigurationExample.xml" />
-    <EmbeddedResource Include="Resources\InstallationVersions.xml" />
     <EmbeddedResource Include="Tracking\PingBackNotificatinProxy.resx">
       <DependentUpon>PingBackNotificatinProxy.cs</DependentUpon>
     </EmbeddedResource>
