@@ -3236,7 +3236,7 @@ SET ROWCOUNT @StartRowIndex
 SELECT	@FirstId = [BlogId] FROM [<dbUser,varchar,dbo>].[subtext_Config]
 WHERE @ConfigurationFlags & Flag = @ConfigurationFlags
 	AND (Host = @Host OR @Host IS NULL)
-ORDER BY [BlogId] DESC
+ORDER BY [BlogId] ASC
 
 -- Now, set the row count to MaximumRows and get
 -- all records >= @first_id
@@ -3274,9 +3274,10 @@ SELECT	blog.BlogId
 		, blog.AkismetAPIKey
 		
 FROM [<dbUser,varchar,dbo>].[subtext_config] blog
-WHERE blog.BlogId <= @FirstId
+WHERE blog.BlogId >= @FirstId
 	AND @ConfigurationFlags & Flag = @ConfigurationFlags
 	AND (Host = @Host OR @Host IS NULL)
+ORDER BY blog.BlogId ASC
 
 SELECT COUNT([BlogId]) AS TotalRecords
 FROM [<dbUser,varchar,dbo>].[subtext_config]
@@ -4271,21 +4272,21 @@ CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPostsByCategoriesArchive]
 )
 AS
 
-
-select subtext_LinkCategories.CategoryID as [Id],
-	subtext_LinkCategories.Title, 
-	count(*) as  [Count],
-	1 AS [Month],
-	1 AS [Year],
-	1 AS [Day]
+SELECT	[Id] = c.CategoryID
+		, c.Title 
+		, [Count] = COUNT(1)
+		, [Month] = 1
+		, [Year] = 1
+		, [Day] = 1
 	
-from subtext_LinkCategories inner join subtext_Links on subtext_LinkCategories.CategoryID=subtext_Links.CategoryID
-where			subtext_LinkCategories.Active= 1 
-	AND		(subtext_LinkCategories.BlogId = @BlogId OR @BlogId IS NULL)
-	AND		subtext_LinkCategories.CategoryType = 1 -- post category
+FROM [<dbUser,varchar,dbo>].[subtext_LinkCategories] c 
+	INNER JOIN [<dbUser,varchar,dbo>].[subtext_Links] l on c.CategoryID = l.CategoryID
+WHERE	c.Active= 1 
+	AND	(c.BlogId = @BlogId OR @BlogId IS NULL)
+	AND	c.CategoryType = 1 -- post category
 
-group by subtext_LinkCategories.CategoryID, subtext_LinkCategories.Title
-order by subtext_LinkCategories.Title
+GROUP BY c.CategoryID, c.Title
+ORDER BY c.Title
 
 GO
 SET QUOTED_IDENTIFIER OFF 
