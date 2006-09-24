@@ -3412,10 +3412,10 @@ VALUES
 
 SELECT @Id = SCOPE_IDENTITY()
 
-IF NOT @EntryId IS NULL
-UPDATE [<dbUser,varchar,dbo>].[subtext_Content]
-SET FeedbackCount = FeedbackCount + 1 
-WHERE [ID] = @EntryId
+IF NOT @EntryId IS NULL AND @StatusFlag & 1 = 1 -- Approved
+	UPDATE [<dbUser,varchar,dbo>].[subtext_Content]
+	SET FeedbackCount = FeedbackCount + 1 
+	WHERE [ID] = @EntryId
 
 GO
 SET QUOTED_IDENTIFIER OFF 
@@ -3437,7 +3437,6 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateFeedback]
 	, @Title nvarchar(256)
 	, @Body ntext = NULL
 	, @BlogId int
-	, @EntryId int = NULL
 	, @Author nvarchar(128) = NULL
 	, @Email varchar(128) = NULL
 	, @Url varchar(256) = NULL
@@ -3452,10 +3451,23 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateFeedback]
 )
 AS
 
+-- Get previous status.
+DECLARE @PrevStatus int
+DECLARE @EntryId int
+SELECT @PrevStatus = StatusFlag, @EntryId = EntryId 
+FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE Id = @Id
+
+-- Was approved, now not.
+If @PrevStatus & 1 = 1 AND @StatusFlag & 1 = 0
+	UPDATE [<dbUser,varchar,dbo>].[subtext_Content] SET FeedbackCount = FeedbackCount - 1 WHERE [ID] = @EntryId
+
+-- Was not approved, but now is.
+If @PrevStatus & 1 = 0 AND @StatusFlag & 1 = 1
+	UPDATE [<dbUser,varchar,dbo>].[subtext_Content] SET FeedbackCount = FeedbackCount + 1 WHERE [ID] = @EntryId
+
 UPDATE [<dbUser,varchar,dbo>].[subtext_Feedback]
 SET	Title = @Title
 	, Body = @Body
-	, EntryId = @EntryId
 	, Author = @Author
 	, Email = @Email
 	, Url = @Url

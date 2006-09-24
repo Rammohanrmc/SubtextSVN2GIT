@@ -152,6 +152,37 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 			Assert.AreEqual(commentTwo.Id, feedback[1].Id, "The first does not match");
 			Assert.AreEqual(commentFour.Id, feedback[0].Id, "The first does not match");
 		}
+		
+		[Test]
+		[RollBack]
+		public void OnlyApprovedItemsContributeToEntryFeedbackCount()
+		{
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
+			Config.CurrentBlog.CommentsEnabled = true;
+			Config.CurrentBlog.ModerationEnabled = false;
+			
+			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("blah", "blah", "blah");
+			int entryId = Entries.Create(entry);
+
+			CreateAndUpdateFeedbackWithExactStatus(entry, FeedbackType.Comment, FeedbackStatusFlag.Approved);
+			entry = Entries.GetEntry(entryId, PostConfig.None, false);
+			Assert.AreEqual(1, entry.FeedBackCount, "Expected one approved feedback entry.");
+
+			FeedbackItem comment = CreateAndUpdateFeedbackWithExactStatus(entry, FeedbackType.Comment, FeedbackStatusFlag.FlaggedAsSpam);
+			entry = Entries.GetEntry(entryId, PostConfig.None, false);
+			Assert.AreEqual(1, entry.FeedBackCount, "Expected one approved feedback entry.");
+
+			comment.Approved = true;
+			FeedbackItem.Update(comment);
+			entry = Entries.GetEntry(entryId, PostConfig.None, false);
+			Assert.AreEqual(2, entry.FeedBackCount, "After approving the second comment, expected two approved feedback entry.");
+
+			comment.Approved = false;
+			FeedbackItem.Update(comment);
+			entry = Entries.GetEntry(entryId, PostConfig.None, false);
+			Assert.AreEqual(1, entry.FeedBackCount, "After un-approving the second comment, expected one approved feedback entry.");
+		}
+		
 
 		/// <summary>
 		/// Make sure that we can get all feedback that is flagged as 
