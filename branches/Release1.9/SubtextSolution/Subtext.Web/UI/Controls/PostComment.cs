@@ -44,25 +44,7 @@ namespace Subtext.Web.UI.Controls
 
 			//TODO: Make this configurable.
 			tbComment.MaxLength = 4000;
-			tbComment.ValidationGroup = "SubtextComment";
-
-			if (this.tbTitle != null)
-				this.tbTitle.ValidationGroup = "SubtextComment";
-
-			if (this.tbName != null)
-				this.tbName.ValidationGroup = "SubtextComment";
-
-			if (this.tbUrl != null)
-				this.tbUrl.ValidationGroup = "SubtextComment";
-			
-			if(this.tbEmail != null)
-				this.tbEmail.ValidationGroup = "SubtextComment";
-
-			if (this.btnCompliantSubmit != null)
-				this.btnCompliantSubmit.ValidationGroup = "SubtextComment";
-
-			if (this.btnSubmit != null)
-				this.btnSubmit.ValidationGroup = "SubtextComment";
+			SetValidationGroup();
 		
 			if(!IsPostBack)
 			{
@@ -97,6 +79,33 @@ namespace Subtext.Web.UI.Controls
 				}
 			}
 		}
+		
+		void SetValidationGroup()
+		{
+			foreach(Control control in this.Controls)
+			{
+				BaseValidator validator = control as BaseValidator;
+				if(validator != null)
+				{
+					validator.ValidationGroup = "SubtextComment";
+					continue;
+				}
+
+				Button btn = control as Button;
+				if (btn != null)
+				{
+					btn.ValidationGroup = "SubtextComment";
+					continue;
+				}
+
+				TextBox textbox = control as TextBox;
+				if (textbox != null)
+				{
+					textbox.ValidationGroup = "SubtextComment";
+					continue;
+				}
+			}
+		}
 
 		/// <summary>
 		/// Called when an approved comment is added.
@@ -107,6 +116,7 @@ namespace Subtext.Web.UI.Controls
 			{
 				this.Controls.RemoveAt(i);
 			}
+			Message = new Label();
 			Message.Text = "Thanks for your comment!";
 			Message.CssClass = "success";
 			this.Controls.Add(Message);
