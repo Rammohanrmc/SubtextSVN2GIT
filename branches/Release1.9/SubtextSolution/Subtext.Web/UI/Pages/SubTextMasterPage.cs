@@ -65,7 +65,7 @@ namespace Subtext.Web.UI.Pages
 
 		private void InitializeBlogPage()
 		{
-			this.MaintainScrollPositionOnPostBack = true;
+			MaintainScrollPositionOnPostBack = true;
 			CurrentBlog = Config.CurrentBlog;
 
 			string skinFolder = Config.CurrentBlog.Skin.TemplateFolder;
@@ -85,7 +85,7 @@ namespace Subtext.Web.UI.Pages
                     if (controlId.Equals("Comments.ascx"))
                     {
                     	control.Visible = true;
-						this.commentsControl = control as Comments;
+						commentsControl = control as Comments;
                         apnlCommentsWrapper.Controls.Add(control);
                     }
                     else if (controlId.Equals("PostComment.ascx"))
@@ -154,7 +154,7 @@ namespace Subtext.Web.UI.Pages
 
 		void postCommentControl_CommentPosted(object sender, EventArgs e)
 		{
-			this.commentsControl.BindFeedback(false); //don't get it from cache.
+			commentsControl.BindFeedback(false); //don't get it from cache.
 		}
 
 

@@ -105,6 +105,12 @@ IF NOT EXISTS
 	ALTER TABLE [<dbUser,varchar,dbo>].[subtext_Feedback] CHECK CONSTRAINT [FK_subtext_Feedback_subtext_Config]
 GO
 
+-- Now we need to do a little "cleanup" to remove any references to comments/trackback from 
+-- the subtext_Referrals table.
+DELETE FROM [<dbUser,varchar,dbo>].[subtext_Referrals]  
+	WHERE EXISTS (SELECT * FROM [<dbUser,varchar,dbo>].[subtext_Content] sC 
+		WHERE (sc.PostType = 3 OR sC.PostType = 4) AND [<dbUser,varchar,dbo>].[subtext_Referrals].EntryID = sc.ID)
+
 
 IF EXISTS 
 	(
@@ -123,7 +129,7 @@ IF EXISTS
 			, Author
 			, Email
 			, Url = TitleUrl
-			, CommentType = CASE PostConfig WHEN 3 THEN 1 ELSE 2 END
+			, FeedbackType = CASE PostConfig WHEN 3 THEN 1 ELSE 2 END
 			, StatusFlag = 1
 			, CommentAPI = 0
 			, Referrer = NULL

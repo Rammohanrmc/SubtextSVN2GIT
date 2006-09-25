@@ -15,6 +15,7 @@
 
 using System;
 using System.Globalization;
+using System.Web.UI;
 using System.Web.UI.HtmlControls;
 
 namespace Subtext.Web.Controls
@@ -27,19 +28,19 @@ namespace Subtext.Web.Controls
 	public class HelpToolTip : HtmlContainerControl
 	{
 		/// <summary>
-		/// <p>Renders this tool tip.  The format looks like: 
+		/// Renders this tool tip.  The format looks like: 
 		/// &lt;a class="helplink" onclick="showHelpTip(event, 'help text'); 
 		/// return false;" href="?"&gt;Label Text&lt;a&gt;
-		/// </p>
+		/// 
 		/// //TODO: Look into embedding helplink.js and helplink.css
 		/// </summary>
 		/// <param name="writer">Writer.</param>
-		protected override void Render(System.Web.UI.HtmlTextWriter writer)
+		protected override void Render(HtmlTextWriter writer)
 		{
 			string format = @"<a class=""helpLink"" onclick=""showHelpTip(event, '{0}'); return false;"" href=""?"">";
 			string helpText = HelpText.Replace("'", "\\'");
-			writer.Write(string.Format(System.Globalization.CultureInfo.InvariantCulture, format, helpText));
-			this.RenderChildren(writer);
+			writer.Write(string.Format(CultureInfo.InvariantCulture, format, helpText));
+			RenderChildren(writer);
 			if(ImageUrl.Length > 0)
 			{
 				string imageUrl = ControlHelper.ExpandTildePath(ImageUrl);
@@ -60,14 +61,8 @@ namespace Subtext.Web.Controls
 		/// <value></value>
 		public string HelpText
 		{
-			get
-			{
-				return Attributes["helptext"] ?? string.Empty;
-			}
-			set
-			{
-				Attributes["helptext"] = value;
-			}
+			get { return Attributes["helptext"] ?? string.Empty; }
+			set { Attributes["helptext"] = value; }
 		}
 
 		/// <summary>
