@@ -730,7 +730,7 @@ FROM [<dbUser,varchar,dbo>].[subtext_LinkCategories]
 WHERE	
 			subtext_LinkCategories.Active= 1 
 	AND		(subtext_LinkCategories.BlogId = @BlogId OR @BlogId IS NULL)
-	AND		subtext_LinkCategories.CategoryType = 0
+	AND		subtext_LinkCategories.CategoryType = 5
 ORDER BY 
 	subtext_LinkCategories.Title;
 
@@ -749,7 +749,7 @@ WHERE
 	AND categories.Active = 1
 	AND (categories.BlogId = @BlogId OR @BlogId IS NULL)
 	AND links.BlogId = @BlogId 
-	AND categories.CategoryType = 0
+	AND categories.CategoryType = 5
 ORDER BY 
 	links.Title;
 
