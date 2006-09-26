@@ -53,8 +53,7 @@ namespace Subtext.Akismet
 			{
 				responseText = reader.ReadToEnd();
 			}
-			if (String.IsNullOrEmpty(responseText))
-				throw new InvalidResponseException("Akismet returned an empty response", response.StatusCode);
+			
 			return responseText;
 		}
 	}

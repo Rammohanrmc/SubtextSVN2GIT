@@ -1,4 +1,5 @@
 using System;
+using Subtext.Web.Controls;
 
 namespace Subtext.Web.UI.Controls
 {
@@ -13,6 +14,7 @@ namespace Subtext.Web.UI.Controls
 		protected Subtext.Web.Controls.CompliantButton btnCompliantSubmit;
 		protected System.Web.UI.WebControls.Label Message;
 		protected System.Web.UI.WebControls.CheckBox chkRemember;
+		protected InvisibleCaptcha invisibleCaptchaValidator;
 		protected SubtextCoComment coComment;
 	}
 }

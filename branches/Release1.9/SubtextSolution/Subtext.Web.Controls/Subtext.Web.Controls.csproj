@@ -164,6 +164,7 @@
     <Compile Include="HelpToolTip.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="InvisibleCaptcha.cs" />
     <Compile Include="MasterPage.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -196,6 +197,9 @@
     <EmbeddedResource Include="Resources\CoCommentScript.js" />
     <EmbeddedResource Include="Resources\CollapsiblePanel.js" />
     <EmbeddedResource Include="Resources\ScrollPositionSaver.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\InvisibleCaptcha.js" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

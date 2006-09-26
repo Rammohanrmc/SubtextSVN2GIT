@@ -143,7 +143,12 @@ namespace Subtext.Akismet
 		public bool VerifyApiKey()
 		{
 			string parameters = "key=" + HttpUtility.UrlEncode(this.ApiKey) + "&blog=" + HttpUtility.UrlEncode(this.BlogUrl.ToString());
-			return String.Equals("valid", this.httpClient.PostRequest(verifyUrl, this.UserAgent, this.Timeout, parameters), StringComparison.InvariantCultureIgnoreCase);
+			string result = this.httpClient.PostRequest(verifyUrl, this.UserAgent, this.Timeout, parameters);
+
+			if (String.IsNullOrEmpty(result))
+				throw new InvalidResponseException("Akismet returned an empty response");
+			
+			return String.Equals("valid", result, StringComparison.InvariantCultureIgnoreCase);
 		}
 		
 		/// <summary>
@@ -154,9 +159,13 @@ namespace Subtext.Akismet
 		public bool CheckCommentForSpam(IComment comment)
 		{
 			string result = SubmitComment(comment, this.checkUrl);
+
+			if (String.IsNullOrEmpty(result))
+				throw new InvalidResponseException("Akismet returned an empty response");
+			
 			if (result != "true" && result != "false")
 				throw new InvalidResponseException(string.Format("Received the response '{0}' from Akismet. Probably a bad API key.", result));
-				
+			
 			return bool.Parse(result);
 		}
 

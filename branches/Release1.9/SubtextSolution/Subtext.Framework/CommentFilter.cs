@@ -77,7 +77,7 @@ namespace Subtext.Framework
 							feedbackItem.FlaggedAsSpam = true;
 							feedbackItem.Approved = false;
 							FeedbackItem.Update(feedbackItem);
-							throw new CommentSpamException("Sorry, but your comment has been flagged as spam.");
+							return;
 						}
 					}
 					feedbackItem.Approved = true;

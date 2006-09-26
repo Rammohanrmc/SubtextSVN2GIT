@@ -91,7 +91,7 @@ namespace Subtext.Web.UI.Pages
                     else if (controlId.Equals("PostComment.ascx"))
                     {
                     	postCommentControl = (PostComment)control;
-						postCommentControl.CommentPosted += new EventHandler<EventArgs>(postCommentControl_CommentPosted);
+						postCommentControl.CommentApproved += new EventHandler<EventArgs>(postCommentControl_CommentPosted);
                         apnlCommentsWrapper.Controls.Add(control);
                         CenterBodyControl.Controls.Add(apnlCommentsWrapper);
                     }
