@@ -3434,19 +3434,13 @@ SET ANSI_NULLS ON
 GO
 CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateFeedback]
 (
-	@ID int output	
+	@ID int
 	, @Title nvarchar(256)
 	, @Body ntext = NULL
-	, @BlogId int
 	, @Author nvarchar(128) = NULL
 	, @Email varchar(128) = NULL
 	, @Url varchar(256) = NULL
-	, @FeedbackType int
 	, @StatusFlag int
-	, @CommentAPI bit
-	, @Referrer varchar(256) = NULL
-	, @IpAddress varchar(16) = NULL
-	, @UserAgent nvarchar(128) = NULL
 	, @FeedbackChecksumHash varchar(32)
 	, @DateModified datetime
 )
@@ -3472,12 +3466,7 @@ SET	Title = @Title
 	, Author = @Author
 	, Email = @Email
 	, Url = @Url
-	, FeedbackType = @FeedbackType
 	, StatusFlag = @StatusFlag
-	, CommentAPI = @CommentAPI
-	, Referrer = @Referrer
-	, IpAddress = @IpAddress
-	, UserAgent = @UserAgent
 	, FeedbackChecksumHash = @FeedbackChecksumHash
 	, DateModified = @DateModified
 WHERE Id = @Id
