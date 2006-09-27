@@ -143,7 +143,7 @@ namespace Subtext.Web.UI.Pages
 			// if specified, add script elements
 			if (scripts != null)
 			{
-				scripts.Text = scriptRenderer.RenderScriptElementCollection(skinFolder);
+				scripts.Text = scriptRenderer.RenderScriptElementCollection(Config.CurrentBlog.Skin.SkinKey);
 			}
 
 			if(styles != null)
@@ -246,12 +246,22 @@ namespace Subtext.Web.UI.Pages
 				}
 			}
 
-			private static string GetSkinPath(string skinName)
+			/// <summary>
+			/// Gets the skin path.
+			/// </summary>
+			/// <param name="skinTemplateFolder">Name of the skin.</param>
+			/// <returns></returns>
+			private static string GetSkinPath(string skinTemplateFolder)
 			{
 				string applicationPath = HttpContext.Current.Request.ApplicationPath;
-				return (applicationPath == "/" ? String.Empty : applicationPath) + "/Skins/" + skinName + "/";
+				return (applicationPath == "/" ? String.Empty : applicationPath) + "/Skins/" + skinTemplateFolder + "/";
 			}
 
+			/// <summary>
+			/// Renders the script element collection for thes kin key.
+			/// </summary>
+			/// <param name="skinKey">The skin key.</param>
+			/// <returns></returns>
 			public string RenderScriptElementCollection(string skinKey)
 			{
 				StringBuilder result = new StringBuilder();
