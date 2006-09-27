@@ -71,8 +71,8 @@ namespace Subtext.Web.Controls
 			
 			string answer = (first + second).ToString(CultureInfo.InvariantCulture);
 			//A little obsfucation.
-			Page.ClientScript.RegisterHiddenField(HiddenAnswerHashFieldName, Convert.ToBase64String(Encoding.UTF8.GetBytes(answer)));
-
+			Page.ClientScript.RegisterHiddenField(HiddenAnswerExpectedFieldName, Convert.ToBase64String(Encoding.UTF8.GetBytes(answer)));
+			Page.ClientScript.RegisterHiddenField(HiddenAnswerHashFieldName, ComputeAnswerHash(answer));
 			Page.ClientScript.RegisterStartupScript(typeof(InvisibleCaptcha), "MakeCaptchaInvisible", string.Format("<script type=\"text/javascript\">\r\nsubtext_invisible_captcha_hideFromJavascriptEnabledBrowsers('{0}');\r\n</script>", this.CaptchaInputClientId));
 			
 			Page.ClientScript.RegisterClientScriptInclude("InvisibleCaptcha",
@@ -149,6 +149,14 @@ namespace Subtext.Web.Controls
 			}
 		}
 
+		string HiddenAnswerExpectedFieldName
+		{
+			get
+			{
+				return ClientID + "_answerExpected";
+			}
+		}
+		
 		string HiddenAnswerHashFieldName
 		{
 			get
@@ -183,13 +191,14 @@ namespace Subtext.Web.Controls
 				answer = Page.Request.Form[VisibleAnswerFieldName];
 			string answerHash = ComputeAnswerHash(answer);
 
-			string encodedExpectedAnswer = Page.Request.Form[HiddenAnswerHashFieldName];
+			string encodedExpectedAnswer = Page.Request.Form[HiddenAnswerExpectedFieldName];
 			if (String.IsNullOrEmpty(encodedExpectedAnswer))
 				return false; //Somebody is tampering with the form.
 
 			string actualAnswer = Encoding.UTF8.GetString(Convert.FromBase64String(encodedExpectedAnswer));
-			string expectedAnswerHash = ComputeAnswerHash(actualAnswer);
-			return answerHash == expectedAnswerHash;
+			string expectedAnswerHash = Page.Request.Form[HiddenAnswerHashFieldName];
+
+			return actualAnswer == answer && answerHash == expectedAnswerHash;
 		}
 	}
 }
