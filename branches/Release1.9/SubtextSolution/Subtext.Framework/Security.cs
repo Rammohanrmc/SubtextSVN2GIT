@@ -19,9 +19,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using System.Web.Security;
-using Subtext.Framework.Configuration;
-using Subtext.Framework.Text;
 using log4net;
+using Subtext.Framework.Configuration;
+using Subtext.Framework.Data;
+using Subtext.Framework.Logging;
+using Subtext.Framework.Text;
 
 namespace Subtext.Framework
 {
@@ -30,7 +32,7 @@ namespace Subtext.Framework
 	/// </summary>
 	public static class Security
 	{
-		private readonly static ILog log = new Subtext.Framework.Logging.Log();
+		private readonly static ILog log = new Log();
 
 		/// <summary>
 		/// Check to see if the supplied credentials are valid for the current blog. If so, 
@@ -69,7 +71,7 @@ namespace Subtext.Framework
 			
 			if(Config.Settings.UseHashedPasswords)
 			{
-				password = Security.HashPassword(password, HostInfo.Instance.Salt);
+				password = HashPassword(password, HostInfo.Instance.Salt);
 			}
 
 			if (!StringHelper.AreEqualIgnoringCase(HostInfo.Instance.Password, password))
@@ -101,11 +103,13 @@ namespace Subtext.Framework
 		public static HttpCookie SelectAuthenticationCookie()
 		{
 			HttpCookie authCookie = null;
-
-			log.Debug("cookie count = " + HttpContext.Current.Request.Cookies.Count);
-			for (int i = 0; i < HttpContext.Current.Request.Cookies.Count; ++i)
+            HttpCookie c;
+		    int count = HttpContext.Current.Request.Cookies.Count;
+		    
+			log.Debug("cookie count = " + count);
+		    for (int i = 0; i < count; i++)
 			{
-				HttpCookie c = HttpContext.Current.Request.Cookies[i];
+                c = HttpContext.Current.Request.Cookies[i];
 				#region Logging
 				if (log.IsDebugEnabled)
 				{
@@ -149,7 +153,7 @@ namespace Subtext.Framework
 		/// name for all cookies in multiblog setups as the old code did).
 		/// </summary>
 		/// <returns></returns>
-		public static string GetFullCookieName() //this could be made public
+		public static string GetFullCookieName()
 		{
 			return GetFullCookieName(false);
 		}
@@ -173,7 +177,20 @@ namespace Subtext.Framework
 			    name.Append("HA.");
 			}
 
-			name.Append(Config.CurrentBlog == null ? "null" : Config.CurrentBlog.Id.ToString());
+		    try
+		    {
+		        name.Append(Config.CurrentBlog == null ? "null" : Config.CurrentBlog.Id.ToString());
+		    }
+            catch (System.Data.SqlClient.SqlException sqlExc)
+		    {
+                if (sqlExc.Number == (int)SqlErrorMessage.CouldNotFindStoredProcedure 
+                    && sqlExc.Message.IndexOf("'subtext_GetConfig'") > 0)
+                {
+                    // must not have the db installed.
+                    log.Debug("The database must not be installed.");
+                }
+                else throw;
+		    }
 			log.Debug("GetFullCookieName selected cookie named " + name.ToString());
 			return name.ToString();           
 		}
@@ -231,7 +248,7 @@ namespace Subtext.Framework
 				log.Debug("the code MUST call a redirect after this");
 			} 
 			#endregion
-			System.Web.Security.FormsAuthentication.SignOut();
+			FormsAuthentication.SignOut();
 		}
 
 		//From Forums Source Code
@@ -391,7 +408,7 @@ namespace Subtext.Framework
 			HostInfo hostInfo = HostInfo.Instance;
 			if(Config.Settings.UseHashedPasswords)
 			{
-				hostInfo.Password = Security.HashPassword(password, HostInfo.Instance.Salt);
+				hostInfo.Password = HashPassword(password, HostInfo.Instance.Salt);
 			}
 			else
 			{

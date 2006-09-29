@@ -3,8 +3,8 @@ using System.Security.Principal;
 using System.Web;
 using System.Web.Security;
 using log4net;
-using Subtext.Framework.Text;
-using Subtext.Framework.Configuration;
+using Subtext.Framework;
+using Subtext.Framework.Logging;
 
 namespace Subtext.Web.HttpModules
 {
@@ -14,7 +14,7 @@ namespace Subtext.Web.HttpModules
     /// </summary>
     public class AuthenticationModule : IHttpModule
     {
-        private readonly static ILog log = new Subtext.Framework.Logging.Log();
+        private readonly static ILog log = new Log();
         
         public void Init(HttpApplication context)
         {
@@ -23,7 +23,7 @@ namespace Subtext.Web.HttpModules
 
         void OnAuthenticateRequest(object sender, EventArgs e)
         {
-			HttpCookie authCookie = Subtext.Framework.Security.SelectAuthenticationCookie();
+			HttpCookie authCookie = Security.SelectAuthenticationCookie();
 
             if (null == authCookie)
             {
@@ -39,27 +39,27 @@ namespace Subtext.Web.HttpModules
             catch (Exception ex)
             {
                 log.Error("Could not decrypt the authentication cookie.", ex);
-				HttpContext.Current.Response.Cookies.Add(Subtext.Framework.Security.GetExpiredCookie());			
+				HttpContext.Current.Response.Cookies.Add(Security.GetExpiredCookie());			
                 return;
             }
 
             if (null == authTicket)
             {
                 log.Warn("Could not decrypt the authentication cookie. No exception was thrown.");
-                HttpContext.Current.Response.Cookies.Add(Subtext.Framework.Security.GetExpiredCookie());			
+                HttpContext.Current.Response.Cookies.Add(Security.GetExpiredCookie());			
                 return;
             }
 
             if (authTicket.Expired)
             {
                 log.Debug("Authentication ticket expired.");
-				HttpContext.Current.Response.Cookies.Add(Subtext.Framework.Security.GetExpiredCookie());
+				HttpContext.Current.Response.Cookies.Add(Security.GetExpiredCookie());
                 return;
             }
 
-			if (System.Web.Security.FormsAuthentication.SlidingExpiration)
+			if (FormsAuthentication.SlidingExpiration)
 			{
-			    System.Web.Security.FormsAuthentication.RenewTicketIfOld(authTicket);
+			    FormsAuthentication.RenewTicketIfOld(authTicket);
 			}
 
             // When the ticket was created, the UserData property was assigned a
