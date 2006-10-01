@@ -13,6 +13,7 @@ namespace Subtext.Web.Admin.WebUI
 	{
 		protected void Page_Load(object sender, EventArgs e)
 		{
+			lblCurrentTime.Text = DateTime.Now.ToString("f") + " " + TimeZone.CurrentTimeZone.StandardName;
 		}
 
 		/// <summary>

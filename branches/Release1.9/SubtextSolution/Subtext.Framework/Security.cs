@@ -14,6 +14,7 @@
 #endregion
 
 using System;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
@@ -22,6 +23,7 @@ using System.Web.Security;
 using log4net;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Data;
+using Subtext.Framework.Exceptions;
 using Subtext.Framework.Logging;
 using Subtext.Framework.Text;
 
@@ -157,6 +159,7 @@ namespace Subtext.Framework
 		{
 			return GetFullCookieName(false);
 		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -179,9 +182,16 @@ namespace Subtext.Framework
 
 		    try
 		    {
-		        name.Append(Config.CurrentBlog == null ? "null" : Config.CurrentBlog.Id.ToString());
+		    	try 
+		    	{
+					name.Append(Config.CurrentBlog.Id.ToString(CultureInfo.InvariantCulture));
+		    	}
+		    	catch(BlogDoesNotExistException)
+		    	{
+					name.Append("null");
+		    	}
 		    }
-            catch (System.Data.SqlClient.SqlException sqlExc)
+            catch (SqlException sqlExc)
 		    {
                 if (sqlExc.Number == (int)SqlErrorMessage.CouldNotFindStoredProcedure 
                     && sqlExc.Message.IndexOf("'subtext_GetConfig'") > 0)

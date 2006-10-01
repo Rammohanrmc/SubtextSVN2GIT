@@ -18,7 +18,9 @@ namespace Subtext.Web.Admin.Pages {
         protected System.Web.UI.WebControls.TextBox txbUser;
         protected System.Web.UI.WebControls.TextBox txbAuthor;
         protected System.Web.UI.WebControls.TextBox txbAuthorEmail;
+        protected Subtext.Web.Controls.HelpToolTip hlpTimeZone;
         protected System.Web.UI.WebControls.DropDownList ddlTimezone;
+        protected System.Web.UI.WebControls.Label lblServerTimeZone;
         protected System.Web.UI.WebControls.DropDownList ddlLangLocale;
         protected System.Web.UI.WebControls.DropDownList ddlItemCount;
         protected System.Web.UI.WebControls.DropDownList ddlCategoryListPostCount;

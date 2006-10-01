@@ -41,6 +41,8 @@ namespace Subtext.Web.Admin.Pages
 
 		protected override void BindLocalUI()
 		{
+			lblServerTimeZone.Text = string.Format("{0} ({1})", TimeZone.CurrentTimeZone.StandardName, TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now));
+			
 			BlogInfo info = Config.CurrentBlog;
 			txbTitle.Text = info.Title;
 			txbSubtitle.Text = info.SubTitle;

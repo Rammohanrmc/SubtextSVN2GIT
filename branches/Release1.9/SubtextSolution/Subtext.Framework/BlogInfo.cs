@@ -155,7 +155,8 @@ namespace Subtext.Framework
 
 		private int _timeZone = 0;
 		/// <summary>
-		/// Gets or sets the time zone.  0 = GMT. -8 = PST.
+		/// Gets or sets the time zone for the blogger.  
+		/// 0 = GMT. -8 = PST.
 		/// </summary>
 		/// <value></value>
 		public int TimeZone

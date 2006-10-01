@@ -39,7 +39,10 @@
 				<asp:TextBox id="txbAuthorEmail" runat="server" CssClass="textinput"></asp:TextBox>
 			</p>
 			<p>
-				<label class="Block" accessKey="z" for="Edit_ddlTimezone">Time<u>z</u>one</label>
+				<label class="Block" accessKey="z" for="Edit_ddlTimezone">
+					Your Time<u>z</u>one
+					<st:HelpToolTip id="hlpTimeZone" runat="server" HelpText="Select your timezone, which may differ from the timezone where your blog server is located." ImageUrl="~/images/icons/help-small.png" ImageWidth="16" ImageHeight="16" />
+				</label>
 				<asp:DropDownList id="ddlTimezone" runat="server">
 					<asp:ListItem Text="Hawaii (GMT -10)" Value="-10" />
 					<asp:ListItem Text="Alaska (GMT -9)" Value="-9" />
@@ -62,7 +65,7 @@
 					<asp:ListItem Text="Australian Time (GMT +10)" Value="10" />
 					<asp:ListItem Text="Pacific Rim Time (GMT +11)" Value="11" />
 					<asp:ListItem Text="New Zealand Time (GMT +12)" Value="12" />
-				</asp:DropDownList>
+				</asp:DropDownList> <em>(The server timezone is configured to be <asp:Label ID="lblServerTimeZone" runat="server" />)</em>
 			</p>
 			<p>
 				<label class="Block" accessKey="l" for="Edit_ddlLangLocale"><u>L</u>anguage/Locale</label>

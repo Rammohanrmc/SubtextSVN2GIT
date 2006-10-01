@@ -798,32 +798,6 @@ GO
 GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetAllCategories]  TO [public]
 GO
 
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetBlogKeyWords]
-(
-	@BlogId int
-)
-AS
-
-SELECT 
-	KeyWordID, Word, Rel, [Text], ReplaceFirstTimeOnly, OpenInNewWindow, CaseSensitive, Url, Title, BlogId
-FROM
-	[<dbUser,varchar,dbo>].[subtext_keywords]
-WHERE 
-	BlogId = @BlogId
-
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetBlogKeyWords]  TO [public]
-GO
 
 SET QUOTED_IDENTIFIER ON 
 GO
@@ -4284,4 +4258,40 @@ SET ANSI_NULLS ON
 GO
 
 GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetPostsByCategoriesArchive]  TO [public]
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetBlogKeyWords]
+(
+	@BlogId int
+)
+AS
+
+SELECT 
+	KeyWordID
+	, Word
+	, Rel
+	, [Text]
+	, ReplaceFirstTimeOnly
+	, OpenInNewWindow
+	, CaseSensitive
+	, Url
+	, Title
+	, BlogId
+FROM
+	[<dbUser,varchar,dbo>].[subtext_keywords]
+WHERE 
+	BlogId = @BlogId
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetBlogKeyWords]  TO [public]
 GO
