@@ -40,12 +40,12 @@ namespace Subtext.Framework.Format
 		
 		public virtual string PostCategoryUrl(string categoryName, int categoryID)
 		{
-			return GetUrl("category/{0}.aspx", categoryID);
+			return GetUrl("category/{0}.aspx", HttpUtility.UrlPathEncode(categoryName));
 		}
 		
 		public virtual string ArticleCategoryUrl(string categoryName, int categoryID)
 		{
-			return GetUrl("category/{0}.aspx",categoryID);
+			return GetUrl("category/{0}.aspx", categoryID);
 		}
 
 		/// <summary>
