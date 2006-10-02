@@ -21,6 +21,7 @@ using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.UI.Skinning;
+using Subtext.Framework.Util;
 
 namespace Subtext.Web.Admin.Pages
 {
@@ -41,8 +42,6 @@ namespace Subtext.Web.Admin.Pages
 
 		protected override void BindLocalUI()
 		{
-			lblServerTimeZone.Text = string.Format("{0} ({1})", TimeZone.CurrentTimeZone.StandardName, TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now));
-			
 			BlogInfo info = Config.CurrentBlog;
 			txbTitle.Text = info.Title;
 			txbSubtitle.Text = info.SubTitle;
@@ -109,6 +108,8 @@ namespace Subtext.Web.Admin.Pages
 				ddlCategoryListPostCount.Items.FindByValue(info.CategoryListPostCount.ToString(CultureInfo.InvariantCulture)).Selected = true;
 			}
 
+			UpdateTime();
+			base.BindLocalUI();
 		}
 
 		private void BindPost()
@@ -169,13 +170,37 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		private void InitializeComponent()
 		{    
-
+			this.ddlTimezone.SelectedIndexChanged += new EventHandler(ddlTimezone_SelectedIndexChanged);
+			this.btnPost.Click += new EventHandler(btnPost_Click);
 		}
 		#endregion
 
-		protected void lkbPost_Click(object sender, System.EventArgs e)
+		protected void btnPost_Click(object sender, System.EventArgs e)
 		{
 			BindPost();
+		}
+
+		protected void ddlTimezone_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			UpdateTime();
+		}
+		
+		void UpdateTime()
+		{
+			lblServerTimeZone.Text = string.Format("{0} ({1})", TimeZone.CurrentTimeZone.StandardName, TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now));
+			lblServerTime.Text = DateTime.Now.ToString("yyyy/MM/dd hh:mm tt");
+			TimeZone.CurrentTimeZone.ToUniversalTime(DateTime.Now).ToLocalTime();
+			//lblCurrentTime.Text = BlogTime.ConvertToBloggerTime(DateTime.Now, SelectedTimeZone).ToString("yyyy/MM/dd hh:mm tt");
+			lblCurrentTime.Text = (DateTime.UtcNow.AddHours(SelectedTimeZone)).ToString("yyyy/MM/dd hh:mm tt");
+		}
+
+		int SelectedTimeZone
+		{
+			get
+			{
+				string timeZoneText = ddlTimezone.SelectedValue;
+				return int.Parse(timeZoneText);
+			}
 		}
 	}
 }

@@ -33,6 +33,5 @@ namespace Subtext.Web.Admin.WebUI {
         protected System.Web.UI.WebControls.ContentPlaceHolder categoryListHeading;
         protected System.Web.UI.WebControls.ContentPlaceHolder categoryListLinks;
         protected System.Web.UI.WebControls.ContentPlaceHolder pageContent;
-        protected System.Web.UI.WebControls.Label lblCurrentTime;
     }
 }

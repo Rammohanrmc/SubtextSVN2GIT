@@ -101,9 +101,6 @@
 						.TEXT Copyright &copy; <a href="http://scottwater.com/blog" title="Creator of .TEXT">Scott Watermasysk</a>, 2003. 
 						All rights reserved.
 					</div>
-					<div>
-						<p><em>The Time according to your blog server is: <strong><asp:Label ID="lblCurrentTime" runat="Server" /></strong></em></p>
-					</div>
 				</td>
 			</tr>
 		</table>
