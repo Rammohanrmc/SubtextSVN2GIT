@@ -3,7 +3,6 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading;
-using System.Web.Caching;
 using MbUnit.Framework;
 using Microsoft.ApplicationBlocks.Data;
 using Subtext.Extensibility;
@@ -38,16 +37,43 @@ namespace UnitTests.Subtext.Framework.Data
 		public void GetPagedEntriesHandlesPagingProperly(int total, int pageSize, int expectedPageCount, int itemsCountOnLastPage)
 		{
 			Assert.IsTrue(Config.CreateBlog("", "username", "password", this.hostName, "blog"));
-			IPagedCollectionTester[] collectionTesters = {
-			                           	new PagedEntryCollectionTester()
-										, new PagedEntryByCategoryCollectionTester()
-										, new FeedbackCollectionTester()
-			                           };
+			AssertPagedCollection(new PagedEntryCollectionTester(), expectedPageCount, itemsCountOnLastPage, pageSize, total);
+		}
 
-			foreach (IPagedCollectionTester factory in collectionTesters)
-			{
-				AssertPagedCollection(factory, expectedPageCount, itemsCountOnLastPage, pageSize, total);
-			}
+		/// <summary>
+		/// Creates some entries and makes sure that the proper 
+		/// number of pages and entries per page are created 
+		/// for various page sizes.
+		/// </summary>
+		[RowTest]
+		[Row(11, 10, 2, 1)]
+		[Row(11, 5, 3, 1)]
+		[Row(12, 5, 3, 2)]
+		[Row(10, 5, 2, 5)]
+		[Row(10, 20, 1, 10)]
+		[RollBack]
+		public void GetPagedEntriesByCategoryHandlesPagingProperly(int total, int pageSize, int expectedPageCount, int itemsCountOnLastPage)
+		{
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", this.hostName, "blog"));
+			AssertPagedCollection(new PagedEntryByCategoryCollectionTester(), expectedPageCount, itemsCountOnLastPage, pageSize, total);
+		}
+
+		/// <summary>
+		/// Creates some entries and makes sure that the proper 
+		/// number of pages and entries per page are created 
+		/// for various page sizes.
+		/// </summary>
+		[RowTest]
+		[Row(11, 10, 2, 1)]
+		[Row(11, 5, 3, 1)]
+		[Row(12, 5, 3, 2)]
+		[Row(10, 5, 2, 5)]
+		[Row(10, 20, 1, 10)]
+		[RollBack]
+		public void GetPagedFeedbackHandlesPagingProperly(int total, int pageSize, int expectedPageCount, int itemsCountOnLastPage)
+		{
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", this.hostName, "blog"));
+			AssertPagedCollection(new FeedbackCollectionTester(), expectedPageCount, itemsCountOnLastPage, pageSize, total);
 		}
 
 		[RowTest]
@@ -158,8 +184,6 @@ namespace UnitTests.Subtext.Framework.Data
 		{
 			this.hostName = UnitTestHelper.GenerateRandomString();
 			UnitTestHelper.SetHttpContextWithBlogRequest(this.hostName, "blog");
-			CommentFilter filter = new CommentFilter(new Cache());
-			filter.ClearCommentCache();	
 		}
 
 		[TearDown]
@@ -237,6 +261,7 @@ namespace UnitTests.Subtext.Framework.Data
 
 			feedbackItem.SourceUrl = new Uri("http://blah/");
 			FeedbackItem.Create(feedbackItem);
+			FeedbackItem.Approve(feedbackItem);
 		}
 
 		public IPagedCollection GetPagedItems(int pageIndex, int pageSize)

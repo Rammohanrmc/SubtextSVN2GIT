@@ -15,7 +15,6 @@
 
 using System;
 using System.Reflection;
-using MbUnit.Framework;
 
 // Used to provide assembly level setup and teardown.
 //[assembly: AssemblyCleanup(typeof(UnitTests.Subtext.AssemblySetUpAndCleanUp))]

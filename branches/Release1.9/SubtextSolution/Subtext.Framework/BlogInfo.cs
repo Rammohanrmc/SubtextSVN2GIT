@@ -677,7 +677,7 @@ namespace Subtext.Framework
 		{
 			get
 			{
-				return feedbackSpamServiceKey.Length > 0;
+				return !String.IsNullOrEmpty(feedbackSpamServiceKey);
 			}
 		}
 

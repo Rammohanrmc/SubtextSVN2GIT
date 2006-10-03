@@ -120,6 +120,9 @@ namespace Subtext.Framework
 		{
 			const int RECENT_ENTRY_CAPACITY = 10;
 
+			if(cache == null)
+				return false;
+			
 			// Check the cache for the last 10 comments
 			// Chances are, if a spam attack is occurring, then 
 			// this entry will be a duplicate of a recent entry.

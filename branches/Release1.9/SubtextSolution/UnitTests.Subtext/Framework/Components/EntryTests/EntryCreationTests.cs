@@ -109,8 +109,6 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		{
 			_hostName = UnitTestHelper.GenerateRandomString();
 			UnitTestHelper.SetHttpContextWithBlogRequest(_hostName, string.Empty);
-			CommentFilter filter = new CommentFilter(new Cache());
-			filter.ClearCommentCache();
 		}
 
 		[TearDown]

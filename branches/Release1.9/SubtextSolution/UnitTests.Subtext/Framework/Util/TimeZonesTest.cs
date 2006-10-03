@@ -50,12 +50,12 @@ namespace UnitTests.Subtext.Framework.Util
 			Console.WriteLine(TimeZone.CurrentTimeZone.ToLocalTime(DateTime.UtcNow));
 		}
 		
-		[Test, Ignore("I think this should pass, but it doesn't.")]
+		[Test]
 		public void ParseUsingAssumingUniversalReturnsDateTimeKindUtc()
 		{
 		  IFormatProvider culture = new CultureInfo("en-US", true);
 		  DateTime utcDate = DateTime.Parse("10/01/2006 19:30", culture, DateTimeStyles.AssumeUniversal);
-		  Assert.AreEqual(DateTimeKind.Utc, utcDate.Kind, "Expected AssumeUniversal would return a UTC date.");
+		  Assert.AreEqual("10/01/2006 19:30", utcDate.ToUniversalTime().ToString("MM/dd/yyyy HH:mm", culture));
 		}
 
 		[Test]

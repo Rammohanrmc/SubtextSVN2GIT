@@ -538,5 +538,61 @@ namespace Subtext.Framework
 					&& HttpContext.Current.Request.UserHostAddress == "127.0.0.1";
 			}
 		}
+
+		/// <summary>
+		/// Generates the symmetric key.
+		/// </summary>
+		/// <returns></returns>
+		public static byte[] GenerateSymmetricKey()
+		{
+			SymmetricAlgorithm rijaendel = RijndaelManaged.Create();
+			rijaendel.GenerateKey();
+			return rijaendel.Key;
+		}
+
+		/// <summary>
+		/// Generates the symmetric key.
+		/// </summary>
+		/// <returns></returns>
+		public static byte[] GenerateInitializationVector()
+		{
+			SymmetricAlgorithm rijaendel = RijndaelManaged.Create();
+			rijaendel.GenerateIV();
+			return rijaendel.IV;
+		}
+
+		/// <summary>
+		/// Generates the symmetric key.
+		/// </summary>
+		/// <param name="clearText">The clear text.</param>
+		/// <param name="encoding">The encoding.</param>
+		/// <param name="key">The key.</param>
+		/// <param name="initializationVendor">The initialization vendor.</param>
+		/// <returns></returns>
+		public static string EncryptString(string clearText, Encoding encoding, byte[] key, byte[] initializationVendor)
+		{
+			SymmetricAlgorithm rijaendel = RijndaelManaged.Create();
+			ICryptoTransform encryptor = rijaendel.CreateEncryptor(key, initializationVendor);
+			byte[] clearTextBytes = encoding.GetBytes(clearText);
+			byte[] encrypted = encryptor.TransformFinalBlock(clearTextBytes, 0, clearTextBytes.Length);
+			return Convert.ToBase64String(encrypted);
+		}
+
+		/// <summary>
+		/// Decrypts the string.
+		/// </summary>
+		/// <param name="encryptedBase64EncodedString">The encrypted base64 encoded string.</param>
+		/// <param name="encoding">The encoding.</param>
+		/// <param name="key">The key.</param>
+		/// <param name="initializationVendor">The initialization vendor.</param>
+		/// <returns></returns>
+		public static string DecryptString(string encryptedBase64EncodedString, Encoding encoding, byte[] key, byte[] initializationVendor)
+		{
+			SymmetricAlgorithm rijaendel = RijndaelManaged.Create();
+			ICryptoTransform decryptor = rijaendel.CreateDecryptor(key, initializationVendor);
+			byte[] encrypted = Convert.FromBase64String(encryptedBase64EncodedString);
+			byte[] decrypted = decryptor.TransformFinalBlock(encrypted, 0, encrypted.Length);
+			return encoding.GetString(decrypted);
+		}
 	}
 }

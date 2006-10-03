@@ -121,6 +121,26 @@ namespace UnitTests.Subtext.Framework.SecurityHandling
 			HttpCookie cookie = Security.SelectAuthenticationCookie();
 			Assert.IsNotNull(cookie, "Could not get authentication cookie.");
 		}
+		
+		[Test]
+		public void CanGenerateSymmetricEncryptionKey()
+		{
+			byte[] key = Security.GenerateSymmetricKey();
+			Assert.IsTrue(key.Length > 0, "Expected a non-zero key.");
+		}
+		
+		[Test]
+		public void CanSymmetcricallyEncryptAndDecryptText()
+		{
+			string clearText = "Hello world!";
+			byte[] key = Security.GenerateSymmetricKey();
+			byte[] iv = Security.GenerateInitializationVector();
+
+			string encrypted = Security.EncryptString(clearText, Encoding.UTF8, key, iv);
+			Assert.IsTrue(encrypted != clearText, "Encrypted text should not equal the clear text.");
+			string unencrypted = Security.DecryptString(encrypted, Encoding.UTF8, key, iv);
+			Assert.AreEqual(clearText, unencrypted, "Round trip encrypt/decrypt failed to produce original string.");
+		}
 
 		/// <summary>
 		/// Sets the up test fixture.  This is called once for 
