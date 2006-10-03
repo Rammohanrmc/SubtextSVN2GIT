@@ -19,6 +19,8 @@ namespace Subtext.Web.Controls
 	/// </summary>
 	public class InvisibleCaptcha : BaseValidator
 	{
+		static SymmetricAlgorithm encryptionAlgorithm = InitializeEncryptionAlgorithm();
+		
 		Random rnd = new Random();
 		string directions = string.Empty;
 		
@@ -27,6 +29,38 @@ namespace Subtext.Web.Controls
 		/// </summary>
 		public InvisibleCaptcha() : base()
 		{
+		}
+		
+		static SymmetricAlgorithm InitializeEncryptionAlgorithm()
+		{
+			SymmetricAlgorithm rijaendel = RijndaelManaged.Create();
+			rijaendel.GenerateKey();
+			rijaendel.GenerateIV();
+			return rijaendel;
+		}
+
+		/// <summary>
+		/// Encrypts the string and returns a base64 encoded encrypted string.
+		/// </summary>
+		/// <param name="clearText">The clear text.</param>
+		/// <returns></returns>
+		public static string EncryptString(string clearText)
+		{
+			byte[] clearTextBytes = Encoding.UTF8.GetBytes(clearText);
+			byte[] encrypted = encryptionAlgorithm.CreateEncryptor().TransformFinalBlock(clearTextBytes, 0, clearTextBytes.Length);
+			return Convert.ToBase64String(encrypted);
+		}
+
+		/// <summary>
+		/// Decrypts the base64 encrypted string and returns the cleartext.
+		/// </summary>
+		/// <param name="encryptedEncodedText">The clear text.</param>
+		/// <returns></returns>
+		public static string DecryptString(string encryptedEncodedText)
+		{
+			byte[] encryptedBytes = Convert.FromBase64String(encryptedEncodedText);
+			byte[] decryptedBytes = encryptionAlgorithm.CreateDecryptor().TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
+			return Encoding.UTF8.GetString(decryptedBytes);
 		}
 
 		/// <summary>
@@ -53,6 +87,8 @@ namespace Subtext.Web.Controls
 		{
 			Page.RegisterRequiresControlState(this);
 			
+			// This is the hidden input the javascript will use to 
+			// populate the answer to the little math riddle.
 			Page.ClientScript.RegisterHiddenField(HiddenAnswerFieldName, "");
 			base.OnInit(e);
 		}
@@ -70,9 +106,9 @@ namespace Subtext.Web.Controls
 			Display = ValidatorDisplay.Dynamic;
 			
 			string answer = (first + second).ToString(CultureInfo.InvariantCulture);
-			//A little obsfucation.
-			Page.ClientScript.RegisterHiddenField(HiddenAnswerExpectedFieldName, Convert.ToBase64String(Encoding.UTF8.GetBytes(answer)));
-			Page.ClientScript.RegisterHiddenField(HiddenAnswerHashFieldName, ComputeAnswerHash(answer));
+			
+			// We store the answer encrypted so it can't be tampered with.
+			Page.ClientScript.RegisterHiddenField(this.HiddenEncryptedAnswerFieldName, EncryptAnswer(answer));
 			Page.ClientScript.RegisterStartupScript(typeof(InvisibleCaptcha), "MakeCaptchaInvisible", string.Format("<script type=\"text/javascript\">\r\nsubtext_invisible_captcha_hideFromJavascriptEnabledBrowsers('{0}');\r\n</script>", this.CaptchaInputClientId));
 			
 			Page.ClientScript.RegisterClientScriptInclude("InvisibleCaptcha",
@@ -117,12 +153,9 @@ namespace Subtext.Web.Controls
 			return true;
 		}
 
-		string ComputeAnswerHash(string answer)
+		string EncryptAnswer(string answer)
 		{
-			string saltedAnswer = answer + "_" + SecretCode;
-			Byte[] clearBytes = Encoding.UTF8.GetBytes(saltedAnswer);
-			Byte[] hashedBytes = new MD5CryptoServiceProvider().ComputeHash(clearBytes);
-			return Convert.ToBase64String(hashedBytes);
+			return EncryptString(answer + "|" + DateTime.Now.ToString("yyyy/MM/dd HH:mm"));
 		}
 		
 		string CaptchaInputClientId
@@ -149,34 +182,14 @@ namespace Subtext.Web.Controls
 			}
 		}
 
-		string HiddenAnswerExpectedFieldName
+		string HiddenEncryptedAnswerFieldName
 		{
 			get
 			{
-				return ClientID + "_answerExpected";
+				return ClientID + "_encrypted";
 			}
 		}
-		
-		string HiddenAnswerHashFieldName
-		{
-			get
-			{
-				return ClientID + "_answerhash";
-			}
-		}
-		
-		string SecretCode
-		{
-			get
-			{
-				if(Page.Cache["SecretCode"] == null)
-				{
-					Page.Cache["SecretCode"] = Guid.NewGuid().ToString();
-				}
-				return (string)Page.Cache["SecretCode"];
-			}
-		}
-		
+
 		///<summary>
 		///When overridden in a derived class, this method contains the code to determine whether the value in the input control is valid.
 		///</summary>
@@ -186,19 +199,39 @@ namespace Subtext.Web.Controls
 		///
 		protected override bool EvaluateIsValid()
 		{
-			string answer = Page.Request.Form[HiddenAnswerFieldName];
+			string answer = GetClientSpecifiedAnswer();
+			
+			string encryptedAnswerFromForm = Page.Request.Form[this.HiddenEncryptedAnswerFieldName];
+			
+			if(String.IsNullOrEmpty(encryptedAnswerFromForm))
+				return false;
+			
+			string decryptedAnswer = DecryptString(encryptedAnswerFromForm);
+			
+			string[] answerParts = decryptedAnswer.Split('|');
+			if(answerParts.Length < 2)
+				return false;
+			
+			string expectedAnswer = answerParts[0];
+			DateTime date = DateTime.ParseExact(answerParts[1], "yyyy/MM/dd HH:mm", CultureInfo.InvariantCulture);
+			if ((DateTime.Now - date).Minutes > 30) //30 minutes to leave a comment or the captcha expires.
+			{
+				this.ErrorMessage = "Sorry, but this form has expired. Please submit again.";
+				return false;
+			}
+
+			return !String.IsNullOrEmpty(answer) && answer == expectedAnswer;
+		}
+
+		// Gets the answer from the client, whether entered by 
+		// javascript or by the user.
+		private string GetClientSpecifiedAnswer()
+		{
+			string answer = Page.Request.Form[this.HiddenAnswerFieldName];
 			if(String.IsNullOrEmpty(answer))
-				answer = Page.Request.Form[VisibleAnswerFieldName];
-			string answerHash = ComputeAnswerHash(answer);
-
-			string encodedExpectedAnswer = Page.Request.Form[HiddenAnswerExpectedFieldName];
-			if (String.IsNullOrEmpty(encodedExpectedAnswer))
-				return false; //Somebody is tampering with the form.
-
-			string actualAnswer = Encoding.UTF8.GetString(Convert.FromBase64String(encodedExpectedAnswer));
-			string expectedAnswerHash = Page.Request.Form[HiddenAnswerHashFieldName];
-
-			return actualAnswer == answer && answerHash == expectedAnswerHash;
+				answer = Page.Request.Form[this.VisibleAnswerFieldName];
+			return answer;
 		}
 	}
 }
+
