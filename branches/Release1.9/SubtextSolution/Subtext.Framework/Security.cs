@@ -66,7 +66,7 @@ namespace Subtext.Framework
 		/// <returns></returns>
 		public static bool AuthenticateHostAdmin(string username, string password, bool persist)
 		{
-			if (!StringHelper.AreEqualIgnoringCase(username, HostInfo.Instance.HostUserName))
+			if (!String.Equals(username, HostInfo.Instance.HostUserName, StringComparison.InvariantCultureIgnoreCase))
 			{
 				return false;
 			}
@@ -76,7 +76,7 @@ namespace Subtext.Framework
 				password = HashPassword(password, HostInfo.Instance.Salt);
 			}
 
-			if (!StringHelper.AreEqualIgnoringCase(HostInfo.Instance.Password, password))
+			if (!String.Equals(HostInfo.Instance.Password, password, StringComparison.InvariantCultureIgnoreCase))
 			{
 				return false;
 			}
@@ -328,7 +328,7 @@ namespace Subtext.Framework
 		/// <returns>bool value indicating if the user is valid.</returns>
 		public static bool IsValidUser(string username, string password)
 		{
-			if (StringHelper.AreEqualIgnoringCase(username, Config.CurrentBlog.UserName))
+			if (String.Equals(username, Config.CurrentBlog.UserName, StringComparison.InvariantCultureIgnoreCase))
 			{
 				return IsValidPassword(password);
 			}
@@ -371,7 +371,7 @@ namespace Subtext.Framework
 				}
 			}
 			
-			bool areEqual = StringHelper.AreEqual(password, storedPassword, ComparisonType.CaseSensitive);
+			bool areEqual = String.Equals(password, storedPassword, StringComparison.InvariantCulture);
 			if (!areEqual)
 			{
 				log.Debug("The supplied password is incorrect.");
@@ -454,7 +454,7 @@ namespace Subtext.Framework
 		{
 			get
 			{
-				bool areNamesEqual = StringHelper.AreEqualIgnoringCase(CurrentUserName, Config.CurrentBlog.UserName);
+				bool areNamesEqual = String.Equals(CurrentUserName, Config.CurrentBlog.UserName, StringComparison.InvariantCultureIgnoreCase);
 				#region temp logging code
 				if (!areNamesEqual)
 				{
@@ -533,7 +533,7 @@ namespace Subtext.Framework
 		{
 			get
 			{
-				return StringHelper.AreEqualIgnoringCase(HttpContext.Current.Request.Url.Host, "localhost")
+				return String.Equals(HttpContext.Current.Request.Url.Host, "localhost", StringComparison.InvariantCultureIgnoreCase)
 					&& HttpContext.Current.Request.UserHostAddress == HttpContext.Current.Request.ServerVariables["LOCAL_ADDR"]
 					&& HttpContext.Current.Request.UserHostAddress == "127.0.0.1";
 			}

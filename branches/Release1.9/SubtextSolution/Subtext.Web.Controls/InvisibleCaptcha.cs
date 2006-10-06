@@ -17,52 +17,23 @@ namespace Subtext.Web.Controls
 	/// small numbers, unless the <see cref="Accessible" />  property is set to false.
 	/// </para>
 	/// </summary>
-	public class InvisibleCaptcha : BaseValidator
+	public class InvisibleCaptcha : CaptchaBase
 	{
-		static SymmetricAlgorithm encryptionAlgorithm = InitializeEncryptionAlgorithm();
-		
-		Random rnd = new Random();
 		string directions = string.Empty;
+		Random rnd = new Random();
+
+		/// <summary>
+		/// If Accessible is true and javascript disabled, this is the 
+		/// form field in which the answer would be entered by the user.
+		/// </summary>
+		string VisibleAnswerFieldName
+		{
+			get
+			{
+				return ClientID + "_visibleanswer";
+			}
+		}
 		
-		/// <summary>
-		/// Initializes a new instance of the <see cref="InvisibleCaptcha"/> class.
-		/// </summary>
-		public InvisibleCaptcha() : base()
-		{
-		}
-		
-		static SymmetricAlgorithm InitializeEncryptionAlgorithm()
-		{
-			SymmetricAlgorithm rijaendel = RijndaelManaged.Create();
-			rijaendel.GenerateKey();
-			rijaendel.GenerateIV();
-			return rijaendel;
-		}
-
-		/// <summary>
-		/// Encrypts the string and returns a base64 encoded encrypted string.
-		/// </summary>
-		/// <param name="clearText">The clear text.</param>
-		/// <returns></returns>
-		public static string EncryptString(string clearText)
-		{
-			byte[] clearTextBytes = Encoding.UTF8.GetBytes(clearText);
-			byte[] encrypted = encryptionAlgorithm.CreateEncryptor().TransformFinalBlock(clearTextBytes, 0, clearTextBytes.Length);
-			return Convert.ToBase64String(encrypted);
-		}
-
-		/// <summary>
-		/// Decrypts the base64 encrypted string and returns the cleartext.
-		/// </summary>
-		/// <param name="encryptedEncodedText">The clear text.</param>
-		/// <returns></returns>
-		public static string DecryptString(string encryptedEncodedText)
-		{
-			byte[] encryptedBytes = Convert.FromBase64String(encryptedEncodedText);
-			byte[] decryptedBytes = encryptionAlgorithm.CreateDecryptor().TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
-			return Encoding.UTF8.GetString(decryptedBytes);
-		}
-
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="InvisibleCaptcha"/> is accessible 
 		/// to non-javascript browsers.  If false, then non-javascript browsers will always fail 
@@ -80,16 +51,25 @@ namespace Subtext.Web.Controls
 		}
 
 		/// <summary>
+		/// Id of the span used to house the visible captcha section.
+		/// </summary>
+		string CaptchaInputClientId
+		{
+			get
+			{
+				return this.ClientID + "_subtext_captcha";
+			}
+		}
+
+		/// <summary>
 		/// Sets up a hashed answer.
 		/// </summary>
 		/// <param name="e"></param>
 		protected override void OnInit(EventArgs e)
 		{
-			Page.RegisterRequiresControlState(this);
-			
 			// This is the hidden input the javascript will use to 
 			// populate the answer to the little math riddle.
-			Page.ClientScript.RegisterHiddenField(HiddenAnswerFieldName, "");
+			Page.ClientScript.RegisterHiddenField(this.AnswerFormFieldName, "");
 			base.OnInit(e);
 		}
 
@@ -104,17 +84,17 @@ namespace Subtext.Web.Controls
 
 			directions = string.Format("Please add {0} and {1} and type the answer here: ", first, second);
 			Display = ValidatorDisplay.Dynamic;
-			
+
 			string answer = (first + second).ToString(CultureInfo.InvariantCulture);
-			
+
 			// We store the answer encrypted so it can't be tampered with.
 			Page.ClientScript.RegisterHiddenField(this.HiddenEncryptedAnswerFieldName, EncryptAnswer(answer));
 			Page.ClientScript.RegisterStartupScript(typeof(InvisibleCaptcha), "MakeCaptchaInvisible", string.Format("<script type=\"text/javascript\">\r\nsubtext_invisible_captcha_hideFromJavascriptEnabledBrowsers('{0}');\r\n</script>", this.CaptchaInputClientId));
-			
+
 			Page.ClientScript.RegisterClientScriptInclude("InvisibleCaptcha",
 				 Page.ClientScript.GetWebResourceUrl(this.GetType(), "Subtext.Web.Controls.Resources.InvisibleCaptcha.js"));
 
-			Page.ClientScript.RegisterStartupScript(typeof(InvisibleCaptcha), "ComputeCaptchaAnswer", string.Format("<script type=\"text/javascript\">\r\nsubtext_invisible_captcha_setAnswer({0}, {1}, '{2}');\r\n</script>", first, second, this.HiddenAnswerFieldName));
+			Page.ClientScript.RegisterStartupScript(typeof(InvisibleCaptcha), "ComputeCaptchaAnswer", string.Format("<script type=\"text/javascript\">\r\nsubtext_invisible_captcha_setAnswer({0}, {1}, '{2}');\r\n</script>", first, second, this.AnswerFormFieldName));
 			base.OnPreRender(e);
 		}
 
@@ -124,7 +104,7 @@ namespace Subtext.Web.Controls
 		/// <param name="writer">A <see cref="T:System.Web.UI.HtmlTextWriter"></see> that contains the output stream for rendering on the client.</param>
 		protected override void Render(HtmlTextWriter writer)
 		{
-			string answer = Page.Request.Form[HiddenAnswerFieldName];
+			string answer = Page.Request.Form[AnswerFormFieldName];
 			// In an Ajax postback, we don't want to render this if javascript is enabled 
 			// because the page won't know to set this span to be invisible.
 			if (Accessible && String.IsNullOrEmpty(answer))
@@ -137,98 +117,17 @@ namespace Subtext.Web.Controls
 				writer.Write(directions);
 
 				writer.Write("<input type=\"text\" name=\"{0}\" value=\"\" />", this.VisibleAnswerFieldName);
-				
+
 				writer.RenderEndTag();
 			}
 		}
 
-		/// <summary>Checks the properties of the control for valid values.</summary>
-		/// <returns>true if the control properties are valid; otherwise, false.</returns>
-		protected override bool ControlPropertiesValid()
-		{
-			if (!String.IsNullOrEmpty(ControlToValidate))
-			{
-				CheckControlValidationProperty(ControlToValidate, "ControlToValidate");
-			}
-			return true;
-		}
-
-		string EncryptAnswer(string answer)
-		{
-			return EncryptString(answer + "|" + DateTime.Now.ToString("yyyy/MM/dd HH:mm"));
-		}
-		
-		string CaptchaInputClientId
-		{
-			get
-			{
-				return this.ClientID + "_subtext_captcha";
-			}
-		}
-		
-		string VisibleAnswerFieldName
-		{
-			get
-			{
-				return ClientID + "_visibleanswer";
-			}
-		}
-		
-		string HiddenAnswerFieldName
-		{
-			get
-			{
-				return ClientID + "_answer";
-			}
-		}
-
-		string HiddenEncryptedAnswerFieldName
-		{
-			get
-			{
-				return ClientID + "_encrypted";
-			}
-		}
-
-		///<summary>
-		///When overridden in a derived class, this method contains the code to determine whether the value in the input control is valid.
-		///</summary>
-		///<returns>
-		///true if the value in the input control is valid; otherwise, false.
-		///</returns>
-		///
-		protected override bool EvaluateIsValid()
-		{
-			string answer = GetClientSpecifiedAnswer();
-			
-			string encryptedAnswerFromForm = Page.Request.Form[this.HiddenEncryptedAnswerFieldName];
-			
-			if(String.IsNullOrEmpty(encryptedAnswerFromForm))
-				return false;
-			
-			string decryptedAnswer = DecryptString(encryptedAnswerFromForm);
-			
-			string[] answerParts = decryptedAnswer.Split('|');
-			if(answerParts.Length < 2)
-				return false;
-			
-			string expectedAnswer = answerParts[0];
-			DateTime date = DateTime.ParseExact(answerParts[1], "yyyy/MM/dd HH:mm", CultureInfo.InvariantCulture);
-			if ((DateTime.Now - date).Minutes > 30) //30 minutes to leave a comment or the captcha expires.
-			{
-				this.ErrorMessage = "Sorry, but this form has expired. Please submit again.";
-				return false;
-			}
-
-			return !String.IsNullOrEmpty(answer) && answer == expectedAnswer;
-		}
-
 		// Gets the answer from the client, whether entered by 
 		// javascript or by the user.
-		private string GetClientSpecifiedAnswer()
+		protected override string GetClientSpecifiedAnswer()
 		{
-			string answer = Page.Request.Form[this.HiddenAnswerFieldName];
-			if(String.IsNullOrEmpty(answer))
+			string answer = base.GetClientSpecifiedAnswer();
+			if (String.IsNullOrEmpty(answer))
 				answer = Page.Request.Form[this.VisibleAnswerFieldName];
 			return answer;
 		}

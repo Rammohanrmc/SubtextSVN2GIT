@@ -1,5 +1,6 @@
 <%@ Control Language="c#" AutoEventWireup="false" Inherits="Subtext.Web.UI.Controls.PostComment" %>
 <%@ Register TagPrefix="sub" Namespace="Subtext.Web.Controls" Assembly="Subtext.Web.Controls" %>
+<%@ Register TagPrefix="sub" Namespace="Subtext.Web.Controls.Captcha" Assembly="Subtext.Web.Controls" %>
 
     <div id="CommentForm">
     <fieldset>
@@ -34,6 +35,7 @@
 	    </p>
 	    <asp:CheckBox id="chkRemember" runat="server" Text="Remember Me?" Visible="False" TabIndex="5" />
 	    <p>
+			<sub:SubtextCaptchaControl id="captcha" runat="server" />
 			<sub:CompliantButton id="btnCompliantSubmit" CssClass="buttonSubmit" runat="server" Text="Post" TabIndex="6" CausesValidation="true" />
 			<asp:Label id="Message" runat="server" ForeColor="Red" />
 		</p>

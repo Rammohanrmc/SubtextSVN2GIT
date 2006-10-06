@@ -300,7 +300,7 @@ namespace Subtext.Framework.Configuration
 
 			foreach(string invalidSubFolder in _invalidSubfolders)
 			{
-				if(StringHelper.AreEqualIgnoringCase(invalidSubFolder, subfolder))
+				if (String.Equals(invalidSubFolder, subfolder, StringComparison.InvariantCultureIgnoreCase))
 					return false;
 			}
 			return true;

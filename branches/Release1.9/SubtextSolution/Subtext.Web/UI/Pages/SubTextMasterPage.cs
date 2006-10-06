@@ -22,6 +22,7 @@ using System.Web.UI.WebControls;
 using MagicAjax.UI.Controls;
 using Subtext.Framework;
 using Subtext.Framework.Configuration;
+using Subtext.Framework.Text;
 using Subtext.Framework.UI.Skinning;
 using Subtext.Framework.UrlManager;
 using Subtext.Web.Controls;

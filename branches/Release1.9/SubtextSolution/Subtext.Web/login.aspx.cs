@@ -66,7 +66,7 @@ namespace Subtext.Web.Pages
 			if(info != null)
 			{
 				//Try Admin login.
-				if(StringHelper.AreEqualIgnoringCase(tbUserName.Text, info.UserName))
+				if (String.Equals(tbUserName.Text, info.UserName, StringComparison.InvariantCultureIgnoreCase))
 				{
 					if(info.IsPasswordHashed)
 					{
@@ -91,8 +91,8 @@ namespace Subtext.Web.Pages
 					messageSent = true;
 				}
 			}
-				
-			if(StringHelper.AreEqualIgnoringCase(tbUserName.Text, HostInfo.Instance.HostUserName))
+
+			if (String.Equals(tbUserName.Text, HostInfo.Instance.HostUserName, StringComparison.InvariantCultureIgnoreCase))
 			{
 				//Try Host Admin login.
 				if(Config.Settings.UseHashedPasswords)

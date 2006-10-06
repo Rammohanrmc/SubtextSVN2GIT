@@ -399,7 +399,7 @@ namespace Subtext.Framework.Text
 				{
 					foreach (string allowedAttr in allowedAttrs)
 					{
-						if(StringHelper.AreEqualIgnoringCase(allowedAttr.Trim(), attributeName))
+						if(String.Equals(allowedAttr.Trim(), attributeName, StringComparison.InvariantCultureIgnoreCase))
 						{
 							// found an allowed attribute, so get the attribute value
 							string attrValue = attributes[attributeName];

@@ -27,29 +27,6 @@ namespace Subtext.Framework.Text
 	public static class StringHelper
 	{
 		/// <summary>
-		/// Compares the strings and returns true if they are equal.
-		/// </summary>
-		/// <param name="source">Source.</param>
-		/// <param name="compared">Compared.</param>
-		/// <param name="comparisonType"></param>
-		/// <returns></returns>
-		public static bool AreEqual(string source, string compared, ComparisonType comparisonType)
-		{
-			return string.Compare(source, compared, (comparisonType == ComparisonType.CaseInsensitive), CultureInfo.InvariantCulture) == 0;
-		}
-
-		/// <summary>
-		/// Compares the strings and returns true if they are equal, ignoring case.
-		/// </summary>
-		/// <param name="source">Source.</param>
-		/// <param name="compared">Compared.</param>
-		/// <returns></returns>
-		public static bool AreEqualIgnoringCase(string source, string compared)
-		{
-			return AreEqual(source, compared, ComparisonType.CaseInsensitive);
-		}
-
-		/// <summary>
 		/// Parses a camel cased or pascal cased string and returns an array 
 		/// of the words within the string.
 		/// </summary>
@@ -304,7 +281,7 @@ namespace Subtext.Framework.Text
 				return false;
 
 			string prefixSizedString = Left(searched, prefix.Length);
-			return AreEqual(prefixSizedString, prefix, ComparisonType.CaseInsensitive);
+			return String.Equals(prefixSizedString, prefix, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		/// <summary>
@@ -330,7 +307,7 @@ namespace Subtext.Framework.Text
 				return false;
 
 			string suffixSizedString = Right(searched, suffix.Length);
-			return AreEqual(suffixSizedString, suffix, ComparisonType.CaseInsensitive);
+			return String.Equals(suffixSizedString, suffix, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		/// <summary>
