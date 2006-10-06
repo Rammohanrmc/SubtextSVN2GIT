@@ -132,7 +132,7 @@ namespace Subtext.Web.Pages
 		{
 			BlogInfo currentBlog = Config.CurrentBlog;
 			string returnUrl = Request.QueryString["ReturnURL"];
-			if(currentBlog == null || (returnUrl != null && StringHelper.Contains(returnUrl, "HostAdmin", ComparisonType.CaseInsensitive)))
+			if(currentBlog == null || (returnUrl != null && StringHelper.Contains(returnUrl, "HostAdmin", StringComparison.InvariantCultureIgnoreCase)))
 			{
 				if(!AuthenticateHostAdmin())
 				{

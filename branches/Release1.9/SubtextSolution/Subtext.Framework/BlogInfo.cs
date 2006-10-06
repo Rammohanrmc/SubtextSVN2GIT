@@ -45,7 +45,7 @@ namespace Subtext.Framework
 		public static string NormalizeHostName(string host)
 		{
 			return StringHelper.LeftBefore(
-			    StringHelper.RightAfter(host, "www.", ComparisonType.CaseInsensitive), ":");
+			    StringHelper.RightAfter(host, "www.", StringComparison.InvariantCultureIgnoreCase), ":");
 		}
 		
 		/// <summary>

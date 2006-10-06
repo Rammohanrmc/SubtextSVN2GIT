@@ -140,7 +140,7 @@ namespace Subtext.Web.Controls
 		{
 			get
 			{
-				return StringHelper.LeftBefore(Context.Request.Path, "Default.aspx", ComparisonType.CaseInsensitive);
+				return StringHelper.LeftBefore(Context.Request.Path, "Default.aspx", StringComparison.InvariantCultureIgnoreCase);
 			}
 		}
 

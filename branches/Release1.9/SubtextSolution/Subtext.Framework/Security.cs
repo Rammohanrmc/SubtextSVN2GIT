@@ -175,7 +175,7 @@ namespace Subtext.Framework
 			string returnUrl = HttpContext.Current.Request.QueryString.ToString(); //["ReturnURL"];
 			if (forceHostAdmin
 				|| StringHelper.Contains(path + returnUrl, "HostAdmin", 
-			    ComparisonType.CaseInsensitive))
+			    StringComparison.InvariantCultureIgnoreCase))
 			{
 			    name.Append("HA.");
 			}
