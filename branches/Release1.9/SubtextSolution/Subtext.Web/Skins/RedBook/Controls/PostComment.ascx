@@ -35,7 +35,7 @@
 	    </p>
 	    <asp:CheckBox id="chkRemember" runat="server" Text="Remember Me?" Visible="False" TabIndex="5" />
 	    <p>
-			<sub:SubtextCaptchaControl id="captcha" runat="server" />
+			<sub:SubtextCaptchaControl id="captcha" runat="server" ErrorMessage="Please enter the correct word" />
 			<sub:CompliantButton id="btnCompliantSubmit" CssClass="buttonSubmit" runat="server" Text="Post" TabIndex="6" CausesValidation="true" />
 			<asp:Label id="Message" runat="server" ForeColor="Red" />
 		</p>

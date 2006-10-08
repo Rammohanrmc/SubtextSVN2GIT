@@ -350,6 +350,7 @@
     <Compile Include="StubDataReader.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SubtextWeb\Controls\CaptchaTests.cs" />
     <Compile Include="SubtextWeb\Controls\InvisibleCaptchaTests.cs" />
     <Compile Include="SubtextWeb\Providers\RichTextEditor\FCKeditorProviderTests.cs">
       <SubType>Code</SubType>
