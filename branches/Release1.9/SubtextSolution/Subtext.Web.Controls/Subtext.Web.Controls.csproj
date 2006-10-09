@@ -151,6 +151,7 @@
     <Compile Include="Captcha\CaptchaBase.cs" />
     <Compile Include="Captcha\CaptchaImage.cs" />
     <Compile Include="Captcha\CaptchaImageHandler.cs" />
+    <Compile Include="Captcha\InvisibleCaptcha.cs" />
     <Compile Include="Captcha\SubtextCaptchaControl.cs" />
     <Compile Include="CoComment.cs">
       <SubType>Code</SubType>
@@ -170,10 +171,10 @@
     <Compile Include="ControlHelper.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Designers\HelpToolTipDesigner.cs" />
     <Compile Include="HelpToolTip.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="InvisibleCaptcha.cs" />
     <Compile Include="MasterPage.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -3387,11 +3387,16 @@ VALUES
 
 SELECT @Id = SCOPE_IDENTITY()
 
-IF NOT @EntryId IS NULL AND @StatusFlag & 1 = 1 -- Approved
-	UPDATE [<dbUser,varchar,dbo>].[subtext_Content]
-	SET FeedbackCount = FeedbackCount + 1 
-	WHERE [ID] = @EntryId
-
+-- Update the entry comment count.
+UPDATE [dbo].[subtext_Content] 
+SET [dbo].[subtext_Content].FeedbackCount = 
+	(
+		SELECT COUNT(1) 
+		FROM  [dbo].[subtext_Feedback] f WITH (NOLOCK)
+		WHERE f.EntryId = @EntryId 
+			AND f.StatusFlag & 1 = 1
+	)
+WHERE Id = @EntryId
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3420,19 +3425,8 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateFeedback]
 )
 AS
 
--- Get previous status.
-DECLARE @PrevStatus int
 DECLARE @EntryId int
-SELECT @PrevStatus = StatusFlag, @EntryId = EntryId 
-FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE Id = @Id
-
--- Was approved, now not.
-If @PrevStatus & 1 = 1 AND @StatusFlag & 1 = 0
-	UPDATE [<dbUser,varchar,dbo>].[subtext_Content] SET FeedbackCount = FeedbackCount - 1 WHERE [ID] = @EntryId
-
--- Was not approved, but now is.
-If @PrevStatus & 1 = 0 AND @StatusFlag & 1 = 1
-	UPDATE [<dbUser,varchar,dbo>].[subtext_Content] SET FeedbackCount = FeedbackCount + 1 WHERE [ID] = @EntryId
+SELECT @EntryId = EntryId FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE Id = @Id
 
 UPDATE [<dbUser,varchar,dbo>].[subtext_Feedback]
 SET	Title = @Title
@@ -3444,6 +3438,18 @@ SET	Title = @Title
 	, FeedbackChecksumHash = @FeedbackChecksumHash
 	, DateModified = @DateModified
 WHERE Id = @Id
+
+-- Update the entry comment count.
+UPDATE [<dbUser,varchar,dbo>].[subtext_Content] 
+SET [<dbUser,varchar,dbo>].[subtext_Content].FeedbackCount = 
+	(
+		SELECT COUNT(1) 
+		FROM  [<dbUser,varchar,dbo>].[subtext_Feedback] f  WITH (NOLOCK)
+		WHERE f.EntryId = @EntryId 
+			AND f.StatusFlag & 1 = 1
+	)
+WHERE Id = @EntryId
+
 
 GO
 SET QUOTED_IDENTIFIER OFF 

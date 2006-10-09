@@ -14,9 +14,11 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
+using Subtext.Web.Controls.Designers;
 
 namespace Subtext.Web.Controls
 {
@@ -25,8 +27,16 @@ namespace Subtext.Web.Controls
 	/// necessary scripts and CSS (against the general practice). Instead, 
 	/// it relies on the user having declared helptooltip.js and helptooltip.css.
 	/// </summary>
+	[Designer(typeof(HelpToolTipDesigner))]
 	public class HelpToolTip : HtmlContainerControl
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="HelpToolTip"/> class.
+		/// </summary>
+		public HelpToolTip() : base()
+		{
+		}
+		
 		/// <summary>
 		/// Renders this tool tip.  The format looks like: 
 		/// &lt;a class="helplink" onclick="showHelpTip(event, 'help text'); 

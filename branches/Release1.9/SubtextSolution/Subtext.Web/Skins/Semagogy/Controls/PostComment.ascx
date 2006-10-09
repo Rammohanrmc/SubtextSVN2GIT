@@ -1,6 +1,6 @@
 <%@ Control Language="c#" AutoEventWireup="false" Inherits="Subtext.Web.UI.Controls.PostComment" %>
 	<dl class="PostComment">
-		<dt>Post Comment</dt>
+		<dt><h3>Post Comment</h3></dt>
 		<dd class="Form">
 			<dl class="Inputs">
 				<dt>
@@ -32,7 +32,6 @@
 				</dt>
 				<dd>
 					<asp:textbox id="tbComment" runat="server" textmode="MultiLine" />
-					<asp:RequiredFieldValidator id="vldCommentBodyRequired" runat="server" ErrorMessage="Please enter your comment" ControlToValidate="tbComment" Display="Dynamic" EnableClientScript="true" />
 				</dd>
 				<dd>
 					<asp:checkbox id="chkRemember" runat="server" text="Remember Me?" checked="True" />

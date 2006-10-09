@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace Subtext.Web.Controls
+namespace Subtext.Web.Controls.Captcha
 {
 	/// <summary>
 	/// <para>Simple CAPTCHA control that requires the browser to perform a 

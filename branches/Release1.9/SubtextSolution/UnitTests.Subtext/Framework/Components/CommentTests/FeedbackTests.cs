@@ -181,6 +181,10 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 			FeedbackItem.Update(comment);
 			entry = Entries.GetEntry(entryId, PostConfig.None, false);
 			Assert.AreEqual(1, entry.FeedBackCount, "After un-approving the second comment, expected one approved feedback entry.");
+			
+			FeedbackItem.Delete(comment);
+			entry = Entries.GetEntry(entryId, PostConfig.None, false);
+			Assert.AreEqual(1, entry.FeedBackCount, "After un-approving the second comment, expected one approved feedback entry.");
 		}
 		
 

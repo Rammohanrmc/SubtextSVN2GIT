@@ -6,6 +6,7 @@ using System.Drawing.Text;
 using System.Text;
 using System.Web;
 using System.Web.UI;
+using System.Web.UI.WebControls;
 using Subtext.Framework.Util;
 
 namespace Subtext.Web.Controls.Captcha
@@ -19,10 +20,16 @@ namespace Subtext.Web.Controls.Captcha
         public CaptchaControl()
         {
 			this.LayoutStyle = CaptchaControl.Layout.CssBased;
+			this.ErrorMessage = "Please enter the correct word";
+			this.Display = ValidatorDisplay.Dynamic;
 		}
 
         private void GenerateNewCaptcha()
         {
+			if (this.Width.IsEmpty)
+				this.Width = Unit.Pixel(180);
+			if (this.Height.IsEmpty)
+				this.Height = Unit.Pixel(50);
 			this.captcha.TextLength = this.CaptchaLength;
         }
 
@@ -37,6 +44,20 @@ namespace Subtext.Web.Controls.Captcha
             return false;
         }
 
+    	protected override bool EvaluateIsValid()
+    	{
+			bool isValid = base.EvaluateIsValid();
+
+			if (isValid)
+			{
+				//We don't want the CAPTCHA to change if the 
+				//user specifies a correct answer but some other 
+				//field is not valid.
+				this.captcha.Text = GetClientSpecifiedAnswer();
+			}
+			return isValid;
+    	}
+    	
 		/// <summary>
 		/// Generates the captcha if it hasn't been generated already.
 		/// </summary>
@@ -44,12 +65,11 @@ namespace Subtext.Web.Controls.Captcha
 		protected override void OnPreRender(EventArgs e)
         {
 			// We store the answer encrypted so it can't be tampered with.
-			this.GenerateNewCaptcha();
-			if (this.Width == 0)
-				this.Width = 180;
-			if (this.Height == 0)
-				this.Height = 50;
-
+			if (!Page.IsPostBack || !this.IsValid)
+			{
+				this.GenerateNewCaptcha();
+			}
+			
 			base.OnPreRender(e);
         }
 
@@ -64,7 +84,7 @@ namespace Subtext.Web.Controls.Captcha
 
     	void RenderHiddenInputForEncryptedAnswer(HtmlTextWriter writer)
     	{
-    		writer.Write("<input type=\"hidden\" name=\"" + this.HiddenEncryptedAnswerFieldName + "\" value=\"" + EncryptAnswer(CaptchaText) + "\"");
+    		writer.Write("<input type=\"hidden\" name=\"" + this.HiddenEncryptedAnswerFieldName + "\" value=\"" + EncryptAnswer(CaptchaText) + "\" />");
     	}
     	
         protected override void Render(HtmlTextWriter writer)
@@ -73,34 +93,39 @@ namespace Subtext.Web.Controls.Captcha
             writer.Write("<div id=\"" + this.ClientID + "\"");
             if (!String.IsNullOrEmpty(this.CssClass))
             {
-                writer.Write(" class='" + this.CssClass + "'");
+                writer.Write(" class=\"" + this.CssClass + "\"");
+            }
+        	else
+            {
+				writer.Write(" class=\"captcha\"");
             }
             writer.Write(">");
-            writer.Write("<span class=\"captcha_outer\">");
-            
-        	writer.Write("<img src=\"CaptchaImage.ashx");
+
+			string src = ControlHelper.ExpandTildePath("~/CaptchaImage.ashx");
+        	
+            writer.Write("<img src=\"" + src);
             if (!this.IsDesignMode)
             {
 				writer.Write("?spec=" + HttpUtility.UrlEncodeUnicode(captcha.ToEncryptedString()));
             }
-            writer.Write("\" border='0'");
-        	writer.Write(" width=\"" + this.Width + "\" ");
-			writer.Write(" height=\"" + this.Height + "\" ");
+            writer.Write("\" border=\"0\"");
+			
+        	writer.Write(" width=\"" + this.Width.Value + "\" ");
+			writer.Write(" height=\"" + this.Height.Value + "\" ");
             if (this.ToolTip.Length > 0)
             {
                 writer.Write(" alt='" + this.ToolTip + "'");
             }
-            writer.Write(">");
-            writer.Write("</span>");
-            writer.Write("<span class=\"captcha_inner\">");
+            writer.Write(" />");
             
         	if (this.text.Length > 0)
             {
+				writer.Write("<label for=\"" + this.AnswerFormFieldName + "\">");
                 writer.Write(this.text);
+				writer.Write("</label>");
             	base.Render(writer);
-                writer.Write("<br />");
             }
-
+			
 			writer.Write("<input name=\"" + this.AnswerFormFieldName + "\" type=\"text\" size=\"");
             writer.Write(this.captcha.TextLength.ToString());
             writer.Write("\" maxlength=\"" + this.captcha.TextLength.ToString() + "\"");
@@ -116,9 +141,11 @@ namespace Subtext.Web.Controls.Captcha
             {
                 writer.Write(" tabindex=\"" + this.TabIndex.ToString() + "\"");
             }
-            writer.Write(" value=\"\" />");
-            writer.Write("</span>");
-            writer.Write("<br clear='all' />");
+			if (Page.IsPostBack && this.IsValid)
+				writer.Write(" value=\"" + HttpUtility.HtmlEncode(Page.Request.Form[AnswerFormFieldName]) + "\" />");
+        	else
+				writer.Write(" value=\"\" />");
+				
             writer.Write("</div>");
         }
     	
@@ -316,7 +343,7 @@ namespace Subtext.Web.Controls.Captcha
 		{
 			get
 			{
-				if (this.text.Length == 0)
+				if (String.IsNullOrEmpty(this.text))
 				{
 					this.text = this.GenerateRandomText();
 				}
@@ -336,6 +363,8 @@ namespace Subtext.Web.Controls.Captcha
 		{
 			get
 			{
+				if (this.randomTextLength <= 0)
+					this.randomTextLength = 4;
 				return this.randomTextLength;
 			}
 			set

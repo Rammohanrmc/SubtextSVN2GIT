@@ -23,6 +23,8 @@ namespace Subtext.Web.Admin.Pages {
         protected System.Web.UI.WebControls.TextBox txtAkismetAPIKey;
         protected System.Web.UI.WebControls.CheckBox chkEnableCommentModeration;
         protected Subtext.Web.Controls.HelpToolTip helpCommentModeration;
+        protected System.Web.UI.WebControls.CheckBox chkEnableCaptcha;
+        protected Subtext.Web.Controls.HelpToolTip helpCaptcha;
         protected System.Web.UI.WebControls.CheckBox chkAllowDuplicates;
         protected Subtext.Web.Controls.HelpToolTip Helptooltip4;
         protected Subtext.Web.Controls.HelpToolTip HelpToolTip2;

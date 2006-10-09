@@ -515,6 +515,16 @@ namespace Subtext.Framework
 			set { FlagSetter(ConfigurationFlag.CommentModerationEnabled, value); }
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether captcha is enabled.
+		/// </summary>
+		/// <value><c>true</c> if captcha is enabled; otherwise, <c>false</c>.</value>
+		public bool CaptchaEnabled
+		{
+			get { return FlagPropertyCheck(ConfigurationFlag.CaptchaEnabled); }
+			set { FlagSetter(ConfigurationFlag.CaptchaEnabled, value); }
+		}
+		
 		private string subfolder;
 		/// <summary>
 		/// Gets or sets the subfolder the blog lives in.

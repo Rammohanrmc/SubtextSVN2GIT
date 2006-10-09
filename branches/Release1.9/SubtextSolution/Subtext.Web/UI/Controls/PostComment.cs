@@ -26,6 +26,7 @@ using Subtext.Framework.Exceptions;
 using Subtext.Framework.Text;
 using Subtext.Framework.Web;
 using Subtext.Web.Controls;
+using Subtext.Web.Controls.Captcha;
 
 namespace Subtext.Web.UI.Controls
 {
@@ -160,10 +161,40 @@ namespace Subtext.Web.UI.Controls
 				btnIndex = Controls.IndexOf(btnCompliantSubmit);
 			}
 
-			invisibleCaptchaValidator = new InvisibleCaptcha();
-			invisibleCaptchaValidator.ErrorMessage = "Please enter the answer to the supplied question.";
-			
-			Controls.AddAt(btnIndex, invisibleCaptchaValidator);
+			//Captcha should not be given to admin.
+			if (!Security.IsAdmin)
+			{
+				if (Config.CurrentBlog.CaptchaEnabled)
+				{
+					captcha = new CaptchaControl();
+					captcha.ID = "captcha";
+					Control preExisting = ControlHelper.FindControlRecursively(this, "captcha");
+					if (preExisting == null) // && !Config.CurrentBlog.FeedbackSpamServiceEnabled) Experimental code for improved UI. Will put back in later. - Phil Haack 10/09/2006
+					{
+						Controls.AddAt(btnIndex, captcha);
+					}
+					
+					/*
+					* Experimental code for improved UI. Will put back in later.
+					*		- Phil Haack Removed 10/09/2006
+					if(Config.CurrentBlog.FeedbackSpamServiceEnabled)
+					{
+						// Set up this button just in case we need to show it.
+						if (btnConfirm == null)
+							btnConfirm = new Button();
+						btnConfirm.ID = "btnConfirm";
+						btnConfirm.Text = "Confirm";
+						btnConfirm.Visible = true;
+						Controls.AddAt(btnIndex, btnConfirm);
+						btnConfirm.Click += new EventHandler(btnConfirm_Click);
+					}*/
+				}
+
+				invisibleCaptchaValidator = new InvisibleCaptcha();
+				invisibleCaptchaValidator.ErrorMessage = "Please enter the answer to the supplied question.";
+
+				Controls.AddAt(btnIndex, invisibleCaptchaValidator);
+			}
 		}
 		#endregion
 
@@ -184,16 +215,23 @@ namespace Subtext.Web.UI.Controls
 
 						if(chkRemember == null || chkRemember.Checked)
 						{
-							HttpCookie user = new HttpCookie("CommentUser");
-							user.Values["Name"] = tbName.Text;
-							user.Values["Url"] = tbUrl.Text;
-							if(tbEmail!=null)
-								user.Values["Email"] = tbEmail.Text;
-							user.Expires = DateTime.Now.AddDays(30);
-							Response.Cookies.Add(user);
+							SetRememberedUserCookie();
 						}
-						
+
 						DisplayResultMessage(feedbackItem);
+						
+						/*
+						* Experimental code for improved UI. Will put back in later.
+						*		- Phil Haack Removed 10/09/2006
+						if (feedbackItem.FlaggedAsSpam && !feedbackItem.NeedsModeratorApproval && Config.CurrentBlog.CaptchaEnabled && Config.CurrentBlog.FeedbackSpamServiceEnabled)
+						{
+							SetupBackupCaptcha(feedbackItem.Id);
+						}
+						else
+						{
+							DisplayResultMessage(feedbackItem);
+						}
+						 */
 					}
 				}
 				catch(BaseCommentException exception)
@@ -201,6 +239,72 @@ namespace Subtext.Web.UI.Controls
 					Message.Text = exception.Message;
 				}
 			}
+		}
+
+		/*
+		 * Experimental code for improved UI. Will put back in later.
+		 *		- Phil Haack Removed 10/09/2006
+
+		private void SetupBackupCaptcha(int feedbackId)
+		{
+			RemoveCommentControls();
+			if (this.Message == null)
+				this.Message = new Label();
+
+			this.Page.ClientScript.RegisterHiddenField(ClientID + "_feedbackId", feedbackId.ToString(CultureInfo.InvariantCulture));
+					
+			this.Message.Text = "Your comment was flagged as spam and will be held for moderation unless you prove you are a human.";						
+			Controls.Add(this.Message);
+			Controls.Add(this.captcha);
+			Controls.Add(this.btnConfirm);
+			btnConfirm.Visible = true;
+		}
+
+		void btnConfirm_Click(object sender, EventArgs e)
+		{
+			if(captcha.IsValid)
+			{
+				FeedbackItem item = FeedbackItem.Get(GetFeedbackIdFromSecondarySpamFilter());
+				if (item != null)
+				{
+					FeedbackItem.Approve(item);
+				}
+							
+				RemoveCommentControls();
+				if (Message == null)
+					Message = new Label();
+				Controls.Add(Message);
+				Message.Text = "Thank you!";
+			}
+			else
+			{
+				SetupBackupCaptcha(GetFeedbackIdFromSecondarySpamFilter());
+			}
+		}
+		
+		
+		int GetFeedbackIdFromSecondarySpamFilter()
+		{
+			string idText = Page.Request.Form[ClientID + "_feedbackId"] ?? string.Empty;
+			if(idText.Length == 0)
+			{
+				int id;
+				if(int.TryParse(idText, out id))
+					return id;
+			}
+			return 0;
+		}
+		*/
+
+		private void SetRememberedUserCookie()
+		{
+			HttpCookie user = new HttpCookie("CommentUser");
+			user.Values["Name"] = this.tbName.Text;
+			user.Values["Url"] = this.tbUrl.Text;
+			if(this.tbEmail!=null)
+				user.Values["Email"] = this.tbEmail.Text;
+			user.Expires = DateTime.Now.AddDays(30);
+			Response.Cookies.Add(user);
 		}
 
 		private void DisplayResultMessage(FeedbackItem feedbackItem)

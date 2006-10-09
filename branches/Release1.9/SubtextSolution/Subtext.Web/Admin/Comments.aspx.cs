@@ -43,6 +43,7 @@ namespace Subtext.Web.Admin.Pages
 			this.chkEnableTrackbacks.Checked = info.TrackbacksEnabled;
 			this.chkCoCommentEnabled.Checked = info.CoCommentsEnabled;
 			this.chkAllowDuplicates.Checked = info.DuplicateCommentsEnabled;
+			this.chkEnableCaptcha.Checked = info.CaptchaEnabled;
 
 			this.txtAkismetAPIKey.Text = info.FeedbackSpamServiceKey;
 			
@@ -77,7 +78,8 @@ namespace Subtext.Web.Admin.Pages
 			{
 				this.txtRecentCommentsLength.Text = string.Empty;
 			}
-
+			
+			base.BindLocalUI();
 		}
 
 		private void ManageHiddenSettings()
@@ -117,6 +119,7 @@ namespace Subtext.Web.Admin.Pages
 				info.CoCommentsEnabled = this.chkCoCommentEnabled.Checked;
 				info.TrackbacksEnabled = this.chkEnableTrackbacks.Checked;
 				info.DuplicateCommentsEnabled = this.chkAllowDuplicates.Checked;
+				info.CaptchaEnabled = this.chkEnableCaptcha.Checked;
 				
 				if(this.txtCommentDelayIntervalMinutes.Text.Length == 0)
 				{
@@ -155,7 +158,6 @@ namespace Subtext.Web.Admin.Pages
 				}
 
 				info.FeedbackSpamServiceKey = this.txtAkismetAPIKey.Text;
-
 				Config.UpdateConfigData(info);
 			}
 		}
