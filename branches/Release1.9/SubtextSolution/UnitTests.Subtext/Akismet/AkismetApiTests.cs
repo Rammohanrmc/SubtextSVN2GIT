@@ -36,6 +36,13 @@ namespace UnitTests.Subtext.Akismet
 		#endregion
 
 		[Test]
+		public void CanParseIP()
+		{
+			IPAddress address = IPAddress.Parse("135.254.247.185, 192.11.54.1");
+			Assert.IsNotNull(address);
+		}
+		
+		[Test]
 		public void ConstructorSetsApiKeyAndUrl()
 		{
 			AkismetClient client = new AkismetClient("fake-key", new Uri("http://haacked.com/"), new HttpClient());
