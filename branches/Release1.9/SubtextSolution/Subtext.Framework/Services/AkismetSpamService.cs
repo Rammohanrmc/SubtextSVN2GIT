@@ -1,8 +1,8 @@
 using System;
 using System.Globalization;
+using System.Net;
 using Subtext.Akismet;
 using log4net;
-using Subtext.Extensibility;
 using Subtext.Framework.Components;
 
 namespace Subtext.Framework.Services
@@ -20,7 +20,14 @@ namespace Subtext.Framework.Services
 		public AkismetSpamService(string apiKey, BlogInfo blog)
 		{
 			this.akismet = new AkismetClient(apiKey, blog.RootUrl);
-			this.akismet.VerifyApiKey();
+			try
+			{
+				this.akismet.VerifyApiKey();
+			}
+			catch(WebException e)
+			{
+				log.Error("Error occured while verifying Akismet.", e);
+			}
 		}
 		
 		/// <summary>

@@ -139,6 +139,7 @@ namespace Subtext.Akismet
 		/// Verifies the API key.  You really only need to 
 		/// call this once, perhaps at startup.
 		/// </summary>
+		/// <exception type="Sytsem.Web.WebException">If it cannot make a request of Akismet.</exception>
 		/// <returns></returns>
 		public bool VerifyApiKey()
 		{
