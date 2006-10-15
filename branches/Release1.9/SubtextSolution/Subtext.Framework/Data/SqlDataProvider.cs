@@ -123,7 +123,7 @@ namespace Subtext.Framework.Data
 			};
 			try
 			{
-				return this.NonQueryBool("subtext_TrackEntry", p);
+				return NonQueryBool("subtext_TrackEntry", p);
 			}
 			catch(Exception e)
 			{
@@ -407,9 +407,14 @@ namespace Subtext.Framework.Data
 			{
 				BlogIdParam
 			};
-			this.NonQueryInt("subtext_LogClear", p);
+			NonQueryInt("subtext_LogClear", p);
 		}
 
+        public override bool ClearBlogContent()
+        {
+            SqlParameter[] p = {BlogIdParam};
+            return NonQueryBool("subtext_ClearBlogContent", p);
+        }
 
 		#endregion	
 
@@ -1279,4 +1284,5 @@ namespace Subtext.Framework.Data
 		}
 	}
 }
+
 
