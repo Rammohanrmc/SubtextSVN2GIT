@@ -120,14 +120,15 @@ GO
 -- subtext_Feedback
 SET IDENTITY_INSERT [<subtext_db_name,varchar,SubtextData>].[<dbUser,varchar,dbo>].[subtext_Feedback] ON 
 INSERT [<subtext_db_name,varchar,SubtextData>].[<dbUser,varchar,dbo>].[subtext_Feedback]
-    ([Id],[Title],[Body],[BlogId],[EntryId],[Author],[Email],[Url],[FeedbackType],[StatusFlag],
-        [CommentAPI],[Referrer],[IpAddress],[UserAgent],[FeedbackChecksumHash],[DateCreated],[DateModified])
+    ([Id],[Title],[Body],[BlogId],[EntryId],[Author], [IsBlogAuthor], [Email], [Url], [FeedbackType], [StatusFlag],
+        [CommentAPI], [Referrer], [IpAddress], [UserAgent], [FeedbackChecksumHash], [DateCreated], [DateModified])
 SELECT [Id] = [ID]
     , Title
 	, Body = [Text]
 	, BlogId = BlogID
 	, EntryId = ParentID
 	, Author
+	, 0
 	, Email
 	, Url = TitleUrl
 	, FeedbackType = CASE PostConfig WHEN 3 THEN 1 ELSE 2 END

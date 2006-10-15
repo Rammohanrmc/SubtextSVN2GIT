@@ -698,6 +698,7 @@ namespace Subtext.Framework.Data
 				DataHelper.MakeInParam("@Body", DataHelper.CheckNull(feedbackItem.Body)), 
 				DataHelper.MakeInParam("@EntryId", SqlDbType.Int, 4, DataHelper.CheckNull(feedbackItem.EntryId)),
 				DataHelper.MakeInParam("@Author", SqlDbType.NVarChar, 128, DataHelper.CheckNull(feedbackItem.Author)), 
+				DataHelper.MakeInParam("@IsBlogAuthor", SqlDbType.Bit, 1, feedbackItem.IsBlogAuthor),
 				DataHelper.MakeInParam("@Email", SqlDbType.VarChar, 128, DataHelper.CheckNull(feedbackItem.Email)), 
 				DataHelper.MakeInParam("@Url", SqlDbType.VarChar, 256, sourceUrl), 
 				DataHelper.MakeInParam("@FeedbackType", SqlDbType.Int, 4, (int)feedbackItem.FeedbackType),

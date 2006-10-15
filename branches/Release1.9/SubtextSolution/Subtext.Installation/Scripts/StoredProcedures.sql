@@ -1104,6 +1104,7 @@ AS
 		, f.BlogId
 		, f.EntryId
 		, f.Author
+		, f.IsBlogAuthor
 		, f.Email
 		, f.Url
 		, f.FeedbackType
@@ -1151,6 +1152,7 @@ AS
 		, f.BlogId
 		, f.EntryId
 		, f.Author
+		, f.IsBlogAuthor
 		, f.Email
 		, f.Url
 		, f.FeedbackType
@@ -1568,6 +1570,7 @@ SELECT  f.Id
 		, f.BlogId
 		, f.EntryId
 		, f.Author
+		, f.IsBlogAuthor
 		, f.Email
 		, f.Url
 		, f.FeedbackType
@@ -3339,6 +3342,7 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_InsertFeedback]
 	, @BlogId int
 	, @EntryId int = NULL
 	, @Author nvarchar(128) = NULL
+	, @IsBlogAuthor bit = 0
 	, @Email varchar(128) = NULL
 	, @Url varchar(256) = NULL
 	, @FeedbackType int
@@ -3359,6 +3363,7 @@ INSERT INTO [<dbUser,varchar,dbo>].[subtext_Feedback]
 	, BlogId
 	, EntryId
 	, Author
+	, IsBlogAuthor
 	, Email
 	, Url
 	, FeedbackType
@@ -3378,6 +3383,7 @@ VALUES
 	, @BlogId
 	, @EntryId
 	, @Author
+	, @IsBlogAuthor
 	, @Email
 	, @Url
 	, @FeedbackType
@@ -3569,6 +3575,7 @@ SELECT TOP 1 f.Title
 		, f.BlogId
 		, f.EntryId
 		, f.Author
+		, f.IsBlogAuthor
 		, f.Email
 		, f.Url
 		, f.FeedbackType
@@ -4180,6 +4187,7 @@ SELECT	f.[Id]
 		, BlogId
 		, EntryId
 		, Author
+		, IsBlogAuthor
 		, Email
 		, Url
 		, FeedbackType
@@ -4203,6 +4211,7 @@ SELECT	f.[Id]
 		, BlogId
 		, EntryId
 		, Author
+		, IsBlogAuthor
 		, Email
 		, Url
 		, FeedbackType

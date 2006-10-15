@@ -59,6 +59,7 @@ IF NOT EXISTS
 			[BlogId] [int] NOT NULL,
 			[EntryId] [int] NULL,
 			[Author] [nvarchar](128) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+			[IsBlogAuthor] [bit],
 			[Email] [varchar](128) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
 			[Url] [varchar](256) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
 			[FeedbackType] [int] NOT NULL,
@@ -135,6 +136,7 @@ IF EXISTS
 			, BlogId
 			, EntryId = ParentID
 			, Author
+			, 0
 			, Email
 			, Url = TitleUrl
 			, FeedbackType = CASE PostConfig WHEN 3 THEN 1 ELSE 2 END
