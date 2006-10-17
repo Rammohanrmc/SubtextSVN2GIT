@@ -7,6 +7,7 @@ using Subtext.Framework.Components;
 
 namespace Subtext.Framework.Services
 {
+	[Serializable]
 	public class AkismetSpamService : IFeedbackSpamService
 	{
 		private readonly static ILog log = new Subtext.Framework.Logging.Log();

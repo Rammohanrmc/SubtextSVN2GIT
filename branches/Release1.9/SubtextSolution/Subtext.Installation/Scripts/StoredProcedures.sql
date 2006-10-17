@@ -318,6 +318,10 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,
 drop procedure [<dbUser,varchar,dbo>].[subtext_InsertFeedback]
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount]
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_UpdateFeedback]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateFeedback]
 GO
@@ -462,7 +466,60 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount]
+(
+	@BlogId int
+	,@EntryId int
+)
+AS
+	-- Update the entry comment count.
+	UPDATE [<dbUser,varchar,dbo>].[subtext_Content] 
+	SET [<dbUser,varchar,dbo>].[subtext_Content].FeedbackCount = 
+		(
+			SELECT COUNT(1) 
+			FROM  [<dbUser,varchar,dbo>].[subtext_Feedback] f  WITH (NOLOCK)
+			WHERE f.EntryId = @EntryId 
+				AND f.StatusFlag & 1 = 1
+		)
+	WHERE Id = @EntryId
 
+	-- Update the blog comment count.
+	UPDATE [dbo].[subtext_Config] 
+	SET CommentCount = 
+		(
+			SELECT COUNT(1) 
+			FROM  [dbo].[subtext_Feedback] f WITH (NOLOCK)
+			WHERE f.BlogId = @BlogId
+				AND f.StatusFlag & 1 = 1
+				AND f.FeedbackType = 1
+		)
+	WHERE BlogId = @BlogId
+	
+	-- Update the blog trackback count.
+	UPDATE [dbo].[subtext_Config] 
+	SET PingTrackCount = 
+		(
+			SELECT COUNT(1) 
+			FROM  [dbo].[subtext_Feedback] f WITH (NOLOCK)
+			WHERE f.BlogId = @BlogId
+				AND f.StatusFlag & 1 = 1
+				AND f.FeedbackType = 2
+		)
+	WHERE BlogId = @BlogId
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount] TO [public]
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
 
 CREATE PROC [<dbUser,varchar,dbo>].[subtext_DeleteCategory]
 (
@@ -665,14 +722,13 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_DeleteFeedback]
 AS
 
 DECLARE @EntryId int
+DECLARE @BlogId int
 
-SELECT @EntryId = EntryId FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE [Id] = @Id
-
-UPDATE [<dbUser,varchar,dbo>].[subtext_Content] 
-SET FeedbackCount = FeedbackCount - 1
-WHERE ID = @EntryId
+SELECT @EntryId = EntryId, @BlogId = BlogId FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE [Id] = @Id
 
 DELETE [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE [Id] = @Id
+
+exec [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount] @BlogId, @EntryId
 GO
 
 GO
@@ -3403,16 +3459,9 @@ VALUES
 
 SELECT @Id = SCOPE_IDENTITY()
 
--- Update the entry comment count.
-UPDATE [dbo].[subtext_Content] 
-SET [dbo].[subtext_Content].FeedbackCount = 
-	(
-		SELECT COUNT(1) 
-		FROM  [dbo].[subtext_Feedback] f WITH (NOLOCK)
-		WHERE f.EntryId = @EntryId 
-			AND f.StatusFlag & 1 = 1
-	)
-WHERE Id = @EntryId
+exec [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount] @BlogId, @EntryId
+
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3442,7 +3491,8 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateFeedback]
 AS
 
 DECLARE @EntryId int
-SELECT @EntryId = EntryId FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE Id = @Id
+DECLARE @BlogId int
+SELECT @EntryId = EntryId, @BlogId = BlogId FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE Id = @Id
 
 UPDATE [<dbUser,varchar,dbo>].[subtext_Feedback]
 SET	Title = @Title
@@ -3455,17 +3505,7 @@ SET	Title = @Title
 	, DateModified = @DateModified
 WHERE Id = @Id
 
--- Update the entry comment count.
-UPDATE [<dbUser,varchar,dbo>].[subtext_Content] 
-SET [<dbUser,varchar,dbo>].[subtext_Content].FeedbackCount = 
-	(
-		SELECT COUNT(1) 
-		FROM  [<dbUser,varchar,dbo>].[subtext_Feedback] f  WITH (NOLOCK)
-		WHERE f.EntryId = @EntryId 
-			AND f.StatusFlag & 1 = 1
-	)
-WHERE Id = @EntryId
-
+exec [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount] @BlogId, @EntryId
 
 GO
 SET QUOTED_IDENTIFIER OFF 

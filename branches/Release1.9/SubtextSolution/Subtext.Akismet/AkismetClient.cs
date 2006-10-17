@@ -8,6 +8,7 @@ namespace Subtext.Akismet
 	/// The client class used to communicate with the 
 	/// <see href="http://akismet.com/">Akismet</see> service.
 	/// </summary>
+	[Serializable]
 	public class AkismetClient
 	{
 		private HttpClient httpClient;
