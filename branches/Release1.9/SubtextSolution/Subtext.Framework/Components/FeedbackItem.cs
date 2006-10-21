@@ -251,7 +251,22 @@ namespace Subtext.Framework.Components
 			if (feedback == null)
 				throw new ArgumentNullException("comment", "Cannot destroy a null comment.");
 
+			if (feedback.Approved)
+				throw new InvalidOperationException("Cannot destroy an approved comment. Please flag it as spam or trash it first.");
+			
 			ObjectProvider.Instance().DestroyFeedback(feedback.Id);
+		}
+
+		/// <summary>
+		/// Destroys all non-active emails that meet the status.
+		/// </summary>
+		/// <param name="feedbackStatus">The feedback.</param>
+		public static void Destroy(FeedbackStatusFlag feedbackStatus)
+		{
+			if ((feedbackStatus & FeedbackStatusFlag.Approved) == FeedbackStatusFlag.Approved)
+				throw new InvalidOperationException("Cannot destroy an active comment.");
+
+			ObjectProvider.Instance().DestroyFeedback(feedbackStatus);
 		}
 
 		/// <summary>

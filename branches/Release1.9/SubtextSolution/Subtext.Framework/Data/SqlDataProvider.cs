@@ -560,6 +560,21 @@ namespace Subtext.Framework.Data
 			};
 			NonQueryBool("subtext_DeleteFeedback", p);
 		}
+
+		/// <summary>
+		/// Deletes the entry from the database.
+		/// </summary>
+		/// <param name="status">The post ID.</param>
+		/// <returns></returns>
+		public override void DestroyFeedback(FeedbackStatusFlag status)
+		{
+			SqlParameter[] p =
+			{
+				BlogIdParam
+				, DataHelper.MakeInParam("@StatusFlag", SqlDbType.Int, 4, status),
+			};
+			NonQueryBool("subtext_DeleteFeedbackByStatus", p);
+		}
 		
 	    /// <summary>
 	    /// Saves the categories for the specified post.

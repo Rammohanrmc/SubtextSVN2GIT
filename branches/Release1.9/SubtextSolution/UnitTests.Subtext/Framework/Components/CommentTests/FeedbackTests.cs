@@ -83,7 +83,74 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 
 		[Test]
 		[RollBack]
+		public void DestroyCommentByStatusDestroysOnlyThatStatus()
+		{
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
+			Config.CurrentBlog.CommentsEnabled = true;
+			Config.CurrentBlog.ModerationEnabled = false;
+
+			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("blah", "blah", "blah");
+			Entries.Create(entry);
+
+			for (int i = 0; i < 3; i++)
+			{
+				FeedbackItem comment = CreateAndUpdateFeedbackWithExactStatus(entry, FeedbackType.Comment, FeedbackStatusFlag.Approved);
+				Assert.IsTrue(comment.Approved, "should be approved");
+			}
+
+			for (int i = 0; i < 2; i++)
+			{
+				FeedbackItem comment = CreateAndUpdateFeedbackWithExactStatus(entry, FeedbackType.Comment, FeedbackStatusFlag.FlaggedAsSpam);
+				Assert.IsFalse(comment.Approved, "should not be approved");
+			}
+
+			FeedbackItem newComment = CreateAndUpdateFeedbackWithExactStatus(entry, FeedbackType.Comment, FeedbackStatusFlag.FlaggedAsSpam);
+			Assert.IsFalse(newComment.Approved, "should not be approved");
+			FeedbackItem.Delete(newComment); //Move it to trash.
+
+			for (int i = 0; i < 3; i++)
+			{
+				FeedbackItem comment = CreateAndUpdateFeedbackWithExactStatus(entry, FeedbackType.Comment, FeedbackStatusFlag.Deleted);
+				Assert.IsFalse(comment.Approved, "should not be approved");
+			}
+
+			FeedbackCounts counts = FeedbackItem.GetFeedbackCounts();
+			Assert.AreEqual(3, counts.ApprovedCount, "Expected three approved still");
+			Assert.AreEqual(2, counts.FlaggedAsSpamCount, "Expected three approved still");
+			Assert.AreEqual(4, counts.DeletedCount, "Expected four in the trash");
+			
+			FeedbackItem.Destroy(FeedbackStatusFlag.FlaggedAsSpam);
+			counts = FeedbackItem.GetFeedbackCounts();
+			Assert.AreEqual(3, counts.ApprovedCount, "Expected three approved still");
+			Assert.AreEqual(0, counts.FlaggedAsSpamCount, "Expected three approved still");
+			Assert.AreEqual(4, counts.DeletedCount, "Expected four in the trash");
+		}
+		
+		[Test]
+		[RollBack]
 		public void DestroyCommentReallyGetsRidOfIt()
+		{
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
+			Config.CurrentBlog.CommentsEnabled = true;
+			Config.CurrentBlog.ModerationEnabled = false;
+
+			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("blah", "blah", "blah");
+			Entries.Create(entry);
+
+			FeedbackItem comment = CreateAndUpdateFeedbackWithExactStatus(entry, FeedbackType.Comment, FeedbackStatusFlag.Approved);
+			Assert.IsTrue(comment.Approved, "should be approved");
+			comment.Approved = false;
+			FeedbackItem.Update(comment);
+
+			FeedbackItem.Destroy(comment);
+			comment = FeedbackItem.Get(comment.Id);
+			Assert.IsNull(comment);
+		}
+
+		[Test]
+		[RollBack]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public void DestroyCommentCannotDestroyActiveComment()
 		{
 			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
 			Config.CurrentBlog.CommentsEnabled = true;
@@ -96,8 +163,6 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 			Assert.IsTrue(comment.Approved, "should be approved");
 
 			FeedbackItem.Destroy(comment);
-			comment = FeedbackItem.Get(comment.Id);
-			Assert.IsNull(comment);
 		}
 
 		[Test]
