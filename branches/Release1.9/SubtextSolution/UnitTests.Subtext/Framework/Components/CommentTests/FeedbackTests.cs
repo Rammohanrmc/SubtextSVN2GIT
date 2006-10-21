@@ -2,6 +2,7 @@ using System;
 using MbUnit.Framework;
 using Subtext.Extensibility;
 using Subtext.Extensibility.Interfaces;
+using Subtext.Extensibility.Providers;
 using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
@@ -225,7 +226,7 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		/// </summary>
 		[Test]
 		[RollBack]
-		public void EntryCreateHasContentHash()
+		public void CreateFeedbackHasContentHash()
 		{
 			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
 
@@ -238,6 +239,53 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 
 			FeedbackItem savedEntry = FeedbackItem.Get(id);
 			Assert.IsTrue(savedEntry.ChecksumHash.Length > 0, "The Content Checksum should be larger than 0.");
+		}
+
+		/// <summary>
+		/// Makes sure that the content checksum hash is being created correctly.
+		/// </summary>
+		[RowTest]
+		[Row("commenter@example.com", "http://haacked.com/", "commenter@example.com", "http://haacked.com/")]
+		[Row("", "http://haacked.com/", "no email given", "http://haacked.com/")]
+		[Row("commenter@example.com", "", "commenter@example.com", "none given")]
+		[RollBack]
+		public void CreateFeedbackSendsCorrectEmail(string commenterEmail, string commenterUrl, string expectedEmail, string expectedUrl)
+		{
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
+			Config.CurrentBlog.Email = "test@example.com";
+			Config.CurrentBlog.Title = "You've been haacked";
+
+			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("blah", "blah", "blah");
+			int entryId = Entries.Create(entry);
+
+			FeedbackItem feedbackItem = new FeedbackItem(FeedbackType.Comment);
+			feedbackItem.Author = "Billy Bob";
+			feedbackItem.Email = commenterEmail;
+			feedbackItem.DateCreated = DateTime.Now;
+			if (commenterUrl.Length > 0)
+				feedbackItem.SourceUrl = new Uri(commenterUrl);
+			feedbackItem.Title = "Some Title";
+			feedbackItem.Body = "Some Body<br /> likes me.";
+			feedbackItem.EntryId = entryId;
+			int id = FeedbackItem.Create(feedbackItem);
+
+			string expectedMessageBody = "Comment from You've been haacked" + Environment.NewLine
+			                             + "----------------------------------------------------" + Environment.NewLine
+			                             + "From:\tBilly Bob <" + expectedEmail + ">" + Environment.NewLine
+			                             + "Url:\t" + expectedUrl + Environment.NewLine +
+			                             "IP:\t127.0.0.1" + Environment.NewLine
+			                             + "====================================================" + Environment.NewLine + Environment.NewLine
+			                             + "Some Body" + Environment.NewLine + " likes me." + Environment.NewLine + Environment.NewLine
+			                             + "Source: " + entry.FullyQualifiedUrl + "#" + id;
+
+			UnitTestEmailProvider emailProvider = (UnitTestEmailProvider)EmailProvider.Instance();
+
+			Assert.AreEqual("test@example.com", emailProvider.To, "Email should've been sent to the blog email addr.");
+			if (String.IsNullOrEmpty(commenterEmail))
+				expectedEmail = "admin@YOURBLOG.com";
+			Assert.AreEqual(expectedEmail, emailProvider.From, "Email should have been sent from the value in App.config.");
+			Assert.AreEqual("Comment: Some Title (via You've been haacked)", emailProvider.Subject, "Comment subject line wrong.");
+			Assert.AreEqual(expectedMessageBody, emailProvider.Message, "Did not receive the expected message.");
 		}
 
 		static FeedbackItem CreateAndUpdateFeedbackWithExactStatus(Entry entry, FeedbackType type, FeedbackStatusFlag status)
