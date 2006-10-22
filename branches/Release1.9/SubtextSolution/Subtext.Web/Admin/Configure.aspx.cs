@@ -21,7 +21,6 @@ using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.UI.Skinning;
-using Subtext.Framework.Util;
 
 namespace Subtext.Web.Admin.Pages
 {
@@ -189,6 +188,7 @@ namespace Subtext.Web.Admin.Pages
 		{
 			lblServerTimeZone.Text = string.Format("{0} ({1})", TimeZone.CurrentTimeZone.StandardName, TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now));
 			lblServerTime.Text = DateTime.Now.ToString("yyyy/MM/dd hh:mm tt");
+			lblUtcTime.Text = DateTime.UtcNow.ToString("yyyy/MM/dd hh:mm tt");
 			TimeZone.CurrentTimeZone.ToUniversalTime(DateTime.Now).ToLocalTime();
 			//lblCurrentTime.Text = BlogTime.ConvertToBloggerTime(DateTime.Now, SelectedTimeZone).ToString("yyyy/MM/dd hh:mm tt");
 			lblCurrentTime.Text = (DateTime.UtcNow.AddHours(SelectedTimeZone)).ToString("yyyy/MM/dd hh:mm tt");

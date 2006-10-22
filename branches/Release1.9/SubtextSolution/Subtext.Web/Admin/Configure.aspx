@@ -83,7 +83,8 @@
 			<p>
 				<em>Time at selected timezone is: <strong><asp:Label ID="lblCurrentTime" runat="server" /></strong></em><br />
 				<em>Time at server is: <strong><asp:Label ID="lblServerTime" runat="server" /></strong></em><br />
-				<em>Server timezone is <asp:Label ID="lblServerTimeZone" runat="server" />)</em>
+				<em>Server timezone is <asp:Label ID="lblServerTimeZone" runat="server" />)</em><br />
+				<em><acronym title="Coordinated Universal Time">UTC</acronym> time is <asp:Label ID="lblUtcTime" runat="server" />)</em>
 			</p>
 			</ajax:ajaxpanel>
 			<p>
