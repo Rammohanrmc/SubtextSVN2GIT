@@ -1,4 +1,5 @@
 using System;
+using System.Configuration;
 using System.Globalization;
 using System.Net;
 using Subtext.Akismet;
@@ -21,6 +22,20 @@ namespace Subtext.Framework.Services
 		public AkismetSpamService(string apiKey, BlogInfo blog)
 		{
 			this.akismet = new AkismetClient(apiKey, blog.RootUrl);
+			if(!String.IsNullOrEmpty(ConfigurationManager.AppSettings["ProxyHost"]))
+			{
+				string proxyHost = ConfigurationManager.AppSettings["ProxyHost"];
+				
+				int proxyPort;
+				if (int.TryParse(ConfigurationManager.AppSettings["ProxyPort"], out proxyPort))
+				{
+					this.akismet.Proxy = new WebProxy(proxyHost, proxyPort);
+				}
+				else
+				{
+					this.akismet.Proxy = new WebProxy(proxyHost);
+				}
+			}
 		}
 
 		/// <summary>
@@ -57,10 +72,15 @@ namespace Subtext.Framework.Services
 					this.akismet.SubmitSpam(comment);
 					return true;
 				}
+				else
+				{
+					feedback.Body += "<!-- Akismet accepted this item. -->";
+				}
 			}
 			catch(InvalidResponseException e)
 			{
 				log.Error(e.Message, e);
+				feedback.Body += "<!-- Akismet error occured. Item accepted. -->";
 			}
 			return false;
 		}
