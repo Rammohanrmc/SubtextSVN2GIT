@@ -72,15 +72,10 @@ namespace Subtext.Framework.Services
 					this.akismet.SubmitSpam(comment);
 					return true;
 				}
-				else
-				{
-					feedback.Body += "<!-- Akismet accepted this item. -->";
-				}
 			}
 			catch(InvalidResponseException e)
 			{
 				log.Error(e.Message, e);
-				feedback.Body += "<!-- Akismet error occured. Item accepted. -->";
 			}
 			return false;
 		}

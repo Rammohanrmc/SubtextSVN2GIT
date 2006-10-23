@@ -190,7 +190,6 @@ namespace Subtext.Web.UI.Controls
 					{
 						FeedbackItem feedbackItem = CreateFeedbackInstanceFromFormInput(currentEntry);
 						//Assume allowed.
-						feedbackItem.Approved = true;
 						FeedbackItem.Create(feedbackItem);
 						
 						CommentFilter filter = new CommentFilter(HttpContext.Current.Cache);
