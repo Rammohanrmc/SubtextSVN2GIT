@@ -660,7 +660,7 @@ namespace Subtext.Framework.Data
 				DataHelper.MakeInParam("@Url", SqlDbType.VarChar, 256, sourceUrl), 
 				DataHelper.MakeInParam("@StatusFlag", SqlDbType.Int, 4, (int)feedbackItem.Status),
 				DataHelper.MakeInParam("@FeedbackChecksumHash", SqlDbType.VarChar, 32, feedbackItem.ChecksumHash), 
-				DataHelper.MakeInParam("@DateModified", SqlDbType.DateTime, 8, DateTime.Now.ToUniversalTime()),
+				DataHelper.MakeInParam("@DateModified", SqlDbType.DateTime, 8, Config.CurrentBlog.TimeZone.Now),
 			};
 			return NonQueryBool("subtext_UpdateFeedback", p);
 		}
@@ -728,7 +728,7 @@ namespace Subtext.Framework.Data
 				DataHelper.MakeInParam("@IpAddress", SqlDbType.VarChar, 16, ipAddress),
 				DataHelper.MakeInParam("@UserAgent", SqlDbType.NVarChar, 128, feedbackItem.UserAgent), 
 				DataHelper.MakeInParam("@FeedbackChecksumHash", SqlDbType.VarChar, 32, feedbackItem.ChecksumHash), 
-				DataHelper.MakeInParam("@DateCreated", SqlDbType.DateTime, 8, DateTime.Now.ToUniversalTime()),
+				DataHelper.MakeInParam("@DateCreated", SqlDbType.DateTime, 8, Config.CurrentBlog.TimeZone.Now),
 				BlogIdParam,
 				outParam
 			};
@@ -1093,7 +1093,7 @@ namespace Subtext.Framework.Data
 					,DataHelper.MakeInParam("@Skin", SqlDbType.NVarChar, 50, info.Skin.TemplateFolder) 
 					,DataHelper.MakeInParam("@Application", SqlDbType.NVarChar, 50, info.CleanSubfolder) 
 					,DataHelper.MakeInParam("@Host", SqlDbType.NVarChar, 100, info.Host) 
-					,DataHelper.MakeInParam("@TimeZone", SqlDbType.Int, 4, info.TimeZone) 
+					,DataHelper.MakeInParam("@TimeZone", SqlDbType.Int, 4, info.TimeZoneId) 
 					,DataHelper.MakeInParam("@Language", SqlDbType.NVarChar, 10, info.Language) 
 					,DataHelper.MakeInParam("@News", SqlDbType.NText, 0, DataHelper.CheckNull(info.News)) 
 					,DataHelper.MakeInParam("@ItemCount", SqlDbType.Int,  4, info.ItemCount) 

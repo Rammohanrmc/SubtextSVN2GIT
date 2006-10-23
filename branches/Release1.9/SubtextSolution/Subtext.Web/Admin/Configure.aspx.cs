@@ -21,6 +21,7 @@ using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.UI.Skinning;
+using Subtext.Framework.Util;
 
 namespace Subtext.Web.Admin.Pages
 {
@@ -49,7 +50,13 @@ namespace Subtext.Web.Admin.Pages
 			txbUser.Text = info.UserName;
 			txbNews.Text = info.News;
 			ckbAllowServiceAccess.Checked = info.AllowServiceAccess;
-			ddlTimezone.Items.FindByValue(info.TimeZone.ToString(CultureInfo.InvariantCulture)).Selected = true;
+			ddlTimezone.DataSource = WindowsTimeZone.TimeZones;
+			ddlTimezone.DataTextField = "DisplayName";
+			ddlTimezone.DataValueField = "Id";
+			ddlTimezone.DataBind();
+			ListItem selectedItem = ddlTimezone.Items.FindByValue(info.TimeZoneId.ToString(CultureInfo.InvariantCulture));
+			if (selectedItem != null)
+				selectedItem.Selected = true;
 
 			ListItem languageItem = ddlLangLocale.Items.FindByValue(info.Language);
 			if(languageItem != null)
@@ -122,7 +129,7 @@ namespace Subtext.Web.Admin.Pages
 				info.Email = txbAuthorEmail.Text;
 				info.UserName = txbUser.Text;
 
-				info.TimeZone = Int32.Parse(ddlTimezone.SelectedItem.Value);
+				info.TimeZoneId = Int32.Parse(ddlTimezone.SelectedItem.Value);
 				info.Subfolder = Config.CurrentBlog.Subfolder;
 				info.Host = Config.CurrentBlog.Host;
 				info.Id = Config.CurrentBlog.Id;
@@ -189,17 +196,21 @@ namespace Subtext.Web.Admin.Pages
 			lblServerTimeZone.Text = string.Format("{0} ({1})", TimeZone.CurrentTimeZone.StandardName, TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now));
 			lblServerTime.Text = DateTime.Now.ToString("yyyy/MM/dd hh:mm tt");
 			lblUtcTime.Text = DateTime.UtcNow.ToString("yyyy/MM/dd hh:mm tt");
-			TimeZone.CurrentTimeZone.ToUniversalTime(DateTime.Now).ToLocalTime();
-			//lblCurrentTime.Text = BlogTime.ConvertToBloggerTime(DateTime.Now, SelectedTimeZone).ToString("yyyy/MM/dd hh:mm tt");
-			lblCurrentTime.Text = (DateTime.UtcNow.AddHours(SelectedTimeZone)).ToString("yyyy/MM/dd hh:mm tt");
+			lblCurrentTime.Text = SelectedTimeZone.Now.ToString("yyyy/MM/dd hh:mm tt");
 		}
 
-		int SelectedTimeZone
+		WindowsTimeZone SelectedTimeZone
 		{
 			get
 			{
+				int timeZoneId;
 				string timeZoneText = ddlTimezone.SelectedValue;
-				return int.Parse(timeZoneText);
+				if (String.IsNullOrEmpty(timeZoneText))
+					timeZoneId = TimeZone.CurrentTimeZone.StandardName.GetHashCode();
+				else
+					timeZoneId = int.Parse(timeZoneText);
+
+				return WindowsTimeZone.GetById(timeZoneId);
 			}
 		}
 	}

@@ -103,7 +103,7 @@ namespace Subtext.Framework.Components
 			feedbackItem.Author = HtmlHelper.SafeFormat(feedbackItem.Author);
 			feedbackItem.Body = HtmlHelper.ConvertToAllowedHtml(feedbackItem.Body);
 			feedbackItem.Title = HtmlHelper.SafeFormat(feedbackItem.Title);
-			feedbackItem.DateCreated = feedbackItem.DateModified = BlogTime.CurrentBloggerTime;
+			feedbackItem.DateCreated = feedbackItem.DateModified = Config.CurrentBlog.TimeZone.Now;
 			feedbackItem.Id = ObjectProvider.Instance().Create(feedbackItem);
 
 			// if it's not the administrator commenting and it's not a trackback.
@@ -141,8 +141,8 @@ namespace Subtext.Framework.Components
 		{
 			if (feedbackItem == null)
 				throw new ArgumentNullException("feedbackItem", "Cannot update a null feedback");
-			
-			feedbackItem.DateModified = DateTime.Now;
+
+			feedbackItem.DateModified = Config.CurrentBlog.TimeZone.Now;
 			return ObjectProvider.Instance().Update(feedbackItem);
 		}
 
