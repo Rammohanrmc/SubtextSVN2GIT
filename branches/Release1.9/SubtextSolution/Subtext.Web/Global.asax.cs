@@ -214,7 +214,7 @@ namespace Subtext
 			if (commentException != null)
 			{
 				string message = "Comment exception thrown and handled in Global.asax.";
-				if(HttpContext.Current != null && HttpContext.Current.Request.UserAgent != null)
+				if(HttpContext.Current != null && HttpContext.Current.Request != null)
 				{
 					message += "-- User Agent: " + HttpContext.Current.Request.UserAgent;
 				}
