@@ -210,6 +210,17 @@ namespace Subtext
 				exception = exception.InnerException;
 			}
 
+			BaseCommentException commentException = exception as BaseCommentException;
+			if (commentException != null)
+			{
+				string message = "Comment exception thrown and handled in Global.asax.";
+				if(HttpContext.Current != null && HttpContext.Current.Request.UserAgent != null)
+				{
+					message += "-- User Agent: " + HttpContext.Current.Request.UserAgent;
+				}
+				log.Info(message, commentException);
+			}
+			
 			//Sql Exception and request is for "localhost"
 			SqlException sqlExc = exception as SqlException;
 			if (sqlExc != null)
