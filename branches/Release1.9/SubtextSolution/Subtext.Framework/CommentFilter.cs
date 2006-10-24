@@ -90,7 +90,6 @@ namespace Subtext.Framework
 			}
 			else
 			{
-				feedbackItem.Body += "<!-- Admin comment -->";
 				feedbackItem.Approved = true;
 			}
 			FeedbackItem.Update(feedbackItem);

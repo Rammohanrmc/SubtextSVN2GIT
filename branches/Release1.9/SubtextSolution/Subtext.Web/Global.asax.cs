@@ -176,7 +176,7 @@ namespace Subtext
 					{}
 
 					if(!MagicAjax.MagicAjaxContext.Current.IsAjaxCall)
-						context.Response.Write(string.Format(message, @"<!-- ", lb, v, machineName, framework, userInfo, lb, "//-->"));
+						context.Response.Write(string.Format(debugMessage, @"<!-- ", lb, v, machineName, framework, userInfo, lb, "//-->"));
 				}	
 			#endif
 			#endregion
@@ -322,7 +322,7 @@ namespace Subtext
 
 #if DEBUG
 		private static string lb = "============ Debug Build ============";
-		private static string message = "{0}{1}<br />Subtext Version: {2}<br />Machine Name: {3}<br />.NET Version: {4}<br />{5}<br />{6}{7}";
+		private static string debugMessage = "{0}{1}<br />Subtext Version: {2}<br />Machine Name: {3}<br />.NET Version: {4}<br />{5}<br />{6}{7}";
 #endif
 
 		/// <summary>
