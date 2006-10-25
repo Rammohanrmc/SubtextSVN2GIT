@@ -90,8 +90,9 @@ namespace Subtext.Framework.Components
 		/// Creates a feedback item in the database.
 		/// </summary>
 		/// <param name="feedback">The feedback.</param>
+		/// <param name="filter">Spam filter.</param>
 		/// <returns></returns>
-		public static int Create(FeedbackItem feedback)
+		public static int Create(FeedbackItem feedback, CommentFilter filter)
 		{
 			if (HttpContext.Current != null && HttpContext.Current.Request != null)
 			{
@@ -104,7 +105,14 @@ namespace Subtext.Framework.Components
 			feedback.Body = HtmlHelper.ConvertToAllowedHtml(feedback.Body);
 			feedback.Title = HtmlHelper.SafeFormat(feedback.Title);
 			feedback.DateCreated = feedback.DateModified = Config.CurrentBlog.TimeZone.Now;
+			
+			if(filter != null)
+				filter.FilterBeforePersist(feedback);
+			
 			feedback.Id = ObjectProvider.Instance().Create(feedback);
+			
+			if(filter != null)
+				filter.FilterAfterPersist(feedback);
 
 			// if it's not the administrator commenting and it's not a trackback.
 			if (!Security.IsAdmin && !String.IsNullOrEmpty(Config.CurrentBlog.Email) && feedback.FeedbackType != Extensibility.FeedbackType.PingTrack)
