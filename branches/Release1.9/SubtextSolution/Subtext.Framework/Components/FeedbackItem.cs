@@ -99,7 +99,7 @@ namespace Subtext.Framework.Components
 				feedback.IpAddress = HttpHelper.GetUserIpAddress(HttpContext.Current);
 			}
 			
-			feedback.Approved = true;
+			feedback.FlaggedAsSpam = true; //We're going to start with this assumption.
 			feedback.Author = HtmlHelper.SafeFormat(feedback.Author);
 			feedback.Body = HtmlHelper.ConvertToAllowedHtml(feedback.Body);
 			feedback.Title = HtmlHelper.SafeFormat(feedback.Title);

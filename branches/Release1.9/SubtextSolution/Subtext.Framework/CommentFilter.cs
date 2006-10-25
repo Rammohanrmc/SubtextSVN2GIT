@@ -80,16 +80,19 @@ namespace Subtext.Framework
 							return;
 						}
 					}
+					feedbackItem.FlaggedAsSpam = false;
 					feedbackItem.Approved = true;
 				}
 				else //Moderated!
 				{
+					feedbackItem.FlaggedAsSpam = false;
 					feedbackItem.NeedsModeratorApproval = true;
 					feedbackItem.Approved = false;
 				}
 			}
 			else
 			{
+				feedbackItem.FlaggedAsSpam = false;
 				feedbackItem.Approved = true;
 			}
 			FeedbackItem.Update(feedbackItem);

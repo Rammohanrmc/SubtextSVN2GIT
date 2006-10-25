@@ -68,6 +68,8 @@ namespace Subtext.Framework.Tracking
 		/// <param name="context">An <see cref="T:System.Web.HttpContext"/> object that provides references to the intrinsic server objects (for example, <see langword="Request"/>, <see langword="Response"/>, <see langword="Session"/>, and <see langword="Server"/>)<see langword=""/> used to service HTTP requests.</param>
 		public void ProcessRequest(HttpContext context)
 		{
+			if(!Config.CurrentBlog.TrackbacksEnabled)
+				return;
 			try
 			{
 				HandleTrackback(context);
