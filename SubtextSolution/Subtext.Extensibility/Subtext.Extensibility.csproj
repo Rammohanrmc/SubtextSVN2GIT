@@ -129,20 +129,36 @@
     <Compile Include="NamespaceDocumentation.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Plugins\PluginModulesCollection.cs" />
     <Compile Include="Plugins\IImplementationInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Plugins\IModuleIdentifier.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Plugins\IPlugin.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Plugins\IPluginContext.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Plugins\IPluginFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Plugins\IPluginIdentifier.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Plugins\PluginModule.cs" />
-    <Compile Include="Plugins\PluginSectionHandler.cs" />
-    <Compile Include="Plugins\PluginSettings.cs" />
-    <Compile Include="Plugins\PluginSettingsCollection.cs" />
+    <Compile Include="Plugins\IPluginIdentifierCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Plugins\ITarget.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Plugins\ITargetIdentifier.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Plugins\ITargetIdentifierCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="PostConfig.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -165,7 +181,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Providers\SearchProvider.cs" />
-    <Compile Include="Plugins\STApplication.cs" />
     <Compile Include="Web\BaseHttpHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

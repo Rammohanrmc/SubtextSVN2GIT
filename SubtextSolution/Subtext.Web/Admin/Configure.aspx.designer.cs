@@ -30,16 +30,6 @@ namespace Subtext.Web.Admin.Pages {
         protected System.Web.UI.WebControls.DropDownList ddlLangLocale;
         protected System.Web.UI.WebControls.DropDownList ddlItemCount;
         protected System.Web.UI.WebControls.DropDownList ddlCategoryListPostCount;
-        protected System.Web.UI.WebControls.CheckBox ckbPop3MailToWeblog;
-        protected System.Web.UI.WebControls.TextBox txbPop3Server;
-        protected System.Web.UI.WebControls.TextBox txbPop3User;
-        protected System.Web.UI.WebControls.TextBox txbPop3Password;
-        protected System.Web.UI.WebControls.TextBox txbPop3Subject;
-        protected System.Web.UI.WebControls.TextBox txbPop3StartTag;
-        protected System.Web.UI.WebControls.TextBox txbPop3EndTag;
-        protected System.Web.UI.WebControls.CheckBox ckbPop3InlineAttachedPict;
-        protected System.Web.UI.WebControls.TextBox txbPop3ThumbHeight;
-        protected System.Web.UI.WebControls.CheckBox ckbPop3DeleteProcessedEmail;
         protected Subtext.Web.Controls.HelpToolTip HelpToolTip1;
         protected System.Web.UI.WebControls.TextBox txbSecondaryCss;
         protected System.Web.UI.WebControls.TextBox txbNews;
