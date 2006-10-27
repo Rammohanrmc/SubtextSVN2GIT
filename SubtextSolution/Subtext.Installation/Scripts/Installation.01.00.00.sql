@@ -153,7 +153,7 @@ CREATE TABLE [<dbUser,varchar,dbo>].[subtext_Config] (
 	[DaysTillCommentsClose] [int] NULL ,
 	[CommentDelayInMinutes] [int] NULL ,
 	[NumberOfRecentComments] [int] NULL,
-	[RecentCommentsLength] [int] NULL,
+	[RecentCommentsLength] [int] NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 

@@ -14,28 +14,17 @@
 #endregion
 
 using System;
+using System.Collections;
 
 namespace Subtext.Extensibility.Plugins
 {
 	/// <summary>
-	/// This is the starting point for the plug-in architecture.  
-	/// Someone want to run with this?
+	/// Summary description for IPluginIdentifierCollection.
 	/// </summary>
-	public interface IPlugin
+	public interface IPluginIdentifierCollection : ICollection
 	{
-		/// <summary>
-		/// Identifier of the plugin. This value has to be unique. For instance, full type name may be used.
-		/// </summary>
-		IPluginIdentifier Id {get;}
-
-		/// <summary>
-		/// All targets for which this implementation is intended
-		/// </summary>
-		ITargetIdentifierCollection Targets {get;}
-
-		/// <summary>
-		/// Information about plugin implementation
-		/// </summary>
-		IImplementationInfo Info {get;}
+		IPluginIdentifier this[int index] {get;}
+		bool Contains(IPluginIdentifier pluginIdentifier);
+		void CopyTo(IPluginIdentifier[] pluginIdentifiers, int index);
 	}
 }

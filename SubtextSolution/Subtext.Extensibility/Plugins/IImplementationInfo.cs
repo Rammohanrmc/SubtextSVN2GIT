@@ -43,11 +43,6 @@ namespace Subtext.Extensibility.Plugins
 		string Copyright {get;}
 
 		/// <summary>
-		/// Description
-		/// </summary>
-		string Description { get;}
-
-		/// <summary>
 		/// Homepage Url
 		/// </summary>
 		Uri HomePageUrl {get;}

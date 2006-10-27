@@ -414,26 +414,6 @@ if exists (select ROUTINE_NAME from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TY
 drop procedure [<dbUser,varchar,dbo>].[subtext_ClearBlogContent]
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_InsertPluginData]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [<dbUser,varchar,dbo>].[subtext_InsertPluginData]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_UpdatePluginData]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [<dbUser,varchar,dbo>].[subtext_UpdatePluginData]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[subtext_DeletePluginBlog]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [<dbUser,varchar,dbo>].[subtext_DeletePluginBlog]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[subtext_GetPluginBlog]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [<dbUser,varchar,dbo>].[subtext_GetPluginBlog]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[subtext_InsertPluginBlog]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [<dbUser,varchar,dbo>].[subtext_InsertPluginBlog]
-GO
-
 SET QUOTED_IDENTIFIER OFF 
 GO
 SET ANSI_NULLS OFF 
@@ -1108,17 +1088,6 @@ BEGIN
 		, RecentCommentsLength
 		, AkismetAPIKey
 		, FeedBurnerName
-		, pop3User
-		, pop3Pass
-		, pop3Server
-		, pop3StartTag
-		, pop3EndTag
-		, pop3SubjectPrefix
-		, pop3MTBEnable
-		, pop3DeleteOnlyProcessed
-		, pop3InlineAttachedPictures
-		, pop3HeightForThumbs
-		
 	FROM [<dbUser,varchar,dbo>].[subtext_Config]
 END
 ELSE
@@ -1154,17 +1123,6 @@ BEGIN
 		, RecentCommentsLength
 		, AkismetAPIKey
 		, FeedBurnerName
-		, pop3User
-		, pop3Pass
-		, pop3Server
-		, pop3StartTag
-		, pop3EndTag
-		, pop3SubjectPrefix
-		, pop3MTBEnable
-		, pop3DeleteOnlyProcessed
-		, pop3InlineAttachedPictures
-		, pop3HeightForThumbs
-		
 	FROM [<dbUser,varchar,dbo>].[subtext_Config]
 	WHERE	Host = @Host
 		AND Application = @Application
@@ -3032,16 +2990,6 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateConfig]
 	, @RecentCommentsLength int = NULL
 	, @AkismetAPIKey varchar(16) = NULL
 	, @FeedBurnerName nvarchar(64) = NULL
-	, @pop3User varchar(32) = NULL
-	, @pop3Pass varchar(32) = NULL
-	, @pop3Server varchar(56) = NULL
-	, @pop3StartTag varchar(10) = NULL
-	, @pop3EndTag varchar(10) = NULL
-	, @pop3SubjectPrefix nvarchar(10) = NULL
-	, @pop3MTBEnable bit = NULL
-	, @pop3DeleteOnlyProcessed bit = NULL
-	, @pop3InlineAttachedPictures bit = NULL
-	, @pop3HeightForThumbs int = NULL
 )
 AS
 UPDATE [<dbUser,varchar,dbo>].[subtext_Config]
@@ -3071,17 +3019,6 @@ Set
 	, RecentCommentsLength = @RecentCommentsLength
 	, AkismetAPIKey = @AkismetAPIKey
 	, FeedBurnerName = @FeedBurnerName
-	, pop3User = @pop3User
-	, pop3Pass = @pop3Pass
-	, pop3Server = @pop3Server
-	, pop3StartTag = @pop3StartTag
-	, pop3EndTag = @pop3EndTag
-	, pop3SubjectPrefix = @pop3SubjectPrefix
-	, pop3MTBEnable = @pop3MTBEnable
-	, pop3DeleteOnlyProcessed = @pop3DeleteOnlyProcessed
-	, pop3InlineAttachedPictures = @pop3InlineAttachedPictures
-	, pop3HeightForThumbs = @pop3HeightForThumbs
-	
 WHERE BlogId = @BlogId
 
 GO
@@ -3416,16 +3353,6 @@ SELECT	blog.BlogId
 		, blog.RecentCommentsLength
 		, blog.AkismetAPIKey
 		, blog.FeedBurnerName
-		, blog.pop3User
-		, blog.pop3Pass
-		, blog.pop3Server
-		, blog.pop3StartTag
-		, blog.pop3EndTag
-		, blog.pop3SubjectPrefix
-		, blog.pop3MTBEnable
-		, blog.pop3DeleteOnlyProcessed
-		, blog.pop3InlineAttachedPictures
-		, blog.pop3HeightForThumbs	
 		
 FROM [<dbUser,varchar,dbo>].[subtext_config] blog
 WHERE blog.BlogId >= @FirstId
@@ -3488,17 +3415,6 @@ SELECT	blog.BlogId
 		, blog.RecentCommentsLength
 		, blog.AkismetAPIKey
 		, blog.FeedBurnerName
-		, blog.pop3User
-		, blog.pop3Pass
-		, blog.pop3Server
-		, blog.pop3StartTag
-		, blog.pop3EndTag
-		, blog.pop3SubjectPrefix
-		, blog.pop3MTBEnable
-		, blog.pop3DeleteOnlyProcessed
-		, blog.pop3InlineAttachedPictures
-		, blog.pop3HeightForThumbs
-		
 FROM [<dbUser,varchar,dbo>].[subtext_config] blog
 WHERE	blog.BlogId = @BlogId
 GO
@@ -4513,141 +4429,4 @@ SET ANSI_NULLS ON
 GO
 
 GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_ClearBlogContent]  TO [public]
-GO
-
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-CREATE PROC [<dbUser,varchar,dbo>].[subtext_InsertPluginData]
-(
-	@PluginID uniqueidentifier,
-	@BlogID int,
-	@EntryID int,
-	@Key nvarchar(256),
-	@Value ntext,
-	@ID int output
-)
-AS
-
-INSERT INTO [<dbUser,varchar,dbo>].[subtext_PluginData]
-(
-	PluginID,
-	BlogID,
-	EntryID,
-	[Key],
-	[Value]
-)
-VALUES
-(
-	@PluginID,
-	@BlogID,
-	@EntryID,
-	@Key,
-	@Value
-)
-
-SELECT @ID = SCOPE_IDENTITY()
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdatePluginData]
-(
-	@PluginID uniqueidentifier,
-	@BlogID int,
-	@EntryID int,
-	@Key nvarchar(256),
-	@Value ntext,
-	@ID int
-)
-AS
-
-UPDATE [<dbUser,varchar,dbo>].[subtext_PluginData]
-SET
-	[Value]=@Value
-
-WHERE id=@ID AND PluginID=@PluginID AND BlogID=@BlogID AND [Key]=@Key AND EntryID=@EntryID
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER ON 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_DeletePluginBlog]
-(
-	@PluginID uniqueidentifier,
-	@BlogId int
-)
-as
-
-DELETE FROM [<dbUser,varchar,dbo>].[subtext_PluginBlog]
-WHERE PluginID=@PluginID and BlogID=@BlogId
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER ON 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPluginBlog]
-(
-	@BlogId int
-)
-
-AS
-
-SELECT PluginID FROM [<dbUser,varchar,dbo>].[subtext_PluginBlog]
-WHERE
-BlogID=@BlogId
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER ON 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_InsertPluginBlog]
-(
-	@PluginID uniqueidentifier,
-	@BlogId int
-)
-as
-
-INSERT INTO [<dbUser,varchar,dbo>].[subtext_PluginBlog]
-(
-	PluginID,
-	BlogID
-)
-VALUES
-(
-	@PluginID,
-	@BlogId
-)
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
 GO
