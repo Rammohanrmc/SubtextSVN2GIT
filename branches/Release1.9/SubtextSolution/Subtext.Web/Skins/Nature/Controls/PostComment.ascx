@@ -36,11 +36,10 @@
 	<div class="input">
 		<asp:TextBox id="tbComment" runat="server" Rows="10" Columns="40" AccessKey="C"
 			TextMode="MultiLine" Width="400px" class="livepreview" />
-        <br />
+			<br/>
 			<asp:RequiredFieldValidator id="vldCommentBodyRequired" runat="server" ErrorMessage="Please enter a comment"
 			ControlToValidate="tbComment" />
-        <br />
-        <asp:CheckBox ID="chkRemember" runat="server" Checked="True" Text="Remember Me?" /></div>
+	</div>
 
 	<div class="input">
 		<sub:CompliantButton id="btnCompliantSubmit" runat="server" Text="Leave Your Mark" /> 
