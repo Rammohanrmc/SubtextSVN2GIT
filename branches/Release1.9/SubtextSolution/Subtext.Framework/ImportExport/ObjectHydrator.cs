@@ -90,9 +90,10 @@ namespace Subtext.ImportExport
 			blog.Title = title;
 			blog.SubTitle = subtitle;
 			blog.RootUrl = rootUrl;
-			blog.Author = new BlogMLAuthor();
-			blog.Author.Name = author;
-			blog.Author.Email = email;
+		    // TODO- finish BlogMl 2.0 upgrade.
+//			blog.Author = new BlogMLAuthor();
+//			blog.Author.Name = author;
+//			blog.Author.Email = email;
 			blog.DateCreated = dateCreated;
 			return blog;
 		}
