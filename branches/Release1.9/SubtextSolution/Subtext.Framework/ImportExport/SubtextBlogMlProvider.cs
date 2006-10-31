@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
@@ -24,7 +23,7 @@ using Subtext.ImportExport.Conversion;
 namespace Subtext.ImportExport
 {
 	public class SubtextBlogMLProvider : BlogMLProvider
-	{
+	{	
 		bool duplicateCommentsEnabled;
 		SubtextConversionStrategy conversion = new SubtextConversionStrategy();
 		/// <summary>
@@ -35,8 +34,7 @@ namespace Subtext.ImportExport
 		/// <param name="pageIndex"></param>
 		/// <param name="pageSize"></param>
 		/// <returns></returns>
-
-        public override IPagedCollection<BlogMLPost> GetBlogPosts(string blogId, int pageIndex, int pageSize)
+		public override IPagedCollection<BlogMLPost> GetBlogPosts(string blogId, int pageIndex, int pageSize)
 		{
 			IPagedCollection<BlogMLPost> posts = new PagedCollection<BlogMLPost>();
 			using (IDataReader reader = GetPostsAndArticlesReader(blogId, pageIndex, pageSize))
@@ -160,8 +158,8 @@ namespace Subtext.ImportExport
 				blogMlBlog.Title = blog.Title;
 				blogMlBlog.SubTitle = blog.SubTitle;
 				blogMlBlog.RootUrl = blog.RootUrl.ToString();
-				//blogMlBlog.Author.Name = blog.Author;
-				//blogMlBlog.Author.Email = blog.Email;
+				blogMlBlog.Author.Name = blog.Author;
+				blogMlBlog.Author.Email = blog.Email;
 				blogMlBlog.DateCreated = blog.TimeZone.Now;
 				return blogMlBlog;
 			}
@@ -379,12 +377,7 @@ namespace Subtext.ImportExport
 		/// <param name="e"></param>
 		public override void LogError(string message, Exception e)
 		{
-            //TODO: finish BlogMl 2.0 upgrade.
+			//TODO:
 		}
-
-	    public override void Initialize(string name, NameValueCollection configValue)
-	    {
-	        base.Initialize(name, configValue);
-	    }
 	}
 }
