@@ -305,9 +305,14 @@ namespace Subtext.Web.Controls
 			WriteConditional(writer, _prefixText, _usePrefixSuffix);
 
             // determine the start and end pages
-            int startPage = currentPage - DisplayPageCount / 2 <= 0 ? 0 : currentPage - DisplayPageCount / 2;
+            int startPage = currentPage - DisplayPageCount / 2 < 0 ? 0 : currentPage - DisplayPageCount / 2;
+
             int endPage = startPage + DisplayPageCount > LastPageIndex ? LastPageIndex + 1 : startPage + DisplayPageCount;
-            
+
+            if (endPage - startPage != DisplayPageCount && endPage - startPage > 0)
+            {
+                startPage = endPage - DisplayPageCount;
+            }
             // if the start page isn't the first, then we display << to allow
             // paging backwards DisplayCountPage
             if (startPage != 0)
@@ -322,14 +327,6 @@ namespace Subtext.Web.Controls
                 //since you can't page less than that.
                 writer.Write(RenderLink(currentPage - DisplayPageCount < 0 ? 0 : currentPage - DisplayPageCount - 1, "<<"));
             }
-
-            //if the start page falls near the end of the line, we don't want to subtract
-            //too many from it, ending up with less than DisplayPageCount choices.
-            if (currentPage + DisplayPageCount / 2 >= LastPageIndex)
-            {
-                startPage = LastPageIndex - DisplayPageCount;
-            }
-
             //Now, loop through start to end and display all the links.
             for (int i = startPage; i < endPage; i++)
             {
