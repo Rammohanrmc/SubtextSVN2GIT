@@ -16,6 +16,7 @@ namespace Subtext.BlogML
 		IBlogMLProvider provider;
 		IdConversionStrategy conversionStrategy;
 		string blogId;
+        bool embedAttachments;
 		BlogMLBlog blog;
 
 		/// <summary>
@@ -41,6 +42,7 @@ namespace Subtext.BlogML
 		{			
 			this.provider = provider;
 			this.blogId = context.BlogId;
+            this.embedAttachments = context.EmbedAttachments;
 			this.conversionStrategy = provider.IdConversion;
 			
 			if (this.conversionStrategy == null)
@@ -87,8 +89,9 @@ namespace Subtext.BlogML
 		private void WriteBlogStart()
 		{
 			WriteStartBlog(blog.Title, ContentTypes.Text, blog.SubTitle, ContentTypes.Text, blog.RootUrl, blog.DateCreated);
-			WriteAuthor(blog.Author.Name, blog.Author.Email);
+            WriteAuthor(blog.Authors[0].ID, blog.Authors[0].Title, blog.Authors[0].Email, blog.DateCreated, DateTime.MinValue, true);
 		}
+
 
 		protected void WritePostsPage(IPagedCollection<BlogMLPost> posts)
 		{
@@ -102,7 +105,8 @@ namespace Subtext.BlogML
 		private void WritePost(BlogMLPost post)
 		{
 			string postId = this.conversionStrategy.GetConvertedId(IdScopes.Posts, post.ID);
-			WriteStartPost(postId, post.Title, post.DateCreated, post.DateModified, post.Approved, post.Content.Text, post.PostUrl);
+		    WriteStartPost(postId, post.Title, post.DateCreated, post.DateModified, post.Approved, post.Content.Text,
+		                   post.PostUrl, post.Views, post.PostType, post.PostName);
 
 			WritePostAttachments(post);
 			WritePostComments(post.Comments);
@@ -172,7 +176,7 @@ namespace Subtext.BlogML
 		private void WritePostAttachments(BlogMLPost post)
 		{
 			string content = post.Content.Text;
-			
+		    
 			string[] imagesURLs = SgmlUtil.GetAttributeValues(content, "img", "src");
 			string appFullRootUrl = this.blog.RootUrl.ToLower(CultureInfo.InvariantCulture);
 
@@ -185,8 +189,8 @@ namespace Subtext.BlogML
 					// now we need to determine if the URL is local
 					if (SgmlUtil.IsRootUrlOf(appFullRootUrl, loweredImageURL))
 					{
-						WriteAttachment(imageURL, GetMimeType(imageURL), imageURL);
-						Writer.Flush();						
+					    WriteAttachment(imageURL, 0, GetMimeType(imageURL), imageURL, embedAttachments, null);
+						Writer.Flush();
 					}
 				}
 				WriteEndElement(); // End Attachments Element
