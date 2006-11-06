@@ -16,7 +16,6 @@ namespace Subtext.BlogML
 		IBlogMLProvider provider;
 		IdConversionStrategy conversionStrategy;
 		string blogId;
-        bool embedAttachments;
 		BlogMLBlog blog;
 
 		/// <summary>
@@ -42,7 +41,6 @@ namespace Subtext.BlogML
 		{			
 			this.provider = provider;
 			this.blogId = context.BlogId;
-            this.embedAttachments = context.EmbedAttachments;
 			this.conversionStrategy = provider.IdConversion;
 			
 			if (this.conversionStrategy == null)
@@ -189,7 +187,7 @@ namespace Subtext.BlogML
 					// now we need to determine if the URL is local
 					if (SgmlUtil.IsRootUrlOf(appFullRootUrl, loweredImageURL))
 					{
-					    WriteAttachment(imageURL, 0, GetMimeType(imageURL), imageURL, embedAttachments, null);
+					    WriteAttachment(imageURL, 0, GetMimeType(imageURL), imageURL, provider.GetBlogMlContext().EmbedAttachments, null);
 						Writer.Flush();
 					}
 				}
