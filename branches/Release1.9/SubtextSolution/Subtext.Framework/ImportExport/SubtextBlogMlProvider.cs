@@ -308,7 +308,7 @@ namespace Subtext.ImportExport
 		/// <returns></returns>
 		public override string CreateBlogPost(BlogMLPost post, string content, IDictionary<string, string> categoryIdMap)
 		{
-			Entry newEntry = new Entry((post.PostType == BlogPostTypes.Normal) ? PostType.BlogPost : PostType.Story);
+            Entry newEntry = new Entry((post.PostType == BlogPostTypes.Article) ? PostType.Story : PostType.BlogPost);
 			newEntry.BlogId = Config.CurrentBlog.Id;
 			newEntry.Title = post.Title;
 			newEntry.DateCreated = post.DateCreated;

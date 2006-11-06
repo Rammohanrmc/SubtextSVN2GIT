@@ -30,7 +30,7 @@ namespace Subtext.ImportExport
 			post.Content.Text = entry.Body;
 			post.DateCreated = entry.DateCreated;
 			post.DateModified = entry.DateModified;
-            post.PostType = (entry.PostType == PostType.BlogPost) ? BlogPostTypes.Normal : BlogPostTypes.Article;
+            post.PostType = (entry.PostType == PostType.Story) ? BlogPostTypes.Article : BlogPostTypes.Normal;
             post.PostName = entry.EntryName;
             post.Views = (uint) 0; // I think we have this statistic in the db... right?
 
