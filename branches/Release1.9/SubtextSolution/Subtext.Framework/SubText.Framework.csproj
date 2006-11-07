@@ -370,7 +370,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Providers\EntrySearchProvider.cs" />
-    <Compile Include="Security.cs">
+    <Compile Include="Security\SecurityHelper.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Services\AkismetSpamService.cs" />

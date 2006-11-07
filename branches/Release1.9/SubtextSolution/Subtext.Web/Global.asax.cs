@@ -26,6 +26,7 @@ using Subtext.Framework.Configuration;
 using Subtext.Framework.Data;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Logging;
+using Subtext.Framework.Security;
 
 namespace Subtext 
 {
@@ -59,7 +60,7 @@ namespace Subtext
 		/// </returns>
 		public override string GetVaryByCustomString(HttpContext context, string custom)
 		{
-			if(custom == "Blogger" && !Security.IsAdmin && !Security.IsHostAdmin) // Do not cache admin.
+			if(custom == "Blogger" && !SecurityHelper.IsAdmin && !SecurityHelper.IsHostAdmin) // Do not cache admin.
 			{
 				return Config.CurrentBlog.Id.ToString(CultureInfo.InvariantCulture);
 			}
@@ -164,10 +165,10 @@ namespace Subtext
 						if(context.Request.IsAuthenticated)
 						{
 							userInfo = context.User.Identity.Name;
-							userInfo += "<br />Is Host Admin: " + Subtext.Framework.Security.IsHostAdmin.ToString(CultureInfo.InvariantCulture);
+							userInfo += "<br />Is Host Admin: " + SecurityHelper.IsHostAdmin.ToString(CultureInfo.InvariantCulture);
 							if(!InstallationManager.IsInHostAdminDirectory && !InstallationManager.IsInInstallDirectory && !InstallationManager.IsInSystemMessageDirectory)
 							{
-								userInfo += "<br />Is Admin: " + Subtext.Framework.Security.IsAdmin.ToString(CultureInfo.InvariantCulture);
+								userInfo += "<br />Is Admin: " + SecurityHelper.IsAdmin.ToString(CultureInfo.InvariantCulture);
 								userInfo += "<br />BlogId: " + Subtext.Framework.Configuration.Config.CurrentBlog.Id.ToString(CultureInfo.InvariantCulture);
 							}	
 						}
