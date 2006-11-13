@@ -176,10 +176,17 @@ namespace Subtext
 					catch
 					{}
 
-					if(!MagicAjax.MagicAjaxContext.Current.IsAjaxCall)
-						context.Response.Write(string.Format(debugMessage, @"<!-- ", lb, v, machineName, framework, userInfo, lb, "//-->"));
+					try
+					{
+						if (!MagicAjax.MagicAjaxContext.Current.IsAjaxCall)
+							context.Response.Write(string.Format(debugMessage, @"<!-- ", lb, v, machineName, framework, userInfo, lb, "//-->"));
+					}
+					catch(MagicAjaxException exc)
+					{
+						log.Error("magic Ajax Exception in DEBUG build.", exc);
+					}
 				}	
-			#endif
+#endif
 			#endregion
 		}
 
