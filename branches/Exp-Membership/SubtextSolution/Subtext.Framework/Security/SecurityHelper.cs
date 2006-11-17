@@ -443,15 +443,7 @@ namespace Subtext.Framework.Security
 		{
 			get
 			{
-				bool areNamesEqual = String.Equals(CurrentUserName, Config.CurrentBlog.UserName, StringComparison.InvariantCultureIgnoreCase);
-				#region temp logging code
-				if (!areNamesEqual)
-				{
-					log.DebugFormat("CurrentUserName '{0}'is not equal to Config.CurrentBlog.UserName '{1}'", CurrentUserName, Config.CurrentBlog.UserName);
-				}
-				#endregion
-				//TODO: Eventually just check for admin role.
-				return IsInRole("Admins") && areNamesEqual;
+                return IsInRole("Admins");
 			}
 		}
 
@@ -583,5 +575,27 @@ namespace Subtext.Framework.Security
 			byte[] decrypted = decryptor.TransformFinalBlock(encrypted, 0, encrypted.Length);
 			return encoding.GetString(decrypted);
 		}
+
+        public static string GetApplicationId()
+        {
+
+            int BlogId;
+            try
+            {
+                BlogId = Subtext.Framework.Configuration.Config.CurrentBlog.Id;
+            }
+            catch (NullReferenceException)
+            {
+                BlogId = -1;
+            }
+            if (BlogId <= 0)
+            {
+                return "/";
+            }
+            else
+            {
+                return "Blog_" + BlogId.ToString();
+            }
+        }
 	}
 }
