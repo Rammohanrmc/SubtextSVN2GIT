@@ -728,6 +728,7 @@ namespace Subtext.Framework.Data
 				DataHelper.MakeInParam("@Text", SqlDbType.NText, 0, entry.Body), 
 				DataHelper.MakeInParam("@PostType", SqlDbType.Int, 4, entry.PostType), 
 				DataHelper.MakeInParam("@Author", SqlDbType.NVarChar, 50, DataHelper.CheckNull(entry.Author)), 
+                DataHelper.MakeInParam("@UserId", Security.SecurityHelper.GetUserId()),
 				DataHelper.MakeInParam("@Email", SqlDbType.NVarChar, 50, DataHelper.CheckNull(entry.Email)), 
 				DataHelper.MakeInParam("@Description", SqlDbType.NVarChar, 500, DataHelper.CheckNull(entry.Description)), 
 				DataHelper.MakeInParam("@DateAdded", SqlDbType.DateTime, 8, entry.DateCreated), 
@@ -1422,10 +1423,7 @@ namespace Subtext.Framework.Data
             SqlParameter[] p = 
 				{
 					DataHelper.MakeInParam("@BlogId", SqlDbType.Int,  4, DataHelper.CheckNull(info.Id))
-					,DataHelper.MakeInParam("@UserName", SqlDbType.NVarChar, 50, info.UserName) 
-					,DataHelper.MakeInParam("@Password", SqlDbType.NVarChar, 50, info.Password) 
-					,DataHelper.MakeInParam("@Author", SqlDbType.NVarChar, 100, info.Author) 
-					,DataHelper.MakeInParam("@Email", SqlDbType.NVarChar, 50, info.Email) 
+					,DataHelper.MakeInParam("@OwnerId", Security.SecurityHelper.GetUserId()) 
 					,DataHelper.MakeInParam("@Title", SqlDbType.NVarChar, 100, info.Title) 
 					,DataHelper.MakeInParam("@SubTitle", SqlDbType.NVarChar, 250, info.SubTitle) 
 					,DataHelper.MakeInParam("@Skin", SqlDbType.NVarChar, 50, info.Skin.TemplateFolder) 

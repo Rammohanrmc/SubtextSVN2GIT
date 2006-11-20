@@ -510,7 +510,7 @@ namespace Subtext.Framework.Data
 			info.Author = ReadString(reader, "Author");
 			info.Id = DataHelper.ReadInt32(reader, "BlogId");
 			info.Email = ReadString(reader, "Email");
-			info.Password = ReadString(reader, "Password");
+            info.Password = ReadString(reader, "Password");
 
 			info.SubTitle = ReadString(reader, "SubTitle");
 			info.Title = ReadString(reader, "Title");
