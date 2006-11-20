@@ -727,7 +727,8 @@ namespace Subtext.Framework.Data
 				DataHelper.MakeInParam("@IpAddress", SqlDbType.VarChar, 16, ipAddress),
 				DataHelper.MakeInParam("@UserAgent", SqlDbType.NVarChar, 128, feedbackItem.UserAgent), 
 				DataHelper.MakeInParam("@FeedbackChecksumHash", SqlDbType.VarChar, 32, feedbackItem.ChecksumHash), 
-				DataHelper.MakeInParam("@DateCreated", SqlDbType.DateTime, 8, Config.CurrentBlog.TimeZone.Now),
+				DataHelper.MakeInParam("@DateCreated", SqlDbType.DateTime, 8, feedbackItem.DateCreated),
+				DataHelper.MakeInParam("@DateModified", SqlDbType.DateTime, 8, feedbackItem.DateModified),
 				BlogIdParam,
 				outParam
 			};

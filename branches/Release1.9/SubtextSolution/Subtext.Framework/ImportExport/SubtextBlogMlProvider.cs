@@ -264,16 +264,16 @@ namespace Subtext.ImportExport
 		public override IDictionary<string, string> CreateCategories(BlogMLBlog blog)
 		{
 			IDictionary<string, string> idMap = new Dictionary<string, string>();
-			foreach (BlogMLCategory blogMLCategory in blog.Categories)
+			foreach (BlogMLCategory bmlCategory in blog.Categories)
 			{
 				LinkCategory category = new LinkCategory();
 				category.BlogId = Config.CurrentBlog.Id;
-				category.Title = blogMLCategory.Title;
-				category.Description = blogMLCategory.Description;
-				category.IsActive = blogMLCategory.Approved;
+				category.Title = bmlCategory.Title;
+				category.Description = bmlCategory.Description;
+				category.IsActive = bmlCategory.Approved;
 				category.CategoryType = CategoryType.PostCollection;
 				Links.CreateLinkCategory(category);
-				idMap.Add(blogMLCategory.ID, category.Title);
+				idMap.Add(bmlCategory.ID, category.Title);
 			}
 			return idMap;
 		}
@@ -357,7 +357,11 @@ namespace Subtext.ImportExport
 			newComment.Approved = bmlComment.Approved;
 			newComment.Author = StringHelper.ReturnCheckForNull(bmlComment.UserName);
 			newComment.Email = bmlComment.UserEMail;
-			newComment.SourceUrl = new Uri(bmlComment.UserUrl);
+		    
+		    if (!string.IsNullOrEmpty(bmlComment.UserUrl))
+		    {
+		        newComment.SourceUrl = new Uri(bmlComment.UserUrl);
+		    }
 
 			FeedbackItem.Create(newComment, null);
 		}

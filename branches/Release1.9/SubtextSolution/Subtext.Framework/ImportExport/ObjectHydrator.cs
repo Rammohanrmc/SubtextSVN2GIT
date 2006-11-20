@@ -62,9 +62,11 @@ namespace Subtext.ImportExport
 			comment.Content.Text = feedbackItem.Body;
 			comment.DateCreated = feedbackItem.DateCreated;
 			comment.DateModified = feedbackItem.DateModified;
-			comment.UserUrl = feedbackItem.SourceUrl.ToString();
 			comment.UserEMail = feedbackItem.Email;
 			comment.UserName = feedbackItem.Author;
+            if (feedbackItem.SourceUrl != null)
+		        comment.UserUrl = feedbackItem.SourceUrl.ToString();
+		    
 			return comment;
 		}
 

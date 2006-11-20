@@ -3452,9 +3452,14 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_InsertFeedback]
 	, @UserAgent nvarchar(128) = NULL
 	, @FeedbackChecksumHash varchar(32)
 	, @DateCreated datetime
+	, @DateModified datetime = NULL
 	, @Id int output	
 )
 AS
+
+IF @DateModified = NULL
+    SET @DateModified = getdate()
+    
 INSERT INTO [<dbUser,varchar,dbo>].[subtext_Feedback]
 ( 
 	Title
@@ -3493,7 +3498,7 @@ VALUES
 	, @UserAgent
 	, @FeedbackChecksumHash
 	, @DateCreated
-	, @DateCreated
+	, @DateModified
 )
 
 SELECT @Id = SCOPE_IDENTITY()
