@@ -38,9 +38,11 @@
 			<fail message="msbuild.exe property not set, so cannot test" />
 		</if>
 
+		<property name="buildtools.dir" value="${CCNetWorkingDirectory}\BuildTools" />
 		<property name="solution.dir" value="${CCNetWorkingDirectory}\SubtextSolution" />
 		<property name="MbUnit.exe" value="${CCNetWorkingDirectory}\BuildTools\MbUnit\MbUnit.Cons.exe" />
-		<property name="NCover.exe" value="${CCNetWorkingDirectory}\BuildTools\NCover\NCover.Console.exe" />
+		<property name="ncoverexplorer.exe" value="${buildtools.dir}\NCover\NCoverExplorer.Console.exe" />
+		<property name="ncover.exe" value="${buildtools.dir}\NCover\NCover.Console.exe" />
 		<property name="NDepend.exe" value="${CCNetWorkingDirectory}\BuildTools\NDepend\NDepend.Console.exe" />
 		<property name="NDepend.config" value="${solution.dir}\NDependProject.xml" />
 		<property name="subtext.web.bin" value="${solution.dir}\Subtext.Web\bin" />
@@ -128,7 +130,7 @@
 		Compiles Subtext and runs the MbUnit tests and NCover reports.
 	-->
 	<target name="testAndCover" depends="get-publishing-properties,compile-debug">
-		<exec program="${NCover.exe}" 
+		<exec program="${ncover.exe}" 
 			workingdir="UnitTests.Subtext\bin\${configuration}" 
 			commandline="&quot;${MbUnit.exe}&quot; /rnf:unittest /rt:xml /rf:${log.dir} UnitTests.Subtext.dll //x ${log.dir}\ncover-temp.xml" 
 			failonerror="true"/>
