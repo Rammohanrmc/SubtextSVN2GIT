@@ -30,10 +30,6 @@
 			<fail message="fxcop.exe property not set, so cannot test" />
 		</if>
 
-		<if test="${not property::exists('ncoverexplorer.exe')}">
-			<fail message="ncoverexplorer.exe property not set, so cannot test" />
-		</if>
-
 		<if test="${not property::exists('msbuild.exe')}">
 			<fail message="msbuild.exe property not set, so cannot test" />
 		</if>
