@@ -13,7 +13,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 
-using System;
 using System.Globalization;
 using MbUnit.Framework;
 using Subtext.Framework;
@@ -266,7 +265,7 @@ namespace UnitTests.Subtext.Framework.Configuration
 		[RollBack]
 		public void ReservedSubtextWordsAreNotValidForSubfolders()
 		{
-			string[] badSubfolders = { "Admin", "bin", "ExternalDependencies", "HostAdmin", "Images", "Install", "Modules", "Services", "Skins", "UI", "Category", "Archive", "Archives", "Comments", "Articles", "Posts", "Story", "Stories", "Gallery", "Providers", "aggbug" };
+            string[] badSubfolders = { "Admin", "bin", "ExternalDependencies", "HostAdmin", "Images", "Install", "Properties", "Providers", "Scripts", "Skins", "SystemMessages", "UI", "Modules", "Services", "Category", "Archive", "Archives", "Comments", "Articles", "Posts", "Story", "Stories", "Gallery", "aggbug" };
 			foreach (string subfolderCandidate in badSubfolders)
 			{
 				Assert.IsFalse(Config.IsValidSubfolderName(subfolderCandidate), subfolderCandidate + " is not a valid app name.");

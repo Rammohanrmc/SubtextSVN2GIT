@@ -1054,7 +1054,7 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetConfig]
 )
 AS
 
-IF (@Strict = 0) AND (1 = (SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_config]))
+IF (@Strict = 0) AND (1 = (SELECT COUNT(1) FROM [dbo].[subtext_config]))
 BEGIN
 	-- Return the one and only record
 	SELECT
@@ -1065,7 +1065,7 @@ BEGIN
 		, Title
 		, SubTitle
 		, Skin
-		, Application
+		, [Application]
 		, Host
 		, Author
 		, TimeZone
@@ -1088,8 +1088,44 @@ BEGIN
 		, RecentCommentsLength
 		, AkismetAPIKey
 		, FeedBurnerName
-	FROM [<dbUser,varchar,dbo>].[subtext_Config]
+	FROM [dbo].[subtext_Config]
 END
+ELSE IF (@Strict = 0) AND (1 = (SELECT COUNT(1) FROM [dbo].[subtext_config] WHERE Host = @Host))
+BEGIN
+	 SELECT
+		BlogId
+		, UserName
+		, [Password]
+		, Email
+		, Title
+		, SubTitle
+		, Skin
+		, [Application]
+		, Host
+		, Author
+		, TimeZone
+		, ItemCount
+		, CategoryListPostCount
+		, [Language]
+		, News
+		, SecondaryCss
+		, LastUpdated
+		, PostCount
+		, StoryCount
+		, PingTrackCount
+		, CommentCount
+		, Flag
+		, SkinCssFile 
+		, LicenseUrl
+		, DaysTillCommentsClose
+		, CommentDelayInMinutes
+		, NumberOfRecentComments
+		, RecentCommentsLength
+		, AkismetAPIKey
+		, FeedBurnerName
+	FROM [dbo].[subtext_Config]
+	WHERE	Host = @Host
+END 
 ELSE
 BEGIN
 	SELECT
@@ -1100,7 +1136,7 @@ BEGIN
 		, Title
 		, SubTitle
 		, Skin
-		, Application
+		, [Application]
 		, Host
 		, Author
 		, TimeZone
@@ -1123,9 +1159,9 @@ BEGIN
 		, RecentCommentsLength
 		, AkismetAPIKey
 		, FeedBurnerName
-	FROM [<dbUser,varchar,dbo>].[subtext_Config]
+	FROM [dbo].[subtext_Config]
 	WHERE	Host = @Host
-		AND Application = @Application
+		AND [Application] = @Application
 END
 
 GO
