@@ -56,10 +56,23 @@ namespace Subtext.ImportExport
 				
 				if (bmlPosts.Count > 0 && reader.NextResult())
 					PopulateTrackbacks(bmlPosts, reader);
+			    
+			    if (bmlPosts.Count > 0 && reader.NextResult())
+			        PopulateAuthors(bmlPosts, reader);
 				
 			}
 			return bmlPosts;
 		}
+
+        private static void PopulateAuthors(IPagedCollection<BlogMLPost> posts, IDataReader reader)
+	    {
+            PostChildrenPopulator populator = delegate(BlogMLPost bmlPost)
+            {
+                bmlPost.Authors.Add(DataHelper.ReadInt32(reader, "AuthorId").ToString(CultureInfo.InvariantCulture));
+            };
+
+            ReadAndPopulatePostChildren(posts, reader, "Id", populator);
+	    }
 
 		private static void PopulateCategories(IPagedCollection<BlogMLPost> posts, IDataReader reader)
 		{
@@ -170,6 +183,22 @@ namespace Subtext.ImportExport
                 bmlAuthor.DateCreated = blog.LastUpdated;
                 bmlAuthor.DateModified = blog.LastUpdated;
 			    bmlBlog.Authors.Add(bmlAuthor);
+			    
+			    // Add Extended Properties
+			    Pair<string, string> bmlExtProp = new Pair<string, string>();
+                bmlExtProp.Key = BlogMLBlogExtendedProperties.CommentModeration;
+                bmlExtProp.Value = blog.ModerationEnabled
+                                       ? CommentModerationTypes.Enabled.ToString()
+                                       : CommentModerationTypes.Disabled.ToString();
+			    bmlBlog.ExtendedProperties.Add(bmlExtProp);
+			    
+                // TODO: The blog.TrackbasksEnabled actually determines if Subtext will
+			    // ACCEPT a trackback, not send one. Perhaps we should add that config option.
+//                bmlExtProp.Key = BlogMLBlogExtendedProperties.EnableSendingTrackbacks;
+//                bmlExtProp.Value = blog.TrackbacksEnabled
+//                                       ? SendTrackbackTypes.Yes.ToString()
+//                                       : SendTrackbackTypes.No.ToString();
+			    
 				return bmlBlog;
 			}
 			return null;

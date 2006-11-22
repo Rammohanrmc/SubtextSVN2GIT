@@ -4351,8 +4351,13 @@ SELECT	f.[Id]
 FROM [<dbUser,varchar,dbo>].[subtext_Feedback] f
 	INNER JOIN #IDs idTable ON idTable.Id = f.[EntryId]
 	WHERE f.FeedbackType = 2 -- Trackback/Pingback
-
 ORDER BY idTable.[ID] ASC
+
+-- Get the Post's author(s)
+SELECT	p.[Id]
+		, @BlogId AS AuthorId-- Hardcoding the AuthorId since right now we only have one.
+	FROM #IDs p
+	ORDER BY p.[ID] ASC
 
 GO
 SET QUOTED_IDENTIFIER OFF 

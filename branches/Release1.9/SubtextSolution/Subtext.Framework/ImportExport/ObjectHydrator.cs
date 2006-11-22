@@ -84,7 +84,8 @@ namespace Subtext.ImportExport
 			blogMLTrackback.Approved = trackback.Approved;
 			blogMLTrackback.DateCreated = trackback.DateCreated;
 			blogMLTrackback.DateModified = trackback.DateModified;
-			blogMLTrackback.Url = trackback.SourceUrl.ToString();
+		    if (trackback.SourceUrl != null)
+			    blogMLTrackback.Url = trackback.SourceUrl.ToString();
 			return blogMLTrackback;
 		}
 		
@@ -93,7 +94,6 @@ namespace Subtext.ImportExport
 			BlogMLCategory category = new BlogMLCategory();
 			category.ID = id;
 			category.Title = title;
-			//category.TitleContentType = titleContentType;
 			category.Description = description;
 			category.Approved = approved;
 			category.ParentRef = parentId;
