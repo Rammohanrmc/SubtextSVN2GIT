@@ -227,7 +227,7 @@ namespace Subtext.Framework.Configuration
 		public static bool UpdateConfigData(BlogInfo info)
 		{
 			//Check for duplicate
-			BlogInfo potentialDuplicate = GetBlogInfo(info.Host, info.Subfolder);
+			BlogInfo potentialDuplicate = GetBlogInfo(info.Host, info.Subfolder, true);
 			if(potentialDuplicate != null && !potentialDuplicate.Equals(info))
 			{
 				//we found a duplicate!
@@ -235,7 +235,7 @@ namespace Subtext.Framework.Configuration
 			}
 
 			//Check to see if we're going to end up hiding another blog.
-			BlogInfo potentialHidden = GetBlogInfo(info.Host, string.Empty);
+			BlogInfo potentialHidden = GetBlogInfo(info.Host, string.Empty, true);
 			if(potentialHidden != null && !potentialHidden.Equals(info) && potentialHidden.IsActive)
 			{
 				//We found a blog that would be hidden by this one.
