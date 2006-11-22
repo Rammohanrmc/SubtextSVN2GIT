@@ -134,7 +134,10 @@
 			failonerror="true"/>
 
 		<call target="util.ncoverexplorer.nant" />
+		<!--
+			Removing it since it will fail for an error
 		<call target="code.metrics" />
+		-->
 	</target>
 
 	<target name="code.metrics">
