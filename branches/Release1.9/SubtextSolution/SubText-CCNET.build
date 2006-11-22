@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <project xmlns="http://nant.sf.net/schemas/nant.xsd" name="SubText">
 
 	<property name="nant.settings.currentframework" value="net-2.0"/>
@@ -56,6 +56,8 @@
 		
 		<property name="docs.root.dir" value="${CCNetWorkingDirectory}\Docs" />
 		<property name="ndoc.output.dir" value="${docs.root.dir}\NDoc" />
+		
+		<loadtasks path="${buildtools.dir}\NAnt\tasks" failonerror="false" />
 	</target>
 
 	
