@@ -1342,7 +1342,7 @@ FROM [<dbUser,varchar,dbo>].[subtext_Images]
 WHERE CategoryID = @CategoryID 
 	AND BlogId = @BlogId 
 	AND Active <> CASE @IsActive WHEN 1 THEN 0 Else -1 END
-ORDER BY Title
+ORDER BY Title, ImageID
 
 
 GO
