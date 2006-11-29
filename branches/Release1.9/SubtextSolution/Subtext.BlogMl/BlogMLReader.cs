@@ -43,8 +43,10 @@ namespace Subtext.BlogML
             BlogMLBlog blog = DeserializeBlogMlStream(blogMlStream);
 
             this.provider.PreImport();
-	    	
-	    	IDictionary<string, string> categoryIdMap = this.provider.CreateCategories(blog);
+
+	        this.provider.SetBlogMlExtendedProperties(blog.ExtendedProperties);
+
+	        IDictionary<string, string> categoryIdMap = this.provider.CreateCategories(blog);
 
             foreach (BlogMLPost bmlPost in blog.Posts)
             {
@@ -92,7 +94,8 @@ namespace Subtext.BlogML
 
 	    	provider.ImportComplete();
 	    }
-		private string CreateFilesFromAttachments(BlogMLPost bmlPost, string postContent)
+
+	    private string CreateFilesFromAttachments(BlogMLPost bmlPost, string postContent)
 		{
 			foreach (BlogMLAttachment bmlAttachment in bmlPost.Attachments)
 			{

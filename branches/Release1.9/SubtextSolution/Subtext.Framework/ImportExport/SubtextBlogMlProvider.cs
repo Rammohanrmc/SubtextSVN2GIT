@@ -191,13 +191,16 @@ namespace Subtext.ImportExport
                                        ? CommentModerationTypes.Enabled.ToString()
                                        : CommentModerationTypes.Disabled.ToString();
 			    bmlBlog.ExtendedProperties.Add(bmlExtProp);
-			    
-                // TODO: The blog.TrackbasksEnabled actually determines if Subtext will
-			    // ACCEPT a trackback, not send one. Perhaps we should add that config option.
-//                bmlExtProp.Key = BlogMLBlogExtendedProperties.EnableSendingTrackbacks;
-//                bmlExtProp.Value = blog.TrackbacksEnabled
-//                                       ? SendTrackbackTypes.Yes.ToString()
-//                                       : SendTrackbackTypes.No.ToString();
+
+                /* TODO: The blog.TrackbasksEnabled determines if Subtext will ACCEPT and SEND trackbacks.
+                 * Perhaps we should separate the two out?
+                 * For now, we'll assume that if a BlogML blog allows sending, it will also
+                 * allow receiving track/pingbacks.
+                 */
+                bmlExtProp.Key = BlogMLBlogExtendedProperties.EnableSendingTrackbacks;
+                bmlExtProp.Value = blog.TrackbacksEnabled
+                                       ? SendTrackbackTypes.Yes.ToString()
+                                       : SendTrackbackTypes.No.ToString();
 			    
 				return bmlBlog;
 			}
@@ -417,8 +420,45 @@ namespace Subtext.ImportExport
 
 			FeedbackItem.Create(newPingTrack, null);
 		}
-		
-		/// <summary>
+
+	    public override void SetBlogMlExtendedProperties(BlogMLBlog.ExtendedPropertiesCollection extendedProperties)
+	    {
+            if (extendedProperties != null && extendedProperties.Count > 0)
+            {
+                BlogInfo info = Config.CurrentBlog;
+                
+                foreach (Pair<string, string> extProp in extendedProperties)
+                {
+                    if (BlogMLBlogExtendedProperties.CommentModeration.Equals(extProp.Key))
+                    {
+                        bool modEnabled;
+                        
+                        if (bool.TryParse(extProp.Value, out modEnabled))
+                        {
+                            info.ModerationEnabled = modEnabled;
+                        }
+                    }
+                    else if (BlogMLBlogExtendedProperties.EnableSendingTrackbacks.Equals(extProp.Key))
+                    {
+                        bool tracksEnabled;
+
+                        if (bool.TryParse(extProp.Value, out tracksEnabled))
+                        {
+                            /* TODO: The blog.TrackbasksEnabled determines if Subtext will ACCEPT and SEND trackbacks.
+                             * Perhaps we should separate the two out?
+                             * For now, we'll assume that if a BlogML blog allows sending, it will also
+                             * allow receiving track/pingbacks.
+                             */
+                            info.TrackbacksEnabled = tracksEnabled;
+                        }
+                    }
+                }
+
+                Config.UpdateConfigData(info);
+            }
+	    }
+
+	    /// <summary>
 		/// Lets the provider decide how to log errors.
 		/// </summary>
 		/// <param name="message"></param>
