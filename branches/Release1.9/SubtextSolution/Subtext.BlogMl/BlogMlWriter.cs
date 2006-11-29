@@ -241,9 +241,9 @@ namespace Subtext.BlogML
 					if (SgmlUtil.IsRootUrlOf(appFullRootUrl, loweredImageURL))
 					{
 					    // TODO: Need to figure out how to get the byte array for the file
-                        //WriteAttachment(imageURL, 0, GetMimeType(imageURL), imageURL, provider.GetBlogMlContext().EmbedAttachments, GetBytes(imageURL, appFullRootUrl));
+                        WriteAttachment(imageURL, 0, GetMimeType(imageURL), imageURL, provider.GetBlogMlContext().EmbedAttachments, GetBytes(imageURL, appFullRootUrl));
 					    
-					    WriteAttachment(imageURL, GetMimeType(imageURL), imageURL);
+					    //WriteAttachment(imageURL, GetMimeType(imageURL), imageURL);
 					    Writer.Flush();
 					}
 				}
