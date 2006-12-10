@@ -17,8 +17,7 @@
 	<st:MessagePanel id="Messages" runat="server"></st:MessagePanel>
 	<st:AdvancedPanel id="Edit" runat="server" Collapsible="False" HeaderText="Configure" HeaderCssClass="CollapsibleHeader"
 		BodyCssClass="Edit" DisplayHeader="true">
-		<fieldset class="options">
-			<legend>Main Settings</legend>
+		<asp:Panel runat="server" GroupingText="Main Settings" CssClass="options" >
 			<p>
 				<label class="Block" accesskey="t" for="Edit_txbTitle"><u>T</u>itle</label>
 				<asp:TextBox id="txbTitle" runat="server" CssClass="textinput"></asp:TextBox>
@@ -47,9 +46,8 @@
 				<label accesskey="w" for="Edit_ckbAllowServiceAccess">Allow <u>W</u>eb Service Access</label>
 				<asp:CheckBox id="ckbAllowServiceAccess" runat="server"></asp:CheckBox>
 			</p>
-		</fieldset>
-		<fieldset class="options wide">
-			<legend>Location Settings</legend>
+		</asp:Panel>
+		<asp:Panel runat="server" GroupingText="Location Settings" CssClass="options wide">
 			<ajax:ajaxpanel ID="ajaxTimezone" runat="server">
 			<p>
 				<label class="Block" accesskey="z" for="Edit_ddlTimezone">
@@ -274,9 +272,8 @@
 					<asp:ListItem Text="Vietnamese - Vietnam" Value="vi-VN" />
 				</asp:DropDownList>
 			</p>
-		</fieldset>
-		<fieldset class="options">
-			<legend>Count Settings</legend>
+		</asp:Panel>
+		<asp:Panel runat="server" GroupingText="Count Settings" CssClass="options">
 			<p>
 				<label class="Block" accesskey="d" for="Edit_ddlItemCount"><u>D</u>efault Number of Feed/Homepage Items</label>
 				<asp:DropDownList id="ddlItemCount" runat="server"></asp:DropDownList>
@@ -285,7 +282,7 @@
 				<label class="Block" accesskey="p" for="Edit_ddlCategoryListPostCount">Number of <u>P</u>osts in Category Lists</label>
 				<asp:DropDownList id="ddlCategoryListPostCount" runat="server"></asp:DropDownList>
 			</p>
-		</fieldset>
+		</asp:Panel>
 		<div class="clear">
 			<div class="options">
 				<p>

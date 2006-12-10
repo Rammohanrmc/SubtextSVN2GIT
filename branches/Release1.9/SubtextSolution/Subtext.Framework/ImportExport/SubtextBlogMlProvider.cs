@@ -1,9 +1,26 @@
+#region Disclaimer/Info
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Subtext WebLog
+// 
+// Subtext is an open source weblog system that is a fork of the .TEXT
+// weblog system.
+//
+// For updated news and information please visit http://subtextproject.com/
+// Subtext is hosted at SourceForge at http://sourceforge.net/projects/subtext
+// The development mailing list is at subtext-devs@lists.sourceforge.net 
+//
+// This project is licensed under the BSD license.  See the License.txt file for more information.
+///////////////////////////////////////////////////////////////////////////////////////////////////
+#endregion
+
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.IO;
 using System.Web;
 using BlogML;
 using BlogML.Xml;
@@ -40,9 +57,13 @@ namespace Subtext.ImportExport
 			IPagedCollection<BlogMLPost> bmlPosts = new PagedCollection<BlogMLPost>();
 			using (IDataReader reader = GetPostsAndArticlesReader(blogId, pageIndex, pageSize))
 			{
+                BlogMLPost bmlPost;
+                IBlogMLContext bmlContext = this.GetBlogMlContext();
 				while (reader.Read())
 				{
-					bmlPosts.Add(ObjectHydrator.LoadPostFromDataReader(reader));
+                    bmlPost = ObjectHydrator.LoadPostFromDataReader(reader);
+                    bmlPost.Attachments.AddRange(GetPostAttachments(bmlPost, bmlContext));
+					bmlPosts.Add(bmlPost);
 				}
 
 				if (reader.NextResult() && reader.Read())
@@ -63,6 +84,55 @@ namespace Subtext.ImportExport
 			}
 			return bmlPosts;
 		}
+
+        private static IList GetPostAttachments(BlogMLPost bmlPost, IBlogMLContext bmlContext)
+        {
+            IList attachments = new ArrayList();
+            string[] attachmentUrls = BlogMLWriterBase.SgmlUtil.GetAttributeValues(bmlPost.Content.Text, "img", "src");
+
+            if (attachmentUrls.Length > 0)
+            {
+                bool embed = bmlContext.EmbedAttachments;
+                
+                foreach (string attachmentUrl in attachmentUrls)
+                {
+                    string blogHostUrl = Config.CurrentBlog.HostFullyQualifiedUrl.ToString().ToLower(CultureInfo.InvariantCulture);
+                    
+                    // If the URL for the attachment is local then we'll want to build a new BlogMLAttachment 
+                    // add add it to the list of attchements for this post.
+                    if (BlogMLWriterBase.SgmlUtil.IsRootUrlOf(blogHostUrl, attachmentUrl.ToLower(CultureInfo.InvariantCulture)))
+                    {
+                        BlogMLAttachment attachment = new BlogMLAttachment();
+                        string attachVirtualPath = attachmentUrl.Replace(blogHostUrl, "/");
+
+                        // If we are embedding attachements then we need to get the data stream 
+                        // for the attachment, else the datastream can be null.
+                        if (embed)
+                        {
+                            string attachPhysicalPath = HttpContext.Current.Server.MapPath(attachVirtualPath);
+
+                            //using (Stream attachStream = new StreamReader(attachPhysicalPath).BaseStream)
+                            using (FileStream attachStream = File.OpenRead(attachPhysicalPath))
+                            {
+                                using (BinaryReader reader = new BinaryReader(attachStream))
+                                {
+                                    reader.BaseStream.Position = 0;
+                                    byte[] data = reader.ReadBytes((int)attachStream.Length);
+                                    attachment.Data = data;
+                                }
+                            }
+                        }
+
+                        attachment.Embedded = embed;
+                        attachment.MimeType = BlogMLWriter.GetMimeType(attachmentUrl);
+                        attachment.Path = attachVirtualPath;
+                        attachment.Url = attachmentUrl;
+                        attachments.Add(attachment);
+                    }
+                }
+            }
+            return attachments;
+        }
 
         private static void PopulateAuthors(IPagedCollection<BlogMLPost> posts, IDataReader reader)
 	    {

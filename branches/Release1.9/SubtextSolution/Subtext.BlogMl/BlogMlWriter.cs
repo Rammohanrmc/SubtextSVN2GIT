@@ -1,16 +1,27 @@
+#region Disclaimer/Info
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Subtext WebLog
+// 
+// Subtext is an open source weblog system that is a fork of the .TEXT
+// weblog system.
+//
+// For updated news and information please visit http://subtextproject.com/
+// Subtext is hosted at SourceForge at http://sourceforge.net/projects/subtext
+// The development mailing list is at subtext-devs@lists.sourceforge.net 
+//
+// This project is licensed under the BSD license.  See the License.txt file for more information.
+///////////////////////////////////////////////////////////////////////////////////////////////////
+#endregion
+
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Net;
-using System.Web;
-using System.Web.UI;
 using BlogML;
 using BlogML.Xml;
 using Subtext.BlogML.Conversion;
+using Subtext.BlogML.Interfaces;
 using Subtext.Extensibility.Collections;
 using Subtext.Extensibility.Interfaces;
-using Subtext.BlogML.Interfaces;
 
 namespace Subtext.BlogML
 {
@@ -226,43 +237,27 @@ namespace Subtext.BlogML
 
 		private void WritePostAttachments(BlogMLPost bmlPost)
 		{
-			string content = bmlPost.Content.Text;
-		    
-			string[] imagesURLs = SgmlUtil.GetAttributeValues(content, "img", "src");
-			string appFullRootUrl = this.bmlBlog.RootUrl.ToLower(CultureInfo.InvariantCulture);
-
-			if (imagesURLs.Length > 0)
+			if (bmlPost.Attachments.Count > 0)
 			{
 				WriteStartAttachments();
-				foreach(string imageURL in imagesURLs)
+				foreach(BlogMLAttachment attachment in bmlPost.Attachments)
 				{
-					string loweredImageURL = imageURL.ToLower(CultureInfo.InvariantCulture);
-					// now we need to determine if the URL is local
-					if (SgmlUtil.IsRootUrlOf(appFullRootUrl, loweredImageURL))
-					{
-					    // TODO: Need to figure out how to get the byte array for the file
-                        //WriteAttachment(imageURL, 0, GetMimeType(imageURL), imageURL, provider.GetBlogMlContext().EmbedAttachments, GetBytes(imageURL, appFullRootUrl));
-                        WriteAttachment(imageURL, 0, GetMimeType(imageURL), imageURL,
-                                        provider.GetBlogMlContext().EmbedAttachments, null);
-					    
-					    //WriteAttachment(imageURL, GetMimeType(imageURL), imageURL);
-					    Writer.Flush();
-					}
+				    if (attachment.Embedded)
+				    {
+				        WriteAttachment(attachment.Url, attachment.Data.Length, attachment.MimeType, attachment.Path, attachment.Embedded, attachment.Data);
+				    }
+				    else
+				    {
+				        WriteAttachment(attachment.Path, attachment.MimeType, attachment.Url);
+				    }
+				    Writer.Flush();
 				}
 				WriteEndElement(); // End Attachments Element
 				Writer.Flush();
 			}
 		}
 	    
-	    private static char[] slash = new char[] {'/'};
-	    
-	    private static byte[] GetBytes(string attachUrl, string blogRoot)
-	    {
-	        WebClient client = new WebClient();
-            return client.DownloadData(blogRoot.Trim(slash) + "/" + attachUrl.Trim(slash));
-	    }
-
-	    private static string GetMimeType(string fullUrl)
+	    public static string GetMimeType(string fullUrl)
 		{
 			string extension = Path.GetExtension(fullUrl);
 			string retVal;
@@ -277,15 +272,18 @@ namespace Subtext.BlogML
 			switch (extension.ToLower())
 			{
 				case "png":
-					retVal = "png";
+                    retVal = "image/png";
 					break;
 				case "jpg":
 				case "jpeg":
-					retVal = "jpg";
+                    retVal = "image/jpeg";
 					break;
 				case "bmp":
-					retVal = "bmp";
+                    retVal = "image/bmp";
 					break;
+			    case "gif":
+			        retVal = "image/gif";
+			        break;
 				default:
 					retVal = "none";
 					break;
