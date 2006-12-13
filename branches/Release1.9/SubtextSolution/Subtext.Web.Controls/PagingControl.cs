@@ -309,10 +309,6 @@ namespace Subtext.Web.Controls
 
             int endPage = startPage + DisplayPageCount > LastPageIndex ? LastPageIndex + 1 : startPage + DisplayPageCount;
 
-//            if (endPage - startPage != DisplayPageCount && endPage - startPage > 0)
-//            {
-//                startPage = endPage - DisplayPageCount;
-//            }
             // if the start page isn't the first, then we display << to allow
             // paging backwards DisplayCountPage
             if (startPage != 0)
