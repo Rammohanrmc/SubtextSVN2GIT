@@ -3668,6 +3668,7 @@ VALUES
 SELECT @ID = SCOPE_IDENTITY()
 
 EXEC [<dbUser,varchar,dbo>].[subtext_UpdateConfigUpdateTime] @BlogId, @DateAdded
+EXEC [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount] @BlogId, @ID
 
 
 GO
