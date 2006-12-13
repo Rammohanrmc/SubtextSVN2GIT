@@ -250,7 +250,7 @@ namespace Subtext.BlogML
 				    {
 				        WriteAttachment(attachment.Path, attachment.MimeType, attachment.Url);
 				    }
-				    Writer.Flush();
+				    //Writer.Flush();
 				}
 				WriteEndElement(); // End Attachments Element
 				Writer.Flush();

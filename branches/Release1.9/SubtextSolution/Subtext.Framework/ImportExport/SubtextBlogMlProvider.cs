@@ -109,8 +109,8 @@ namespace Subtext.ImportExport
                         // for the attachment, else the datastream can be null.
                         if (embed)
                         {
-                            string attachPhysicalPath = HttpContext.Current.Server.MapPath(attachVirtualPath);
-
+                            string attachPhysicalPath = HttpUtility.UrlDecode(HttpContext.Current.Server.MapPath(attachVirtualPath));
+                            
                             //using (Stream attachStream = new StreamReader(attachPhysicalPath).BaseStream)
                             using (FileStream attachStream = File.OpenRead(attachPhysicalPath))
                             {

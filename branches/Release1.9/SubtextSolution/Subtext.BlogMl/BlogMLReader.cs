@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Web;
 using BlogML;
 using BlogML.Xml;
 using Subtext.BlogML.Interfaces;
@@ -131,7 +132,7 @@ namespace Subtext.BlogML
 		private static string CreateFileFromAttachment(BlogMLAttachment bmlAttachment, string attachmentDirectoryPath, string attachmentDirectoryUrl, string postContent)
 		{
 			string fileName = Path.GetFileName(bmlAttachment.Url);
-			string attachmentPath = Path.Combine(attachmentDirectoryPath, fileName);
+			string attachmentPath = HttpUtility.UrlDecode(Path.Combine(attachmentDirectoryPath, fileName));
 			string attachmentUrl = attachmentDirectoryUrl + fileName;
 
             if (bmlAttachment.Embedded)
