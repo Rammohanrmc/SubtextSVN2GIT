@@ -111,7 +111,7 @@ namespace Subtext.Web.Controls.Captcha
 			string src = ControlHelper.ExpandTildePath("~/CaptchaImage.ashx");
         	
             writer.Write("<img src=\"" + src);
-            if (!IsDesignMode)
+            if (!this.IsDesignMode)
             {
 				writer.Write("?spec=" + HttpUtility.UrlEncodeUnicode(captcha.ToEncryptedString()));
             }
@@ -135,7 +135,7 @@ namespace Subtext.Web.Controls.Captcha
 			
 			writer.Write("<input name=\"" + this.AnswerFormFieldName + "\" type=\"text\" size=\"");
             writer.Write(this.captcha.TextLength.ToString());
-            writer.Write("\" maxlength=\"" + this.captcha.TextLength + "\"");
+            writer.Write("\" maxlength=\"" + this.captcha.TextLength.ToString() + "\"");
             if (this.AccessKey.Length > 0)
             {
                 writer.Write(" accesskey=\"" + this.AccessKey + "\"");
@@ -146,7 +146,7 @@ namespace Subtext.Web.Controls.Captcha
             }
             if (this.TabIndex > 0)
             {
-                writer.Write(" tabindex=\"" + this.TabIndex + "\"");
+                writer.Write(" tabindex=\"" + this.TabIndex.ToString() + "\"");
             }
 			if (Page.IsPostBack && this.IsValid)
 				writer.Write(" value=\"" + HttpUtility.HtmlEncode(Page.Request.Form[AnswerFormFieldName]) + "\" />");
@@ -219,7 +219,7 @@ namespace Subtext.Web.Controls.Captcha
             }
         }        
 
-        private static bool IsDesignMode
+        private bool IsDesignMode
         {
             get
             {
@@ -279,14 +279,14 @@ namespace Subtext.Web.Controls.Captcha
 		/// Returns a random font family name.
 		/// </summary>
 		/// <returns></returns>
-		private static string RandomFontFamily()
+		private string RandomFontFamily()
 		{
-			InstalledFontCollection fontCollection = new InstalledFontCollection();
-            FontFamily[] families = fontCollection.Families;
+			InstalledFontCollection collection1 = new InstalledFontCollection();
+			FontFamily[] familyArray1 = collection1.Families;
 			string fontFamily = "bogus";
 			while (goodFontList.IndexOf(fontFamily) == -1)
 			{
-                fontFamily = families[random.Next(0, fontCollection.Families.Length)].Name.ToLower();
+				fontFamily = familyArray1[random.Next(0, collection1.Families.Length)].Name.ToLower();
 			}
 			return fontFamily;
 		}
@@ -339,7 +339,6 @@ namespace Subtext.Web.Controls.Captcha
 			set
 			{
 				this.validRandomTextChars = value;
-				this.text = this.GenerateRandomText();
 			}
 		}
 
@@ -408,7 +407,7 @@ namespace Subtext.Web.Controls.Captcha
 			                     , this.WarpFactor
 			                     , this.FontFamily
 			                     , this.Text
-								 , this.DateGenerated.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture));
+			                     , this.DateGenerated.ToString("yyyy/MM/dd HH:mm:ss"));
 		}
 		
 		public DateTime DateGenerated;

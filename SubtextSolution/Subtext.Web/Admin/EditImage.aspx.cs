@@ -141,7 +141,7 @@ namespace Subtext.Web.Admin.Pages
 				return String.Empty;
 		}
 
-		protected static string EvalImageNavigateUrl(object imageObject)
+		protected string EvalImageNavigateUrl(object imageObject)
 		{
 			if (imageObject is Subtext.Framework.Components.Image)
 			{
@@ -149,9 +149,7 @@ namespace Subtext.Web.Admin.Pages
 				return Subtext.Framework.Configuration.Config.CurrentBlog.UrlFormats.ImageUrl(null,image.ImageID);
 			}
 			else
-			{
 				return String.Empty;
-			}
 		}
 
 		protected string GetImageGalleryUrl()

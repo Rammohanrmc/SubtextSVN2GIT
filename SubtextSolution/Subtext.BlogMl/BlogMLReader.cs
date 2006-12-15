@@ -1,10 +1,25 @@
+#region Disclaimer/Info
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Subtext WebLog
+// 
+// Subtext is an open source weblog system that is a fork of the .TEXT
+// weblog system.
+//
+// For updated news and information please visit http://subtextproject.com/
+// Subtext is hosted at SourceForge at http://sourceforge.net/projects/subtext
+// The development mailing list is at subtext-devs@lists.sourceforge.net 
+//
+// This project is licensed under the BSD license.  See the License.txt file for more information.
+///////////////////////////////////////////////////////////////////////////////////////////////////
+#endregion
+
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Web;
 using BlogML;
 using BlogML.Xml;
 using Subtext.BlogML.Interfaces;
-using Subtext.BlogML.Properties;
 
 namespace Subtext.BlogML
 {
@@ -15,7 +30,7 @@ namespace Subtext.BlogML
 		public static BlogMLReader Create(IBlogMLProvider provider)
 		{
 			if (provider == null)
-				throw new ArgumentNullException("provider", Resources.ArgumentNull_Provider);
+				throw new ArgumentNullException("provider", "provider cannot be null");
 
 			return new BlogMLReader(provider);
 		}
@@ -27,7 +42,7 @@ namespace Subtext.BlogML
 			this.provider = provider;
 		}
 
-		private static BlogMLBlog DeserializeBlogMlStream(Stream stream)
+		BlogMLBlog DeserializeBlogMlStream(Stream stream)
 		{
 			return BlogMLSerializer.Deserialize(stream);
 		}
@@ -35,17 +50,19 @@ namespace Subtext.BlogML
 	    /// <summary>
 	    /// Reads in a BlogML Stream and creates the appropriate blog posts, 
 	    /// </summary>
-	    /// <param name="blogMLStream"></param>
-        public void ReadBlog(Stream blogMLStream)
+	    /// <param name="blogMlStream"></param>
+        public void ReadBlog(Stream blogMlStream)
 	    {
-			if (blogMLStream == null)
-				throw new ArgumentNullException("blogMlStream", Resources.ArgumentNull_Stream);
+			if (blogMlStream == null)
+				throw new ArgumentNullException("blogMlStream", "Cannot read a null stream");
 
-            BlogMLBlog blog = DeserializeBlogMlStream(blogMLStream);
+            BlogMLBlog blog = DeserializeBlogMlStream(blogMlStream);
 
             this.provider.PreImport();
-	    	
-	    	IDictionary<string, string> categoryIdMap = this.provider.CreateCategories(blog);
+
+	        this.provider.SetBlogMlExtendedProperties(blog.ExtendedProperties);
+
+	        IDictionary<string, string> categoryIdMap = this.provider.CreateCategories(blog);
 
             foreach (BlogMLPost bmlPost in blog.Posts)
             {
@@ -93,7 +110,8 @@ namespace Subtext.BlogML
 
 	    	provider.ImportComplete();
 	    }
-		private string CreateFilesFromAttachments(BlogMLPost bmlPost, string postContent)
+
+	    private string CreateFilesFromAttachments(BlogMLPost bmlPost, string postContent)
 		{
 			foreach (BlogMLAttachment bmlAttachment in bmlPost.Attachments)
 			{
@@ -114,24 +132,27 @@ namespace Subtext.BlogML
 		private static string CreateFileFromAttachment(BlogMLAttachment bmlAttachment, string attachmentDirectoryPath, string attachmentDirectoryUrl, string postContent)
 		{
 			string fileName = Path.GetFileName(bmlAttachment.Url);
-			string attachmentPath = Path.Combine(attachmentDirectoryPath, fileName);
+			string attachmentPath = HttpUtility.UrlDecode(Path.Combine(attachmentDirectoryPath, fileName));
 			string attachmentUrl = attachmentDirectoryUrl + fileName;
 
-			postContent = BlogMLWriterBase.SgmlUtil.CleanAttachmentUrls(
-				postContent,
-				bmlAttachment.Url,
-				attachmentUrl);
+            if (bmlAttachment.Embedded)
+		    {
+		        postContent = BlogMLWriterBase.SgmlUtil.CleanAttachmentUrls(
+		            postContent,
+		            bmlAttachment.Url,
+		            attachmentUrl);
 
-			if (bmlAttachment.Embedded && !File.Exists(attachmentPath))
-			{	
-				using (FileStream fStream = new FileStream(attachmentPath, FileMode.CreateNew))
-				{
-					using (BinaryWriter writer = new BinaryWriter(fStream))
-					{
-						writer.Write(bmlAttachment.Data);
-					}
-				}	
-			}
+		        if (!File.Exists(attachmentPath))
+		        {	
+		            using (FileStream fStream = new FileStream(attachmentPath, FileMode.CreateNew))
+		            {
+		                using (BinaryWriter writer = new BinaryWriter(fStream))
+		                {
+		                    writer.Write(bmlAttachment.Data);
+		                }
+		            }	
+		        }
+		    }
 			return postContent;
 		}	    
 	}

@@ -1,7 +1,6 @@
 using System;
-using System.Security.Principal;
+using System.Globalization;
 using System.Threading;
-using System.Web.Security;
 using MbUnit.Framework;
 using Subtext.Extensibility;
 using Subtext.Extensibility.Interfaces;
@@ -15,6 +14,8 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 	[TestFixture]
 	public class FeedbackTests
 	{
+		string _hostName = string.Empty;
+
 		[RowTest]
 		[Row(FeedbackStatusFlag.Approved, true, false, false, false)]
 		[Row(FeedbackStatusFlag.ApprovedByModerator, true, false, false, false)]
@@ -26,8 +27,7 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		[RollBack]
 		public void CanCreateCommentWithStatus(FeedbackStatusFlag status, bool expectedApproved, bool expectedNeedsModeratorApproval, bool expectedDeleted, bool expectedFlaggedAsSpam)
 		{
-			UnitTestHelper.SetupBlog();
-			
+			Assert.IsTrue(Config.CreateBlog(string.Empty, "username", "password", _hostName, string.Empty));
 			Config.CurrentBlog.CommentsEnabled = true;
 			Config.CurrentBlog.ModerationEnabled = false;
 
@@ -47,7 +47,7 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		[RollBack]
 		public void ConfirmSpamRemovesApprovedBitAndSetsDeletedBit()
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog(string.Empty, "username", "password", _hostName, string.Empty));
 			Config.CurrentBlog.CommentsEnabled = true;
 			Config.CurrentBlog.ModerationEnabled = false;
 
@@ -67,7 +67,7 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		[RollBack]
 		public void DeleteCommentSetsDeletedBit()
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog(string.Empty, "username", "password", _hostName, string.Empty));
 			Config.CurrentBlog.CommentsEnabled = true;
 			Config.CurrentBlog.ModerationEnabled = false;
 
@@ -87,7 +87,7 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		[RollBack]
 		public void DestroyCommentByStatusDestroysOnlyThatStatus()
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog(string.Empty, "username", "password", _hostName, string.Empty));
 			Config.CurrentBlog.CommentsEnabled = true;
 			Config.CurrentBlog.ModerationEnabled = false;
 
@@ -154,7 +154,7 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		[RollBack]
 		public void DestroyCommentReallyGetsRidOfIt()
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog(string.Empty, "username", "password", _hostName, string.Empty));
 			Config.CurrentBlog.CommentsEnabled = true;
 			Config.CurrentBlog.ModerationEnabled = false;
 
@@ -176,7 +176,7 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void DestroyCommentCannotDestroyActiveComment()
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog(string.Empty, "username", "password", _hostName, string.Empty));
 			Config.CurrentBlog.CommentsEnabled = true;
 			Config.CurrentBlog.ModerationEnabled = false;
 
@@ -193,7 +193,7 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		[RollBack]
 		public void ApproveCommentRemovesDeletedAndConfirmedSpamBits()
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog(string.Empty, "username", "password", _hostName, string.Empty));
 			Config.CurrentBlog.CommentsEnabled = true;
 			Config.CurrentBlog.ModerationEnabled = false;
 
@@ -220,7 +220,7 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		[RollBack]
 		public void CanGetAllApprovedComments()
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog(string.Empty, "username", "password", _hostName, string.Empty));
 			Config.CurrentBlog.CommentsEnabled = true;
 			Config.CurrentBlog.ModerationEnabled = false;
 
@@ -247,7 +247,7 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		[RollBack]
 		public void OnlyApprovedItemsContributeToEntryFeedbackCount()
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog(string.Empty, "username", "password", _hostName, string.Empty));
 			Config.CurrentBlog.CommentsEnabled = true;
 			Config.CurrentBlog.ModerationEnabled = false;
 			
@@ -288,7 +288,7 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		[RollBack]
 		public void CanGetItemsFlaggedAsSpam()
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog(string.Empty, "username", "password", _hostName, string.Empty));
 			Config.CurrentBlog.CommentsEnabled = true;
 			Config.CurrentBlog.ModerationEnabled = false;
 
@@ -317,7 +317,7 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		[RollBack]
 		public void CreateFeedbackHasContentHash()
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog(string.Empty, "username", "password", _hostName, string.Empty));
 
 			FeedbackItem trackback = new FeedbackItem(FeedbackType.PingTrack);
 			trackback.DateCreated = DateTime.Now;
@@ -330,6 +330,37 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 			Assert.IsTrue(savedEntry.ChecksumHash.Length > 0, "The Content Checksum should be larger than 0.");
 		}
 
+	    /// <summary>
+	    /// Make sure that we can create Feedback items with specific dates, needed for Import functionality.
+	    /// </summary>
+	    [Test]
+	    [RollBack]
+	    public void CreateFeedbackWithSpecifiedDateCreated()
+	    {
+	        Assert.IsTrue(Config.CreateBlog(string.Empty, "username", "password", _hostName, string.Empty));
+            DateTime dateCreated = DateTime.ParseExact("2005/01/23 05:05:05", "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+	        
+            FeedbackItem savedComment = CreateFeedbackWithSpecifiedDates(dateCreated, NullValue.NullDateTime);
+            Assert.IsTrue(dateCreated.CompareTo(savedComment.DateCreated) == 0, "The Comment's Date Created was not saved correctly.");
+            Assert.IsTrue(dateCreated.CompareTo(savedComment.DateModified) == 0, "The Comment's Date Modified was not saved correctly.");
+	    }
+
+        /// <summary>
+        /// Make sure that we can create Feedback items with specific dates, needed for Import functionality.
+        /// </summary>
+        [Test]
+        [RollBack]
+        public void CreateFeedbackWithSpecifiedDateModified()
+        {
+            Assert.IsTrue(Config.CreateBlog(string.Empty, "username", "password", _hostName, string.Empty));
+            DateTime dateCreated = DateTime.ParseExact("2005/01/23 05:05:05", "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
+            DateTime dateModified = dateCreated.AddDays(5);
+
+            FeedbackItem savedComment = CreateFeedbackWithSpecifiedDates(dateCreated, dateModified);
+            Assert.IsTrue(dateCreated.CompareTo(savedComment.DateCreated) == 0, "The Comment's Date Created was not saved correctly.");
+            Assert.IsTrue(dateModified.CompareTo(savedComment.DateModified) == 0, "The Comment's Date Modified was not saved correctly.");
+        }
+	    
 		/// <summary>
 		/// Makes sure that the content checksum hash is being created correctly.
 		/// </summary>
@@ -340,10 +371,8 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		[RollBack]
 		public void CreateFeedbackSendsCorrectEmail(string commenterEmail, string commenterUrl, string expectedEmail, string expectedUrl)
 		{
-			UnitTestHelper.SetupBlog();
-			Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity("NotAnAdmin"), new string[] { "Anonymous" });
-			Config.CurrentBlog.Owner.Email = "test@example.com";
-			Membership.UpdateUser(Config.CurrentBlog.Owner);
+			Assert.IsTrue(Config.CreateBlog(string.Empty, "username", "password", _hostName, string.Empty));
+			Config.CurrentBlog.Email = "test@example.com";
 			Config.CurrentBlog.Title = "You've been haacked";
 
 			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("blah", "blah", "blah");
@@ -380,6 +409,19 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 			Assert.AreEqual(expectedMessageBody, emailProvider.Message, "Did not receive the expected message.");
 		}
 
+        static FeedbackItem CreateFeedbackWithSpecifiedDates(DateTime created, DateTime modified)
+        {
+            FeedbackItem comment = new FeedbackItem(FeedbackType.Comment);
+            comment.SourceUrl = new Uri("http://" + UnitTestHelper.GenerateRandomString() + "/ThisUrl/");
+            comment.Title = UnitTestHelper.GenerateRandomString();
+            comment.Body = UnitTestHelper.GenerateRandomString();
+            comment.DateCreated = created;
+            comment.DateModified = modified;
+
+            int feedbackId = FeedbackItem.Create(comment, null);
+            return FeedbackItem.Get(feedbackId);
+        }
+	    
 		static FeedbackItem CreateAndUpdateFeedbackWithExactStatus(Entry entry, FeedbackType type, FeedbackStatusFlag status)
 		{
 			FeedbackItem feedback = new FeedbackItem(type);
@@ -431,6 +473,13 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 			FeedbackItem.Destroy(null);
 		}
 		#endregion
+
+		[SetUp]
+		public void SetUp()
+		{
+			_hostName = UnitTestHelper.GenerateRandomString();
+			UnitTestHelper.SetHttpContextWithBlogRequest(_hostName, string.Empty);
+		}
 
 		[TearDown]
 		public void TearDown()

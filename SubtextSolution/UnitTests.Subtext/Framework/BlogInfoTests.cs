@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.Web;
 using MbUnit.Framework;
 using Subtext.Extensibility;
@@ -14,130 +13,8 @@ namespace UnitTests.Subtext.Framework
 	/// </summary>
 	[TestFixture]
 	public class BlogInfoTests
-	{
-		[Test]
-		public void PropertyGetSetTests()
-		{
-			BlogInfo blog = new BlogInfo();
-			blog.CaptchaEnabled = true;
-			Assert.IsTrue((blog.Flag & ConfigurationFlag.CaptchaEnabled) == ConfigurationFlag.CaptchaEnabled);
-			blog.CaptchaEnabled = false;
-			Assert.IsTrue((blog.Flag & ConfigurationFlag.CaptchaEnabled) != ConfigurationFlag.CaptchaEnabled);
-
-			blog.CoCommentsEnabled = true;
-			Assert.IsTrue(blog.CoCommentsEnabled);
-			Assert.IsTrue((blog.Flag & ConfigurationFlag.CoCommentEnabled) == ConfigurationFlag.CoCommentEnabled);
-			blog.CoCommentsEnabled = false;
-			Assert.IsTrue((blog.Flag & ConfigurationFlag.CoCommentEnabled) != ConfigurationFlag.CoCommentEnabled);
-
-			blog.IsActive = true;
-			Assert.IsTrue(blog.IsActive);
-			Assert.IsTrue((blog.Flag & ConfigurationFlag.IsActive) == ConfigurationFlag.IsActive);
-			blog.IsActive = false;
-			Assert.IsTrue((blog.Flag & ConfigurationFlag.IsActive) != ConfigurationFlag.IsActive);
-
-			blog.IsAggregated = true;
-			Assert.IsTrue(blog.IsAggregated);
-			Assert.IsTrue((blog.Flag & ConfigurationFlag.IsAggregated) == ConfigurationFlag.IsAggregated);
-			blog.IsAggregated = false;
-			Assert.IsTrue((blog.Flag & ConfigurationFlag.IsAggregated) != ConfigurationFlag.IsAggregated);
-
-			blog.CommentCount = 42;
-			Assert.AreEqual(42, blog.CommentCount);
-
-			blog.PingTrackCount = 8;
-			Assert.AreEqual(8, blog.PingTrackCount);
-
-			blog.NumberOfRecentComments = 2006;
-			Assert.AreEqual(2006, blog.NumberOfRecentComments);
-
-			blog.PostCount = 1997;
-			Assert.AreEqual(1997, blog.PostCount);
-
-			blog.RecentCommentsLength = 1993;
-			Assert.AreEqual(1993, blog.RecentCommentsLength);
-
-			blog.StoryCount = 1975;
-			Assert.AreEqual(1975, blog.StoryCount);
-
-			Assert.IsFalse(blog.Equals(null), "Blog should not equal null");
-		}
-
-		[Test]
-		public void CanGetDefaultTimeZone()
-		{
-			BlogInfo blog = new BlogInfo();
-			blog.TimeZoneId = int.MinValue;
-			Assert.IsNotNull(blog.TimeZone);
-		}
-
-		[Test]
-		public void CanGetLanguageAndLanguageCode()
-		{
-			BlogInfo blog = new BlogInfo();
-			blog.Language = null;
-			Assert.AreEqual("en-US", blog.Language, "By default, the language is en-US");
-			Assert.AreEqual("en", blog.LanguageCode);
-
-			blog.Language = "fr-FR";
-			Assert.AreEqual("fr-FR", blog.Language, "The language should have changed.");
-			Assert.AreEqual("fr", blog.LanguageCode);
-		}
-
-		[Test]
-		public void DefaultPortIs80()
-		{
-			Assert.IsNull(HttpContext.Current);
-			Assert.AreEqual(80, new BlogInfo().Port);
-		}
-
-		[Test]
-		public void CanSetupFeedbackSpamService()
-		{
-			UnitTestHelper.SetupHttpContextWithRequest("/");
-
-			BlogInfo blog = new BlogInfo();
-			blog.Host = "http://subtextproject.com/";
-			blog.FeedbackSpamServiceKey = null;
-			Assert.IsNull(blog.FeedbackSpamService);
-			Assert.IsFalse(blog.FeedbackSpamServiceEnabled);
-
-			blog.FeedbackSpamServiceKey = "abc123";
-			Assert.IsNotNull(blog.FeedbackSpamService);
-			Assert.IsTrue(blog.FeedbackSpamServiceEnabled);
-		}
-
-		[Test]
-		public void HasNewsReturnsProperResult()
-		{
-			BlogInfo blog = new BlogInfo();
-			Assert.IsFalse(blog.HasNews);
-			blog.News = "You rock! Story at eleven";
-			Assert.IsTrue(blog.HasNews);
-		}
-
-		[Test]
-		public void CanGetHashCode()
-		{
-			BlogInfo blog = new BlogInfo();
-			blog.Host = "http://subtextproject.com";
-			blog.Subfolder = "blog";
-
-			Assert.AreEqual(-1988688221, blog.GetHashCode());
-		}
-
-		[Test]
-		public void CanSetFeedBurnerName()
-		{
-			BlogInfo blog = new BlogInfo();
-			blog.FeedBurnerName = null;
-			Assert.IsFalse(blog.FeedBurnerEnabled);
-
-			blog.FeedBurnerName = "Subtext";
-			Assert.IsTrue(blog.FeedBurnerEnabled);
-		}
-
-		[Test]
+	{	
+	    [Test]
 	    public void NormalizeHostNameFunctionsProperly()
 	    {
             string host = UnitTestHelper.GenerateRandomString();
@@ -187,9 +64,11 @@ namespace UnitTests.Subtext.Framework
 		[RollBack]
 		public void HostFullyQualifiedUrlPropertySetCorrectly(string subfolder, string virtualDir, int port, string expected)
 		{
-			UnitTestHelper.SetupBlog(subfolder, virtualDir, port);
-			
-			Assert.AreEqual("http://" + Config.CurrentBlog.Host + expected, Config.CurrentBlog.HostFullyQualifiedUrl.ToString(), "Did not set the HostFullyQualifiedUrl correctly.");
+			string host = UnitTestHelper.GenerateRandomString();
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, port, subfolder, virtualDir);
+			Assert.IsTrue(Config.CreateBlog("TestVirtualUrlPropertySetCorrectly", "username", "password", host, subfolder));
+
+			Assert.AreEqual("http://" + host + expected, Config.CurrentBlog.HostFullyQualifiedUrl.ToString(), "Did not set the HostFullyQualifiedUrl correctly.");
 		}
 
 	    /// <summary>
@@ -209,12 +88,14 @@ namespace UnitTests.Subtext.Framework
         [RollBack]
         public void FullyQualifiedUrlPropertySetCorrectly(string subfolder, string virtualDir, int port, string expected)
         {
-			UnitTestHelper.SetupBlog(subfolder, virtualDir, port);
+            string host = UnitTestHelper.GenerateRandomString();
+            UnitTestHelper.SetHttpContextWithBlogRequest(host, port, subfolder, virtualDir);
+            Assert.IsTrue(Config.CreateBlog("TestVirtualUrlPropertySetCorrectly", "username", "password", host, subfolder));
             
             Entry entry = new Entry(PostType.BlogPost);
-            entry.DateCreated = DateTime.ParseExact("1/23/1975", "M/d/yyyy", CultureInfo.InvariantCulture);
+            entry.DateCreated = DateTime.Parse("1/23/1975");
             entry.Id = 987123;
-            Assert.AreEqual("http://" + Config.CurrentBlog.Host + expected, Config.CurrentBlog.UrlFormats.EntryFullyQualifiedUrl(entry), "Did not set the entry url correctly.");
+            Assert.AreEqual("http://" + host + expected, Config.CurrentBlog.UrlFormats.EntryFullyQualifiedUrl(entry), "Did not set the entry url correctly.");
         }
 	    
 		[RowTest]
@@ -230,8 +111,9 @@ namespace UnitTests.Subtext.Framework
 		[RollBack]
 		public void TestVirtualUrlPropertySetCorrectly(string subfolder, string virtualDir, string expected)
 		{
-			UnitTestHelper.SetupBlog(subfolder, virtualDir);
-			
+			string host = UnitTestHelper.GenerateRandomString();
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, subfolder, virtualDir);
+			Assert.IsTrue(Config.CreateBlog("TestVirtualUrlPropertySetCorrectly", "username", "password", host, subfolder));
 			Console.WriteLine("TEST: Subfolder: " + subfolder);
 			Console.WriteLine("TEST: VirtualDir: " + virtualDir);
 			Console.WriteLine("TEST: expected: " + expected);
@@ -251,8 +133,9 @@ namespace UnitTests.Subtext.Framework
 		[RollBack]
 		public void TestAdminDirectoryVirtualUrlPropertySetCorrectly(string subfolder, string virtualDir, string expected)
 		{
-			UnitTestHelper.SetupBlog(subfolder, virtualDir);
-			
+			string host = UnitTestHelper.GenerateRandomString();
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, subfolder, virtualDir);
+			Assert.IsTrue(Config.CreateBlog("TestVirtualUrlPropertySetCorrectly", "username", "password", host, subfolder));
 			Assert.AreEqual(expected, Config.CurrentBlog.AdminDirectoryVirtualUrl, "Did not set the Admin Virtual Dir correctly.");
 		}
 		
@@ -269,8 +152,9 @@ namespace UnitTests.Subtext.Framework
 		[RollBack]
 		public void TestAdminVirtualUrlPropertySetCorrectly(string subfolder, string virtualDir, string expected)
 		{
-			UnitTestHelper.SetupBlog(subfolder, virtualDir);
-			
+			string host = UnitTestHelper.GenerateRandomString();
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, subfolder, virtualDir);
+			Assert.IsTrue(Config.CreateBlog("TestVirtualUrlPropertySetCorrectly", "username", "password", host, subfolder));
 			Assert.AreEqual(expected, Config.CurrentBlog.AdminHomeVirtualUrl, "Did not set the Admin Virtual Dir correctly.");
 		}
 
@@ -282,9 +166,12 @@ namespace UnitTests.Subtext.Framework
 		[RollBack]
 		public void RootUrlPropertyReturnsCorrectValue(string subfolder, string virtualDir, string expected)
 		{
-			UnitTestHelper.SetupBlog(subfolder, virtualDir);
+			string host = UnitTestHelper.GenerateRandomString();
+			string expectedUrl = string.Format("http://{0}/{1}", host, expected);
 			
-			string expectedUrl = string.Format("http://{0}/{1}", Config.CurrentBlog.Host, expected);
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, subfolder, virtualDir);
+			Assert.IsTrue(Config.CreateBlog("TestRootUrlPropertySetCorrectly", "username", "password", host, subfolder));
+
 			Assert.AreEqual(expectedUrl, Config.CurrentBlog.RootUrl.ToString(), "Did not set the Virtual Dir correctly.");
 		}
 
@@ -296,9 +183,12 @@ namespace UnitTests.Subtext.Framework
 		[RollBack]
 		public void TestBlogHomeFullyQualifiedUrlPropertySetCorrectly(string subfolder, string virtualDir, string expected)
 		{
-			UnitTestHelper.SetupBlog(subfolder, virtualDir);
-			string expectedUrl = string.Format("http://{0}/{1}", Config.CurrentBlog.Host, expected);
+			string host = UnitTestHelper.GenerateRandomString();
+			string expectedUrl = string.Format("http://{0}/{1}", host, expected);
 			
+			Assert.IsTrue(Config.CreateBlog("TestBlogHomeUrlPropertySetCorrectly", "username", "password", host, subfolder));
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, subfolder, virtualDir);
+
 			Assert.AreEqual(expectedUrl, Config.CurrentBlog.HomeFullyQualifiedUrl.ToString(), "Did not set the BlogHomeUrl correctly.");
 		}
 
@@ -310,7 +200,9 @@ namespace UnitTests.Subtext.Framework
 		[RollBack]
 		public void TestBlogHomeVirtualUrlPropertySetCorrectly(string subfolder, string virtualDir, string expected)
 		{
-			UnitTestHelper.SetupBlog(subfolder, virtualDir);
+			string host = UnitTestHelper.GenerateRandomString();
+			Assert.IsTrue(Config.CreateBlog("TestBlogHomeVirtualUrlPropertySetCorrectly", "username", "password", host, subfolder));
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, subfolder, virtualDir);
 
 			Assert.AreEqual(expected, Config.CurrentBlog.HomeVirtualUrl, "Did not set the BlogHomeVirtualUrl correctly.");
 		}
@@ -329,23 +221,11 @@ namespace UnitTests.Subtext.Framework
 		[RollBack]
 		public void TestVirtualDirectoryRootPropertySetCorrectly(string subfolder, string virtualDir, string expected)
 		{
-			UnitTestHelper.SetupBlog(subfolder, virtualDir);
+			string host = UnitTestHelper.GenerateRandomString();
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, subfolder, virtualDir);
+			Assert.IsTrue(Config.CreateBlog("TestVirtualDirectoryRootPropertySetCorrectly", "username", "password", host, subfolder));
 
 			Assert.AreEqual(expected, Config.CurrentBlog.VirtualDirectoryRoot, "Did not set the VirtualDirectoryRoot correctly.");
-		}
-
-		[Test]
-		[ExpectedArgumentNullException]
-		public void GetBlogsByHostThrowsArgumentNullException()
-		{
-			BlogInfo.GetBlogsByHost(null, 0, 10, ConfigurationFlag.IsActive);
-		}
-
-		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
-		public void FeedBurnerNameThrowsInvalidOperationException()
-		{
-			new BlogInfo().FeedBurnerName = "/";
 		}
 	}
 }

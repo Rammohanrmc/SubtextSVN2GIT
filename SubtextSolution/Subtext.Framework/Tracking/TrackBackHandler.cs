@@ -188,12 +188,10 @@ namespace Subtext.Framework.Tracking
 			context.Response.Output.Flush();
 		}
 
-		private static string SafeParam(HttpContext context, string pName)
+		private string SafeParam(HttpContext context, string pName)
 		{
 			if (context.Request.Form[pName] != null)
-			{
 				return HtmlHelper.SafeFormat(context.Request.Form[pName]);
-			}
 			return string.Empty;
 		}
 		

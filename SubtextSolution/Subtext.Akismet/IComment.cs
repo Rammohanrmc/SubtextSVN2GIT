@@ -34,7 +34,7 @@ namespace Subtext.Akismet
 		/// The HTTP_REFERER header value of the 
 		/// originating comment.
 		/// </summary>
-		string Referrer { get;}
+		string Referer { get;}
 
 		/// <summary>
 		/// Permanent location of the entry the comment was 
@@ -56,7 +56,7 @@ namespace Subtext.Akismet
 		/// <summary>
 		/// IPAddress of the submitter
 		/// </summary>
-		IPAddress IPAddress { get;}
+		IPAddress IpAddress { get;}
 
 		/// <summary>
 		/// Optional collection of various server environment variables. 

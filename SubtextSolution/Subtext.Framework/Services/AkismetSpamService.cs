@@ -12,26 +12,18 @@ namespace Subtext.Framework.Services
 	public class AkismetSpamService : IFeedbackSpamService
 	{
 		private readonly static ILog log = new Subtext.Framework.Logging.Log();
-		IAkismetClient akismet;
+		AkismetClient akismet;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AkismetSpamService"/> class.
 		/// </summary>
 		/// <param name="apiKey">The API key.</param>
 		/// <param name="blog">The blog.</param>
-		public AkismetSpamService(string apiKey, IBlogInfo blog) : this(new AkismetClient(apiKey, blog.RootUrl))
+		public AkismetSpamService(string apiKey, BlogInfo blog)
 		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AkismetSpamService"/> class.
-		/// </summary>
-		/// <param name="akismetClient">The akismet client.</param>
-		public AkismetSpamService(IAkismetClient akismetClient)
-		{
-			this.akismet = akismetClient;
+			this.akismet = new AkismetClient(apiKey, blog.RootUrl);
 			IWebProxy proxy = HttpHelper.GetProxy();
-			if (proxy != null)
+			if(proxy != null)
 				this.akismet.Proxy = proxy;
 		}
 
@@ -99,21 +91,17 @@ namespace Subtext.Framework.Services
 			this.akismet.SubmitSpam(comment);
 		}
 		
-		private static Comment ConvertToAkismetItem(FeedbackItem feedback)
+		private Comment ConvertToAkismetItem(FeedbackItem feedback)
 		{
 			Comment comment = new Comment(feedback.IpAddress, feedback.UserAgent);
 			comment.Author = feedback.Author;
 			comment.AuthorEmail = feedback.Email;
 			if (feedback.SourceUrl != null)
-			{
 				comment.AuthorUrl = feedback.SourceUrl;
-			}
 			comment.Content = feedback.Body;
-			comment.Referrer = feedback.Referrer;
+			comment.Referer = feedback.Referrer;
 			if (feedback.DisplayUrl != null)
-			{
 				comment.Permalink = feedback.DisplayUrl;
-			}
 
 			comment.CommentType = feedback.FeedbackType.ToString().ToLower(CultureInfo.InvariantCulture);
 			return comment;

@@ -8,13 +8,17 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Subtext.Web {
+namespace Subtext.Web.Pages {
     
-    public partial class Login {
-        public new Subtext.Web.Skins._System.Login Master {
-            get {
-                return ((Subtext.Web.Skins._System.Login)(base.Master));
-            }
-        }
+    public partial class login {
+        protected Subtext.Web.Controls.StyleTag SystemStyle;
+        protected System.Web.UI.HtmlControls.HtmlForm frmLogin;
+        protected System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator1;
+        protected System.Web.UI.WebControls.TextBox tbUserName;
+        protected System.Web.UI.WebControls.TextBox tbPassword;
+        protected System.Web.UI.WebControls.Button btnLogin;
+        protected System.Web.UI.WebControls.CheckBox chkRemember;
+        protected System.Web.UI.WebControls.Label Message;
+        protected System.Web.UI.WebControls.LinkButton lbSendPassword;
     }
 }

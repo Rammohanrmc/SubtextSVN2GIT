@@ -15,24 +15,23 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using Subtext.Extensibility;
 using Subtext.Extensibility.Interfaces;
 using Subtext.Extensibility.Providers;
 using Subtext.Framework.Components;
 using System.Configuration.Provider;
 using Subtext.Framework.Configuration;
-using System.Collections.Specialized;
 
 namespace Subtext.Framework.Providers
 {
 	/// <summary>
 	/// Provides a Data Object Source for interacting with Subtext Data.  One example 
-	/// is a DataObjectProvider, which stores Subtext data in a SQL Server database.
+	/// is a DataObjectProvider, which stores Subtext data in a database (which itself is 
+	/// provided via the <see cref="DbProvider"/> class).
 	/// </summary>
     public abstract class ObjectProvider : ProviderBase
 	{
-		private static ObjectProvider provider;
+		private static ObjectProvider provider = null;
 		private static GenericProviderCollection<ObjectProvider> providers = ProviderConfigurationHelper.LoadProviderCollection<ObjectProvider>("ObjectProvider", out provider);
 
 		/// <summary>
@@ -55,29 +54,6 @@ namespace Subtext.Framework.Providers
 			}
 		}
 
-        /// <summary>
-        /// Initializes this provider, setting the connection string.
-        /// </summary>
-        /// <param name="name">Friendly Name of the provider.</param>
-        /// <param name="configValue">Config value.</param>
-        public override void Initialize(string name, NameValueCollection configValue)
-        {
-            _connectionString = ProviderConfigurationHelper.GetConnectionStringSettingValue("connectionStringName", configValue);
-            base.Initialize(name, configValue);
-        }
-
-        private string _connectionString;
-        /// <summary>
-        /// Gets or sets the connection string.
-        /// </summary>
-        /// <value></value>
-        public string ConnectionString
-        {
-            //TODO: Make this protected.
-            get { return _connectionString; }
-            set { _connectionString = value; }
-        }
-
         #region ObjectProvider Specific methods
 		#region Host
 
@@ -88,14 +64,11 @@ namespace Subtext.Framework.Providers
 		public abstract HostInfo LoadHostInfo(HostInfo info);
 
 		/// <summary>
-		/// Creates an initial Host instance.
+		/// Updates the <see cref="HostInfo"/> instance.  If the host record is not in the 
+		/// database, one is created. There should only be one host record.
 		/// </summary>
-		/// <param name="username">The username of the host admin.</param>
-		/// <param name="password">The password of the host admin.</param>
-		/// <param name="passwordSalt">The password salt.</param>
-		/// <param name="email">The email.</param>
-		/// <returns></returns>
-		public abstract HostInfo CreateHost(HostInfo host, string username, string password, string passwordSalt, string email);
+		/// <param name="hostInfo">The host information.</param>
+		public abstract bool UpdateHost(HostInfo hostInfo);
 		
 		#endregion Host
 
@@ -268,7 +241,7 @@ namespace Subtext.Framework.Providers
 		/// </summary>
 		/// <param name="feedbackItem"></param>
 		/// <returns></returns>
-		public abstract int CreateFeedback(FeedbackItem feedbackItem);
+		public abstract int Create(FeedbackItem feedbackItem);
 		
 		/// <summary>
 		/// Creates the specified entry attaching the specified categories.
@@ -276,14 +249,7 @@ namespace Subtext.Framework.Providers
 		/// <param name="entry">Entry.</param>
 		/// <param name="categoryIds">Category Ids.</param>
 		/// <returns></returns>
-		public abstract int CreateEntry(Entry entry, int[] categoryIds);
-
-        /// <summary>
-        /// Adds a new entry in the database.
-        /// </summary>
-        /// <param name="entry"></param>
-        /// <returns></returns>
-        public abstract int InsertEntry(Entry entry);
+		public abstract int Create(Entry entry, int[] categoryIds);
 
         /// <summary>
         /// Saves changes to the specified entry attaching the specified categories.
@@ -318,7 +284,7 @@ namespace Subtext.Framework.Providers
 
 		#region LinkCollection
 
-        public abstract ICollection<Link> GetLinkCollectionByPostID(int postID);
+        public abstract ICollection<Link> GetLinkCollectionByPostID(int PostID);
         public abstract ICollection<Link> GetLinksByCategoryID(int catID, bool activeOnly);
 
 		#endregion
@@ -347,10 +313,10 @@ namespace Subtext.Framework.Providers
 
 		public abstract bool UpdateLink(Link link);
 		public abstract int CreateLink(Link link);
-		public abstract bool UpdateLinkCategory(LinkCategory category);
-		public abstract int CreateLinkCategory(LinkCategory category);
-		public abstract bool DeleteLinkCategory(int categoryID);
-		public abstract bool DeleteLink(int linkID);
+		public abstract bool UpdateLinkCategory(LinkCategory lc);
+		public abstract int CreateLinkCategory(LinkCategory lc);
+		public abstract bool DeleteLinkCategory(int CategoryID);
+		public abstract bool DeleteLink(int LinkID);
 
 		#endregion
 
@@ -361,29 +327,25 @@ namespace Subtext.Framework.Providers
         public abstract IPagedCollection<ViewStat> GetPagedViewStats(int pageIndex, int pageSize, DateTime beginDate, DateTime endDate);
         public abstract IPagedCollection<Referrer> GetPagedReferrers(int pageIndex, int pageSize, int entryId);
 
-		public abstract bool TrackEntry(EntryView view);
-		public abstract bool TrackEntry(IEnumerable<EntryView> views);
+		public abstract bool TrackEntry(EntryView ev);
+		public abstract bool TrackEntry(IEnumerable<EntryView> evc);
 
 		#endregion
 
 		#region  Configuration
 
 		/// <summary>
-		/// Adds the initial blog configuration.  This is a convenience method for
-		/// allowing a user with a freshly installed blog to immediately gain access
+		/// Adds the initial blog configuration.  This is a convenience method for 
+		/// allowing a user with a freshly installed blog to immediately gain access 
 		/// to the admin section to edit the blog.
 		/// </summary>
-		/// <param name="title">The title.</param>
-		/// <param name="username">The username of the blog owner.</param>
-		/// <param name="formattedPassword">The password for the blog owner.</param>
-		/// <param name="passwordSalt">The password salt.</param>
-		/// <param name="passwordQuestion">The password reset question.</param>
-		/// <param name="passwordAnswer">The password reset answer.</param>
-		/// <param name="email">The email.</param>
-		/// <param name="host">The host.</param>
-		/// <param name="subfolder">The subfolder.</param>
+		/// <param name="title"></param>
+		/// <param name="userName">Name of the user.</param>
+		/// <param name="password">Password.</param>
+		/// <param name="host"></param>
+		/// <param name="subfolder"></param>
 		/// <returns></returns>
-		public abstract BlogInfo CreateBlog(string title, string username, string formattedPassword, string passwordSalt, string passwordQuestion, string passwordAnswer, string email, string host, string subfolder);
+		public abstract bool CreateBlog(string title, string userName, string password, string host, string subfolder);
 
 		/// <summary>
 		/// Updates the specified blog configuration.
@@ -427,7 +389,7 @@ namespace Subtext.Framework.Providers
 
 		#region KeyWords
 
-		public abstract KeyWord GetKeyWord(int keyWordID);
+		public abstract KeyWord GetKeyWord(int KeyWordID);
         public abstract ICollection<KeyWord> GetKeyWords();
         public abstract IPagedCollection<KeyWord> GetPagedKeyWords(int pageIndex, int pageSize);
 		public abstract bool UpdateKeyWord(KeyWord keyWord);
@@ -440,9 +402,9 @@ namespace Subtext.Framework.Providers
 
         public abstract ImageCollection GetImagesByCategoryID(int catID, bool activeOnly);
 		public abstract Image GetImage(int imageID, bool activeOnly);
-		public abstract int InsertImage(Image image);
-		public abstract bool UpdateImage(Image _image);
-		public abstract bool DeleteImage(int imageID);
+		public abstract int InsertImage(Subtext.Framework.Components.Image _image);
+		public abstract bool UpdateImage(Subtext.Framework.Components.Image _image);
+		public abstract bool DeleteImage(int ImageID);
 
 		#endregion
 
@@ -451,93 +413,6 @@ namespace Subtext.Framework.Providers
         public abstract ICollection<ArchiveCount> GetPostsByMonthArchive();
         public abstract ICollection<ArchiveCount> GetPostsByCategoryArchive();
 		#endregion
-
-		#region Plugins
-		/// <summary>
-		/// Returns the Guids of all plugins enabled for the current blog
-		/// </summary>
-		/// <returns>A list of Guids</returns>
-		public abstract ICollection<Guid> GetEnabledPlugins();
-
-		/// <summary>
-		/// Enable a plugin for the current blog
-		/// </summary>
-        /// <param name="pluginId">The Guid of the plugin to enable</param>
-		/// <returns>True if the operation completed correctly, false otherwise</returns>
-		public abstract bool EnablePlugin(Guid pluginId);
-
-		/// <summary>
-		/// Disable a plugin for the current blog
-		/// </summary>
-        /// <param name="pluginId">The Guid of the plugin to disable</param>
-		/// <returns>True if the operation completed correctly, false otherwise</returns>
-		public abstract bool DisablePlugin(Guid pluginId);
-
-		/// <summary>
-		/// Returns a list of all the blog level settings defined for a plugin
-		/// </summary>
-		/// <param name="pluginId">The Guid of the plugin</param>
-		/// <returns>A strongly type HashTable ettings</returns>
-		public abstract NameValueCollection GetPluginGeneralSettings(Guid pluginId);
-
-		/// <summary>
-		/// Add a new blog level settings for the plugin
-		/// </summary>
-		/// <param name="pluginId">The Guid of the plugin</param>
-		/// <param name="key">Key identifying the setting</param>
-		/// <param name="value">Value of the setting</param>
-		/// <returns>True if the operation completed correctly, false otherwise</returns>
-		public abstract bool InsertPluginGeneralSettings(Guid pluginId, string key, string value);
-
-		/// <summary>
-		/// Update a blog level settings for the plugin
-		/// </summary>
-		/// <param name="pluginId">The Guid of the plugin</param>
-		/// <param name="key">Key identifying the setting</param>
-		/// <param name="value">New value of the setting</param>
-		/// <returns>True if the operation completed correctly, false otherwise</returns>
-		public abstract bool UpdatePluginGeneralSettings(Guid pluginId, string key, string value);
-
 		#endregion
-
-        #region Admin
-
-        /// <summary>
-        /// Gets the specified page of log entries.
-        /// </summary>
-        /// <param name="pageIndex">Index of the page.</param>
-        /// <param name="pageSize">Size of the page.</param>
-        /// <returns></returns>
-        public abstract IDataReader GetPagedLogEntries(int pageIndex, int pageSize);
-	    
-        public abstract void ClearLog();
-
-        /// <summary>
-        /// Clears all content (Entries, Comments, Track/Ping-backs, Statistices, etc...) 
-        /// for a the current blog (sans the Image Galleries).
-        /// </summary>
-        /// <returns>
-        ///     TRUE - At least one unit of content was cleared.
-        ///     FALSE - No content was cleared.
-        /// </returns>
-        public abstract bool ClearBlogContent();
-
-        #endregion
-
-        #region Aggregate Data
-	    
-        /// <summary>
-        /// Returns data displayed on an aggregate blog's home page.
-        /// </summary>
-        /// <returns></returns>
-        public abstract DataSet GetAggregateHomePageData(int groupId);
-
-        public abstract DataTable GetAggregateRecentPosts(int groupId);
-
-        #endregion
-
-        #endregion
-
-
-    }
+	}
 }

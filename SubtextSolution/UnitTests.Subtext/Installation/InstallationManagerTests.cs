@@ -16,6 +16,7 @@
 using System;
 using MbUnit.Framework;
 using Subtext.Framework;
+using Subtext.Framework.Configuration;
 using Subtext.Framework.Exceptions;
 
 namespace UnitTests.Subtext.Installation
@@ -33,7 +34,8 @@ namespace UnitTests.Subtext.Installation
 		[RollBack]
 		public void IsInHostAdminDirectoryReturnsTrueResult()
 		{
-			UnitTestHelper.SetupBlog(string.Empty, "Subtext.Web", "HostAdmin/Import/BlahBlah.aspx");
+			string host = System.Guid.NewGuid().ToString().Replace("-", "");
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, "", "Subtext.Web", "HostAdmin/Import/BlahBlah.aspx");
 			Assert.IsTrue(InstallationManager.IsInHostAdminDirectory, "This request should be within the hostadmin/import directory.");	
 		}
 
@@ -55,8 +57,8 @@ namespace UnitTests.Subtext.Installation
 		[RollBack]
 		public void IsInInstallDirectoryReportsTrueCorrectly()
 		{
-			AssertIsInInstallDirectory("VirtDir", UnitTestHelper.GenerateRandomString());
-			AssertIsInInstallDirectory("", UnitTestHelper.GenerateRandomString());
+			AssertIsInInstallDirectory("VirtDir", System.Guid.NewGuid().ToString().Replace("-", ""));
+			AssertIsInInstallDirectory("", System.Guid.NewGuid().ToString().Replace("-", ""));
 			AssertIsInInstallDirectory("", "");
 		}
 
@@ -67,20 +69,25 @@ namespace UnitTests.Subtext.Installation
 		[RollBack]
 		public void IsInInstallDirectoryReportsFalseCorrectly()
 		{
-			AssertNotInInstallDirectory(UnitTestHelper.GenerateRandomString(), "");
-			AssertNotInInstallDirectory(UnitTestHelper.GenerateRandomString(), "VirtDir");
+			AssertNotInInstallDirectory(System.Guid.NewGuid().ToString().Replace("-", ""), "");
+			AssertNotInInstallDirectory(System.Guid.NewGuid().ToString().Replace("-", ""), "VirtDir");
 			AssertNotInInstallDirectory("", "");
 		}
 
-		static void AssertIsInInstallDirectory(string virtualDirectory, string subfolder)
+		void AssertIsInInstallDirectory(string virtualDirectory, string blogName)
 		{
-			UnitTestHelper.SetupBlog(subfolder, virtualDirectory, "Install/Default.aspx");
+			string host = System.Guid.NewGuid().ToString().Replace("-", "");
+			Config.CreateBlog("AssertIsInInstallDirectory", "username", "thePassword", host, blogName);
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, blogName, virtualDirectory, "Install/InstallationComplete.aspx");
 			Assert.IsTrue(InstallationManager.IsInInstallDirectory, "This request should be within the installation directory.");	
 		}
 
-		static void AssertNotInInstallDirectory(string virtualDirectory, string subfolder)
+		void AssertNotInInstallDirectory(string virtualDirectory, string blogName)
 		{
-			UnitTestHelper.SetupBlog(subfolder, virtualDirectory, "Admin/Default.aspx");
+			string host = System.Guid.NewGuid().ToString().Replace("-", "");
+			Config.CreateBlog("Title", "username", "thePassword", host, blogName);
+
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, blogName, virtualDirectory, "Admin/InstallationComplete.aspx");
 			Assert.IsFalse(InstallationManager.IsInInstallDirectory, "This request is indeed within the installation directory.");	
 		}
 	

@@ -12,6 +12,7 @@ namespace Subtext.Web.Admin.Pages {
     
     public partial class Syndication {
         protected Subtext.Web.Admin.WebUI.MessagePanel Messages;
+        protected Subtext.Web.Admin.WebUI.AdvancedPanel Edit;
         protected System.Web.UI.WebControls.CheckBox chkEnableSyndication;
         protected Subtext.Web.Controls.HelpToolTip HelpToolTip1;
         protected System.Web.UI.HtmlControls.HtmlImage helpImg;

@@ -1,6 +1,4 @@
 using System;
-using System.Security.Principal;
-using System.Threading;
 using System.Web.Caching;
 using MbUnit.Framework;
 using Rhino.Mocks;
@@ -18,6 +16,8 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 	[TestFixture]
 	public class SpamServiceTests
 	{
+		string _hostName = string.Empty;
+		
 		/// <summary>
 		/// Make sure when we create feedback, that it calls the comment service 
 		/// if enabled.
@@ -28,10 +28,7 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		[RollBack]
 		public void FeedbackCreateCallsCommentService(bool isSpam, bool isAdmin)
 		{
-			UnitTestHelper.SetupBlog();
-			//Need to set our user to a non-admin
-			Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity("NotAnAdmin"), new string[] { "Anonymous" });
-			
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
 			MockRepository mocks = new MockRepository();
 			IFeedbackSpamService service = (IFeedbackSpamService)mocks.CreateMock(typeof(IFeedbackSpamService));
 			Config.CurrentBlog.FeedbackSpamService = service;
@@ -56,6 +53,13 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 			Assert.AreEqual(!isSpam, feedback.Approved);
 		}
 		
+		[SetUp]
+		public void SetUp()
+		{
+			_hostName = UnitTestHelper.GenerateRandomString();
+			UnitTestHelper.SetHttpContextWithBlogRequest(_hostName, string.Empty);
+		}
+
 		[TearDown]
 		public void TearDown()
 		{

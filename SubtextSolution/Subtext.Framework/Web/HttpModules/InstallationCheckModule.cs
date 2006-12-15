@@ -1,24 +1,16 @@
 using System;
-using System.Configuration;
 using System.Web;
-using log4net;
+using Subtext.Extensibility.Providers;
 using Subtext.Framework;
-using Subtext.Framework.Logging;
-using Subtext.Framework.Threading;
 using Subtext.Framework.Web;
-using Subtext.Installation;
 
 namespace Subtext.Web.HttpModules
 {
 	/// <summary>
-	/// Checks the current installation status for a Subtext installation. 
-	/// If the installation needs an upgrade, then it will redirect to the 
-	/// upgrade page.
+	/// Maps an incoming URL to a blog.
 	/// </summary>
 	public class InstallationCheckModule : IHttpModule
 	{
-		private readonly static ILog Log = new Log();
-		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="InstallationCheckModule"/> class.
 		/// </summary>
@@ -61,33 +53,16 @@ namespace Subtext.Web.HttpModules
 			// or if we're missing a HostInfo record.
 			if((InstallationManager.IsInstallationActionRequired(VersionInfo.FrameworkVersion) || InstallationManager.HostInfoRecordNeeded))
 			{
-				InstallationState state = InstallationManager.GetCurrentInstallationState();
+				InstallationState state = InstallationManager.GetCurrentInstallationState(VersionInfo.FrameworkVersion);
 				if(state == InstallationState.NeedsInstallation && !InstallationManager.IsInHostAdminDirectory && !InstallationManager.IsInInstallDirectory)
 				{
 					HttpContext.Current.Response.Redirect("~/Install/", true);
 					return;
 				}
 
-				if(state == InstallationState.NeedsUpgrade)
+				if(state == InstallationState.NeedsUpgrade || state == InstallationState.NeedsRepair)
 				{
-					if(ConfigurationManager.AppSettings["StartUpgradeImmediately"] == "true" && HttpContext.Current.Application["UpgradeInitiated"] == null)
-					{
-						HttpContext.Current.Application.Lock();
-						try
-						{
-							if (HttpContext.Current.Application["UpgradeInitiated"] == null)
-							{
-								HttpContext.Current.Application["UpgradeInitiated"] = DateTime.Now;
-								StartUpgradeAsynch();
-							}
-						}
-						finally
-						{
-							HttpContext.Current.Application.UnLock();
-						}
-					}
-					
-					if(!InstallationManager.IsOnLoginPage && !InstallationManager.IsInSystemMessageDirectory)
+					if(!InstallationManager.IsInUpgradeDirectory && !InstallationManager.IsOnLoginPage && !InstallationManager.IsInSystemMessageDirectory)
 					{
 						HttpContext.Current.Response.Redirect("~/SystemMessages/UpgradeInProgress.aspx", true);
 						return;
@@ -95,33 +70,5 @@ namespace Subtext.Web.HttpModules
 				}
 			}
 		}
-
-		private static void StartUpgradeAsynch()
-		{
-			AsynchUpgrade asynchUpgrade = delegate(HttpApplicationState application)
-			{
-				try
-				{
-					Log.Warn("Upgrading Subtext Installation");
-					Installer.Upgrade();
-					Log.Warn("Upgrade Complete!");
-										
-					Log.Info("Attempting to update Application State to flag upgrade completion.");
-					application.Lock();
-					application["UpgradeInitiated"] = null;
-					Log.Info("Updated Application State to flag upgrade completion!");
-					application.UnLock();
-				}
-				catch(Exception exception)
-				{
-					Log.Error("Exception occurred during automatic upgrade", exception);
-				}
-			};
-
-			AsyncHelper.FireAndForget(asynchUpgrade, HttpContext.Current.Application);
-		}
-
-		delegate void AsynchUpgrade(HttpApplicationState application);
-		
 	}
 }

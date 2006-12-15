@@ -14,8 +14,8 @@
 #endregion
 
 using System;
+using Subtext.Extensibility.Providers;
 using Subtext.Framework;
-using Subtext.Installation;
 
 namespace Subtext.Web.HostAdmin.Upgrade
 {
@@ -30,7 +30,7 @@ namespace Subtext.Web.HostAdmin.Upgrade
 	{
 		protected void Page_Load(object sender, System.EventArgs e)
 		{
-			if(InstallationManager.GetCurrentInstallationState() == InstallationState.Complete)
+			if(InstallationManager.GetCurrentInstallationState(VersionInfo.FrameworkVersion) == InstallationState.Complete)
 			{
 				Response.Redirect("UpgradeComplete.aspx");
 			}
@@ -59,7 +59,7 @@ namespace Subtext.Web.HostAdmin.Upgrade
 
 		private void btnUpgrade_Click(object sender, EventArgs e)
 		{
-			Installer.Upgrade();
+			InstallationProvider.Instance().Upgrade();
 			Response.Redirect("UpgradeComplete.aspx");
 		}
 	}

@@ -29,18 +29,18 @@ namespace Subtext.Framework.Syndication
 	public abstract class BaseAtomWriter : BaseSyndicationWriter<Entry>
 	{
 		#region TimeHelpers
-		private static string W3UTC(DateTime dt, TimeZone tz)
+		private string W3UTC(DateTime dt, TimeZone tz)
 		{
 			return dt.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture) + tz.GetUtcOffset(dt);
 		}
 
-		private static string W3UTCZ(DateTime dt)
+		private string W3UTCZ(DateTime dt)
 		{
 			return dt.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
 		}
 		#endregion
 
-		private bool isBuilt;
+		private bool isBuilt = false;
 
 		/// <summary>
 		/// Bases the syndication writer.

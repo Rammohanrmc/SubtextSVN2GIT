@@ -29,6 +29,7 @@ namespace Subtext.Framework.Syndication.Compression
 		public SyndicationCompressionFilter(Stream stream)
 		{
 			_stream = stream;
+			_encoding = null;
 		}
 		#endregion
 

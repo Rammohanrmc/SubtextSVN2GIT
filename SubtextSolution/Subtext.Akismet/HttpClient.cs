@@ -1,10 +1,7 @@
 using System;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Text;
-using Subtext.Akismet.Properties;
 
 namespace Subtext.Akismet
 {
@@ -37,38 +34,36 @@ namespace Subtext.Akismet
 		/// </summary>
 		/// <param name="url">The URL.</param>
 		/// <param name="userAgent">The user agent.</param>
-		/// <param name="timeout">The timeout in milliseconds.</param>
+		/// <param name="timeout">The timeout.</param>
 		/// <param name="formParameters">The form parameters.</param>
 		/// <param name="proxy">The proxy.</param>
 		/// <returns></returns>
 		public virtual string PostRequest(Uri url, string userAgent, int timeout, string formParameters, IWebProxy proxy)
 		{
-			if (formParameters == null)
-				throw new ArgumentNullException("formParameters", Resources.ArgumentNull_String);
-			
 			System.Net.ServicePointManager.Expect100Continue = false;
 			HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
-
-			Debug.Assert(request != null, "HttpWebRequest should not be null", string.Format("Calling WebRequest.Create(url) produced a null HttpWebRequest instance for the URL '{0}'", url));
 
 			if (proxy != null)
 				request.Proxy = proxy;
 			
-			request.UserAgent = userAgent;
-			request.Timeout = timeout;
-			request.Method = "POST";
-			request.ContentLength = formParameters.Length;
-			request.ContentType = "application/x-www-form-urlencoded; charset=utf-8";
-			request.KeepAlive = true;
+			if (null != request)
+			{			
+				request.UserAgent = userAgent;
+				request.Timeout = timeout;
+				request.Method = "POST";
+				request.ContentLength = formParameters.Length;
+				request.ContentType = "application/x-www-form-urlencoded; charset=utf-8";
+				request.KeepAlive = true;
 
-			using (StreamWriter myWriter = new StreamWriter(request.GetRequestStream()))
-			{
-				myWriter.Write(formParameters);
+				using (StreamWriter myWriter = new StreamWriter(request.GetRequestStream()))
+				{
+					myWriter.Write(formParameters);
+				}
 			}
 
 			HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 			if (response.StatusCode < HttpStatusCode.OK && response.StatusCode >= HttpStatusCode.Ambiguous)
-				throw new InvalidResponseException(string.Format(CultureInfo.InvariantCulture, Resources.InvalidResponse_Generic, response.StatusCode), response.StatusCode);
+				throw new InvalidResponseException(string.Format("The service was not able to handle our request. Http Status '{0}'.", response.StatusCode), response.StatusCode);
 
 			string responseText;
 			using(StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.ASCII)) //They only return "true" or "false"

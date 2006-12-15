@@ -17,7 +17,7 @@
 		HeaderText="Referrers" Collapsible="False" LinkStyle="Image" LinkBeforeHeader="True" LinkText="[toggle]">
 		<ASP:Repeater id="rprSelectionList" runat="server">
 			<HeaderTemplate>
-				<table id="Listing" class="Listing" cellSpacing="0" cellPadding="0" border="0">
+				<table id="Listing" class="Listing" cellSpacing="0" cellPadding="0" border="0" style="<%= CheckHiddenStyle() %>">
 					<tr>
 						<th>
 							Referred</th>

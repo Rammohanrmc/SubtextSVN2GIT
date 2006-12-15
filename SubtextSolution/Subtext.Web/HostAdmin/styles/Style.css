@@ -1,11 +1,5 @@
 /******* Styles from Admin.css ****/
-table.Listing tr.Alt
-{
-	color: inherit;
-	background: #F5F5F5;
-}
-
-table.Listing tr
+table.Listing tr.Alt 
 {
 	color: inherit;
 	background: #FFFFFF;
@@ -588,7 +582,7 @@ table.log
 {
 	position: relative;
 	left: -200px;
-	width: 775px;
+	width: 780px;
 }
 
 table.log th.logger

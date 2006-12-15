@@ -53,7 +53,7 @@ namespace Subtext.Framework.Tracking
 		{
 		}
 
-		public static bool TrackBackPing(string pageText, Uri url, string title, Uri link, string blogname, string description)
+		public bool TrackBackPing(string pageText, Uri url, string title, Uri link, string blogname, string description)
 		{
 			string trackBackItem = GetTrackBackText(pageText, url, link);
 			if(trackBackItem != null)
@@ -74,7 +74,7 @@ namespace Subtext.Framework.Tracking
 			return true;
 		}
 
-		private static bool SendPing(Uri trackBackItem, string parameters)
+		private bool SendPing(Uri trackBackItem, string parameters)
 		{
 			HttpWebRequest request = HttpHelper.CreateRequest(trackBackItem);
 			request.Method = "POST";
@@ -93,7 +93,7 @@ namespace Subtext.Framework.Tracking
 			return (response.StatusCode == HttpStatusCode.OK);
 		}
 
-		private static string GetTrackBackText(string pageText, Uri url, Uri postUrl)
+		private string GetTrackBackText(string pageText, Uri url, Uri postUrl)
 		{
 			if(!Regex.IsMatch(pageText, postUrl.ToString(), RegexOptions.IgnoreCase|RegexOptions.Singleline))
 			{

@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Subtext.Framework.Configuration;
@@ -25,7 +24,6 @@ using Subtext.Framework.Format;
 using Subtext.Framework.Tracking;
 using Subtext.Web.Controls;
 using Subtext.Framework.Security;
-using Subtext.Extensibility.Plugins;
 
 namespace Subtext.Web.UI.Controls
 {
@@ -62,9 +60,6 @@ namespace Subtext.Web.UI.Controls
 			//if found
 			if(entry != null)
 			{
-				//Raise event before any processing takes place
-				SubtextEvents.OnSingleEntryRendering(entry, new SubtextEventArgs());
-
 				BindCurrentEntryControls(entry, this);
 				
 				DisplayEditLink(entry);
@@ -73,10 +68,10 @@ namespace Subtext.Web.UI.Controls
 				EntryTracker.Track(Context, entry.Id, CurrentBlog.Id);
 
 				//Set the page title
-                Globals.SetTitle(HttpUtility.HtmlEncode(entry.Title), Context);
+				Globals.SetTitle(entry.Title, Context);
 
 				//Sent entry properties
-                TitleUrl.Text = HttpUtility.HtmlEncode(entry.Title);
+				TitleUrl.Text = entry.Title;
 				ControlHelper.SetTitleIfNone(TitleUrl, "Title of this entry.");
 				TitleUrl.NavigateUrl = entry.Url;
 				Body.Text = entry.Body;

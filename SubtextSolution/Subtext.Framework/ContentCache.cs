@@ -34,6 +34,8 @@ namespace Subtext.Framework
 			return cache;
 		}
 
+		private ContentCache() {}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ContentCache"/> class. 
 		/// The specified <see cref="Cache"/> instance is wrapped by this instance.
@@ -45,7 +47,7 @@ namespace Subtext.Framework
 		}
 
 		//Returns a language aware cache key.
-		private static string GetCacheKey(string key)
+		private string GetCacheKey(string key)
 		{
 			return key + ":" + Thread.CurrentThread.CurrentCulture.LCID.ToString(CultureInfo.InvariantCulture);
 		}

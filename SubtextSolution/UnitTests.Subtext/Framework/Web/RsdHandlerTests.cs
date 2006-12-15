@@ -20,7 +20,8 @@ namespace UnitTests.Subtext.Framework.Web
 		{
 			StringBuilder builder = new StringBuilder();
 			XmlWriter writer = XmlWriter.Create(builder);
-			
+			RsdHandler handler = new RsdHandler();
+
 			BlogInfo blog = new BlogInfo();
 			blog.Id = 8675309;
 			blog.Subfolder = subfolder;
@@ -28,12 +29,12 @@ namespace UnitTests.Subtext.Framework.Web
 			UnitTestHelper.SetHttpContextWithBlogRequest(host, subfolder, application);
 
 			HttpContext.Current.Cache["BlogInfo-" + subfolder] = blog;
-
-            RsdHandler.WriteRsd(writer, blog);
+			
+			handler.WriteRsd(writer, blog);
 			
 			//Now lets assert some things.
 			XmlDocument xml = new XmlDocument();
-			Console.WriteLine(builder);
+			Console.WriteLine(builder.ToString());
 			xml.LoadXml(builder.ToString());
 
 			XmlNamespaceManager nsmgr = new XmlNamespaceManager(xml.NameTable);

@@ -19,7 +19,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.Diagnostics;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using log4net;
@@ -40,8 +39,8 @@ namespace Subtext.Framework
 	/// </summary>
 	public static class Entries
 	{
-		private readonly static ILog log = new Log();
-
+		private readonly static ILog log = new Log();		
+	
 		#region Paged Posts
 
 		/// <summary>
@@ -52,7 +51,7 @@ namespace Subtext.Framework
 		/// <param name="pageIndex"></param>
 		/// <param name="pageSize"></param>
 		/// <returns></returns>
-		public static IPagedCollection<Entry> GetPagedEntries(PostType postType, int categoryID, int pageIndex, int pageSize)
+        public static IPagedCollection<Entry> GetPagedEntries(PostType postType, int categoryID, int pageIndex, int pageSize)
 		{
 			return ObjectProvider.Instance().GetPagedEntries(postType, categoryID, pageIndex, pageSize);
 		}
@@ -68,7 +67,7 @@ namespace Subtext.Framework
 		/// </summary>
 		/// <param name="itemCount">Item count.</param>
 		/// <returns></returns>
-		public static ICollection<EntryDay> GetHomePageEntries(int itemCount)
+        public static ICollection<EntryDay> GetHomePageEntries(int itemCount)
 		{
 			return GetBlogPosts(itemCount, PostConfig.DisplayOnHomePage | PostConfig.IsActive);
 		}
@@ -83,19 +82,19 @@ namespace Subtext.Framework
 		/// <param name="itemCount">Item count.</param>
 		/// <param name="pc">Pc.</param>
 		/// <returns></returns>
-		public static ICollection<EntryDay> GetBlogPosts(int itemCount, PostConfig pc)
+        public static ICollection<EntryDay> GetBlogPosts(int itemCount, PostConfig pc)
 		{
 			return ObjectProvider.Instance().GetBlogPosts(itemCount, pc);
 		}
 
 		public static ICollection<EntryDay> GetPostsByMonth(int month, int year)
 		{
-			return ObjectProvider.Instance().GetPostsByMonth(month, year);
+			return ObjectProvider.Instance().GetPostsByMonth(month,year);
 		}
 
-		public static ICollection<EntryDay> GetPostsByCategoryID(int itemCount, int catID)
+        public static ICollection<EntryDay> GetPostsByCategoryID(int itemCount, int catID)
 		{
-			return ObjectProvider.Instance().GetPostsByCategoryID(itemCount, catID);
+			return ObjectProvider.Instance().GetPostsByCategoryID(itemCount,catID);
 		}
 
 		//#endregion
@@ -109,7 +108,7 @@ namespace Subtext.Framework
 		/// <returns></returns>
 		public static IList<Entry> GetMainSyndicationEntries(int itemCount)
 		{
-			return GetRecentPosts(itemCount, PostType.BlogPost, PostConfig.IncludeInMainSyndication | PostConfig.IsActive, true);
+            return GetRecentPosts(itemCount, PostType.BlogPost, PostConfig.IncludeInMainSyndication | PostConfig.IsActive, true);
 		}
 
 		/// <summary>
@@ -117,7 +116,7 @@ namespace Subtext.Framework
 		/// </summary>
 		/// <param name="parentEntry">Parent entry.</param>
 		/// <returns></returns>
-		public static IList<FeedbackItem> GetFeedBack(Entry parentEntry)
+        public static IList<FeedbackItem> GetFeedBack(Entry parentEntry)
 		{
 			return ObjectProvider.Instance().GetFeedbackForEntry(parentEntry);
 		}
@@ -136,19 +135,19 @@ namespace Subtext.Framework
 			return ObjectProvider.Instance().GetConditionalEntries(itemCount, postType, postConfig, includeCategories);
 		}
 
-		public static IList<Entry> GetPostCollectionByMonth(int month, int year)
+	    public static IList<Entry> GetPostCollectionByMonth(int month, int year)
 		{
-			return ObjectProvider.Instance().GetPostCollectionByMonth(month, year);
+			return ObjectProvider.Instance().GetPostCollectionByMonth(month,year);
 		}
 
-		public static IList<Entry> GetPostsByDayRange(DateTime start, DateTime stop, PostType postType, bool activeOnly)
+        public static IList<Entry> GetPostsByDayRange(DateTime start, DateTime stop, PostType postType, bool activeOnly)
 		{
-			return ObjectProvider.Instance().GetPostsByDayRange(start, stop, postType, activeOnly);
+			return  ObjectProvider.Instance().GetPostsByDayRange(start,stop,postType, activeOnly);
 		}
 
-		public static IList<Entry> GetEntriesByCategory(int itemCount, int catID, bool activeOnly)
+        public static IList<Entry> GetEntriesByCategory(int itemCount, int catID, bool activeOnly)
 		{
-			return ObjectProvider.Instance().GetEntriesByCategory(itemCount, catID, activeOnly);
+			return ObjectProvider.Instance().GetEntriesByCategory(itemCount,catID, activeOnly);
 		}
 		#endregion
 
@@ -164,7 +163,7 @@ namespace Subtext.Framework
 		{
 			return ObjectProvider.Instance().GetCommentByChecksumHash(checksumHash);
 		}
-
+		
 		/// <summary>
 		/// Gets the entry from the data store by id.
 		/// </summary>
@@ -174,8 +173,8 @@ namespace Subtext.Framework
 		/// <returns></returns>
 		public static Entry GetEntry(int entryId, PostConfig postConfig, bool includeCategories)
 		{
-			bool isActive = ((postConfig & PostConfig.IsActive) == PostConfig.IsActive);
-			return ObjectProvider.Instance().GetEntry(entryId, isActive, includeCategories);
+            bool isActive = ((postConfig & PostConfig.IsActive) == PostConfig.IsActive);
+            return ObjectProvider.Instance().GetEntry(entryId, isActive, includeCategories);
 		}
 
 		/// <summary>
@@ -183,17 +182,17 @@ namespace Subtext.Framework
 		/// </summary>
 		/// <param name="EntryName">Name of the entry.</param>
 		/// <param name="postConfig">The entry option used to constrain the search.</param>
-		/// <param name="includeCategories">Whether the returned entry should have its categories collection populated.</param>
+        /// <param name="includeCategories">Whether the returned entry should have its categories collection populated.</param>
 		/// <returns></returns>
-		public static Entry GetEntry(string EntryName, PostConfig postConfig, bool includeCategories)
+        public static Entry GetEntry(string EntryName, PostConfig postConfig, bool includeCategories)
 		{
-			bool isActive = ((postConfig & PostConfig.IsActive) == PostConfig.IsActive);
-			return ObjectProvider.Instance().GetEntry(EntryName, isActive, includeCategories);
+            bool isActive = ((postConfig & PostConfig.IsActive) == PostConfig.IsActive);
+            return ObjectProvider.Instance().GetEntry(EntryName, isActive, includeCategories);
 		}
 		#endregion
 
 		#region Delete
-
+	
 		/// <summary>
 		/// Deletes the entry with the specified entryId.
 		/// </summary>
@@ -214,31 +213,31 @@ namespace Subtext.Framework
 		public static int Create(Entry entry)
 		{
 			Debug.Assert(entry.PostType != PostType.None, "Posttype should never be null.");
-
-			if (Config.CurrentBlog.AutoFriendlyUrlEnabled
+			
+			if(Config.CurrentBlog.AutoFriendlyUrlEnabled
 				&& String.IsNullOrEmpty(entry.EntryName)
 				&& !String.IsNullOrEmpty(entry.Title))
 			{
 				entry.EntryName = AutoGenerateFriendlyUrl(entry.Title);
 			}
-
-			if (NullValue.IsNull(entry.DateCreated))
+			
+			if(NullValue.IsNull(entry.DateCreated))
 			{
 				entry.DateCreated = Config.CurrentBlog.TimeZone.Now;
 			}
 
-			if (entry.IsActive && entry.IncludeInMainSyndication)
+			if(entry.IsActive && entry.IncludeInMainSyndication)
 				entry.DateSyndicated = Config.CurrentBlog.TimeZone.Now;
 			else
 				entry.DateSyndicated = NullValue.NullDateTime;
 
-			int[] categoryIds = { };
-			if (entry.Categories.Count > 0)
+			int[] categoryIds = {};
+			if(entry.Categories.Count > 0)
 			{
 				categoryIds = GetCategoryIdsFromCategoryTitles(entry);
 			}
-
-			int id = ObjectProvider.Instance().CreateEntry(entry, categoryIds);
+			
+			int id = ObjectProvider.Instance().Create(entry, categoryIds);
 			log.Debug("Created entry, running notification services.");
 			NotificationServices.Run(entry);
 			return id;
@@ -250,10 +249,10 @@ namespace Subtext.Framework
 			Collection<int> catIds = new Collection<int>();
 			//Ok, we have categories specified in the entry, but not the IDs.
 			//We need to do something.
-			foreach (string category in entry.Categories)
+			foreach(string category in entry.Categories)
 			{
 				LinkCategory cat = Links.GetLinkCategory(category, true);
-				if (cat != null)
+				if(cat != null)
 				{
 					catIds.Add(cat.Id);
 				}
@@ -270,11 +269,11 @@ namespace Subtext.Framework
 		/// <returns></returns>
 		public static string AutoGenerateFriendlyUrl(string title)
 		{
-			if (title == null)
+			if(title == null)
 				throw new ArgumentNullException("title", "Cannot generate friendly url from null title.");
 
-			NameValueCollection friendlyUrlSettings = (NameValueCollection)ConfigurationManager.GetSection("FriendlyUrlSettings");
-			if (friendlyUrlSettings == null)
+            NameValueCollection friendlyUrlSettings = (NameValueCollection)ConfigurationManager.GetSection("FriendlyUrlSettings");
+			if(friendlyUrlSettings == null)
 			{
 				//Default to old behavior.
 				return AutoGenerateFriendlyUrl(title, char.MinValue);
@@ -291,7 +290,7 @@ namespace Subtext.Framework
 			{
 				wordCount = int.Parse(friendlyUrlSettings["limitWordCount"]);
 			}
-
+			
 			// break down to number of words. If 0 (or less) don't mess with the title
 			if (wordCount > 0)
 			{
@@ -308,13 +307,13 @@ namespace Subtext.Framework
 						wordCharCounter = wordCharCounter + words[i].Length + 1;
 					}
 
-					title = title.Substring(0, wordCharCounter - 1);
+					title = title.Substring(0, wordCharCounter-1);
 				}
 			}
 
 			// separating characters are limited due to the problems certain chars
 			// can cause. Only - _ and . are allowed
-			if ((wordSeparator == "_") || (wordSeparator == ".") || (wordSeparator == "-"))
+			if ((wordSeparator == "_") || (wordSeparator == ".") || (wordSeparator =="-"))
 			{
 				return AutoGenerateFriendlyUrl(title, wordSeparator[0]);
 			}
@@ -334,37 +333,37 @@ namespace Subtext.Framework
 		/// <returns></returns>
 		public static string AutoGenerateFriendlyUrl(string title, char wordSeparator)
 		{
-			if (title == null)
+			if(title == null)
 				throw new ArgumentNullException("title", "Cannot generate friendly url from null title.");
-
+			
 			string entryName = RemoveNonWordCharacters(title);
 			entryName = ReplaceSpacesWithSeparator(entryName, wordSeparator);
 			entryName = HttpUtility.UrlEncode(entryName);
 			entryName = RemoveTrailingPeriods(entryName);
-			entryName = entryName.Trim(new char[] { wordSeparator });
+			entryName = entryName.Trim(new char[] {wordSeparator});
 			entryName = RemoveDoublePeriods(entryName);
-
-			if (StringHelper.IsNumeric(entryName))
-			{
-				entryName = "n" + wordSeparator + entryName;
-			}
+		    
+		    if (StringHelper.IsNumeric(entryName))
+		    {
+                entryName = "n" + wordSeparator + entryName;
+		    }
 
 			string newEntryName = entryName;
 			int tryCount = 0;
-			while (ObjectProvider.Instance().GetEntry(newEntryName, false, false) != null)
+			while(ObjectProvider.Instance().GetEntry(newEntryName, false, false) != null)
 			{
-				if (tryCount == 1)
+				if(tryCount == 1)
 					newEntryName = entryName + "Again";
-				if (tryCount == 2)
+				if(tryCount == 2)
 					newEntryName = entryName + "YetAgain";
-				if (tryCount == 3)
+				if(tryCount == 3)
 					newEntryName = entryName + "AndAgain";
-				if (tryCount == 4)
+				if(tryCount == 4)
 					newEntryName = entryName + "OnceMore";
-				if (tryCount == 5)
+				if(tryCount == 5)
 					newEntryName = entryName + "ToBeatADeadHorse";
 
-				if (tryCount++ > 5)
+				if(tryCount++ > 5)
 					break; //Allow an exception to get thrown later.
 			}
 
@@ -373,7 +372,7 @@ namespace Subtext.Framework
 
 		static string ReplaceSpacesWithSeparator(string text, char wordSeparator)
 		{
-			if (wordSeparator == char.MinValue)
+			if(wordSeparator == char.MinValue)
 			{
 				//Special case if we are just removing spaces.
 				return StringHelper.PascalCase(text);
@@ -388,21 +387,21 @@ namespace Subtext.Framework
 		{
 			Regex regex = new Regex(@"[\w\d\. ]+", RegexOptions.Compiled);
 			MatchCollection matches = regex.Matches(text);
+			string cleansedText = string.Empty;
 
-			StringBuilder cleansedText = new StringBuilder();
-			foreach (Match match in matches)
+			foreach(Match match in matches)
 			{
-				if (match.Value.Length > 0)
+				if(match.Value.Length > 0)
 				{
-					cleansedText.Append(match.Value);
+					cleansedText += match.Value;
 				}
-			}
-			return cleansedText.ToString();
+			}			
+			return cleansedText;
 		}
-
+		
 		static string RemoveDoublePeriods(string text)
 		{
-			while (text.IndexOf("..") > -1)
+			while(text.IndexOf("..") > -1)
 			{
 				text = text.Replace("..", ".");
 			}
@@ -426,12 +425,12 @@ namespace Subtext.Framework
 		/// <returns></returns>
 		public static bool Update(Entry entry)
 		{
-			if (NullValue.IsNull(entry.DateSyndicated) && entry.IsActive && entry.IncludeInMainSyndication)
+			if(NullValue.IsNull(entry.DateSyndicated) && entry.IsActive && entry.IncludeInMainSyndication)
 			{
 				entry.DateSyndicated = Config.CurrentBlog.TimeZone.Now;
 			}
-
-			if (!entry.IncludeInMainSyndication)
+			
+			if(!entry.IncludeInMainSyndication)
 			{
 				entry.DateSyndicated = NullValue.NullDateTime;
 			}
@@ -458,9 +457,10 @@ namespace Subtext.Framework
 
 		public static bool SetEntryCategoryList(int EntryID, int[] Categories)
 		{
-			return ObjectProvider.Instance().SetEntryCategoryList(EntryID, Categories);
+			return ObjectProvider.Instance().SetEntryCategoryList(EntryID,Categories);
 		}
 
 		#endregion
 	}
 }
+

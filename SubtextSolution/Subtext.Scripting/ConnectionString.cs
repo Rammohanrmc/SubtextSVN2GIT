@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace Subtext.Scripting
@@ -50,12 +49,6 @@ namespace Subtext.Scripting
 		/// <returns></returns>
 		public static ConnectionString Parse(string connectionString)
 		{
-			if (connectionString == null)
-				throw new ArgumentNullException("connectionString", "Cannot parse a null connection string");
-
-			if (connectionString.Length == 0)
-				return ConnectionString.Empty;
-
 			return new ConnectionString(connectionString);
 		}
 
@@ -125,8 +118,8 @@ namespace Subtext.Scripting
 		{
 			get
 			{
-				return String.Compare(_securityType, "sspi", StringComparison.InvariantCultureIgnoreCase) == 0
-					|| String.Compare(_securityType, "true", StringComparison.InvariantCultureIgnoreCase) == 0;
+				return String.Compare(_securityType, "sspi", true) == 0 
+					|| String.Compare(_securityType, "true", true) == 0;
 			}
 
 			set
@@ -149,9 +142,9 @@ namespace Subtext.Scripting
 		public override string ToString()
 		{
 			if(TrustedConnection)
-				return string.Format(CultureInfo.InvariantCulture, _trustedConnectionFormatString, _serverFieldName, _server, _databaseFieldName, _database, _securityTypeText);
+				return string.Format(_trustedConnectionFormatString, _serverFieldName, _server, _databaseFieldName, _database, _securityTypeText);
 			else
-				return string.Format(CultureInfo.InvariantCulture, _connectionFormatString, _serverFieldName, _server, _databaseFieldName, _database, _userId, _password, _securityTypeText);
+				return string.Format(_connectionFormatString, _serverFieldName, _server, _databaseFieldName, _database, _userId, _password, _securityTypeText);
 		}
 
 		private ConnectionString(string connectionString)

@@ -19,5 +19,7 @@ OSQL -E -d master -Q "CREATE DATABASE [%DBNAME%]"
 OSQL -E -d %DBNAME% -Q "sp_grantdbaccess '%COMPUTERNAME%\ASPNET'"
 OSQL -E -d %DBNAME% -Q "sp_addrolemember 'db_owner', '%COMPUTERNAME%\ASPNET'"
 
+IISRESET /RESTART
+NET START W3SVC
 
 PAUSE

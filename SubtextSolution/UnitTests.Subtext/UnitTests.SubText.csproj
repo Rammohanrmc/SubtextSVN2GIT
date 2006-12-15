@@ -108,16 +108,49 @@
       <Name>freetextbox</Name>
       <HintPath>ExternalDependencies\freetextbox.dll</HintPath>
     </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.0.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL" />
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <Name>ICSharpCode.SharpZipLib</Name>
+      <HintPath>ExternalDependencies\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=227c66cf5503649a, processorArchitecture=MSIL" />
-    <Reference Include="MbUnit.Framework, Version=1.0.2531.41788, Culture=neutral, PublicKeyToken=5e72ecd30bc408d5" />
-    <Reference Include="MbUnit.Framework.1.1, Version=1.0.2531.41792, Culture=neutral, PublicKeyToken=5e72ecd30bc408d5" />
+    <Reference Include="MbUnit.Framework">
+      <Name>MbUnit.Framework</Name>
+      <HintPath>ExternalDependencies\MbUnit.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="MbUnit.Framework.1.1">
+      <Name>MbUnit.Framework.1.1</Name>
+      <HintPath>ExternalDependencies\MbUnit.Framework.1.1.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.ApplicationBlocks.Data, Version=1.0.2379.25601, Culture=neutral" />
-    <Reference Include="QuickGraph, Version=2.21.1.0, Culture=neutral, PublicKeyToken=975e84d0c8d6464d" />
-    <Reference Include="QuickGraph.Algorithms, Version=2.21.1.0, Culture=neutral, PublicKeyToken=975e84d0c8d6464d" />
-    <Reference Include="QuickGraph.Algorithms.Graphviz, Version=2.21.1.0, Culture=neutral" />
-    <Reference Include="Refly, Version=2.21.1.0, Culture=neutral, PublicKeyToken=829676e11975a31c" />
-    <Reference Include="Rhino.Mocks, Version=2.9.6.40380, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL" />
+    <Reference Include="NGraphviz">
+      <Name>NGraphviz</Name>
+      <HintPath>ExternalDependencies\NGraphviz.dll</HintPath>
+    </Reference>
+    <Reference Include="NGraphviz.Helpers">
+      <Name>NGraphviz.Helpers</Name>
+      <HintPath>ExternalDependencies\NGraphviz.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="NGraphviz.Layout">
+      <Name>NGraphviz.Layout</Name>
+      <HintPath>ExternalDependencies\NGraphviz.Layout.dll</HintPath>
+    </Reference>
+    <Reference Include="QuickGraph">
+      <Name>QuickGraph</Name>
+      <HintPath>ExternalDependencies\QuickGraph.dll</HintPath>
+    </Reference>
+    <Reference Include="QuickGraph.Algorithms">
+      <Name>QuickGraph.Algorithms</Name>
+      <HintPath>ExternalDependencies\QuickGraph.Algorithms.dll</HintPath>
+    </Reference>
+    <Reference Include="QuickGraph.Algorithms.Graphviz">
+      <Name>QuickGraph.Algorithms.Graphviz</Name>
+      <HintPath>ExternalDependencies\QuickGraph.Algorithms.Graphviz.dll</HintPath>
+    </Reference>
+    <Reference Include="Refly">
+      <Name>Refly</Name>
+      <HintPath>ExternalDependencies\Refly.dll</HintPath>
+    </Reference>
+    <Reference Include="Rhino.Mocks, Version=2.8.7.11026, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL" />
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -192,26 +225,11 @@
       <Link>VersionInfo.Designer.cs</Link>
     </Compile>
     <Compile Include="Akismet\AkismetApiTests.cs" />
-    <Compile Include="Akismet\AkismetCommentTests.cs" />
-    <Compile Include="Akismet\AkismetSpamServiceTests.cs" />
-    <Compile Include="Akismet\HttpClientTests.cs" />
     <Compile Include="AssemblySetUpAndCleanUp.cs" />
     <Compile Include="BlogMl\BlogMlImportTests.cs" />
     <Compile Include="BlogMl\BlogMLReaderTests.cs" />
     <Compile Include="BlogMl\BlogMlWriterTests.cs" />
     <Compile Include="BlogMl\SubtextBlogMlWriterTests.cs" />
-    <Compile Include="Framework\NullValueTests.cs" />
-    <Compile Include="Framework\Providers\GenericProviderCollectionTests.cs" />
-    <Compile Include="Framework\Security\SecurityTests.cs" />
-    <Compile Include="Framework\Security\SubtextMembershipProviderTests.cs" />
-    <Compile Include="Framework\Security\SubtextRoleProviderTests.cs" />
-    <Compile Include="Framework\Web\BaseHttpHandlerTests.cs" />
-    <Compile Include="Installation\InstallerTests.cs" />
-    <Compile Include="Scripting\ConnectionStringTests.cs" />
-    <Compile Include="Scripting\SqlScriptRunnerTests.cs" />
-    <Compile Include="Scripting\TemplateParameterCollectionTests.cs" />
-    <Compile Include="Scripting\TemplateParameterTests.cs" />
-    <Compile Include="SimulatedRequestContext.cs" />
     <Compile Include="Extensibility\DotNetOpenMailProviderSendTests.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -244,17 +262,18 @@
     <Compile Include="Framework\Configuration\BlogCreationTests.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Framework\Configuration\ConfigTests.cs" />
     <Compile Include="Framework\Data\CacherTests.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Framework\Data\ContentCacheTests.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Framework\Data\DatabaseObjectProviderTests.cs" />
     <Compile Include="Framework\Data\DataHelperTests.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Framework\Data\PagedCollectionRetrievalTests.cs" />
+    <Compile Include="Framework\Data\SqlDataProviderTests.cs" />
     <Compile Include="Framework\Format\UrlFormatTests.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -266,6 +285,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Framework\Providers\ProviderConfigurationHelperTests.cs" />
+    <Compile Include="Framework\SecurityHandling\SecurityTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Framework\Skinning\SkinTests.cs" />
     <Compile Include="Framework\Syndication\AtomHandlerTests.cs">
       <SubType>Code</SubType>
@@ -317,8 +339,14 @@
     <Compile Include="ReflectionHelper.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Scripting\ConnectionStringParseTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Scripting\ExceptionTests.cs" />
     <Compile Include="Scripting\ScriptHelperTests.cs" />
+    <Compile Include="Scripting\TemplateParameterParseTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SimulatedHttpRequest.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -326,10 +354,16 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SubtextWeb\Controls\CaptchaTests.cs" />
-    <Compile Include="SubtextWeb\Controls\ControlHelperTests.cs" />
-    <Compile Include="SubtextWeb\Controls\EntryListTests.cs" />
     <Compile Include="SubtextWeb\Controls\InvisibleCaptchaTests.cs" />
-    <Compile Include="SubtextWeb\Providers\RichTextEditor\BlogEntryEditorProviderTests.cs" />
+    <Compile Include="SubtextWeb\Providers\RichTextEditor\FCKeditorProviderTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SubtextWeb\Providers\RichTextEditor\FtbProviderTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SubtextWeb\Providers\RichTextEditor\PlainTextProviderTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SubtextWeb\SubtextMasterPageTests.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -363,9 +397,6 @@
     <Content Include="ExternalDependencies\Rhino.Mocks.dll" />
     <Content Include="ExternalDependencies\Rhino.Mocks.xml" />
     <Content Include="ExternalDependencies\TestFu.dll" />
-    <EmbeddedResource Include="Resources\Scripting\SqlRunnerTestScript.txt" />
-    <EmbeddedResource Include="Resources\Web\HttpClientTest.aspx">
-    </EmbeddedResource>
     <EmbeddedResource Include="Resources\BlogMl\SinglePostWithBadCategoryRef.xml" />
     <EmbeddedResource Include="Resources\BlogMl\SinglePostWithCategory.xml" />
     <EmbeddedResource Include="Resources\BlogMl\TwoCategories.xml" />

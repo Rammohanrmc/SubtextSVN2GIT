@@ -35,7 +35,7 @@ namespace Subtext.Framework.Logging
 		/// <returns></returns>
         public override IPagedCollection<LogEntry> GetPagedLogEntries(int pageIndex, int pageSize)
 		{
-			IDataReader reader = DatabaseObjectProvider.Instance().GetPagedLogEntries(pageIndex, pageSize);
+			IDataReader reader = DbProvider.Instance().GetPagedLogEntries(pageIndex, pageSize);
             IPagedCollection<LogEntry> entries = new PagedCollection<LogEntry>();
 			while(reader.Read())
 			{
@@ -51,7 +51,7 @@ namespace Subtext.Framework.Logging
 		/// </summary>
 		public override void ClearLog()
 		{
-			DatabaseObjectProvider.Instance().ClearLog();
+			DbProvider.Instance().ClearLog();
 		}
 
 	}

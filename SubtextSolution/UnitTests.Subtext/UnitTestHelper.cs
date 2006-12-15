@@ -16,10 +16,8 @@
 using System;
 using System.IO;
 using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Principal;
 using System.Text;
-using System.Threading;
 using System.Web;
 using System.Web.Security;
 using ICSharpCode.SharpZipLib.GZip;
@@ -41,9 +39,6 @@ namespace UnitTests.Subtext
 	/// </summary>
 	public static class UnitTestHelper
 	{
-		internal static readonly string MembershipTestUsername = GenerateRandomString();
-		internal static readonly string MembershipTestPassword = GenerateRandomString();
-		
         /// <summary>
 		/// Unpacks an embedded resource into the specified directory. The resource name should 
 		/// be everything after 'UnitTests.Subtext.Resources.'.
@@ -120,147 +115,12 @@ namespace UnitTests.Subtext
 		/// Generates a random hostname.
 		/// </summary>
 		/// <returns></returns>
-		internal static string GenerateRandomString()
+		public static string GenerateRandomString()
 		{
 			return System.Guid.NewGuid().ToString().Replace("-", "") + ".com";
 		}
 
-		/// <summary>
-		/// Takes all the necessary steps to create a blog and set up the HTTP Context 
-		/// with the blog.
-		/// </summary>
-		/// <returns>
-		/// Returns a reference to a string builder.
-		/// The stringbuilder will end up containing the Response of any simulated 
-		/// requests.
-		/// </returns>
-		internal static SimulatedRequestContext SetupBlog()
-		{
-			return SetupBlog(string.Empty);
-		}
-		
-		internal static MembershipUser CreateUserInstanceForTest()
-		{
-			return new MembershipUser("SubtextMembershipProvider", "Phil Haack", Guid.Empty, "test@example.com", "comment", "comment", true, false, DateTime.Now, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue);
-		}
 
-		/// <summary>
-		/// Takes all the necessary steps to create a blog and set up the HTTP Context
-		/// with the blog.
-		/// </summary>
-		/// <returns>
-		/// Returns a reference to a string builder.
-		/// The stringbuilder will end up containing the Response of any simulated 
-		/// requests.
-		/// </returns>
-		/// <param name="subfolder">The 'virtualized' subfolder the blog lives in.</param>
-		internal static SimulatedRequestContext SetupBlog(string subfolder)
-		{
-			return SetupBlog(subfolder, string.Empty);
-		}
-
-		/// <summary>
-		/// Takes all the necessary steps to create a blog and set up the HTTP Context
-		/// with the blog.
-		/// </summary>
-		/// <returns>
-		/// Returns a reference to a string builder.
-		/// The stringbuilder will end up containing the Response of any simulated 
-		/// requests.
-		/// </returns>
-		/// <param name="subfolder">The 'virtualized' subfolder the blog lives in.</param>
-		/// <param name="applicationPath">The name of the IIS virtual directory the blog lives in.</param>
-		internal static SimulatedRequestContext SetupBlog(string subfolder, string applicationPath)
-		{
-			return SetupBlog(subfolder, applicationPath, 80);
-		}
-		
-		/// <summary>
-		/// Takes all the necessary steps to create a blog and set up the HTTP Context
-		/// with the blog.
-		/// </summary>
-		/// <returns>
-		/// Returns a reference to a string builder.
-		/// The stringbuilder will end up containing the Response of any simulated 
-		/// requests.
-		/// </returns>
-		/// <param name="subfolder">The 'virtualized' subfolder the blog lives in.</param>
-		/// <param name="applicationPath">The name of the IIS virtual directory the blog lives in.</param>
-		/// <param name="port">The port for this blog.</param>
-		internal static SimulatedRequestContext SetupBlog(string subfolder, string applicationPath, int port)
-		{
-			return SetupBlog(subfolder, applicationPath, port, string.Empty);
-		}
-
-		/// <summary>
-		/// Takes all the necessary steps to create a blog and set up the HTTP Context
-		/// with the blog.
-		/// </summary>
-		/// <param name="subfolder">The 'virtualized' subfolder the blog lives in.</param>
-		/// <param name="applicationPath">The name of the IIS virtual directory the blog lives in.</param>
-		/// <param name="page">The page to request.</param>
-		/// <returns>
-		/// Returns a reference to a string builder.
-		/// The stringbuilder will end up containing the Response of any simulated
-		/// requests.
-		/// </returns>
-		internal static SimulatedRequestContext SetupBlog(string subfolder, string applicationPath, string page)
-		{
-			return SetupBlog(subfolder, applicationPath, 80, page);
-		}
-
-		/// <summary>
-		/// Takes all the necessary steps to create a blog and set up the HTTP Context
-		/// with the blog.
-		/// </summary>
-		/// <param name="subfolder">The 'virtualized' subfolder the blog lives in.</param>
-		/// <param name="applicationPath">The name of the IIS virtual directory the blog lives in.</param>
-		/// <param name="port">The port for this blog.</param>
-		/// <param name="page">The page to request.</param>
-		/// <returns>
-		/// Returns a reference to a string builder.
-		/// The stringbuilder will end up containing the Response of any simulated
-		/// requests.
-		/// </returns>
-		internal static SimulatedRequestContext SetupBlog(string subfolder, string applicationPath, int port, string page)
-		{
-			string host = UnitTestHelper.GenerateRandomString();
-			Assert.IsTrue(Config.CreateBlog("Unit Test Blog", MembershipTestUsername, MembershipTestPassword, host, subfolder), "Could Not Create Blog");
-
-			StringBuilder sb = new StringBuilder();
-			TextWriter output = new StringWriter(sb);
-			SimulatedHttpRequest request = SetHttpContextWithBlogRequest(host, port, subfolder, applicationPath, page, output, "GET");
-
-			Config.CurrentBlog.ImageDirectory = Path.Combine(Environment.CurrentDirectory, "images");
-			Config.CurrentBlog.ImagePath = "/image/";
-
-			Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity(MembershipTestUsername), new string[] { "Administrators" });
-			
-			return new SimulatedRequestContext(request, sb, output, host);
-		}
-		
-		/// <summary>
-		/// Takes all the necessary steps to create a blog and set up the HTTP Context
-		/// with the blog.  The blog will have an admin with the specified 
-		/// username and password.
-		/// </summary>
-		public static void SetupBlogWithUserAndPassword(string username, string password)
-		{
-			SetupBlogWithUserAndPassword(username, password, string.Empty);
-		}
-		/// <summary>
-		/// Takes all the necessary steps to create a blog and set up the HTTP Context
-		/// with the blog.  The blog will have an admin with the specified 
-		/// username and password.
-		/// </summary>
-		public static void SetupBlogWithUserAndPassword(string username, string password, string subfolder)
-		{
-			string host = UnitTestHelper.GenerateRandomString();
-			Assert.IsTrue(Config.CreateBlog("Unit Test Blog", username, password, host, subfolder), "Could Not Create Blog");
-			Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity(username), new string[] { "Administrators" });
-			SetHttpContextWithBlogRequest(host, subfolder);
-		}
-		
 		/// <summary>
 		/// Sets the HTTP context with a valid request for the blog specified 
 		/// by the host and application.
@@ -270,15 +130,6 @@ namespace UnitTests.Subtext
 		public static SimulatedHttpRequest SetHttpContextWithBlogRequest(string host, string subfolder)
 		{
 			return SetHttpContextWithBlogRequest(host, subfolder, string.Empty);
-		}
-		
-		/// <summary>
-		/// Sets up the HttpContext with a request.
-		/// </summary>
-		/// <param name="applicationPath"></param>
-		internal static SimulatedHttpRequest SetupHttpContextWithRequest(string applicationPath)
-		{
-			return SetHttpContextWithBlogRequest(UnitTestHelper.GenerateRandomString(), string.Empty, applicationPath);
 		}
 
 		/// <summary>
@@ -351,7 +202,7 @@ namespace UnitTests.Subtext
 			HttpContext.Current.Cache.Remove("BlogInfo-");
 			HttpContext.Current.Cache.Remove("BlogInfo-" + subfolder);
 			
-			HttpContext.Current.Items["Subtext__CurrentRequest"] = new BlogRequest(host, subfolder);			
+			HttpContext.Current.Items["Subtext__CurrentRequest"] = new BlogRequest(host, subfolder);
 
 			#region Console Debug INfo
 			
@@ -509,7 +360,7 @@ namespace UnitTests.Subtext
 			entry.DateModified = entry.DateCreated;
 			entry.DateSyndicated = entry.DateCreated;
 			entry.Title = title;
-			entry.Author = CreateUserInstanceForTest();
+			entry.Author = author;
 			entry.Body = body;
 			entry.DisplayOnHomePage = true;
 			entry.IsAggregated = true;
@@ -664,9 +515,6 @@ namespace UnitTests.Subtext
 			string cookieName = SecurityHelper.GetFullCookieName();
             HttpCookie authCookie = HttpContext.Current.Request.Cookies[cookieName];
 
-	    	if(authCookie == null)
-	    		return;
-	    	
             FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(authCookie.Value);
 
             // When the ticket was created, the UserData property was assigned a
@@ -680,28 +528,7 @@ namespace UnitTests.Subtext
             // Attach the new principal object to the current HttpContext object
             HttpContext.Current.User = principal;
         }
-
-		/// <summary>
-		/// Useful for unit testing that classes implement serialization.  This simply takes in a class, 
-		/// serializes it into a byte array, deserializes the byte array, and returns the result. 
-		/// The unit test should check that all the properties are set correctly.
-		/// </summary>
-		/// <param name="serializableObject">The serializable object.</param>
-		/// <returns></returns>
-		public static T SerializeRoundTrip<T>(T serializableObject)
-		{
-			MemoryStream stream = new MemoryStream();
-			BinaryFormatter formatter = new BinaryFormatter();
-			formatter.Serialize(stream, serializableObject);
-			byte[] serialized = stream.ToArray();
-			
-			stream = new MemoryStream(serialized);
-			stream.Position = 0;
-			formatter = new BinaryFormatter();
-			object o = formatter.Deserialize(stream);
-			return (T)o;
-		}
-
+	    
 		/// <summary>
 		/// Returns a deflated version of the response sent by the web server. If the 
 		/// web server did not send a compressed stream then the original stream is returned. 
@@ -802,7 +629,6 @@ namespace UnitTests.Subtext
 		/// </summary>
 		/// <param name="first">The first.</param>
 		/// <param name="compare">The compare.</param>
-		/// <param name="message">The message.</param>
 		public static void AssertAreNotEqual(int first, int compare, string message)
 		{
 			Assert.IsTrue(first != compare, message + "{0} is equal to {1}", first, compare);
@@ -823,7 +649,6 @@ namespace UnitTests.Subtext
 		/// </summary>
 		/// <param name="first">The first.</param>
 		/// <param name="compare">The compare.</param>
-		/// <param name="message">The message.</param>
 		public static void AssertAreNotEqual(string first, string compare, string message)
 		{
 			Assert.IsTrue(first != compare, message + "{0} is equal to {1}", first, compare);

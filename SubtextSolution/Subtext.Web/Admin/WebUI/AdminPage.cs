@@ -18,6 +18,7 @@ using System.ComponentModel;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using Subtext.Framework;
 using Subtext.Framework.Configuration;
 using Subtext.Web.Admin.WebUI;
 using Subtext.Web.Controls;
@@ -92,7 +93,7 @@ namespace Subtext.Web.Admin.Pages
 			}
 		}
 	    
-	    private static  void AddCssClass(WebControl control, string cssClass)
+	    private void AddCssClass(WebControl control, string cssClass)
 	    {
 			if (control.CssClass != null && control.CssClass.Length > 0 && !String.Equals(cssClass, control.CssClass, StringComparison.InvariantCultureIgnoreCase))
             {

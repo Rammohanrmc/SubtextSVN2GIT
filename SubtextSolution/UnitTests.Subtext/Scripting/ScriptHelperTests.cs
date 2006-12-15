@@ -14,9 +14,7 @@
 #endregion
 
 using System;
-using System.Globalization;
 using System.IO;
-using System.Threading;
 using MbUnit.Framework;
 using Subtext.Installation;
 using Subtext.Scripting;
@@ -44,22 +42,6 @@ namespace UnitTests.Subtext.Scripting
 				Assert.AreEqual(expected, scripts[0].ScriptText, "Expected the multi-line comment to be stripped.");
 		}
 		
-		[Test]
-		public void ScriptToStringIncludesParameters()
-		{
-			ScriptCollection scripts = Script.ParseScripts("SELECT TOP <name, int, 0> * FROM Somewhere");
-			Assert.AreEqual(1, scripts.Count, "Did not parse the script.");
-			Assert.AreEqual(1, scripts.TemplateParameters.Count, "did not merge or parse the template params.");
-			
-			string expected = @"<ScriptToken length=""0"">" + Environment.NewLine 
-				+ @"<ScriptToken length=""11"">" + Environment.NewLine 
-				+ @"<TemplateParameter name=""name"" value=""0"" type=""int"" />" + Environment.NewLine
-				+ @"<ScriptToken length=""17"">" + Environment.NewLine;
-
-
-			Assert.AreEqual(expected, scripts[0].ToString());
-		}
-
 		/// <summary>
 		/// Makes sure that ParseScript parses correctly.
 		/// </summary>
@@ -106,62 +88,6 @@ namespace UnitTests.Subtext.Scripting
 				+ Environment.NewLine + "CREATE TABLE [haacked].[blog_Gost]";
 
 			Assert.AreEqual(expectedThirdScriptBeginning, scripts[2].ScriptText.Substring(0, expectedThirdScriptBeginning.Length), "Script not parsed correctly");
-		}
-
-		[Test]
-		public void ScriptWithEmptyTextStaysEmptyText()
-		{
-			Script script = new Script(string.Empty);
-			Assert.AreEqual(string.Empty, script.ScriptText);
-		}
-
-		[Test]
-		public void CanAddRangeToScriptCollection()
-		{
-			ScriptCollection scripts = Script.ParseScripts("Select * from MyTable");
-			ScriptCollection scriptsToAdd = Script.ParseScripts(string.Format("Select * from SomeTable{0}GO{1}SELECT TOP 1 FROM Pork", Environment.NewLine, Environment.NewLine));
-			scripts.AddRange(scriptsToAdd);
-			Assert.AreEqual(3, scripts.Count);
-		}
-
-		[Test]
-		[ExpectedArgumentNullException]
-		public void AddRangeToScriptCollectionThrowsArgumentNullException()
-		{
-			ScriptCollection scripts = Script.ParseScripts("Select * from MyTable");
-			scripts.AddRange(null);
-		}
-
-		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
-		public void SetScriptTextThrowsInvalidOperationException()
-		{
-			Script script = new Script(null);
-			Console.WriteLine(script.ScriptText);
-		}
-
-		[Test]
-		public void ToStringReturnsNoTokensFoundMessage()
-		{
-			Script script = new Script(null);
-			//make sure en-us
-			Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-			Assert.AreEqual("Script has no tokens.", script.ToString());
-		}
-
-		[Test]
-		[ExpectedArgumentNullException]
-		public void ExecuteThrowsArgumentNullException()
-		{
-			Script script = new Script(null);
-			script.Execute(null);
-		}
-
-		[Test]
-		public void CanGetFullScriptText()
-		{
-			ScriptCollection scripts = Script.ParseScripts("Select * from MyTable");
-			Assert.AreEqual("Select * from MyTable", scripts.FullScriptText);
 		}
 
 		/// <summary>

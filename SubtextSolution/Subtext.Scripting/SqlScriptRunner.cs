@@ -19,6 +19,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using Subtext.Scripting.Exceptions;
 
 namespace Subtext.Scripting
 {
@@ -149,23 +150,36 @@ namespace Subtext.Scripting
 					 * number of rows affected by the command. For all other types of statements, 
 					 * the return value is -1. If a rollback occurs, the return value is also -1. 
 					 */
-					if(script.ScriptText.IndexOf("TRIGGER", StringComparison.InvariantCultureIgnoreCase) == -1 && script.ScriptText.IndexOf("PROC", StringComparison.InvariantCultureIgnoreCase) == -1)
+					if(script.ScriptText.IndexOf("TRIGGER")==-1 && script.ScriptText.IndexOf("PROC")==-1)
 					{
-						if(returnValue >= 0)
+						if(returnValue > -1)
+						{
 							recordsAffectedTotal += returnValue;
-					}					
+							OnProgressEvent(++scriptsExecutedCount, returnValue, script);
+						}
+						else
+						{
+							throw new SqlScriptExecutionException("An error occurred while executing the script.", script, returnValue);
+						}
+					}
+					else 
+					{
+						OnProgressEvent(++scriptsExecutedCount, returnValue, script);
+					}
 				}
-				
-				OnProgressEvent(++scriptsExecutedCount, returnValue, script);
+				else
+				{
+					OnProgressEvent(++scriptsExecutedCount, returnValue, script);
+				}
 			}
 			return recordsAffectedTotal;
 		}
 
-		public event EventHandler<ScriptProgressEventArgs> ScriptProgress;
+		public event ScriptProgressEventHandler ScriptProgress;
 
 		void OnProgressEvent(int scriptCount, int rowsAffected, Script script)
 		{
-			EventHandler<ScriptProgressEventArgs> progressEvent = this.ScriptProgress;
+			ScriptProgressEventHandler progressEvent = this.ScriptProgress;
 			if(progressEvent != null)
 				progressEvent(this, new ScriptProgressEventArgs(scriptCount, rowsAffected, script));
 		}
@@ -211,6 +225,11 @@ namespace Subtext.Scripting
 
 	#region ...ScriptProgressEvent Declarations...
 	/// <summary>
+	/// Event handler delegate for the ScriptProgress event.
+	/// </summary>
+	public delegate void ScriptProgressEventHandler(object sender, ScriptProgressEventArgs e);
+
+	/// <summary>
 	/// Provides information about the progress of a running script.
 	/// </summary>
 	public class ScriptProgressEventArgs : EventArgs
@@ -223,13 +242,19 @@ namespace Subtext.Scripting
 		/// Initializes a new instance of the <see cref="ScriptProgressEventArgs"/> class.
 		/// </summary>
 		/// <param name="scriptsExecutedCount">The scripts processed.</param>
-		/// <param name="rowsAffected">The rows affected.</param>
-		/// <param name="script">The script.</param>
 		public ScriptProgressEventArgs(int scriptsExecutedCount, int rowsAffected, Script script)
 		{
 			_scriptsExecutedCount = scriptsExecutedCount;
 			_rowsAffected = rowsAffected;
 			_script = script;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ScriptProgressEventArgs"/> class.
+		/// </summary>
+		/// <param name="scriptsExecutedCount">The scripts executed count.</param>
+		public ScriptProgressEventArgs(int scriptsExecutedCount, Script script) : this(scriptsExecutedCount, 0, script)
+		{
 		}
 
 		/// <summary>

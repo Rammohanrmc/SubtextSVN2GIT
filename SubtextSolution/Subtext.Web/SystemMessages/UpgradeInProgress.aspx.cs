@@ -14,10 +14,10 @@
 #endregion
 
 using System;
+using Subtext.Extensibility.Providers;
 using Subtext.Framework;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Exceptions;
-using Subtext.Installation;
 
 namespace Subtext.Web
 {
@@ -31,7 +31,7 @@ namespace Subtext.Web
 		{
 			try
 			{
-				InstallationState state = InstallationManager.GetCurrentInstallationState();
+				InstallationState state = InstallationManager.GetCurrentInstallationState(VersionInfo.FrameworkVersion);
 				if(state == InstallationState.NeedsUpgrade || state == InstallationState.NeedsRepair)
 				{
 					plcUpgradeInProgressMessage.Visible = true;

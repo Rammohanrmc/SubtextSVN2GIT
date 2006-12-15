@@ -22,8 +22,6 @@ using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Text;
 using Subtext.Framework.Util;
-using Subtext.Extensibility.Plugins;
-using Subtext.Extensibility;
 
 namespace Subtext.Web.Admin
 {
@@ -47,7 +45,7 @@ namespace Subtext.Web.Admin
 		protected string _cancelSuccessMessage; 
 		protected string _cancelFailureMessage;
 
-		protected bool _autoRedirect;
+		protected bool _autoRedirect = false;
 		protected string _redirectUrl;
 
 		#region Accessors
@@ -154,7 +152,7 @@ namespace Subtext.Web.Admin
 		/// </summary>
 		/// <param name="integers">Integers.</param>
 		/// <returns></returns>
-		protected static string GetDisplayTextFromIntArray(IList<int> integers)
+		protected string GetDisplayTextFromIntArray(IList<int> integers)
 		{
 			if (integers == null || integers.Count == 0)
 				return string.Empty;
@@ -354,15 +352,7 @@ namespace Subtext.Web.Admin
 		{
 			try
 			{
-				Entry entry = Entries.GetEntry(_targetID, PostConfig.None, false);
-				//Code to be called before delete a post
-				SubtextEvents.OnEntryUpdating(entry, new SubtextEventArgs(ObjectState.Delete));
-
 				Entries.Delete(_targetID);
-
-				//Code to be called after updating a post
-				SubtextEvents.OnEntryUpdated(entry, new SubtextEventArgs(ObjectState.Delete));
-
 				return FormatMessage(ExecuteSuccessMessage, _targetName, _targetID);
 			}
 			catch (Exception ex)
@@ -626,13 +616,11 @@ namespace Subtext.Web.Admin
 			}
 		}
 
-		private static void DeleteFile(string path, string filename)
+		private void DeleteFile(string path, string filename)
 		{
 			string localPath = Path.Combine(path, filename);
 			if (File.Exists(localPath))
-			{
 				File.Delete(localPath);
-			}
 		}
 	}
 	#endregion
@@ -718,94 +706,6 @@ namespace Subtext.Web.Admin
 			// this isn't a valid collision test really
 			if (!_allLinks.Contains(newLink))
 				Links.CreateLink(newLink);
-		}
-	}
-	#endregion
-
-	#region TogglePluginCommand
-	/// <summary>
-	/// Defines the actions to be taken when enabling/disabling a plugin for the blog
-	/// </summary>
-	[Serializable]
-	public class TogglePluginCommand : ConfirmCommand
-	{
-		private bool _enablePlugin;
-		private string _actionVerb = "disable";
-		private string _actionPast = "disabled";
-
-		protected Guid _pluginId;
-		protected string _pluginName;
-
-		protected TogglePluginCommand() 
-		{
-			_promptMessage = "Are you sure you want to {0} Plugin {1}?";
-			_executeSuccessMessage = "Plugin {1} was {0}.";
-			_executeFailureMessage = "Plugin {1} could not be {0}. Details: {2}";
-			_cancelSuccessMessage = "Plugin {1} will not be {0}.";
-			_cancelFailureMessage = "Could not cancel {0} of Plugin {1}. Details: {2}";		
-		}
-
-		public TogglePluginCommand(Guid pluginId, string pluginName, bool enable)
-			: this()
-		{
-			_autoRedirect = false;
-			_pluginId = pluginId;
-			_pluginName = "<b>" + pluginName + "</b>";
-			_enablePlugin = enable;
-			if (enable)
-			{
-				_actionVerb = "enable";
-				_actionPast = "enabled";
-			}
-			else
-			{
-				_actionVerb = "disable";
-				_actionPast = "disabled";
-			}
-		}
-
-		public override string Execute()
-		{
-			try
-			{
-				bool operationExecuted = false;
-				if (_enablePlugin)
-				{
-					operationExecuted=Plugin.EnablePlugin(_pluginId);
-				}
-				else
-				{
-					operationExecuted = Plugin.DisablePlugin(_pluginId);
-				}
-
-				if(operationExecuted)
-					return FormatMessage(ExecuteSuccessMessage, _actionPast, _pluginName);
-				else
-					return FormatMessage(ExecuteFailureMessage, _actionPast, _pluginName, "");
-			}
-			catch (Exception ex)
-			{
-				return FormatMessage(ExecuteFailureMessage, _actionPast, _pluginName, ex.Message);
-			}
-		}
-
-		public override string PromptMessage
-		{
-			get
-			{
-				if (!Utilities.IsNullorEmpty(_promptMessage))
-					return FormatMessage(_promptMessage, _actionVerb, _pluginName);
-				else
-					return base.PromptMessage;
-			}
-			set { _promptMessage = value; }
-		}
-
-
-		public override string Cancel()
-		{
-			_autoRedirect = false;
-			return FormatMessage(CancelSuccessMessage, _actionPast, _pluginName);
 		}
 	}
 	#endregion

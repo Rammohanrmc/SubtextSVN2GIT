@@ -27,9 +27,8 @@ using Subtext.Framework.Configuration;
 using Subtext.Framework.Text;
 using Subtext.Web.Admin.Pages;
 using Subtext.Web.Admin.WebUI;
-using Subtext.Web.UI.WebControls;
+using Subtext.Web.Controls;
 using StringHelper = Subtext.Framework.Text.StringHelper;
-using Subtext.Extensibility.Plugins;
 
 namespace Subtext.Web.Admin.UserControls
 {
@@ -39,8 +38,9 @@ namespace Subtext.Web.Admin.UserControls
 		private const string VSKEY_CATEGORYTYPE = "CategoryType";
 
 		private int categoryId = NullValue.NullInt32;
-		private int pageIndex;
-				
+		private int pageIndex = 0;
+		private bool _isListHidden = false;
+		
 		#region Accessors
 		/// <summary>
 		/// Gets or sets the type of the entry.
@@ -86,8 +86,14 @@ namespace Subtext.Web.Admin.UserControls
 				ViewState[VSKEY_CATEGORYTYPE] = value; 
 			}
 		}
-        
-        public string ResultsTitle 
+
+		public bool IsListHidden
+		{
+			get { return _isListHidden; }
+			set { _isListHidden = value; }
+		}
+
+		public string ResultsTitle 
 		{
 			get
 			{
@@ -232,7 +238,7 @@ namespace Subtext.Web.Admin.UserControls
 				return;
 			}
 		
-			Results.Visible = false;
+			Results.Collapsed = true;
 			Edit.Visible = true;
 			this.lkUpdateCategories.Visible = true;
 			txbTitle.Text = currentPost.Title;
@@ -390,7 +396,8 @@ namespace Subtext.Web.Admin.UserControls
 					
 					entry.Title = txbTitle.Text;
 					entry.Body = HtmlHelper.StripRTB(richTextEditor.Xhtml, Request.Url.Host);
-                    entry.Author = System.Web.Security.Membership.GetUser();
+					entry.Author = Config.CurrentBlog.Author;
+					entry.Email = Config.CurrentBlog.Email;
 					entry.BlogId = Config.CurrentBlog.Id;
 
 					// Advanced options
@@ -410,13 +417,11 @@ namespace Subtext.Web.Admin.UserControls
 						entry.DateModified = Config.CurrentBlog.TimeZone.Now;
 						entry.Id = PostID;
 						
-						//Raise event before updating a post
-						SubtextEvents.OnEntryUpdating(entry, new SubtextEventArgs(ObjectState.Update));
+						//TODO: Add here code to be called before updating a post
 						
 						Entries.Update(entry);
-
-						//Raise event after updating a post
-						SubtextEvents.OnEntryUpdated(entry, new SubtextEventArgs(ObjectState.Update));
+						
+						//TODO: Add here code to be called after updating a post
 
 						if(ReturnToOriginalPost)
 						{
@@ -432,14 +437,13 @@ namespace Subtext.Web.Admin.UserControls
 					else
 					{
 						entry.DateCreated = Config.CurrentBlog.TimeZone.Now;
-
-						//Raise event before creating a post
-						SubtextEvents.OnEntryUpdating(entry, new SubtextEventArgs(ObjectState.Create));
+						
+						//TODO: Add here code to be called before creating a post
 						
 						PostID = Entries.Create(entry);
-
-						//Raise event after creating a post
-						SubtextEvents.OnEntryUpdated(entry, new SubtextEventArgs(ObjectState.Create));
+						
+						//TODO: Add here code to be called after creating a post
+						AddCommunityCredits(entry);
 					}
 
 					UpdateCategories();
@@ -459,11 +463,13 @@ namespace Subtext.Web.Admin.UserControls
 
 		private void UpdateCategories()
 		{ 
+			string successMessage;
+
 			try
 			{
 				if (PostID > 0)
 				{
-					string successMessage = Constants.RES_SUCCESSCATEGORYUPDATE;
+					successMessage = Constants.RES_SUCCESSCATEGORYUPDATE;
 					ArrayList al = new ArrayList();
 
 					foreach(ListItem item in cklCategories.Items)
@@ -517,14 +523,19 @@ namespace Subtext.Web.Admin.UserControls
 
 		private void ConfirmDelete(int postID)
 		{
-			AdminPage page = Page as AdminPage;
-			if (page == null)
-				throw new InvalidOperationException("Somehow the page is not an AdminPage.");
-			
-			page.Command = new DeletePostCommand(postID);
-			page.Command.RedirectUrl = Request.Url.ToString();
+			(Page as AdminPage).Command = new DeletePostCommand(postID);
+			(Page as AdminPage).Command.RedirectUrl = Request.Url.ToString();
 			Server.Transfer(Constants.URL_CONFIRM);
 		}
+
+		public string CheckHiddenStyle()
+		{
+			if (_isListHidden)
+				return Constants.CSSSTYLE_HIDDEN;
+			else
+				return String.Empty;
+		}
+
 		#region Web Form Designer generated code
 		override protected void OnInit(EventArgs e)
 		{
@@ -596,6 +607,49 @@ namespace Subtext.Web.Admin.UserControls
 		protected void richTextEditor_Error(object sender, RichTextEditorErrorEventArgs e)
 		{
 			this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, "TODO...", e.Exception.Message));
+		}
+
+		private string AddCommunityCredits(Entry entry) 
+		{
+			string result=string.Empty;
+
+			bool commCreditsEnabled;
+			try
+			{
+                commCreditsEnabled = Convert.ToBoolean(System.Configuration.ConfigurationManager.AppSettings["CommCreditEnabled"]);
+			}
+			catch(Exception) 
+			{
+				commCreditsEnabled = false;
+			}
+
+			if(commCreditsEnabled.Equals("true")) 
+			{
+				com.community_credit.www.AffiliateServices wsCommunityCredit = new com.community_credit.www.AffiliateServices();
+				string url=entry.FullyQualifiedUrl.ToString();
+				string category=String.Empty;
+				if(entry.PostType==PostType.BlogPost)
+					category="Blog";
+				else if (entry.PostType==PostType.Story)
+					category="Article";
+				string description = "Blogged about: " + entry.Title;
+				BlogInfo info = Config.CurrentBlog;
+				string firstName=string.Empty;
+				string lastName=info.Author;
+				string email=info.Email;
+                string affiliateCode = System.Configuration.ConfigurationManager.AppSettings["CommCreditAffiliateCode"];
+                string affiliateKey = System.Configuration.ConfigurationManager.AppSettings["CommCreditAffiliateKey"];
+				
+				try 
+				{
+					result=wsCommunityCredit.AddCommunityCredit(email,firstName,lastName,description,url,category,affiliateCode,affiliateKey);
+				}
+				catch(Exception ex) 
+				{
+					this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, "Error during Community Credits submission (your post has been saved)", ex.Message));
+				}	
+			}
+			return result;
 		}
 	}
 }

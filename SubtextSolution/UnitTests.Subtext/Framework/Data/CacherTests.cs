@@ -24,8 +24,10 @@ namespace UnitTests.Subtext.Framework.Data
 		[RollBack]
 		public void GetActiveCategoriesHandlesLocale()
 		{
-			UnitTestHelper.SetupBlog();
-			
+			string hostName = UnitTestHelper.GenerateRandomString();
+			UnitTestHelper.SetHttpContextWithBlogRequest(hostName, "");
+			Config.CreateBlog("", "username", "thePassword", hostName, "");
+
 			//Start with en-US
 			Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
 

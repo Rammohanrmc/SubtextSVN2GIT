@@ -23,6 +23,7 @@ using Subtext.Framework.Configuration;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Format;
 using Subtext.Web.Admin;
+using Subtext.Framework.Security;
 
 namespace Subtext.Web.HostAdmin.UserControls
 {
@@ -35,7 +36,7 @@ namespace Subtext.Web.HostAdmin.UserControls
 	public partial class BlogsEditor : System.Web.UI.UserControl
 	{
 		const string VSKEY_BLOGID = "VS_BLOGID";
-		int pageIndex;
+		int pageIndex = 0;
 
 		#region Declared Controls
 		protected System.Web.UI.WebControls.Button btnAddNewBlog = new System.Web.UI.WebControls.Button();
@@ -107,7 +108,7 @@ namespace Subtext.Web.HostAdmin.UserControls
 				blog = BlogInfo.GetBlogById(BlogId);
 				this.txtApplication.Text = blog.Subfolder;
 				this.txtHost.Text = blog.Host;
-				this.txtUsername.Text = blog.Owner.UserName;
+				this.txtUsername.Text = blog.UserName;
 				this.txtTitle.Text = blog.Title;	
 			}
 			this.txtTitle.Visible = true;
@@ -328,11 +329,11 @@ namespace Subtext.Web.HostAdmin.UserControls
 			blog.Title = this.txtTitle.Text;
 			blog.Host = this.txtHost.Text;
 			blog.Subfolder = this.txtApplication.Text;
+			blog.UserName = this.txtUsername.Text;
 
 			if(this.txtPassword.Text.Length > 0)
 			{
-				throw new NotImplementedException("Password change Needs to be implemented.");
-				//TODO: Membership.Provider.ChangePassword(Page.User.Identity.Name, this.txtApplication. this.txtPassword.Text);
+				blog.Password = SecurityHelper.HashPassword(this.txtPassword.Text);
 			}
 			
 			if(Config.UpdateConfigData(blog))
@@ -379,7 +380,7 @@ namespace Subtext.Web.HostAdmin.UserControls
 			}
 		}
 		
-		static bool IsTextBoxEmpty(TextBox textbox)
+		bool IsTextBoxEmpty(TextBox textbox)
 		{
 			return textbox.Text.Length == 0;
 		}
@@ -404,16 +405,12 @@ namespace Subtext.Web.HostAdmin.UserControls
 			return true;
 		}
 
-		protected static string ToggleActiveString(bool active)
+		protected string ToggleActiveString(bool active)
 		{
-            if (active)
-            {
-                return "Deactivate";
-            }
-            else
-            {
-                return "Activate";
-            }
+			if(active)
+				return "Deactivate";
+			else
+				return "Activate";
 		}
 
 		void ToggleActive()

@@ -64,7 +64,7 @@ namespace Subtext.Web.UI.Controls
 			set{skinFilePath = value;}
 		}
 		
-		protected static void BindCurrentEntryControls(Entry entry, Control root)
+		protected void BindCurrentEntryControls(Entry entry, Control root)
 		{
 			foreach(Control control in root.Controls)
 			{
@@ -100,7 +100,7 @@ namespace Subtext.Web.UI.Controls
 				RemoveCaptcha();
 			}
 
-            if (BlogConfigurationSettings.InvisibleCaptchaEnabled)
+			if (Config.Settings.InvisibleCaptchaEnabled)
 			{
 				invisibleCaptchaValidator = new InvisibleCaptcha();
 				invisibleCaptchaValidator.ErrorMessage = "Please enter the answer to the supplied question.";

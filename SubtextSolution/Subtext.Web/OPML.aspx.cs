@@ -31,7 +31,7 @@ namespace Subtext.Web
 		private void Page_Load(object sender, System.EventArgs e)
 		{
 			string sql = "DNW_Stats";
-			string conn = DatabaseObjectProvider.Instance().ConnectionString;
+			string conn = Subtext.Framework.Providers.DbProvider.Instance().ConnectionString;
 
 			int GroupID = 1;
 

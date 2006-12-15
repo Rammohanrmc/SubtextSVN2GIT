@@ -15,7 +15,6 @@
 
 using System;
 using System.Configuration;
-using System.Web.Security;
 using Subtext.Extensibility.Interfaces;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Format;
@@ -54,12 +53,7 @@ namespace Subtext.Framework.Configuration
 		{
 			get
 			{
-				BlogInfo currentBlog = ConfigurationProvider.GetBlogInfo();
-				if (currentBlog == null)
-					Roles.ApplicationName = Membership.ApplicationName = "/";
-				else
-					Roles.ApplicationName = Membership.ApplicationName = currentBlog.ApplicationName;
-				return currentBlog;
+				return ConfigurationProvider.GetBlogInfo();
 			}
 		}
 		
@@ -155,29 +149,22 @@ namespace Subtext.Framework.Configuration
 		/// <returns></returns>
 		public static bool CreateBlog(string title, string userName, string password, string host, string subfolder)
 		{
-			string passwordQuestion = "No Question Specified. Please type the word \"subtext\"";
-			string passwordAnswer = "subtext";
-			return CreateBlog(title, userName, password, passwordQuestion, passwordAnswer, host, subfolder, false);
+			return CreateBlog(title, userName, password, host, subfolder, false);
 		}
 
 		/// <summary>
-		/// Creates an initial blog.  This is a convenience method for
-		/// allowing a user with a freshly installed blog to immediately gain access
+		/// Creates an initial blog.  This is a convenience method for 
+		/// allowing a user with a freshly installed blog to immediately gain access 
 		/// to the admin section to edit the blog.
 		/// </summary>
-		/// <param name="title">The title.</param>
 		/// <param name="userName">Name of the user.</param>
 		/// <param name="password">Password.</param>
-		/// <param name="passwordQuestion">The password retrieval question.</param>
-		/// <param name="passwordAnswer">The password retrieval answer.</param>
-		/// <param name="host">The host.</param>
-		/// <param name="subfolder">The subfolder.</param>
+		/// <param name="subfolder"></param>
+		/// <param name="host"></param>
 		/// <param name="passwordAlreadyHashed">If true, the password has already been hashed.</param>
 		/// <returns></returns>
-		public static bool CreateBlog(string title, string userName, string password, string passwordQuestion, string passwordAnswer, string host, string subfolder, bool passwordAlreadyHashed)
+		public static bool CreateBlog(string title, string userName, string password, string host, string subfolder, bool passwordAlreadyHashed)
 		{
-			//TODO: add password question and naswer to params.
-			
 			if(subfolder != null && subfolder.StartsWith("."))
 				throw new InvalidSubfolderNameException(subfolder);
 
@@ -225,34 +212,10 @@ namespace Subtext.Framework.Configuration
 				}
 			}
 
-			//Create the blog.
-			string passwordSalt = SecurityHelper.CreateRandomSalt();
-			if (Membership.Provider.PasswordFormat == MembershipPasswordFormat.Hashed)
-				password = SecurityHelper.HashPassword(password, passwordSalt);
-			
-			//Add blog user to Administrators.
-			BlogInfo blog = ObjectProvider.Instance().CreateBlog(title, userName, password, passwordSalt, passwordQuestion, passwordAnswer, null, host, subfolder);
-			using (IDisposable appScope = MembershipApplicationScope.SetApplicationName(blog.ApplicationName))
-			{
-				CreateBlogRoles();
+			if(!passwordAlreadyHashed && Settings.UseHashedPasswords)
+				password = SecurityHelper.HashPassword(password);
 
-				Roles.AddUserToRole(blog.Owner.UserName, "Administrators");
-				
-				appScope.Dispose();
-			}
-			return true;
-		}
-
-		private static void CreateBlogRoles()
-		{
-			string[] defaultRoles =
-				{"Administrators", "PowerUsers", "Authors", "Commenters", "Anonymous"};
-
-			foreach (string role in defaultRoles)
-			{
-				if (!Roles.RoleExists(role))
-					Roles.CreateRole(role);
-			}
+            return (ObjectProvider.Instance().CreateBlog(title, userName, password, host, subfolder));
 		}
 
 		/// <summary>
@@ -264,7 +227,7 @@ namespace Subtext.Framework.Configuration
 		public static bool UpdateConfigData(BlogInfo info)
 		{
 			//Check for duplicate
-			BlogInfo potentialDuplicate = GetBlogInfo(info.Host, info.Subfolder);
+			BlogInfo potentialDuplicate = GetBlogInfo(info.Host, info.Subfolder, true);
 			if(potentialDuplicate != null && !potentialDuplicate.Equals(info))
 			{
 				//we found a duplicate!
@@ -272,7 +235,7 @@ namespace Subtext.Framework.Configuration
 			}
 
 			//Check to see if we're going to end up hiding another blog.
-			BlogInfo potentialHidden = GetBlogInfo(info.Host, string.Empty);
+			BlogInfo potentialHidden = GetBlogInfo(info.Host, string.Empty, true);
 			if(potentialHidden != null && !potentialHidden.Equals(info) && potentialHidden.IsActive)
 			{
 				//We found a blog that would be hidden by this one.
@@ -300,14 +263,16 @@ namespace Subtext.Framework.Configuration
 				{
 					throw new InvalidSubfolderNameException(subfolderName);
 				}
-			}		
+			}
+			
+			info.IsPasswordHashed = Settings.UseHashedPasswords;
 			info.AllowServiceAccess = Settings.AllowServiceAccess;
 
 			return ObjectProvider.Instance().UpdateBlog(info);
 		}
 
 		//TODO: Is this the right place to put this list?
-		private static string[] _invalidSubfolders = {"Admin", "bin", "ExternalDependencies", "HostAdmin", "Images", "Install", "Modules", "Services", "Skins", "UI", "Category", "Archive", "Archives", "Comments", "Articles", "Posts", "Story", "Stories", "Gallery", "Providers", "aggbug"};
+        private static string[] _invalidSubfolders = {"Admin", "bin", "ExternalDependencies", "HostAdmin", "Images", "Install", "Properties", "Providers", "Scripts", "Skins", "SystemMessages", "UI", "Modules", "Services", "Category", "Archive", "Archives", "Comments", "Articles", "Posts", "Story", "Stories", "Gallery", "aggbug"};
 
 		/// <summary>
 		/// Returns true if the specified subfolder name has a 

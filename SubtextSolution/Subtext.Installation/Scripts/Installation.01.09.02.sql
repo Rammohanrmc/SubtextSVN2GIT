@@ -1,6 +1,7 @@
 /*  Looks like we made a mistake in Subtext 1.09.01 with links 
 	This query fixes it.
 */
+
 UPDATE [<dbUser,varchar,dbo>].[subtext_LinkCategories] SET CategoryType = 5 WHERE CategoryType = 0
 
 
@@ -8,7 +9,7 @@ IF NOT EXISTS
 (
     SELECT * FROM [information_schema].[columns] 
     WHERE   table_name = 'subtext_Config' 
-    AND table_schema = '<dbUser,varchar,dbo>'
+    AND table_schema = 'dbo'
     AND column_name = 'AkismetAPIKey'
 )
 BEGIN
@@ -21,7 +22,7 @@ IF NOT EXISTS
 (
     SELECT * FROM [information_schema].[columns] 
     WHERE   table_name = 'subtext_Config' 
-    AND		table_schema = '<dbUser,varchar,dbo>'
+    AND table_schema = 'dbo'
     AND column_name = 'CategoryListPostCount'
 )
 BEGIN

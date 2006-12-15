@@ -16,6 +16,7 @@
 using System;
 using System.Globalization;
 using System.Threading;
+using System.Web.Caching;
 using MbUnit.Framework;
 using Subtext.Extensibility;
 using Subtext.Framework;
@@ -30,7 +31,9 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 	/// </summary>
 	[TestFixture]
 	public class EntryCreationTests
-	{		
+	{
+		string _hostName = string.Empty;
+		
 		/// <summary>
 		/// Tests that the fully qualified url is correct.
 		/// </summary>
@@ -40,9 +43,12 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		[Row("", "Subtext.Web", "/Subtext.Web")]
 		[Row("blog", "Subtext.Web", "/Subtext.Web/blog")]
 		[RollBack]
-		public void CreatedEntryHasCorrectFullyQualifiedLink(string subfolder, string applicationPath, string expectedUrlPrefix)
+		public void CreatedEntryHasCorrectFullyQualifiedLink(string subfolder, string virtualDir, string expectedUrlPrefix)
 		{
-			UnitTestHelper.SetupBlog(subfolder, applicationPath);
+			string hostname = UnitTestHelper.GenerateRandomString();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", hostname, subfolder));
+			
+			UnitTestHelper.SetHttpContextWithBlogRequest(hostname, subfolder, virtualDir);
 
 			Entry entry = new Entry(PostType.BlogPost);
 			entry.DateCreated = DateTime.ParseExact("2005/01/23", "yyyy/MM/dd", CultureInfo.InvariantCulture);
@@ -51,7 +57,7 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 			int id = Entries.Create(entry);
 
 			string expectedLink = string.Format("{0}/archive/2005/01/23/{1}.aspx", expectedUrlPrefix, id);
-			string expectedFullyQualifiedLink = "http://" + Config.CurrentBlog.Host + expectedLink;
+			string expectedFullyQualifiedLink = "http://" + hostname + expectedLink;
 
             Entry savedEntry = Entries.GetEntry(id, PostConfig.None, false);
 			Assert.AreEqual(expectedLink, savedEntry.Url, "The link was not what we expected.");
@@ -62,7 +68,7 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		[RollBack]
 		public void EntryDateSyndicatedIsNullEquivalentUnlessPublished()
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
 
 			Entry entry = new Entry(PostType.BlogPost);
 			
@@ -79,18 +85,11 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 			Thread.Sleep(1000);
 			savedEntry.IncludeInMainSyndication = true;
 			Entries.Update(savedEntry);
-
-			//Convert to UTC before comparing
-			DateTime utcSyndicatedDate = Config.CurrentBlog.TimeZone.ToUniversalTime(savedEntry.DateSyndicated);
-
-			Assert.IsTrue(utcSyndicatedDate > entry.DateCreated.ToUniversalTime(), string.Format("DateSyndicated '{0}' should larger than date created '{1}'.", savedEntry.DateSyndicated, savedEntry.DateCreated));
+					
+			Assert.IsTrue(savedEntry.DateSyndicated > savedEntry.DateCreated, string.Format("DateSyndicated '{0}' should larger than date created '{1}'.", savedEntry.DateSyndicated, savedEntry.DateCreated));
 
             savedEntry = Entries.GetEntry(id, PostConfig.None, false);
-
-			//Convert to UTC before comparing
-			utcSyndicatedDate = Config.CurrentBlog.TimeZone.ToUniversalTime(savedEntry.DateSyndicated);
-
-			Assert.IsTrue(utcSyndicatedDate > entry.DateCreated.ToUniversalTime(), string.Format("After reloading from DB, DateSyndicated '{0}' should larger than date created '{1}'.", savedEntry.DateSyndicated, savedEntry.DateCreated));
+			Assert.IsTrue(savedEntry.DateSyndicated > savedEntry.DateCreated, string.Format("After reloading from DB, DateSyndicated '{0}' should larger than date created '{1}'.", savedEntry.DateSyndicated, savedEntry.DateCreated));
 		}
 
 
@@ -103,6 +102,13 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		{		
 			//Confirm app settings
             UnitTestHelper.AssertAppSettings();
+		}
+
+		[SetUp]
+		public void SetUp()
+		{
+			_hostName = UnitTestHelper.GenerateRandomString();
+			UnitTestHelper.SetHttpContextWithBlogRequest(_hostName, string.Empty);
 		}
 
 		[TearDown]

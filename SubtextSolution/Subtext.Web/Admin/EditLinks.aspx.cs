@@ -49,7 +49,9 @@ namespace Subtext.Web.Admin.Pages
 				ViewState["filterCategoryID"] = value;
 			}
 		}
-		private int resultsPageNumber;
+		private int resultsPageNumber = 0;
+		private bool _isListHidden = false;
+
 		protected System.Web.UI.WebControls.CheckBoxList cklCategories;
 	
 		#region Accessors
@@ -135,7 +137,6 @@ namespace Subtext.Web.Admin.Pages
 //			ImportExport.Visible = false;
 			Edit.Visible = true;
 
-			lblLinkId.Visible = true;
 			lblEntryID.Text = currentLink.Id.ToString(CultureInfo.InvariantCulture);
 			txbTitle.Text = currentLink.Title;
 			txbUrl.Text = currentLink.Url;
@@ -230,7 +231,6 @@ namespace Subtext.Web.Admin.Pages
 			//ImportExport.Visible = !showEdit;
 			Edit.Visible = showEdit;
 
-			lblLinkId.Visible = false;
 			lblEntryID.Text = String.Empty;
 			txbTitle.Text = String.Empty;
 			txbUrl.Text = String.Empty;
@@ -267,6 +267,15 @@ namespace Subtext.Web.Admin.Pages
 
 				BindList();
 			}
+		}
+
+		// REFACTOR
+		public string CheckHiddenStyle()
+		{
+			if (_isListHidden)
+				return Constants.CSSSTYLE_HIDDEN;
+			else
+				return String.Empty;
 		}
 
 		#region Web Form Designer generated code

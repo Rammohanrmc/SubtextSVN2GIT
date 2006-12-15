@@ -20,8 +20,7 @@ namespace Subtext.Web.Admin.Pages {
         protected System.Web.UI.HtmlControls.HtmlInputFile OpmlImportFile;
         protected System.Web.UI.WebControls.DropDownList ddlImportExportCategories;
         protected System.Web.UI.WebControls.Button lkbImportOpml;
-        protected System.Web.UI.WebControls.PlaceHolder Edit;
-        protected System.Web.UI.WebControls.Literal lblLinkId;
+        protected Subtext.Web.Admin.WebUI.AdvancedPanel Edit;
         protected System.Web.UI.WebControls.Label lblEntryID;
         protected System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator1;
         protected System.Web.UI.WebControls.TextBox txbTitle;

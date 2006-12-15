@@ -17,9 +17,6 @@ using System;
 using System.Web.UI;
 using System.Configuration.Provider;
 using System.Web.UI.WebControls;
-using System.Globalization;
-using Subtext.Extensibility.Properties;
-using System.Collections.Specialized;
 
 namespace Subtext.Extensibility.Providers
 {
@@ -29,28 +26,45 @@ namespace Subtext.Extensibility.Providers
 	/// </summary>
 	public abstract class BlogEntryEditorProvider : ProviderBase
 	{
-		public override void Initialize(string name, NameValueCollection config)
+		private static BlogEntryEditorProvider provider;
+		private static GenericProviderCollection<BlogEntryEditorProvider> providers = ProviderConfigurationHelper.LoadProviderCollection<BlogEntryEditorProvider>("BlogEntryEditor", out provider);
+		
+		/// <summary>
+		/// Returns the default instance of this provider.
+		/// </summary>
+		/// <returns></returns>
+        public static BlogEntryEditorProvider Instance()
+        {
+            return provider;
+        }
+
+		/// <summary>
+		/// Returns all the configured Email Providers.
+		/// </summary>
+		public static GenericProviderCollection<BlogEntryEditorProvider> Providers
 		{
-            if (name == null)
-				throw new ArgumentNullException("name", Resources.ArgumentNull_String);
-
-			if (config == null)
-				throw new ArgumentNullException("config", Resources.ArgumentNull_Collection);
-            
-			if (config["Width"] != null)
-				this.Width = ParseUnit(config["Width"]);
-
-			if (config["Height"] != null)
-				this.Height = ParseUnit(config["Height"]);
-
-			base.Initialize(name, config);
+			get
+			{
+				return providers;
+			}
 		}
 		
-		protected static Unit ParseUnit(string s)
+		public override void Initialize(string name, System.Collections.Specialized.NameValueCollection configValue)
+		{
+			if (configValue["Width"] != null)
+				this.Width = ParseUnit(configValue["Width"]);
+
+			if (configValue["Height"] != null)
+				this.Height = ParseUnit(configValue["Height"]);
+
+			base.Initialize(name, configValue);
+		}
+		
+		protected Unit ParseUnit(string s)
 		{
 			try
 			{
-				return Unit.Parse(s, CultureInfo.InvariantCulture);
+				return Unit.Parse(s);
 			}
 			catch(Exception)
 			{

@@ -16,7 +16,6 @@
 using System;
 using System.Collections.Generic;
 using System.Web;
-using System.Web.Security;
 using Subtext.Extensibility.Interfaces;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Format;
@@ -25,29 +24,16 @@ using Subtext.Framework.Services;
 using Subtext.Framework.Text;
 using Subtext.Framework.Util;
 using Subtext.Framework.Web.HttpModules;
-using Subtext.Framework.Components;
 
 namespace Subtext.Framework
 {
-	/// <summary>
-	/// Represents a blog in the system.
-	/// </summary>
-	public interface IBlogInfo
-	{
-		/// <summary>
-		/// Gets the root URL for this blog.  For example, "http://example.com/" or "http://example.com/blog/".
-		/// </summary>
-		/// <value></value>
-		Uri RootUrl { get; }
-	}
-
 	/// <summary>
 	/// Represents an instance of a blog.  This was formerly known as the BlogConfig class. 
 	/// We are attempting to distinguish this from settings stored in web.config. This class 
 	/// is persisted via a <see cref="ObjectProvider"/>.
 	/// </summary>
 	[Serializable]
-	public class BlogInfo : IBlogInfo
+	public class BlogInfo
 	{
 		const int DefaultRecentCommentsLength = 50;
 		private UrlFormats _urlFormats;
@@ -62,14 +48,11 @@ namespace Subtext.Framework
 			return StringHelper.LeftBefore(
 			    StringHelper.RightAfter(host, "www.", StringComparison.InvariantCultureIgnoreCase), ":");
 		}
-
+		
 		/// <summary>
 		/// Gets the active blog count by host.
 		/// </summary>
 		/// <param name="host">The host.</param>
-		/// <param name="pageIndex">Index of the page.</param>
-		/// <param name="pageSize">Size of the page.</param>
-		/// <param name="flags">The flags.</param>
 		/// <returns></returns>
         public static IPagedCollection<BlogInfo> GetBlogsByHost(string host, int pageIndex, int pageSize, ConfigurationFlag flags)
 		{
@@ -131,28 +114,6 @@ namespace Subtext.Framework
 		}
 
 		private string _imagePath;
-
-		/// <summary>
-		/// Gets or sets the owner of the blog.
-		/// </summary>
-		/// <value>The owner.</value>
-		public MembershipUser Owner
-		{
-			get
-			{
-				if(this.owner == null && this.ownerId != Guid.Empty)
-				{
-					this.owner = Membership.GetUser(this.ownerId);
-				}
-				return this.owner;
-			}
-			set { this.owner = value; }
-		}
-
-		MembershipUser owner;
-
-		internal Guid ownerId;
-		
 		/// <summary>
 		/// Gets or sets the path (url) to the image directory.
 		/// </summary>
@@ -218,7 +179,7 @@ namespace Subtext.Framework
 			get{return this._timeZoneId;}
 			set{this._timeZoneId = value;}
 		}
-		private int _timeZoneId;
+		private int _timeZoneId = 0;
 
 		private int _itemCount = 15;
 		/// <summary>
@@ -268,12 +229,8 @@ namespace Subtext.Framework
 		/// <value></value>
 		public string Language
 		{
-			get{return String.IsNullOrEmpty(_language) ? "en-US" : _language;}
-			set
-			{
-				_language = value;
-				_languageCode = null;
-			}
+			get{return _language;}
+			set{_language = value;}
 		}
 
 		/// <summary>
@@ -284,15 +241,29 @@ namespace Subtext.Framework
 		{
 			get
 			{
-				if(String.IsNullOrEmpty(_languageCode))
+				if(_languageCode == null || _languageCode.Length == 0)
 				{
-					_languageCode = StringHelper.LeftBefore(Language, "-");
+					//Just being paranoid in making this check.
+					if(_language == null)
+						_language = "en-US";
+					_languageCode = StringHelper.LeftBefore(_language, "-");
 				}
 				return _languageCode;
 			}
 		}
 
 		string _languageCode;
+
+		private string _email;
+		/// <summary>
+		/// Gets or sets the email of the blog owner.
+		/// </summary>
+		/// <value></value>
+		public string Email
+		{
+			get{return _email;}
+			set{_email = value;}
+		}
 
 		/// <summary>
 		/// Gets or sets the host for the blog.  For 
@@ -338,6 +309,20 @@ namespace Subtext.Framework
 		{
 			get{return FlagPropertyCheck(ConfigurationFlag.EnableServiceAccess);}
 			set{FlagSetter(ConfigurationFlag.EnableServiceAccess,value);}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether passwords are 
+		/// stored in the database as cleartext or hashed.  If true, 
+		/// passwords are hashed before storage.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if passwords are hashed; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsPasswordHashed
+		{
+			get{return FlagPropertyCheck(ConfigurationFlag.IsPasswordHashed);}
+			set{FlagSetter(ConfigurationFlag.IsPasswordHashed,value);}
 		}
 
 		/// <summary>
@@ -576,21 +561,43 @@ namespace Subtext.Framework
 			}
 		}
 
+		private string _password;
 		/// <summary>
-		/// Gets or sets the name of the Membership application this 
-		/// blog is mapped to.
+		/// Gets or sets the password.
 		/// </summary>
-		/// <value>The name of the application.</value>
-		public string ApplicationName
+		/// <value></value>
+		public string Password
 		{
 			get
 			{
-				return this.applicationName ?? this.Host + "/" + this.Subfolder;
+				if(_password == null)
+				{
+					//TODO: Throw a specific exception.
+					throw new Exception("Invalid Password Setting");
+				}
+				return _password;
 			}
-			set { this.applicationName = value; }
+			set{_password = value;}
 		}
 
-		string applicationName;
+		private string _username;
+		/// <summary>
+		/// Gets or sets the user name for the owner of the blog.
+		/// </summary>
+		/// <value></value>
+		public string UserName
+		{
+			get
+			{
+				if(_username == null)
+				{
+					//TODO: Throw a specific exception.
+					throw new Exception("Invalid UserName Setting");
+				}
+				return _username;
+			}
+			set{_username = value;}
+		}
 
 		private string _title;
 		/// <summary>
@@ -991,7 +998,7 @@ namespace Subtext.Framework
 		/// </summary>
 		/// <param name="cf">Cf.</param>
 		/// <returns></returns>
-		bool FlagPropertyCheck(ConfigurationFlag cf)
+		protected bool FlagPropertyCheck(ConfigurationFlag cf)
 		{
 			return (this.Flag & cf) == cf;
 		}
@@ -1018,109 +1025,6 @@ namespace Subtext.Framework
 		{
 			return this.Host.GetHashCode() ^ this.Subfolder.GetHashCode();
 		}
-
-        //CHANGE: Gurkan Yeniceri
-        /*Mail To Weblog properties*/
-
-        #region Mail To Weblog properties
-        string _pop3Server;
-        public string pop3Server
-        {
-            get { return _pop3Server; }
-            set { _pop3Server = value; }
-        }
-
-        string _pop3User;
-        public string pop3User
-        {
-            get { return _pop3User; }
-            set { _pop3User = value; }
-        }
-
-        string _pop3Pass;
-        public string pop3Pass
-        {
-            get { return _pop3Pass; }
-            set { _pop3Pass = value; }
-        }
-
-        //		int _pop3Interval;
-        //		public int pop3Interval
-        //		{
-        //			get{return _pop3Interval;}
-        //			set{_pop3Interval = value;}
-        //		}
-
-        string _pop3StartTag;
-        public string pop3StartTag
-        {
-            get { return _pop3StartTag; }
-            set { _pop3StartTag = value; }
-        }
-
-        string _pop3EndTag;
-        public string pop3EndTag
-        {
-            get { return _pop3EndTag; }
-            set { _pop3EndTag = value; }
-        }
-
-        string _pop3SubjectPrefix;
-        public string pop3SubjectPrefix
-        {
-            get { return _pop3SubjectPrefix; }
-            set { _pop3SubjectPrefix = value; }
-        }
-
-        bool _pop3MTBEnable;
-        public bool pop3MTBEnable
-        {
-            get { return _pop3MTBEnable; }
-            set { _pop3MTBEnable = value; }
-        }
-
-        bool _pop3DeleteOnlyProcessed;
-        public bool pop3DeleteOnlyProcessed
-        {
-            get { return _pop3DeleteOnlyProcessed; }
-            set { _pop3DeleteOnlyProcessed = value; }
-        }
-
-        bool _pop3InlineAttachedPictures;
-        public bool pop3InlineAttachedPictures
-        {
-            get { return _pop3InlineAttachedPictures; }
-            set { _pop3InlineAttachedPictures = value; }
-        }
-
-        int _pop3HeightForThumbs;
-        public int pop3HeightForThumbs
-        {
-            get { return _pop3HeightForThumbs; }
-            set { _pop3HeightForThumbs = value; }
-        }
-        #endregion
-		//End of Mail To Weblog properties
-
-		#region Plugin Specific Properties
-
-		private IDictionary<Guid,Plugin> _enabledPlugins;
-
-		public IDictionary<Guid,Plugin> EnabledPlugins
-		{
-			get
-			{
-				//if the list of plugins has not been retrived for this BlogInfo
-				//I need to retrieve it from the cache (or, if I'm not lucky, from the storage)
-				if (_enabledPlugins == null)
-				{
-					_enabledPlugins = Plugin.GetEnabledPluginsFromCache();
-				}
-				return _enabledPlugins;
-			}
-		}
-
-		#endregion Plugin Specific Properties
 	}
 }
 

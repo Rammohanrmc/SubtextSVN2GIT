@@ -35,7 +35,7 @@ namespace Subtext.Web.Admin.WebUI
 		protected Control container;
 		protected PageLocation _lastItem;
 		protected string _lastItemText;
-		protected bool _lastItemOverride;
+		protected bool _lastItemOverride = false;
 
 		protected string _pageID = String.Empty;		
 		protected bool _isPanel = true;
@@ -43,7 +43,7 @@ namespace Subtext.Web.Admin.WebUI
 		protected bool _includeSelf = true;
 		protected bool _lastItemStatic;
 		
-		protected bool _usePrefixText;
+		protected bool _usePrefixText = false;
 		protected string _prefixText = PREFIXTEXT_DEFAULT;
 		protected bool _useSpacers = true;
 		protected string _spacer = SPACER_DEFAULT;
@@ -234,7 +234,7 @@ namespace Subtext.Web.Admin.WebUI
 				return control;
 		}
 
-		protected static PageLocation[] GetSampleAncestors()
+		protected PageLocation[] GetSampleAncestors()
 		{
 			PageLocation[] results = new PageLocation[3];
 			results[0] = new PageLocation("", "Level 3", "#");

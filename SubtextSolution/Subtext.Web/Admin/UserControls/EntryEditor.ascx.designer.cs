@@ -16,12 +16,12 @@ namespace Subtext.Web.Admin.UserControls {
         protected System.Web.UI.WebControls.Repeater rprSelectionList;
         protected System.Web.UI.HtmlControls.HtmlGenericControl NoMessagesLabel;
         protected Subtext.Web.Controls.PagingControl resultsPager;
-        protected System.Web.UI.WebControls.PlaceHolder Edit;
+        protected Subtext.Web.Admin.WebUI.AdvancedPanel Edit;
         protected System.Web.UI.WebControls.HyperLink hlEntryLink;
         protected System.Web.UI.WebControls.RequiredFieldValidator valTitleRequired;
         protected System.Web.UI.WebControls.TextBox txbTitle;
         protected System.Web.UI.WebControls.RequiredFieldValidator valtbBodyRequired;
-        protected Subtext.Web.UI.WebControls.RichTextEditor richTextEditor;
+        protected Subtext.Web.Controls.RichTextEditor richTextEditor;
         protected System.Web.UI.WebControls.CheckBoxList cklCategories;
         protected System.Web.UI.WebControls.Button lkbPost;
         protected System.Web.UI.WebControls.Button lkUpdateCategories;

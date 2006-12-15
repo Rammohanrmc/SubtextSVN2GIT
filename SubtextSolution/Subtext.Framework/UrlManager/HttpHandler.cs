@@ -163,7 +163,7 @@ namespace Subtext.Framework.UrlManager
 			}		
 		}
 
-		private ConstructorInfo constructor;
+		private ConstructorInfo constructor = null;
 		public object Instance()
 		{
 			if(constructor == null)

@@ -3,7 +3,10 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using System.Web;
 using System.Web.UI.WebControls;
+using log4net;
+using Subtext.Framework.Logging;
 using Subtext.Web.Controls.Captcha;
 
 namespace Subtext.Web.Controls
@@ -12,7 +15,15 @@ namespace Subtext.Web.Controls
 	/// </summary>
 	public abstract class CaptchaBase : BaseValidator
 	{
+		private readonly static ILog log = new Log();
 		static SymmetricAlgorithm encryptionAlgorithm = InitializeEncryptionAlgorithm();
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="InvisibleCaptcha"/> class.
+		/// </summary>
+		public CaptchaBase() : base()
+		{
+		}
 
 		static SymmetricAlgorithm InitializeEncryptionAlgorithm()
 		{
@@ -44,9 +55,6 @@ namespace Subtext.Web.Controls
 		/// <returns></returns>
 		public static string DecryptString(string encryptedEncodedText)
 		{
-			if (encryptedEncodedText == null)
-				throw new ArgumentNullException("encryptedEncodedText", "Cannot decrypt a null string.");
-
 			try
 			{
 				byte[] encryptedBytes = Convert.FromBase64String(encryptedEncodedText);
@@ -111,8 +119,15 @@ namespace Subtext.Web.Controls
 			{
 				return ValidateCaptcha();
 			}
-			catch(CaptchaExpiredException)
+			catch(CaptchaExpiredException e)
 			{
+				if (e.InnerException != null)
+				{
+					string warning = "CaptchaExpired Exception thrown.";
+					if (HttpContext.Current != null && HttpContext.Current.Request != null)
+						warning += " User Agent: " + HttpContext.Current.Request.UserAgent;
+					log.Warn(warning, e.InnerException);
+				}
 				this.ErrorMessage = "Sorry, but this form has expired. Please try again.";
 				return false;
 			}
@@ -173,7 +188,7 @@ namespace Subtext.Web.Controls
 				this.timeoutInSeconds = value;
 			}
 		}
-		private int timeoutInSeconds;
+		private int timeoutInSeconds = 0;
 	}
 	
 	/// <summary>
@@ -181,13 +196,11 @@ namespace Subtext.Web.Controls
 	/// client.
 	/// </summary>
 	public struct AnswerAndDate
-	{
+	{	
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AnswerAndDate"/> class.
 		/// </summary>
 		/// <param name="encryptedAnswer">The encrypted answer.</param>
-		/// <param name="timeoutInSeconds">The timeout in seconds.</param>
-		/// <returns></returns>
 		public static AnswerAndDate ParseAnswerAndDate(string encryptedAnswer, int timeoutInSeconds)
 		{
 			AnswerAndDate answerAndDate;

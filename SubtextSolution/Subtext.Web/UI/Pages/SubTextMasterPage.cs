@@ -51,8 +51,7 @@ namespace Subtext.Web.UI.Pages
 		protected HtmlLink Rsd;
 		protected HtmlLink AtomLink;
 		protected PlaceHolder CenterBodyControl;
-		protected Literal versionMetaTag;
-        protected Literal authorMetaTag;
+		protected Literal authorMetaTag;
 		protected Literal scripts;
 		protected Literal styles;
 		protected Literal virtualRoot;
@@ -173,13 +172,9 @@ namespace Subtext.Web.UI.Pages
 			//Is this for extra security?
 			EnableViewState = false;
 			pageTitle.Text = Globals.CurrentTitle(Context);
-            if (Config.CurrentBlog.Author != null && Config.CurrentBlog.Author.Length > 0)
-            {
-				authorMetaTag.Text = String.Format("\r\n<meta name=\"author\" content=\"{0}\" />", Config.CurrentBlog.Author);
-            }
-			versionMetaTag.Text = String.Format("\r\n<meta name=\"Generator\" content=\"{0}\" />\r\n", Subtext.Framework.VersionInfo.VersionDisplayText);
-            base.OnPreRender (e);
-
+			if(Config.CurrentBlog.Author != null && Config.CurrentBlog.Author.Length > 0)
+				authorMetaTag.Text = String.Format("<meta name=\"author\" content=\"{0}\" />", Config.CurrentBlog.Author );
+			base.OnPreRender (e);
 		}
 
 		/// <summary>
@@ -306,31 +301,30 @@ namespace Subtext.Web.UI.Pages
 
 			private static string RenderStyleElement(string skinPath, Style style)
 			{
-                StringBuilder element = new StringBuilder();
+                string element = string.Empty;
 			    
                 if (!String.IsNullOrEmpty(style.Conditional))
                 {
-                    element.Append(string.Format("<!--[{0}]>{1}", style.Conditional, Environment.NewLine));
+                    element = string.Format("<!--[{0}]>{1}", style.Conditional, Environment.NewLine);
                 }
+			    
+                element += "<link";
+                    if (style.Media != null && style.Media.Length > 0)
+                        element += RenderStyleAttribute("media", style.Media);
 
-                element.Append("<link");
-                if (style.Media != null && style.Media.Length > 0)
-                {
-                    element.Append(RenderStyleAttribute("media", style.Media));
-                }
-
-                element.Append(RenderStyleAttribute("type", "text/css") + 
+				element +=
+					RenderStyleAttribute("type", "text/css") + 
 					RenderStyleAttribute("rel", "stylesheet") + 
 					RenderStyleAttribute("title", style.Title) + 
 					RenderStyleAttribute("href", GetStylesheetHrefPath(skinPath, style)) + //TODO: Look at this line again.
-					"></link>" + Environment.NewLine);
+					"></link>" + Environment.NewLine;
 
                 if (!String.IsNullOrEmpty(style.Conditional))
                 {
-                    element.Append("<![endif]-->" + Environment.NewLine);
+                    element += "<![endif]-->" + Environment.NewLine;
                 }
 			    
-			    return element.ToString();
+			    return element;
 			}
 
 			/// <summary>
@@ -355,7 +349,7 @@ namespace Subtext.Web.UI.Pages
 				}
 			}
 
-			private static string CreateStylePath(string skinTemplateFolder)
+			private string CreateStylePath(string skinTemplateFolder)
 			{
 				string applicationPath = HttpContext.Current.Request.ApplicationPath;
 				string path = (applicationPath == "/" ? String.Empty : applicationPath) + "/Skins/" + skinTemplateFolder + "/";
@@ -385,7 +379,7 @@ namespace Subtext.Web.UI.Pages
 		/// This will be used by other scripts.
 		/// </summary>
 		/// <value>The allowed HTML javascript declaration.</value>
-		protected static string AllowedHtmlJavascriptDeclaration
+		protected string AllowedHtmlJavascriptDeclaration
 		{
 			get
 			{
@@ -405,5 +399,4 @@ namespace Subtext.Web.UI.Pages
 		}
 	}
 }
-
 

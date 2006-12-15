@@ -15,9 +15,10 @@
 
 using System;
 using System.Web;
+using System.Web.UI;
+using Subtext.Extensibility.Providers;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Format;
-using Subtext.Installation;
 
 namespace Subtext.Framework
 {
@@ -39,8 +40,8 @@ namespace Subtext.Framework
 			{
 				return (bool)HttpContext.Current.Application["NeedsInstallation"];
 			}
-					
-			InstallationState currentState = Installer.GetInstallationStatus();
+			
+			InstallationState currentState = InstallationProvider.Instance().GetInstallationStatus(assemblyVersion);
 			bool needsUpgrade = currentState  == InstallationState.NeedsInstallation 
 				|| currentState  == InstallationState.NeedsUpgrade
 				|| currentState  == InstallationState.NeedsRepair;
@@ -99,10 +100,10 @@ namespace Subtext.Framework
 			if(unhandledException is HostNotConfiguredException)
 				return true;
 
-			if(Installer.IsInstallationException(unhandledException))
+			if(InstallationProvider.Instance().IsInstallationException(unhandledException))
 				return true;
 
-			InstallationState status = Installer.GetInstallationStatus();
+			InstallationState status = InstallationProvider.Instance().GetInstallationStatus(assemblyVersion);
 			switch(status)
 			{
 				case InstallationState.NeedsInstallation:
@@ -159,6 +160,20 @@ namespace Subtext.Framework
 		}
 
 		/// <summary>
+		/// Determines whether the requested page is in the Install directory.
+		/// </summary>
+		/// <returns>
+		/// 	<c>true</c> if is in install directory; otherwise, <c>false</c>.
+		/// </returns>
+		public static bool IsInUpgradeDirectory
+		{
+			get
+			{
+				return UrlFormats.IsInSpecialDirectory("HostAdmin/Upgrade");
+			}
+		}
+
+		/// <summary>
 		/// Determines whether the requested page is in the System Message directory.
 		/// </summary>
 		/// <returns>
@@ -175,10 +190,41 @@ namespace Subtext.Framework
 		/// <summary>
 		/// Gets the installation status.
 		/// </summary>
+		/// <param name="assemblyVersion">Gets the version of the currently installed assembly.</param>
 		/// <returns></returns>
-		public static InstallationState GetCurrentInstallationState()
+		public static InstallationState GetCurrentInstallationState(Version assemblyVersion)
 		{
-			return Installer.GetInstallationStatus();
+			return InstallationProvider.Instance().GetInstallationStatus(assemblyVersion);
+		}
+
+		/// <summary>
+		/// Gets the installation information control.
+		/// </summary>
+		/// <returns></returns>
+		public static Control GetInstallationInformationControl()
+		{
+			return InstallationProvider.Instance().GatherInstallationInformation();	
+		}
+
+		/// <summary>
+		/// Validates the installation information provided by the user.  
+		/// Returns a string with error information.  The string is 
+		/// empty if there are no errors.
+		/// </summary>
+		/// <param name="populatedControl">Information.</param>
+		/// <returns></returns>
+		public static string ValidateInstallationAnswers(Control populatedControl)
+		{
+			return InstallationProvider.Instance().ValidateInstallationInformation(populatedControl);
+		}
+
+		/// <summary>
+		/// Sets the installation question answers.
+		/// </summary>
+		/// <param name="control">Control containing the user's answers.</param>
+		public static void SetInstallationQuestionAnswers(Control control)
+		{
+			InstallationProvider.Instance().ProvideInstallationInformation(control);
 		}
 	}
 }

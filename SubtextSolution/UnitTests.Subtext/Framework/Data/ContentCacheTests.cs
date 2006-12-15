@@ -3,9 +3,7 @@ using System.Collections;
 using System.Globalization;
 using System.Threading;
 using System.Web;
-using System.Web.Caching;
 using MbUnit.Framework;
-using Rhino.Mocks;
 using Subtext.Framework;
 
 namespace UnitTests.Subtext.Framework.Data
@@ -17,51 +15,6 @@ namespace UnitTests.Subtext.Framework.Data
 	[TestFixture]
 	public class ContentCacheTests
 	{
-		[Test]
-		public void CanInsertIntoCache()
-		{
-			UnitTestHelper.SetupHttpContextWithRequest("/");
-			ContentCache cache = ContentCache.Instantiate();
-			Assert.IsNull(cache.Get("NotThere"));
-			cache.Insert("IsThereNow", new object());
-			Assert.IsNotNull(cache.Get("IsThereNow"));
-		}
-
-		[Test]
-		public void CanInsertIntoCacheWithCacheDependency()
-		{
-			UnitTestHelper.SetupHttpContextWithRequest("/");
-			ContentCache cache = ContentCache.Instantiate();
-			Assert.IsNull(cache.Get("NotThere"));
-			MockRepository mocks = new MockRepository();
-			CacheDependency cacheDependency = mocks.CreateMock<CacheDependency>();
-			mocks.ReplayAll();
-			cache.Insert("IsThereWithDependency", new object(), cacheDependency);
-			Assert.IsNotNull(cache.Get("IsThereWithDependency"));
-			mocks.VerifyAll();
-		}
-
-		[Test]
-		public void CanRemoveFromCache()
-		{
-			UnitTestHelper.SetupHttpContextWithRequest("/");
-			ContentCache cache = ContentCache.Instantiate();
-			cache["IsThereForRemove"] = new object();
-			Assert.IsNotNull(cache.Get("IsThereForRemove"));
-			cache.Remove("IsThereForRemove");
-			Assert.IsNull(cache.Get("IsThereForRemove"));
-		}
-
-		[Test]
-		public void CanGetItemFromCache()
-		{
-			UnitTestHelper.SetupHttpContextWithRequest("/");
-			ContentCache cache = ContentCache.Instantiate();
-			Assert.IsNull(cache.Get("NotThere"));
-			cache["IsThereGetIt"] = new object();
-			Assert.IsNotNull(cache.Get("IsThereGetIt"));
-		}
-
 		/// <summary>
 		/// Makes sure that the <see cref="ContentCache"/> <see cref="ContentCache.Instantiate"/> 
 		/// method uses the per-request cache if provided.
@@ -69,7 +22,7 @@ namespace UnitTests.Subtext.Framework.Data
 		[Test]
 		public void InstantiationOfContentCacheUsesRequestCaching()
 		{
-			UnitTestHelper.SetupHttpContextWithRequest("/");
+			UnitTestHelper.SetHttpContextWithBlogRequest(UnitTestHelper.GenerateRandomString(), "");
 			Assert.IsNotNull(HttpContext.Current, "We did not set up the http context correctly.");
 			Assert.AreEqual(1, HttpContext.Current.Items.Count, "Did not expect the request cache to have any items.");
 			
@@ -89,7 +42,7 @@ namespace UnitTests.Subtext.Framework.Data
 		[Test]
 		public void ContentCacheCachesByLanguage()
 		{
-			UnitTestHelper.SetupHttpContextWithRequest("/");
+			UnitTestHelper.SetHttpContextWithBlogRequest(UnitTestHelper.GenerateRandomString(), "");
 
 			//Start with en-US
 			Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
@@ -123,10 +76,10 @@ namespace UnitTests.Subtext.Framework.Data
 		/// Make sure passing in a null value for caching throws an exception.
 		/// </summary>
 		[Test]
-		[ExpectedArgumentNullException]
-		public void InsertThrowsArgumentNullExceptionForNullValue()
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void CannotInsertNullTest()
 		{
-			UnitTestHelper.SetupHttpContextWithRequest("/");
+			UnitTestHelper.SetHttpContextWithBlogRequest(UnitTestHelper.GenerateRandomString(), "");
 			ContentCache cache = ContentCache.Instantiate();
 			cache.Insert("test", null);
 		}
@@ -135,28 +88,12 @@ namespace UnitTests.Subtext.Framework.Data
 		/// Make sure passing in a null value for caching throws an exception.
 		/// </summary>
 		[Test]
-		[ExpectedArgumentNullException]
-		public void InsertThrowsArgumentNullExceptionForNullValueWithCacheDurationOverload()
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void CannotInsertNullWithCacheDurationTest()
 		{
-			UnitTestHelper.SetupHttpContextWithRequest("/");
+			UnitTestHelper.SetHttpContextWithBlogRequest(UnitTestHelper.GenerateRandomString(), "");
 			ContentCache cache = ContentCache.Instantiate();
 			cache.Insert("test", null, CacheDuration.Short);
-		}
-
-		/// <summary>
-		/// Make sure passing in a null value for caching throws an exception.
-		/// </summary>
-		[Test]
-		[ExpectedArgumentNullException]
-		public void InsertThrowsArgumentNullExceptionForNullValueWithCacheDependencyOverload()
-		{
-			UnitTestHelper.SetupHttpContextWithRequest("/");
-			ContentCache cache = ContentCache.Instantiate();
-
-			MockRepository mocks = new MockRepository();
-			CacheDependency cacheDependency = mocks.CreateMock<CacheDependency>();
-			mocks.ReplayAll();
-			cache.Insert("test", null, cacheDependency);
 		}
 	}
 }

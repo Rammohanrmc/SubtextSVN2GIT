@@ -19,7 +19,6 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Caching;
-using System.Web.Security;
 using log4net;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Logging;
@@ -32,7 +31,7 @@ namespace Subtext.Framework.Configuration
 	/// </summary>
 	public class UrlBasedBlogInfoProvider
 	{
-		private readonly static ILog log = new Subtext.Framework.Logging.Log();
+		private readonly static ILog log = new Log();
 
 		static UrlBasedBlogInfoProvider _singletonInstance = new UrlBasedBlogInfoProvider();
 		
@@ -57,7 +56,7 @@ namespace Subtext.Framework.Configuration
 		/// <param name="host">Host.</param>
 		/// <param name="useWWW">Use WWW.</param>
 		/// <returns></returns>
-		static protected string GetFormattedHost(string host, bool useWWW)
+		protected string GetFormattedHost(string host, bool useWWW)
 		{
 			if(useWWW)
 			{
@@ -139,7 +138,7 @@ namespace Subtext.Framework.Configuration
 						throw new BlogInactiveException();
 					}
 			
-					BlogConfigurationSettings settings = Subtext.Framework.Configuration.Config.Settings;
+					BlogConfigurationSettings settings = Config.Settings;
 
 					// look here for issues with gallery images not showing up.
 					string webApp = HttpContext.Current.Request.ApplicationPath;
@@ -157,10 +156,10 @@ namespace Subtext.Framework.Configuration
 					if(subfolder.Length > 1)
 						subfolder = "/" + subfolder;
 					
-					string virtualPath = string.Format(System.Globalization.CultureInfo.InvariantCulture, "images/{0}{1}", Regex.Replace(blogRequest.Host + webApp, @"\:|\.","_"), subfolder);
+					string virtualPath = string.Format(CultureInfo.InvariantCulture, "images/{0}{1}", Regex.Replace(blogRequest.Host + webApp, @"\:|\.","_"), subfolder);
 
 					// now put together the host + / + virtual path (url) to images
-					info.ImagePath = string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}/{1}", formattedHost, virtualPath);
+					info.ImagePath = string.Format(CultureInfo.InvariantCulture, "{0}/{1}", formattedHost, virtualPath);
 					try
 					{
 						info.ImageDirectory = HttpContext.Current.Request.MapPath("~/" + virtualPath);
@@ -180,7 +179,6 @@ namespace Subtext.Framework.Configuration
 					}
 					else
 					{
-						Membership.ApplicationName = Roles.ApplicationName = "/";
 						Log.ResetBlogIdContext();
 					}
 				}
@@ -202,7 +200,7 @@ namespace Subtext.Framework.Configuration
 			aggregateBlog.Skin = SkinConfig.GetDefaultSkin();
             aggregateBlog.Host = ConfigurationManager.AppSettings["AggregateHost"];
 			aggregateBlog.Subfolder = "";
-			//TODO: aggregateBlog.UserName = HostInfo.Instance.HostUserName;
+			aggregateBlog.UserName = HostInfo.Instance.HostUserName;
 			
 			return aggregateBlog;
 		}
@@ -213,7 +211,7 @@ namespace Subtext.Framework.Configuration
 		/// </summary>
 		/// <param name="Request">Request.</param>
 		/// <returns></returns>
-		static protected string GetCurrentHost(HttpRequest Request)
+		protected string GetCurrentHost(HttpRequest Request)
 		{
 			string host = Request.Url.Host;
 			if(!Request.Url.IsDefaultPort)

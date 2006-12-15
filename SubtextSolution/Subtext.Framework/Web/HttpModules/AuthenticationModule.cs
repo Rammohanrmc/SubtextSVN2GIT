@@ -3,6 +3,7 @@ using System.Security.Principal;
 using System.Web;
 using System.Web.Security;
 using log4net;
+using Subtext.Framework;
 using Subtext.Framework.Logging;
 using Subtext.Framework.Web;
 using Subtext.Framework.Security;
@@ -20,13 +21,7 @@ namespace Subtext.Web.HttpModules
         public void Init(HttpApplication context)
         {
             context.AuthenticateRequest += OnAuthenticateRequest;
-			context.PostAuthenticateRequest += OnPostAuthenticateRequest;
         }
-
-		void OnPostAuthenticateRequest(object sender, EventArgs e)
-		{
-			throw new Exception("The method or operation is not implemented.");
-		}
 
         void OnAuthenticateRequest(object sender, EventArgs e)
         {

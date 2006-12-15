@@ -10,13 +10,14 @@
     <title>Subtext - Admin</title>
     <st1:ScriptTag id="commonJs" src="~/Scripts/common.js" runat="server" />
     <st1:ScriptTag id="tableEffectsJS" src="~/Scripts/tableEffects.js" runat="server" />
-    <st:StyleTag id="FormsStyle" href="~/Skins/_System/forms.css" runat="server" />
+    <st1:ScriptTag id="NiceForms" src="~/admin/resources/Scripts/niceForms.js" runat="server" />
 	<st1:ScriptTag id="HelptipJs" src="~/admin/resources/Scripts/helptip.js" runat="server" />
 	<st1:ScriptTag id="AdminJs" src="~/admin/resources/Scripts/admin.js" runat="server" />
 	<link id="commonLayoutCss" type="text/css" rel="stylesheet" runat="Server" href="~/Skins/_System/commonlayout.css" />
 	<link id="commonStyleCss" type="text/css" rel="stylesheet" runat="Server" href="~/Skins/_System/commonstyle.css" />
 	<st:HeaderLink id="HelptipCss" rel="stylesheet" href="resources/scripts/helptip.css" linkType="text/css" runat="server" />
 	<st:HeaderLink id="adminCss" rel="stylesheet" href="resources/admin.css" linkType="text/css" runat="server" />
+	<st:HeaderLink id="NiceFormsStyle" rel="stylesheet" href="resources/scripts/niceforms-default.css" linkType="text/css" runat="server" />
 </head>
 <body id="AdminSection" runat="server">
     <form id="frmMain" runat="server">
@@ -27,7 +28,8 @@
 				</td>
 				<td id="header">
 					<div id="SiteNav">
-						Logged in as <strong><asp:LoginName ID="loginName" runat="server" /></strong> (<asp:LinkButton id="LogoutLink" runat="server">logout</asp:LinkButton>) 
+						Logged in as <strong>
+							<asp:Literal Runat="server" ID="LoggedInUser" Text="<%# Config.CurrentBlog.Author %>" /></strong> (<asp:LinkButton id="LogoutLink" runat="server">logout</asp:LinkButton>) 
 						| <a href="http://www.subtextproject.com/" title="Subtext Project Site">Subtext Project Site</a>
 						<br />
 						

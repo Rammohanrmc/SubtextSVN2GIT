@@ -97,7 +97,7 @@ namespace Subtext.Framework.Syndication
 		/// <returns></returns>
 		protected override string GetAuthorFromItem(Entry item)
 		{
-			return item.Author.UserName;
+			return item.Author;
 		}
 
 		/// <summary>

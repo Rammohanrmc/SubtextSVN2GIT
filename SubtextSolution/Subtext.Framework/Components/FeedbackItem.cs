@@ -122,13 +122,13 @@ namespace Subtext.Framework.Components
 			if(filter != null)
 				filter.FilterBeforePersist(feedback);
 			
-			feedback.Id = ObjectProvider.Instance().CreateFeedback(feedback);
+			feedback.Id = ObjectProvider.Instance().Create(feedback);
 			
 			if(filter != null)
 				filter.FilterAfterPersist(feedback);
 
 			// if it's not the administrator commenting and it's not a trackback.
-			if (!SecurityHelper.IsAdmin && !String.IsNullOrEmpty(Config.CurrentBlog.Owner.Email) && feedback.FeedbackType != Extensibility.FeedbackType.PingTrack)
+			if (!SecurityHelper.IsAdmin && !String.IsNullOrEmpty(Config.CurrentBlog.Email) && feedback.FeedbackType != Extensibility.FeedbackType.PingTrack)
 			{
 				//In order to make this async, we need to pass the HttpContext.Current 
 				//several layers deep. Instead, we should create our own context.
@@ -173,7 +173,7 @@ namespace Subtext.Framework.Components
 			if (String.IsNullOrEmpty(fromEmail))
 				fromEmail = null;
 
-			string to = currentBlog.Owner.Email;
+			string to = currentBlog.Email;
 			string from = fromEmail ?? im.AdminEmail;
 			string subject = String.Format(CultureInfo.InvariantCulture, "Comment: {0} (via {1})", comment.Title, blogTitle);
 			string commenterUrl = "none given";

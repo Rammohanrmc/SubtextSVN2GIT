@@ -32,7 +32,8 @@ namespace Subtext.Web.Admin.Pages
 	/// </summary>
 	public partial class Feedback : AdminPage
 	{
-		private int pageIndex;
+		private int pageIndex = 0;
+		private bool _isListHidden = false;
 		LinkButton btnViewApprovedComments;
 		LinkButton btnViewModerateComments;
 		LinkButton btnViewSpam;
@@ -187,7 +188,7 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		/// <param name="dataItem"></param>
 		/// <returns></returns>
-		protected static string GetBody(object dataItem)
+		protected string GetBody(object dataItem)
 		{
 			FeedbackItem feedbackItem = (FeedbackItem)dataItem;
 			if(feedbackItem.FeedbackType != FeedbackType.PingTrack)
@@ -203,7 +204,7 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		/// <param name="dataItem"></param>
 		/// <returns></returns>
-		protected static string GetAuthor(object dataItem)
+		protected string GetAuthor(object dataItem)
 		{
 			FeedbackItem feedbackItem = (FeedbackItem)dataItem;
 			return string.Format(@"<span title=""{0}"">{1}</span>", feedbackItem.IpAddress, feedbackItem.Author);
@@ -214,7 +215,7 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		/// <param name="dataItem">The data item.</param>
 		/// <returns></returns>
-		protected static string GetTitle(object dataItem)
+		protected string GetTitle(object dataItem)
 		{
 			FeedbackItem feedbackItem = (FeedbackItem)dataItem;
 			if (feedbackItem.DisplayUrl != null)
@@ -231,7 +232,7 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		/// <param name="dataItem"></param>
 		/// <returns></returns>
-		protected static string GetAuthorInfo(object dataItem)
+		protected string GetAuthorInfo(object dataItem)
 		{
 			FeedbackItem feedback = (FeedbackItem)dataItem;
 			string authorInfo = string.Empty;
@@ -258,7 +259,7 @@ namespace Subtext.Web.Admin.Pages
 			SetCount(btnViewTrash, counts.DeletedCount);
 		}
 		
-		static void SetCount(LinkButton button, int count)
+		void SetCount(LinkButton button, int count)
 		{
 			button.Text = StringHelper.LeftBefore(button.Text, "(") + "(" + count + ")";
 		}
@@ -365,6 +366,14 @@ namespace Subtext.Web.Admin.Pages
 					break;
 			}
  			 base.OnPreRender(e);
+		}
+
+		public string CheckHiddenStyle()
+		{
+			if (_isListHidden)
+				return Constants.CSSSTYLE_HIDDEN;
+			else
+				return String.Empty;
 		}
 
 		#region Web Form Designer generated code

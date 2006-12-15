@@ -41,15 +41,11 @@ namespace Subtext.Framework.Text
 		/// <param name="newClass">The new class.</param>
 		public static void AppendCssClass(WebControl control, string newClass)
 		{
-            if (control == null)
-            {
-                throw new ArgumentNullException("Cannot add a css class to a null control");
-            }
+			if (control == null)
+				throw new ArgumentNullException("Cannot add a css class to a null control");
 
-            if (newClass == null)
-            {
-                throw new ArgumentNullException("Cannot add a null css class to a control");
-            }
+			if (newClass == null)
+				throw new ArgumentNullException("Cannot add a null css class to a control");
 			
 			string existingClasses = control.CssClass;
 			if (String.IsNullOrEmpty(existingClasses))
@@ -77,36 +73,28 @@ namespace Subtext.Framework.Text
 		/// <param name="classToRemove">The new class.</param>
 		public static void RemoveCssClass(WebControl control, string classToRemove)
 		{
-            if (control == null)
-            {
-                throw new ArgumentNullException("Cannot remove a css class from a null control");
-            }
+			if (control == null)
+				throw new ArgumentNullException("Cannot remove a css class from a null control");
 
-            if (classToRemove == null)
-            {
-                throw new ArgumentNullException("Cannot remove a null css class from a control");
-            }
+			if (classToRemove == null)
+				throw new ArgumentNullException("Cannot remove a null css class from a control");
 			
 			string existingClasses = control.CssClass;
-            if (String.IsNullOrEmpty(existingClasses))
-            {
-                return; //nothing to remove
-            }
+			if (String.IsNullOrEmpty(existingClasses))
+				return; //nothing to remove
 
 			string[] classes = existingClasses.Split(new string[] { " ", "\t", "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
-            string newClasses = String.Empty;
+			string newClasses = string.Empty;
 			foreach (string cssClass in classes)
 			{
 				if (!String.Equals(cssClass, classToRemove, StringComparison.Ordinal))
 				{
-                    newClasses += cssClass + " ";
+					newClasses += cssClass + " ";
 				}
 			}
-
-            if (newClasses.EndsWith(" "))
-            {
-                newClasses = newClasses.Substring(0, newClasses.Length - 1);
-            }
+			
+			if(newClasses.EndsWith(" "))
+				newClasses = newClasses.Substring(0, newClasses.Length - 1);
 			control.CssClass = newClasses;		
 		}
 		
@@ -159,7 +147,7 @@ namespace Subtext.Framework.Text
 		/// </summary>
 		/// <param name="entry">Entry.</param>
 		/// <returns></returns>
-		public static void ConvertHtmlToXHtml(Entry entry)
+		public static bool ConvertHtmlToXHtml(Entry entry)
 		{
 			SgmlReader reader = new SgmlReader();
 			reader.SetBaseUri(Config.CurrentBlog.RootUrl.ToString());
@@ -188,6 +176,7 @@ namespace Subtext.Framework.Text
 
 			string xml = writer.ToString();
 			entry.Body = xml.Substring("<html>".Length, xml.Length - "<html></html>".Length);
+			return true;
 		}
 
 		/// <summary>
@@ -196,13 +185,12 @@ namespace Subtext.Framework.Text
 		/// </summary>
 		/// <param name="s">S.</param>
 		/// <returns></returns>
-		public static void CheckForIllegalContent(string s)
+		public static bool HasIllegalContent(string s)
 		{
 			if (s == null || s.Trim().Length == 0)
 			{
-				return;
+				return false;
 			}
-		    
 			if (s.IndexOf("<script")> - 1 
 				|| s.IndexOf("&#60script")> - 1 
 				|| s.IndexOf("&60script")> - 1 
@@ -210,6 +198,7 @@ namespace Subtext.Framework.Text
 			{
 				throw new IllegalPostCharactersException("Illegal Characters Found");
 			}
+			return false;
 		}
 
 		/// <summary>

@@ -198,7 +198,8 @@ namespace Subtext.Framework
 				}
 
 				PingBackNotificatinProxy pbnp = new PingBackNotificatinProxy();
-				
+				TrackBackNotificationProxy tbnp = new TrackBackNotificationProxy();
+
 				for(int i = 0; i < count; i++)
 				{
 					try
@@ -213,7 +214,7 @@ namespace Subtext.Framework
 						if(pageText != null)
 						{
 							pbnp.Ping(pageText, entry.FullyQualifiedUrl, url);
-                            TrackBackNotificationProxy.TrackBackPing(pageText, url, entry.Title, entry.FullyQualifiedUrl, blogname, description);
+							tbnp.TrackBackPing(pageText, url, entry.Title, entry.FullyQualifiedUrl, blogname, description);
 						}
 					}
 					catch(Exception e)

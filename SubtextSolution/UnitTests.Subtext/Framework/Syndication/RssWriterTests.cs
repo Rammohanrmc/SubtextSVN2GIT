@@ -47,8 +47,7 @@ namespace UnitTests.Subtext.Framework.Syndication
 			blogInfo.Host = "localhost";
 			blogInfo.Subfolder = subfolder;
 			blogInfo.Title = "My Blog Is Better Than Yours";
-			blogInfo.Owner = UnitTestHelper.CreateUserInstanceForTest();
-			blogInfo.Owner.Email = "Subtext@example.com";
+			blogInfo.Email = "Subtext@example.com";
 			blogInfo.RFC3229DeltaEncodingEnabled = true;
 
 			HttpContext.Current.Items.Add("BlogInfo-", blogInfo);
@@ -70,8 +69,7 @@ namespace UnitTests.Subtext.Framework.Syndication
 			BlogInfo blogInfo = new BlogInfo();
 			blogInfo.Host = "localhost";
 			blogInfo.Title = "My Blog Is Better Than Yours";
-			blogInfo.Owner = UnitTestHelper.CreateUserInstanceForTest();
-			blogInfo.Owner.Email = "Subtext@example.com";
+			blogInfo.Email = "Subtext@example.com";
 			blogInfo.RFC3229DeltaEncodingEnabled = true;
 			blogInfo.TimeZoneId = PacificTimeZoneId;
 			
@@ -79,7 +77,7 @@ namespace UnitTests.Subtext.Framework.Syndication
 
 		    List<Entry> entries = new List<Entry>(CreateSomeEntries());
             entries[0].Categories.AddRange(new string[] { "Category1", "Category2" });
-			entries[0].Author.Email = "nobody@example.com";
+			entries[0].Email = "nobody@example.com";
             entries[2].Categories.Add("Category 3");
 			RssWriter writer = new RssWriter(entries, NullValue.NullDateTime, false);
 
@@ -172,8 +170,7 @@ namespace UnitTests.Subtext.Framework.Syndication
 			BlogInfo blogInfo = new BlogInfo();
 			blogInfo.Host = "localhost";
 			blogInfo.Subfolder = "";
-			blogInfo.Owner = UnitTestHelper.CreateUserInstanceForTest();
-			blogInfo.Owner.Email = "Subtext@example.com";
+			blogInfo.Email = "Subtext@example.com";
 			blogInfo.RFC3229DeltaEncodingEnabled = true;
 			blogInfo.TimeZoneId = PacificTimeZoneId;
 
@@ -243,8 +240,7 @@ namespace UnitTests.Subtext.Framework.Syndication
 			BlogInfo blogInfo = new BlogInfo();
 			blogInfo.Host = "localhost";
 			blogInfo.Subfolder = "";
-			blogInfo.Owner = UnitTestHelper.CreateUserInstanceForTest();
-			blogInfo.Owner.Email = "Subtext@example.com";
+			blogInfo.Email = "Subtext@example.com";
 			blogInfo.RFC3229DeltaEncodingEnabled = false;
 			blogInfo.TimeZoneId = PacificTimeZoneId;
 			
@@ -353,7 +349,7 @@ namespace UnitTests.Subtext.Framework.Syndication
 			entry.DateCreated = dateCreated;
 			entry.DateModified = entry.DateCreated;
 			entry.Title = title;
-			entry.Author = UnitTestHelper.CreateUserInstanceForTest();
+			entry.Author = "Phil Haack";
 			entry.Body = body;
 			entry.Id = id;
 			entry.Url = string.Format(CultureInfo.InvariantCulture, "http://localhost/Subtext.Web/archive/{0:yyyy/MM/dd}/{1}", dateCreated, id);

@@ -16,7 +16,6 @@
 using System;
 using System.Collections.Specialized;
 using System.Web;
-using System.Web.Security;
 using Subtext.Extensibility;
 using Subtext.Extensibility.Interfaces;
 using Subtext.Framework.Configuration;
@@ -183,24 +182,23 @@ namespace Subtext.Framework.Components
 		/// For comments, this is the name given by the commenter. 
 		/// </summary>
 		/// <value>The author.</value>
-		public MembershipUser Author
+		public string Author
 		{
-			get
-			{
-				if(this.author == null)
-				{
-					if(authorId != Guid.Empty)
-					{
-						this.author = Membership.GetUser(authorId);
-					}
-				}
-				return this.author;
-			}
-			set{this.author = value;}
+			get{return _author;}
+			set{_author = value;}
 		}
-		private MembershipUser author;
+		private string _author;
 
-		internal Guid authorId = Guid.Empty;
+		/// <summary>
+		/// Gets or sets the email of the author.
+		/// </summary>
+		/// <value>The email.</value>
+		public string Email
+		{
+			get{return _email;}
+			set{_email = value;}
+		}
+		private string _email;
 
 		/// <summary>
 		/// Gets or sets the date this item was created.
@@ -397,7 +395,7 @@ namespace Subtext.Framework.Components
 		}
 		Uri _fullyQualifiedLink;
 		
-		private int _feedBackCount;
+		private int _feedBackCount = 0;
 		public int FeedBackCount
 		{
 			get{return _feedBackCount;}
