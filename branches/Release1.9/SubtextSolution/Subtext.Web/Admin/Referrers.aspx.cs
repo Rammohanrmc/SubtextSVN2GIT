@@ -162,9 +162,10 @@ namespace Subtext.Web.Admin.Pages
 			if (dataContainer is Referrer)
 			{
 				Referrer referrer = (Referrer) dataContainer;
+                string encodedReferrerUrl = Server.UrlEncode(referrer.ReferrerURL);
 
-
-				return "<a href=\"" + referrer.ReferrerURL + "\" target=\"_new\">" + referrer.ReferrerURL.Substring(0,referrer.ReferrerURL.Length > 50 ? 50 : referrer.ReferrerURL.Length) + "</a>";
+                return "<a href=\"" + encodedReferrerUrl + "\" target=\"_new\">" +
+                    referrer.ReferrerURL.Substring(0, encodedReferrerUrl.Length > 50 ? 50 : encodedReferrerUrl.Length) + "</a>";
 			}
 			else
 			{
