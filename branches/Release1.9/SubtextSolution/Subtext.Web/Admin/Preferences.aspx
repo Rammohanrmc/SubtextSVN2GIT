@@ -28,7 +28,7 @@
 			</asp:DropDownList></p>
 		<p style="MARGIN-TOP: 8px">
 			<label class="Block" for="Edit_chkAutoGenerate">
-				<st:HelpToolTip id="Helptooltip4" runat="server" HelpText="If checked, blog posts and articles will have friendly Urls auto-generated based on the title. For example, the title \'My Blog Post\' will become \'MyBlogPost.aspx\'.">
+				<st:HelpToolTip id="Helptooltip4" runat="server" HelpText="If checked, blog posts and articles will have friendly Urls auto-generated based on the title. For example, the title 'My Blog Post' will become 'MyBlogPost.aspx'.">
 				Auto-Generate Friendly Url
 				</st:HelpToolTip> 
 				<asp:CheckBox id="chkAutoGenerate" runat="server"></asp:CheckBox>
