@@ -21,12 +21,8 @@ namespace Subtext.Web.UI.Controls
 		protected HyperLink MainLink;
 		protected Control LeftPipe;
 		protected Control RightPipe;
-		
-		public PreviousNext()
-		{
-		}
 
-		protected override void OnLoad(EventArgs e)
+	    protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad (e);
 			
@@ -42,7 +38,6 @@ namespace Subtext.Web.UI.Controls
 				IList<Entry> entries = ObjectProvider.Instance().GetPreviousAndNextEntries(entry.Id, PostType.BlogPost);
 
 				//Remember, the NEXT entry is the MORE RECENT entry.
-				
 				switch (entries.Count)
 				{
 					case 0:
@@ -93,15 +88,17 @@ namespace Subtext.Web.UI.Controls
 		}
 
 
-		private void SetNav(HyperLink navLink, Entry entry)
+		private static void SetNav(HyperLink navLink, Entry entry)
 		{
 			string format = navLink.Attributes["Format"];
 			if(String.IsNullOrEmpty(format))
-				format = "{0}";
+			{
+			    format = "{0}";
+			}
 			
 			navLink.Attributes.Remove("Format");
 
-			string entryTitle = entry.Title;
+			string entryTitle = HttpUtility.HtmlDecode(entry.Title);
 			string sizeLimitText = navLink.Attributes["TextSizeLimit"];
 			if (!String.IsNullOrEmpty(sizeLimitText))
 			{
@@ -120,5 +117,4 @@ namespace Subtext.Web.UI.Controls
 			navLink.NavigateUrl = entry.FullyQualifiedUrl.ToString();
 		}
 	}
-
 }
