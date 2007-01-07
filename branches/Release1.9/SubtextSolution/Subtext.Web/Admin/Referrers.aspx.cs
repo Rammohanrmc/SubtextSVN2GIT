@@ -16,11 +16,13 @@
 using System;
 using System.Globalization;
 using System.Web;
+using System.Web.UI.WebControls;
 using log4net;
 using Subtext.Extensibility.Interfaces;
 using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
+using Subtext.Framework.Logging;
 using Subtext.Framework.Text;
 using Subtext.Web.Admin.WebUI;
 
@@ -28,22 +30,17 @@ namespace Subtext.Web.Admin.Pages
 {
 	public partial class Referrers : StatsPage
 	{
-		private readonly static ILog log = new Subtext.Framework.Logging.Log();
-		
+		private readonly static ILog log = new Log();
 		private int pageIndex = 0;
 		private bool _isListHidden = false;
-
 		private int _entryID = NullValue.NullInt32;
-
-		#region Declared Controls
-		#endregion
 	    
 	    public Referrers() : base()
 	    {
             this.TabSectionId = "Stats";
 	    }
 	
-		protected void Page_Load(object sender, System.EventArgs e)
+		protected void Page_Load(object sender, EventArgs e)
 		{
 
 			if(!IsPostBack)
@@ -65,7 +62,6 @@ namespace Subtext.Web.Admin.Pages
 				BindList();
 			}
 		}
-
 		
 		protected override void BindLocalUI()
 		{
@@ -91,7 +87,7 @@ namespace Subtext.Web.Admin.Pages
 			}
 			else
 			{
-				this.resultsPager.UrlFormat += string.Format(System.Globalization.CultureInfo.InvariantCulture, "&{0}={1}", "EntryID", 
+				this.resultsPager.UrlFormat += string.Format(CultureInfo.InvariantCulture, "&{0}={1}", "EntryID", 
 					_entryID);
 				referrers = Stats.GetPagedReferrers(this.pageIndex, this.resultsPager.PageSize, _entryID);
 			}
@@ -109,7 +105,7 @@ namespace Subtext.Web.Admin.Pages
 		{
 		    if(AdminMasterPage != null && AdminMasterPage.BreadCrumb != null)
 			{
-				string bctitle= string.Format(System.Globalization.CultureInfo.InvariantCulture, "Viewing {0}:{1}", selection,title);
+				string bctitle= string.Format(CultureInfo.InvariantCulture, "Viewing {0}:{1}", selection,title);
 
 				AdminMasterPage.BreadCrumb.AddLastItem(bctitle);
                 AdminMasterPage.Title = bctitle;
@@ -126,11 +122,9 @@ namespace Subtext.Web.Admin.Pages
 
 		public string GetTitle(object dataContainer)
 		{
-			
 			if (dataContainer is Referrer)
 			{
 				Referrer referrer = (Referrer) dataContainer;
-
 
 				if(referrer.PostTitle != null)
 				{
@@ -153,16 +147,13 @@ namespace Subtext.Web.Admin.Pages
 			{
 				return "Unknown";
 			}
-
 		}
 
 		public string GetReferrer(object dataContainer)
 		{
-
 			if (dataContainer is Referrer)
 			{
 				Referrer referrer = (Referrer) dataContainer;
-                Uri referrerUri = new Uri(referrer.ReferrerURL);
                 string urlEncodedReferrerUrl = Uri.EscapeUriString(referrer.ReferrerURL);                
                 string htmlEncodedReferrerUrl;
                 
@@ -179,7 +170,6 @@ namespace Subtext.Web.Admin.Pages
 			{
 				return "Unknown";
 			}
-
 		}
 
 		private int EntryID
@@ -188,9 +178,9 @@ namespace Subtext.Web.Admin.Pages
 			set{ViewState["EntryID"] = value;}
 		}
 
-		private void rprSelectionList_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
+		private void rprSelectionList_ItemCommand(object source, RepeaterCommandEventArgs e)
 		{
-			switch (e.CommandName.ToLower(System.Globalization.CultureInfo.InvariantCulture)) 
+			switch (e.CommandName.ToLower(CultureInfo.InvariantCulture)) 
 			{
 				case "create" :
 					object[] args = e.CommandArgument.ToString().Split('|');
@@ -230,7 +220,7 @@ namespace Subtext.Web.Admin.Pages
 		}
 		#endregion
 
-		protected void lkbPost_Click(object sender, System.EventArgs e)
+		protected void lkbPost_Click(object sender, EventArgs e)
 		{
 			try
 			{
@@ -259,15 +249,13 @@ namespace Subtext.Web.Admin.Pages
 			{
 				Results.Collapsible = false;
 			}
-		
 		}
 
-		protected void lkbCancel_Click(object sender, System.EventArgs e)
+		protected void lkbCancel_Click(object sender, EventArgs e)
 		{
 			Results.Collapsible = false;
 			Edit.Visible = false;
 		}
-
 	}
 }
 
