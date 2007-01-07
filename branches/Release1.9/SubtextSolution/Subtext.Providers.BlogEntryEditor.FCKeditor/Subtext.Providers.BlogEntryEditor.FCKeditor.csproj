@@ -154,7 +154,9 @@
     </Compile>
     <Content Include="ExternalDependencies\FredCK.FCKeditorV2.dll" />
     <Content Include="license.txt" />
-    <EmbeddedResource Include="resources\ErrorMessages.resx" />
+    <EmbeddedResource Include="resources\ErrorMessages.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
