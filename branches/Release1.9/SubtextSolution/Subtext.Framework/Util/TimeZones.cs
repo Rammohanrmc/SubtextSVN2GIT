@@ -7,8 +7,6 @@ using System.Collections;
 using System.Globalization;
 using System.IO;
 using System.Xml.Serialization;
-using System.Collections;
-using System.Globalization;
 
 namespace Subtext.Framework.Util
 {
@@ -210,7 +208,7 @@ namespace Subtext.Framework.Util
 		/// <returns></returns>
 		public static WindowsTimeZone GetById(int id)
 		{
-			return WindowsTimeZone.TimeZones.GetById(id);
+			return TimeZones.GetById(id);
 		}
 
 		private static object daylightChangesLock = new object();
@@ -439,7 +437,7 @@ namespace Subtext.Framework.Util
 	/// A collection of elements of type WindowsTimeZone
 	/// </summary>
 	[Serializable]
-	public class WindowsTimeZoneCollection : System.Collections.CollectionBase
+	public class WindowsTimeZoneCollection : CollectionBase
 	{
 		/// <summary>
 		/// Initializes a new empty instance of the WindowsTimeZoneCollection class.
@@ -522,13 +520,13 @@ namespace Subtext.Framework.Util
 		/// <summary>
 		/// Type-specific enumeration class, used by WindowsTimeZoneCollection.GetEnumerator.
 		/// </summary>
-		public class Enumerator: System.Collections.IEnumerator
+		public class Enumerator: IEnumerator
 		{
-			private System.Collections.IEnumerator wrapped;
+			private IEnumerator wrapped;
 
 			public Enumerator(WindowsTimeZoneCollection collection)
 			{
-				this.wrapped = ((System.Collections.CollectionBase)collection).GetEnumerator();
+				this.wrapped = ((CollectionBase)collection).GetEnumerator();
 			}
 
 			public WindowsTimeZone Current
@@ -539,7 +537,7 @@ namespace Subtext.Framework.Util
 				}
 			}
 
-			object System.Collections.IEnumerator.Current
+			object IEnumerator.Current
 			{
 				get
 				{
@@ -564,9 +562,9 @@ namespace Subtext.Framework.Util
 		/// <returns>
 		/// An object that implements System.Collections.IEnumerator.
 		/// </returns>        
-		public new virtual WindowsTimeZoneCollection.Enumerator GetEnumerator()
+		public new virtual Enumerator GetEnumerator()
 		{
-			return new WindowsTimeZoneCollection.Enumerator(this);
+			return new Enumerator(this);
 		}
 
 		public void SortByTimeZoneBias()
