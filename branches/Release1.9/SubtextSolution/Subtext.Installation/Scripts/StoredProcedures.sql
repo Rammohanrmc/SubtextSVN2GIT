@@ -323,6 +323,10 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,
 drop procedure [<dbUser,varchar,dbo>].[subtext_InsertFeedback]
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_UpdateFeedbackStats]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackStats]
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount]
 GO
@@ -467,27 +471,16 @@ GO
 SET ANSI_NULLS ON 
 GO
 
+
 SET QUOTED_IDENTIFIER OFF 
 GO
 SET ANSI_NULLS ON 
 GO
-CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount]
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackStats]
 (
 	@BlogId int
-	,@EntryId int
 )
 AS
-	-- Update the entry comment count.
-	UPDATE [<dbUser,varchar,dbo>].[subtext_Content] 
-	SET [<dbUser,varchar,dbo>].[subtext_Content].FeedbackCount = 
-		(
-			SELECT COUNT(1) 
-			FROM  [<dbUser,varchar,dbo>].[subtext_Feedback] f  WITH (NOLOCK)
-			WHERE f.EntryId = @EntryId 
-				AND f.StatusFlag & 1 = 1
-		)
-	WHERE Id = @EntryId
-
 	-- Update the blog comment count.
 	UPDATE [dbo].[subtext_Config] 
 	SET CommentCount = 
@@ -518,8 +511,43 @@ GO
 SET ANSI_NULLS ON 
 GO
 
+GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackStats] TO [public]
+GO
+
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount]
+(
+	@BlogId int
+	,@EntryId int
+)
+AS
+	-- Update the entry comment count.
+	UPDATE [<dbUser,varchar,dbo>].[subtext_Content] 
+	SET [<dbUser,varchar,dbo>].[subtext_Content].FeedbackCount = 
+		(
+			SELECT COUNT(1) 
+			FROM  [<dbUser,varchar,dbo>].[subtext_Feedback] f  WITH (NOLOCK)
+			WHERE f.EntryId = @EntryId 
+				AND f.StatusFlag & 1 = 1
+		)
+	WHERE Id = @EntryId
+
+	-- Update the blog comment count.
+	EXEC [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackStats] @BlogId
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
 GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount] TO [public]
 GO
+
 
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -795,11 +823,16 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_DeletePost]
 )
 AS
 
+DECLARE @blogId int
+SET @blogId = (select BlogId from [<dbUser,varchar,dbo>].[subtext_Content] where [ID] = @ID)
+
 DELETE FROM [<dbUser,varchar,dbo>].[subtext_Links] WHERE PostID = @ID
 DELETE FROM [<dbUser,varchar,dbo>].[subtext_EntryViewCount] WHERE EntryID = @ID
 DELETE FROM [<dbUser,varchar,dbo>].[subtext_Referrals] WHERE EntryID = @ID
 DELETE FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE EntryId = @ID
 DELETE FROM [<dbUser,varchar,dbo>].[subtext_Content] WHERE [ID] = @ID
+
+EXEC [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackStats] @blogId
 
 GO
 SET QUOTED_IDENTIFIER OFF 
@@ -4449,7 +4482,7 @@ GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetBlogKeyWords]  TO [public]
 GO
 
 
-/*	ClearBlogContent - used to delete all content (Entries, Comments, Track/Ping-backs, Statistices, etc...)
+/*	ClearBlogContent - used to delete all content (Entries, Comments, Track/Ping-backs, Statistics, etc...)
 	for a given blog (sans the Image Galleries). Used from the Admin -> Import/Export Page.
 */
 SET QUOTED_IDENTIFIER OFF 
