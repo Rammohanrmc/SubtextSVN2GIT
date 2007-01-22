@@ -97,7 +97,6 @@ namespace Subtext.Framework
 			return ObjectProvider.Instance().GetPostsByCategoryID(itemCount,catID);
 		}
 
-		//#endregion
 
 		#region EntryCollections
 
@@ -220,6 +219,10 @@ namespace Subtext.Framework
 			{
 				entry.EntryName = AutoGenerateFriendlyUrl(entry.Title);
 			}
+            else if (!String.IsNullOrEmpty(entry.EntryName))
+            {
+                entry.EntryName = AutoGenerateFriendlyUrl(entry.EntryName);
+            }
 			
 			if(NullValue.IsNull(entry.DateCreated))
 			{
@@ -237,10 +240,10 @@ namespace Subtext.Framework
 				categoryIds = GetCategoryIdsFromCategoryTitles(entry);
 			}
 			
-			int id = ObjectProvider.Instance().Create(entry, categoryIds);
+			entry.Id = ObjectProvider.Instance().Create(entry, categoryIds);
 			log.Debug("Created entry, running notification services.");
 			NotificationServices.Run(entry);
-			return id;
+			return entry.Id;
 		}
 
 		private static int[] GetCategoryIdsFromCategoryTitles(Entry entry)
@@ -260,9 +263,11 @@ namespace Subtext.Framework
 			categoryIds = new int[catIds.Count];
 			catIds.CopyTo(categoryIds, 0);
 			return categoryIds;
-		}
+        }
 
-		/// <summary>
+        #endregion
+
+        /// <summary>
 		/// Converts a title of a blog post into a friendly, but URL safe string.
 		/// </summary>
 		/// <param name="title">The original title of the blog post.</param>
@@ -414,8 +419,6 @@ namespace Subtext.Framework
 			return regex.Replace(text, string.Empty);
 		}
 
-		#endregion
-
 		#region Update
 
 		/// <summary>
@@ -448,6 +451,10 @@ namespace Subtext.Framework
 		public static bool Update(Entry entry, params int[] categoryIDs)
 		{
 			entry.DateModified = Config.CurrentBlog.TimeZone.Now;
+
+            if (!string.IsNullOrEmpty(entry.EntryName))
+                entry.EntryName = AutoGenerateFriendlyUrl(entry.EntryName);
+
 			return ObjectProvider.Instance().Update(entry, categoryIDs);
 		}
 

@@ -43,7 +43,7 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void FriendlyUrlWithSeparatorAndNullTitleThrowsArgumentException()
 		{
-			Entries.AutoGenerateFriendlyUrl(null, '_');
+            Entries.AutoGenerateFriendlyUrl(null, '_');
 		}
 	
 		/// <summary>
@@ -65,7 +65,7 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		public void FriendlyUrlLimitedDelimited(string title, char wordSeparator, string expected)
 		{
 			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
-			Assert.AreEqual(expected, Entries.AutoGenerateFriendlyUrl(title, wordSeparator), "The auto generated entry name is not what we expected.");
+            Assert.AreEqual(expected, Entries.AutoGenerateFriendlyUrl(title, wordSeparator), "The auto generated entry name is not what we expected.");
 		}
 
 		/// <summary>
@@ -92,7 +92,7 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		public void FriendlyUrlGeneratesNiceUrl(string title, string expected)
 		{
 			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
-			Assert.AreEqual(expected, Entries.AutoGenerateFriendlyUrl(title, char.MinValue), "The auto generated entry name is not what we expected.");
+            Assert.AreEqual(expected, Entries.AutoGenerateFriendlyUrl(title, char.MinValue), "The auto generated entry name is not what we expected.");
 		}
 
 		/// <summary>
@@ -117,7 +117,7 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		public void FriendlyUrlGeneratesNiceUrlWithUnderscores(string title, string expected)
 		{
 			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
-			Assert.AreEqual(expected, Entries.AutoGenerateFriendlyUrl(title, '_'), "THe auto generated entry name is not what we expected.");
+            Assert.AreEqual(expected, Entries.AutoGenerateFriendlyUrl(title, '_'), "THe auto generated entry name is not what we expected.");
 		}
 		
 		/// <summary>
@@ -131,7 +131,7 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		public void FriendlyUrlGeneratesNiceUrlWithPeriods(string title, string expected)
 		{
 			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
-			Assert.AreEqual(expected, Entries.AutoGenerateFriendlyUrl(title, '.'), "THe auto generated entry name is not what we expected.");
+            Assert.AreEqual(expected, Entries.AutoGenerateFriendlyUrl(title, '.'), "THe auto generated entry name is not what we expected.");
 		}
 
 		[RowTest]
@@ -169,6 +169,17 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 			Entry savedEntry = Entries.GetEntry(id, PostConfig.None, false);
 			Assert.AreEqual("IWantThisUrl", savedEntry.EntryName, "The EntryName should match the EntryName, not the auto-generated.");
 		}
+
+        [RowTest]
+        [Row("12345", '_', "n_12345")]
+        [Row("12345f", '_', "12345f")]
+        [RollBack]
+        public void GenerateFriendlyUrlFixesNumericTitles(string title, char wordSeparator, string expected)
+        {
+            Config.CreateBlog("foo-izze", "username", "password", _hostName, string.Empty);
+            string friendlyName = Entries.AutoGenerateFriendlyUrl(title, wordSeparator);
+            Assert.AreEqual(expected, friendlyName, "Need to prepend an 'n' to the end of numeric EntryNames.");
+        }
 
 		/// <summary>
 		/// Make sure that generated friendly urls are unique.

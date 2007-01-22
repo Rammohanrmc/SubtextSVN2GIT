@@ -14,6 +14,7 @@
 #endregion
 
 using System;
+using System.Configuration;
 using System.Globalization;
 using System.Threading;
 using System.Web.Caching;
@@ -92,6 +93,28 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 			Assert.IsTrue(savedEntry.DateSyndicated > savedEntry.DateCreated, string.Format("After reloading from DB, DateSyndicated '{0}' should larger than date created '{1}'.", savedEntry.DateSyndicated, savedEntry.DateCreated));
 		}
 
+        [RowTest]
+        [Row(true)]
+        [Row(false)]
+        [RollBack]
+        public void CreateEntryCorrectsNumericEntryName(bool isAutoGenerate)
+        {
+            Config.CreateBlog("", "username", "password", _hostName, string.Empty);
+            BlogInfo info = Config.CurrentBlog;
+            info.AutoFriendlyUrlEnabled = isAutoGenerate;
+            Config.UpdateConfigData(info);
+
+            Entry entry = new Entry(PostType.BlogPost);
+            entry.DateCreated = DateTime.Now;
+            entry.Title = "My Title";
+            entry.Body = "My Post Body";
+            entry.EntryName = "9876";
+
+            Entries.Create(entry);
+            Entry savedEntry = Entries.GetEntry(entry.Id, PostConfig.None, false);
+
+            Assert.AreEqual("n_9876", savedEntry.EntryName, "Expected entryName = 'n_9876'");
+        }
 
 		/// <summary>
 		/// Sets the up test fixture.  This is called once for 
