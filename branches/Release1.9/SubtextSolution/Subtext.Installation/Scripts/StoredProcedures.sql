@@ -482,11 +482,11 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackStats]
 )
 AS
 	-- Update the blog comment count.
-	UPDATE [dbo].[subtext_Config] 
+	UPDATE [<dbUser,varchar,dbo>].[subtext_Config] 
 	SET CommentCount = 
 		(
 			SELECT COUNT(1) 
-			FROM  [dbo].[subtext_Feedback] f WITH (NOLOCK)
+			FROM  [<dbUser,varchar,dbo>].[subtext_Feedback] f WITH (NOLOCK)
 			WHERE f.BlogId = @BlogId
 				AND f.StatusFlag & 1 = 1
 				AND f.FeedbackType = 1
@@ -494,11 +494,11 @@ AS
 	WHERE BlogId = @BlogId
 	
 	-- Update the blog trackback count.
-	UPDATE [dbo].[subtext_Config] 
+	UPDATE [<dbUser,varchar,dbo>].[subtext_Config] 
 	SET PingTrackCount = 
 		(
 			SELECT COUNT(1) 
-			FROM  [dbo].[subtext_Feedback] f WITH (NOLOCK)
+			FROM  [<dbUser,varchar,dbo>].[subtext_Feedback] f WITH (NOLOCK)
 			WHERE f.BlogId = @BlogId
 				AND f.StatusFlag & 1 = 1
 				AND f.FeedbackType = 2
@@ -1088,7 +1088,7 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetConfig]
 )
 AS
 
-IF (@Strict = 0) AND (1 = (SELECT COUNT(1) FROM [dbo].[subtext_config]))
+IF (@Strict = 0) AND (1 = (SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_config]))
 BEGIN
 	-- Return the one and only record
 	SELECT
@@ -1122,9 +1122,9 @@ BEGIN
 		, RecentCommentsLength
 		, AkismetAPIKey
 		, FeedBurnerName
-	FROM [dbo].[subtext_Config]
+	FROM [<dbUser,varchar,dbo>].[subtext_Config]
 END
-ELSE IF (@Strict = 0) AND (1 = (SELECT COUNT(1) FROM [dbo].[subtext_config] WHERE Host = @Host))
+ELSE IF (@Strict = 0) AND (1 = (SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_config] WHERE Host = @Host))
 BEGIN
 	 SELECT
 		BlogId
@@ -1157,7 +1157,7 @@ BEGIN
 		, RecentCommentsLength
 		, AkismetAPIKey
 		, FeedBurnerName
-	FROM [dbo].[subtext_Config]
+	FROM [<dbUser,varchar,dbo>].[subtext_Config]
 	WHERE	Host = @Host
 END 
 ELSE
@@ -1193,7 +1193,7 @@ BEGIN
 		, RecentCommentsLength
 		, AkismetAPIKey
 		, FeedBurnerName
-	FROM [dbo].[subtext_Config]
+	FROM [<dbUser,varchar,dbo>].[subtext_Config]
 	WHERE	Host = @Host
 		AND [Application] = @Application
 END
@@ -2078,18 +2078,17 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetPageableReferrers]
 )
 AS
 
-DECLARE @FirstId int
+DECLARE @FirstDate DateTime
 DECLARE @StartRow int
 DECLARE @StartRowIndex int
 
 SET @StartRowIndex = @PageIndex * @PageSize + 1
 
 SET ROWCOUNT @StartRowIndex
--- Get the first entry id for the current page.
-SELECT	@FirstId = [UrlID] FROM [<dbUser,varchar,dbo>].[subtext_Referrals]
+SELECT	@FirstDate = [LastUpdated] FROM [<dbUser,varchar,dbo>].[subtext_Referrals]
 WHERE	BlogId = @BlogId 
 	AND (EntryID = @EntryID OR @EntryID IS NULL)
-ORDER BY [UrlID] DESC
+ORDER BY [LastUpdated] DESC
 
 SET ROWCOUNT @PageSize
 
@@ -2104,10 +2103,10 @@ FROM [<dbUser,varchar,dbo>].[subtext_Referrals] r
 	INNER JOIN [<dbUser,varchar,dbo>].[subtext_URLs] u ON u.UrlID = r.UrlID
 	LEFT OUTER JOIN [<dbUser,varchar,dbo>].[subtext_Content] c ON c.ID = r.EntryID
 WHERE 
-	u.UrlID <= @FirstId
+	r.LastUpdated <= @FirstDate
 	AND (r.EntryID = @EntryID OR @EntryID IS NULL)
 	AND r.BlogId = @BlogId
-ORDER BY u.[UrlID] DESC
+ORDER BY r.[LastUpdated] DESC
 
 SELECT COUNT([UrlID]) AS TotalRecords
 FROM [<dbUser,varchar,dbo>].[subtext_Referrals] 
