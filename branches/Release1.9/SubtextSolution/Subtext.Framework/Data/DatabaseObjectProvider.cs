@@ -14,6 +14,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using Subtext.Extensibility;
@@ -74,6 +75,7 @@ namespace Subtext.Framework.Data
 		/// <param name="pageIndex">Page index.</param>
 		/// <param name="pageSize">Size of the page.</param>
 		/// <returns></returns>
+        /// <param name="flags"></param>
         public override PagedCollection<BlogInfo> GetPagedBlogs(string host, int pageIndex, int pageSize, ConfigurationFlag flags)
 		{
 			using(IDataReader reader = DbProvider.Instance().GetPagedBlogs(host, pageIndex, pageSize, flags))
@@ -244,6 +246,7 @@ namespace Subtext.Framework.Data
 		/// </summary>
 		/// <param name="entryId"></param>
 		/// <returns></returns>
+		/// <param name="postType"></param>
 		public override IList<Entry> GetPreviousAndNextEntries(int entryId, PostType postType)
 		{
 			using(IDataReader reader = DbProvider.Instance().GetPreviousNext(entryId))
@@ -475,7 +478,7 @@ namespace Subtext.Framework.Data
 
 			if(entry.Id > -1 && Config.Settings.Tracking.UseTrackingServices)
 			{
-				entry.Url = Subtext.Framework.Configuration.Config.CurrentBlog.UrlFormats.EntryUrl(entry);
+				entry.Url = Config.CurrentBlog.UrlFormats.EntryUrl(entry);
 			}
 
 			if(entry.Id > -1)
@@ -555,7 +558,7 @@ namespace Subtext.Framework.Data
         
 		#region Format Helper
 		
-		private bool FormatEntry(Entry e, bool UseKeyWords)
+		private static bool FormatEntry(Entry e, bool UseKeyWords)
 		{
 			//Do this before we validate the text
 			if(UseKeyWords)
@@ -566,22 +569,22 @@ namespace Subtext.Framework.Data
 			//TODO: Make this a configuration option.
 			e.Body = Transform.EmoticonTransforms(e.Body);
 
-			if(Text.HtmlHelper.HasIllegalContent(e.Body))
+			if(HtmlHelper.HasIllegalContent(e.Body))
 			{
 				return false;
 			}
 
-			if(Text.HtmlHelper.HasIllegalContent(e.Title))
+			if(HtmlHelper.HasIllegalContent(e.Title))
 			{
 				return false;
 			}
 
-			if(Text.HtmlHelper.HasIllegalContent(e.Description))
+			if(HtmlHelper.HasIllegalContent(e.Description))
 			{
 				return false;
 			}
 
-			if(Text.HtmlHelper.HasIllegalContent(e.Url))
+			if(HtmlHelper.HasIllegalContent(e.Url))
 			{
 				return false;
 			}
@@ -830,7 +833,7 @@ namespace Subtext.Framework.Data
             return LoadPagedReferrersCollection(reader);
 		}
 	    
-	    private IPagedCollection<Referrer> LoadPagedReferrersCollection(IDataReader reader)
+	    private static IPagedCollection<Referrer> LoadPagedReferrersCollection(IDataReader reader)
 	    {
             try
             {
@@ -1039,12 +1042,12 @@ namespace Subtext.Framework.Data
 			}
 		}
 
-		public override int InsertImage(Subtext.Framework.Components.Image _image)
+		public override int InsertImage(Image _image)
 		{
 			return DbProvider.Instance().InsertImage(_image);
 		}
 
-		public override bool UpdateImage(Subtext.Framework.Components.Image image)
+		public override bool UpdateImage(Image image)
 		{
 			return DbProvider.Instance().UpdateImage(image);
 		}

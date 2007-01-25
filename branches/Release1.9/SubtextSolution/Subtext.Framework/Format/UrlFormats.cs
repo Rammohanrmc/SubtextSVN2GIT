@@ -63,6 +63,7 @@ namespace Subtext.Framework.Format
 				if (Config.CurrentBlog.FeedBurnerEnabled)
 					return FeedBurnerUrl;
 				return new Uri(string.Format(CultureInfo.InvariantCulture, "{0}Rss.aspx", Config.CurrentBlog.RootUrl));
+                //return new Uri(string.Format(CultureInfo.InvariantCulture, "{0}Rss.aspx", Config.CurrentBlog.VirtualUrl));
 			}
 		}
 
