@@ -64,7 +64,12 @@ namespace Subtext.Framework.Syndication
 				comment.SourceUrl = HtmlHelper.CheckForUrl(doc.SelectSingleNode("//item/link").InnerText);
 				comment.EntryId = UrlFormats.GetPostIDFromUrl(Request.Path);
 
-				FeedbackItem.Create(comment, new CommentFilter(HttpContext.Current.Cache));
+				// [ 1644691 ] Closing comments didn't stop the CommentAPI
+				// this "If" should fix the bug, but don't know how to test it
+				// so, leave there just in case someone can test it
+
+				//if(!Subtext.Framework.Data.Cacher.GetEntry(comment.EntryId,CacheDuration.Medium).CommentingClosed)
+					FeedbackItem.Create(comment, new CommentFilter(HttpContext.Current.Cache));
 			}
 		}
 	
