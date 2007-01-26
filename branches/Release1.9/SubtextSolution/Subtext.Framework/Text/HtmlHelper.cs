@@ -150,7 +150,7 @@ namespace Subtext.Framework.Text
 		{
 			if (!String.IsNullOrEmpty(text))
 			{
-				Regex commentStripper = new Regex("(?:(&lt;!--)|(<!--))(?:(\\w|[ ]|\\W)*)(?:(--&gt;)|(-->))");
+				Regex commentStripper = new Regex("(?:&lt;!--)(?:(\\w|[ ]|\\W)*)(?:--&gt;)|(?:<!--)(?:(\\w|[ ]|\\W)*)(?:-->)");
 				return commentStripper.Replace(text, string.Empty);
 			}
 			return text;
