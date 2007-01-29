@@ -14,25 +14,31 @@
 #endregion
 
 using System;
+using System.IO;
 using System.Text;
 using System.Web;
 using System.Web.UI;
+using System.Web.UI.WebControls;
 using log4net;
 using Subtext.Framework.Configuration;
+using Subtext.Framework.Logging;
 
 namespace Subtext.Web.Pages
 {
 	public partial class Error : Page
 	{
-		private readonly static ILog log = new Subtext.Framework.Logging.Log();
+		private readonly static ILog log = new Log();
 
-		protected System.Web.UI.WebControls.Label ErrorTitle;
+		protected Label ErrorTitle;
 	
-		protected void Page_Load(object sender, System.EventArgs e)
+		protected void Page_Load(object sender, EventArgs e)
 		{
 			Response.Clear();
 			if (!IsPostBack)
-			{				
+			{
+			    Response.StatusCode = 500;
+			    Response.StatusDescription = "500 Internal Server Error";
+
 				try
 				{				
 					if (null != Config.CurrentBlog)
@@ -57,7 +63,7 @@ namespace Subtext.Web.Pages
 
 				StringBuilder exceptionMsgs = new StringBuilder();
 				
-				if (exception is System.IO.FileNotFoundException)
+				if (exception is FileNotFoundException)
 				{
 					exceptionMsgs.Append("<p>The resource you requested could not be found.</p>");
 				}
