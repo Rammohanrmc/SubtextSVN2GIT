@@ -1549,6 +1549,7 @@
     <Content Include="Skins\Naked\Controls\MonthListings.ascx" />
     <Content Include="Skins\Naked\Controls\MyLinks.ascx" />
     <Content Include="Skins\Naked\Controls\News.ascx" />
+    <Content Include="Skins\Naked\Controls\PostCategoryList.ascx" />
     <Content Include="Skins\Naked\Controls\PostComment.ascx" />
     <Content Include="Skins\Naked\Controls\PreviousNext.ascx" />
     <Content Include="Skins\Naked\Controls\RecentComments.ascx" />
