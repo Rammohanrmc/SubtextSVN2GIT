@@ -431,7 +431,7 @@ namespace Subtext.ImportExport
 			newEntry.AllowComments = true;
 
             if (!string.IsNullOrEmpty(post.PostName))
-                newEntry.EntryName = Entries.AutoGenerateFriendlyUrl(post.PostName);
+                newEntry.EntryName = Entries.AutoGenerateFriendlyUrl(post.PostName, newEntry.Id);
 			
 			foreach(BlogMLCategoryReference categoryRef in post.Categories)
 			{
