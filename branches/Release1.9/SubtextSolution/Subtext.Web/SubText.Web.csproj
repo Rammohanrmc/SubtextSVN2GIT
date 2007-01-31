@@ -430,6 +430,12 @@
     </Compile>
     <Compile Include="Providers\BlogEntryEditor\FTB\FtbBlogEntryEditorProvider.cs" />
     <Compile Include="Providers\BlogEntryEditor\PlainText\PlainTextBlogEntryEditorProvider.cs" />
+    <Compile Include="SiteMap\ChangeFrequency.cs" />
+    <Compile Include="SiteMap\SiteMapHttpHandler.ashx.cs">
+      <DependentUpon>SiteMapHttpHandler.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="SiteMap\Url.cs" />
+    <Compile Include="SiteMap\UrlCollection.cs" />
     <Compile Include="SystemMessages\BlogNotActive.aspx.cs">
       <DependentUpon>BlogNotActive.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1817,6 +1823,7 @@
     <None Include="Providers\BlogEntryEditor\FCKeditor\editor\dialog\fck_spellerpages\spellerpages\server-scripts\spellchecker.php" />
     <None Include="Providers\BlogEntryEditor\FCKeditor\editor\dialog\fck_spellerpages\spellerpages\server-scripts\spellchecker.pl" />
     <None Include="Providers\BlogEntryEditor\FCKeditor\editor\filemanager\browser\default\images\icons\32\Thumbs.db" />
+    <Content Include="SiteMap\SiteMapHttpHandler.ashx" />
     <None Include="Skins\RedBook\Controls\EntryList.ascx" />
     <Content Include="Skins\RedBook\Controls\Footer.ascx" />
     <Content Include="Skins\RedBook\Controls\GalleryThumbNailViewer.ascx" />

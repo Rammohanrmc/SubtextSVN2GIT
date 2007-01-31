@@ -365,6 +365,7 @@
     <Compile Include="SubtextWeb\Providers\RichTextEditor\PlainTextProviderTests.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SubtextWeb\Sitemap.cs" />
     <Compile Include="SubtextWeb\SubtextMasterPageTests.cs">
       <SubType>Code</SubType>
     </Compile>
