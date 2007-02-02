@@ -90,7 +90,7 @@ namespace Subtext.Web.SiteMap
 
         private static ChangeFrequency CalculateFrequency(Entry entry)
         {
-            ChangeFrequency frequency = ChangeFrequency.Daily;
+            ChangeFrequency frequency = ChangeFrequency.Hourly;
             if (entry.DateModified < DateTime.Now.AddMonths(-12))
             {
                 frequency = ChangeFrequency.Yearly;
@@ -101,11 +101,11 @@ namespace Subtext.Web.SiteMap
             }
             else if (entry.DateModified < DateTime.Now.AddDays(-14))
             {
-                frequency = ChangeFrequency.Daily;
+                frequency = ChangeFrequency.Weekly;
             }
             else if (entry.DateModified < DateTime.Now.AddDays(-2))
             {
-                frequency = ChangeFrequency.Hourly;
+                frequency = ChangeFrequency.Daily;
             }
             return frequency;
         }
