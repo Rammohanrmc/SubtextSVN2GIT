@@ -331,6 +331,10 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,
 drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount]
 GO
 
+if exists (select ROUTINE_NAME from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' and OBJECTPROPERTY(OBJECT_ID(ROUTINE_NAME), 'IsMsShipped') = 0 and ROUTINE_SCHEMA = '<dbUser,varchar,dbo>' AND ROUTINE_NAME = 'subtext_UpdateBlogStats')
+drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateBlogStats]
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_UpdateFeedback]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateFeedback]
 GO
@@ -487,9 +491,11 @@ AS
 		(
 			SELECT COUNT(1) 
 			FROM  [<dbUser,varchar,dbo>].[subtext_Feedback] f WITH (NOLOCK)
+			    INNER JOIN [<dbUser,varchar,dbo>].[subtext_Content] c WITH (NOLOCK) ON c.ID = f.EntryId
 			WHERE f.BlogId = @BlogId
 				AND f.StatusFlag & 1 = 1
 				AND f.FeedbackType = 1
+				AND c.PostConfig & 1 = 1
 		)
 	WHERE BlogId = @BlogId
 	
@@ -499,9 +505,11 @@ AS
 		(
 			SELECT COUNT(1) 
 			FROM  [<dbUser,varchar,dbo>].[subtext_Feedback] f WITH (NOLOCK)
+			    INNER JOIN [<dbUser,varchar,dbo>].[subtext_Content] c WITH (NOLOCK) ON c.ID = f.EntryId
 			WHERE f.BlogId = @BlogId
 				AND f.StatusFlag & 1 = 1
 				AND f.FeedbackType = 2
+				AND c.PostConfig & 1 = 1
 		)
 	WHERE BlogId = @BlogId
 
@@ -514,6 +522,37 @@ GO
 GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackStats] TO [public]
 GO
 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateBlogStats]
+(
+	@BlogId int
+)
+AS
+
+    UPDATE [<dbUser,varchar,dbo>].[subtext_Config]  
+    SET PostCount = 
+	    (
+		    SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_Content] WHERE BlogId = @BlogId AND PostType = 1 AND PostConfig & 1 = 1
+	    ),
+	    StoryCount = 
+	    (
+	        SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_Content] WHERE BlogId = @BlogId AND PostType = 2 AND PostConfig & 1 = 1
+	    )
+    WHERE BlogId = @BlogId
+    
+    EXEC [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackStats] @BlogId
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_UpdateBlogStats] TO [public]
+GO
 
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -832,7 +871,7 @@ DELETE FROM [<dbUser,varchar,dbo>].[subtext_Referrals] WHERE EntryID = @ID
 DELETE FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE EntryId = @ID
 DELETE FROM [<dbUser,varchar,dbo>].[subtext_Content] WHERE [ID] = @ID
 
-EXEC [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackStats] @blogId
+EXEC [<dbUser,varchar,dbo>].[subtext_UpdateBlogStats] @blogId
 
 GO
 SET QUOTED_IDENTIFIER OFF 
@@ -3177,6 +3216,8 @@ WHERE
 		[ID] = @ID 
 	AND BlogId = @BlogId
 EXEC [<dbUser,varchar,dbo>].[subtext_UpdateConfigUpdateTime] @BlogId, @DateUpdated
+EXEC [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount] @BlogId, @ID
+EXEC [<dbUser,varchar,dbo>].[subtext_UpdateBlogStats] @BlogId
 
 GO
 SET QUOTED_IDENTIFIER OFF 
@@ -3700,7 +3741,7 @@ VALUES
 SELECT @ID = SCOPE_IDENTITY()
 
 EXEC [<dbUser,varchar,dbo>].[subtext_UpdateConfigUpdateTime] @BlogId, @DateAdded
-EXEC [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount] @BlogId, @ID
+EXEC [<dbUser,varchar,dbo>].[subtext_UpdateBlogStats] @BlogId
 
 
 GO
