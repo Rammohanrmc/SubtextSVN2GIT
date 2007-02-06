@@ -48,7 +48,7 @@
 			<legend>Spam Controls</legend>
 
 			<p class="Valuelabel block">
-				<label for="chkEnableCommentModeration">
+				<label for="txtAkismetAPIKey">
 					Akismet API Key
 					<st:HelpToolTip id="hlpAkismet" runat="server" HelpText="Specify your Akismet API Key to use <a href='http://akismet.com/' title='Akismet Comment Spam Filter Service'>Akismet</a> for spam filtering. Leave blank otherwise." ImageUrl="~/images/icons/help-small.png" ImageWidth="16" ImageHeight="16" />
 				</label>
@@ -69,7 +69,7 @@
 					<st:HelpToolTip id="helpCaptcha" runat="server" HelpText="If checked, displays a CAPTCHA control in the comment form." ImageUrl="~/images/icons/help-small.png" ImageWidth="16" ImageHeight="16" />
 				</label>
 			</p>
-			<p class="Valuelabel">
+			<p class="Valuelabel block">
 				<asp:CheckBox id="chkAllowDuplicates" runat="server"></asp:CheckBox>
 				<label for="chkAllowDuplicates">
 					Allow Duplicate Comments
@@ -77,14 +77,14 @@
 				</label>
 			</p>
 			<p class="Valuelabel">
-				<label for="txtCommentDelayIntervalMinutes">
+				<label for="txtCommentDelayIntervalMinutes" class="Block">
 					Comment Delay In Minutes
 					<st:HelpToolTip id="HelpToolTip2" runat="server" HelpText="Enter the number of minutes the delay between comments originating from the same source should be.  This helps prevent spam bombing attacks via automated scripts." ImageUrl="~/images/icons/help-small.png" ImageWidth="16" ImageHeight="16" />
 				</label>
 				<asp:TextBox id="txtCommentDelayIntervalMinutes" runat="server" Columns="2" />
 			</p>
 			<p class="Valuelabel">
-				<label>
+				<label for="txtDaysTillCommentsClosed" class="Block">
 					Days Till Comments Close
 					<st:HelpToolTip id="Helptooltip3" runat="server" HelpText="If Comments are enabled, this setting allows you to specify whether comments will be disallowed on a post after a certain number of days.  For example, you may wish to have comments close on an item after 30 days." ImageUrl="~/images/icons/help-small.png" ImageWidth="16" ImageHeight="16" />
 					(leave blank if comments never close) 
@@ -96,14 +96,14 @@
 	    <fieldset title="Recent Comments Display" class="clear">
 			<legend>Recent Comments Display</legend>
 			<p class="Valuelabel">
-				<label class="txtNumberOfRecentComments Block">
+				<label for="txtNumberOfRecentComments" class="Block">
 					Number of Recent Comments to Display
 					<st:HelpToolTip id="Helptooltip7" runat="server" HelpText="This sets how many recent comments are displayed in the sidebar. This is an integer from 1-99." ImageUrl="~/images/icons/help-small.png" ImageWidth="16" ImageHeight="16" />
 				</label>
 				<asp:TextBox id="txtNumberOfRecentComments" runat="server" Columns="2" />
 			</p>
 			<p class="Valuelabel">
-				<label class="txtRecentCommentsLength Block">
+				<label for="txtRecentCommentsLength" class="Block">
 					Length of Recent Comments to Display (Number of characters)
 				<st:HelpToolTip id="Helptooltip8" runat="server" HelpText="This controls how many characters of recent comments are displayed in the sidebar. This is an integer from 1-99." ImageUrl="~/images/icons/help-small.png" ImageWidth="16" ImageHeight="16" />
 				</label>

@@ -865,3 +865,9 @@ div.wide, fieldset.wide
 {
 	width: 430px;
 }
+
+.clear { clear: both; }
+.left { float:left; }
+.right { float: right; }
+.block { display: block; }
+.inline { display: inline; }
