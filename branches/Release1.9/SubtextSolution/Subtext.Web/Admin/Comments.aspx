@@ -47,7 +47,7 @@
 	    <fieldset title="spamcontrols">
 			<legend>Spam Controls</legend>
 
-			<p class="Valuelabel Block">
+			<p class="Valuelabel block">
 				<label for="chkEnableCommentModeration">
 					Akismet API Key
 					<st:HelpToolTip id="hlpAkismet" runat="server" HelpText="Specify your Akismet API Key to use <a href='http://akismet.com/' title='Akismet Comment Spam Filter Service'>Akismet</a> for spam filtering. Leave blank otherwise." ImageUrl="~/images/icons/help-small.png" ImageWidth="16" ImageHeight="16" />
@@ -55,14 +55,14 @@
 				<asp:TextBox id="txtAkismetAPIKey" runat="server" Columns="2" /> <em>(if you use <a href="http://akismet.com/" title="Akismet">Akismet</a>, consider disabling ReverseDOS)</em>
 			</p>
 
-			<p class="Valuelabel">
+			<p class="Valuelabel block">
 				<asp:CheckBox id="chkEnableCommentModeration" runat="server" />
 				<label for="chkEnableCommentModeration">
 					Moderate Comments
 					<st:HelpToolTip id="helpCommentModeration" runat="server" HelpText="If checked, enables comment moderation.  Does nothing if comments are not enabled." ImageUrl="~/images/icons/help-small.png" ImageWidth="16" ImageHeight="16" />
 				</label>
 			</p>
-			<p class="Valuelabel">
+			<p class="Valuelabel block">
 				<asp:CheckBox id="chkEnableCaptcha" runat="server" />
 				<label for="chkEnableCaptcha">
 					Enable Captcha
@@ -71,7 +71,7 @@
 			</p>
 			<p class="Valuelabel">
 				<asp:CheckBox id="chkAllowDuplicates" runat="server"></asp:CheckBox>
-				<label for="chkAllowDuplicates" class="block">
+				<label for="chkAllowDuplicates">
 					Allow Duplicate Comments
 					<st:HelpToolTip id="Helptooltip4" runat="server" HelpText="If checked, duplicate comments are allowed.  If unchecked, duplicate comments are not allowed.  Not checking this can help prevent some comment spam, but at the cost that short “me too” style comments may be blocked." ImageUrl="~/images/icons/help-small.png" ImageWidth="16" ImageHeight="16" />
 				</label>
