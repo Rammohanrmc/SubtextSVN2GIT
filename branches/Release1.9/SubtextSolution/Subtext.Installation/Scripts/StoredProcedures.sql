@@ -1973,7 +1973,7 @@ SET ROWCOUNT @StartRowIndex
 SELECT @FirstId = LinkID
 FROM [<dbUser,varchar,dbo>].[subtext_Links]
 WHERE 	BlogId = @BlogId 
-	AND (CategoryID = @CategoryID OR @CategoryID IS NULL)
+	AND (CategoryID = @CategoryID OR @CategoryId IS NULL)
 	AND PostID IS NULL
 ORDER BY [LinkID] DESC
 
@@ -1992,14 +1992,14 @@ SELECT links.LinkID
 FROM [<dbUser,varchar,dbo>].[subtext_Links] links
 WHERE 	links.BlogId = @BlogId 
 	AND links.[LinkId] <= @FirstId
-	AND (CategoryID = @CategoryID OR @CategoryID IS NULL)
+	AND (CategoryID = @CategoryId OR @CategoryId IS NULL)
 	AND PostID IS NULL
 ORDER BY links.[LinkID] DESC
  
 SELECT COUNT([LinkID]) AS TotalRecords
 FROM [<dbUser,varchar,dbo>].[subtext_Links] 
 WHERE 	BlogId = @BlogId 
-	AND (CategoryID = @CategoryID OR @CategoryID IS NULL)
+	AND (CategoryID = @CategoryId OR @CategoryId IS NULL)
 	AND PostID IS NULL
 
 GO
