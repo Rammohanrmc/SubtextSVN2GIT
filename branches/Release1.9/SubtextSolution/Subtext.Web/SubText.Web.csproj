@@ -1625,6 +1625,7 @@
     <Content Include="Skins\origami\Controls\DayCollection.ascx" />
     <Content Include="Skins\origami\Controls\EntryList.ascx" />
     <Content Include="Skins\origami\Controls\Footer.ascx" />
+    <Content Include="Skins\origami\Controls\GalleryThumbNailViewer.ascx" />
     <Content Include="Skins\origami\Controls\Header.ascx" />
     <Content Include="Skins\origami\Controls\HomePage.ascx" />
     <Content Include="Skins\origami\Controls\MyLinks.ascx" />
@@ -1632,6 +1633,7 @@
     <Content Include="Skins\origami\Controls\PostComment.ascx" />
     <Content Include="Skins\origami\Controls\PreviousNext.ascx" />
     <Content Include="Skins\origami\Controls\SingleColumn.ascx" />
+    <Content Include="Skins\origami\Controls\ViewPicture.ascx" />
     <Content Include="Skins\origami\Controls\ViewPost.ascx" />
     <Content Include="Skins\origami\images\bg_85PercentWhite.png" />
     <Content Include="Skins\origami\images\bg_blockquote.png" />
