@@ -4543,6 +4543,8 @@ DELETE FROM [<dbUser,varchar,dbo>].subtext_EntryViewCount WHERE BlogId = @BlogId
 DELETE FROM [<dbUser,varchar,dbo>].subtext_FeedBack WHERE BlogId = @BlogId
 DELETE FROM [<dbUser,varchar,dbo>].subtext_Content WHERE BlogId = @BlogId
 
+EXEC [<dbUser,varchar,dbo>].[subtext_UpdateBlogStats] @BlogId
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
