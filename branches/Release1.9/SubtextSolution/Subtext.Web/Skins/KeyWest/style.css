@@ -344,6 +344,7 @@ div.entryDate h3
 	font-weight: bold;
 	color: #26395e;
 	margin-top: -.2em;
+	padding-bottom: 6px;
 }
 div.comment {
 	margin: 0 0 1em 0;
