@@ -22,6 +22,7 @@ using log4net;
 using Subtext.Extensibility;
 using Subtext.Framework;
 using Subtext.Framework.Components;
+using Subtext.Framework.Configuration;
 using Subtext.Framework.Data;
 using Subtext.Framework.Logging;
 using Subtext.Framework.Text;
@@ -170,10 +171,28 @@ namespace Subtext.Web.UI.Controls
 						{
 							//This allows per-skin configuration of the default gravatar image.
 							string defaultGravatarImage = gravatarImage.Attributes["PlaceHolderImage"];
-							if (String.IsNullOrEmpty(defaultGravatarImage))
-								defaultGravatarImage = ConfigurationManager.AppSettings["GravatarDefaultImage"];
 
-							//This allows a host-wide setting of the default gravatar image.
+						    string ip;
+                            if(feedbackItem.IpAddress != null)
+                                ip = feedbackItem.IpAddress.ToString();
+                            else
+                                ip = DateTime.Now.Millisecond + " " + DateTime.Now.Second;
+
+                            if (String.IsNullOrEmpty(defaultGravatarImage))
+                            {
+                                string identiconSizeSetting = ConfigurationManager.AppSettings["IdenticonSize"];
+
+                                int identiconSize = 40;
+                                if (!String.IsNullOrEmpty(identiconSizeSetting))
+                                {
+                                    int.TryParse(identiconSizeSetting, out identiconSize);
+                                }
+                                defaultGravatarImage = string.Format("~/images/IdenticonHandler.ashx?size={0}&hash={1}"
+                                    , identiconSize
+                                    , SecurityHelper.HashPassword(ip + "-" + Config.CurrentBlog.RootUrl));
+                            }
+
+						    //This allows a host-wide setting of the default gravatar image.
 							string gravatarUrl = null;
 							if (!String.IsNullOrEmpty(feedbackItem.Email))
 								gravatarUrl = BuildGravatarUrl(feedbackItem.Email, defaultGravatarImage);
@@ -183,9 +202,14 @@ namespace Subtext.Web.UI.Controls
 								gravatarImage.Attributes.Remove("PlaceHolderImage");
 								if(gravatarUrl.Length != 0)
 								{
-									gravatarImage.ImageUrl = gravatarUrl;
+                                    gravatarImage.ImageUrl = gravatarUrl;
 									gravatarImage.Visible = true;
 								}
+							}
+                            else
+							{
+							    gravatarImage.ImageUrl = defaultGravatarImage;
+							    gravatarImage.Visible = true;
 							}
 						}
 					}
@@ -210,7 +234,7 @@ namespace Subtext.Web.UI.Controls
 		}
 
 		const string linktag = "<a title=\"permalink: {0}\" href=\"{1}\">#</a>";
-		private string Link(string title, Uri link)
+		private static string Link(string title, Uri link)
 		{
 			if (link == null)
 				return string.Empty;
@@ -220,13 +244,19 @@ namespace Subtext.Web.UI.Controls
 
 		// GC: xhmtl format wreaking havoc in non-xhtml pages in non-IE, changed to non nullable format
 		const string anchortag = "<a name=\"{0}\"></a>";
-		private string Anchor(int id)
+		private static string Anchor(int id)
 		{
 			return string.Format(anchortag, id);
 		}
 
 		private string BuildGravatarUrl(string email, string defaultGravatar) 
 		{
+            if (email == null)
+                throw new ArgumentNullException("email", "Email should not be null.");
+
+            if(defaultGravatar == null)
+                throw new ArgumentNullException("defaultGravatar", "Default gravatar should not be null.");
+
 			string processedEmail = string.Empty;
 
 			if (Request.Url.Port != 80)
