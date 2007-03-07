@@ -1828,6 +1828,7 @@
     <Content Include="Log4Net.config" />
     <Content Include="Install\InstallTemplate.Master" />
     <Content Include="Images\IdenticonHandler.ashx" />
+    <Content Include="Copy of Log4Net.config" />
     <None Include="Providers\BlogEntryEditor\FCKeditor\editor\dialog\fck_spellerpages\spellerpages\server-scripts\spellchecker.cfm" />
     <None Include="Providers\BlogEntryEditor\FCKeditor\editor\dialog\fck_spellerpages\spellerpages\server-scripts\spellchecker.php" />
     <None Include="Providers\BlogEntryEditor\FCKeditor\editor\dialog\fck_spellerpages\spellerpages\server-scripts\spellchecker.pl" />
@@ -2113,8 +2114,7 @@
           <AutoAssignPort>False</AutoAssignPort>
           <DevelopmentServerPort>2732</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>
-          </IISUrl>
+          <IISUrl>http://localhost:2732/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
         </WebProjectProperties>
       </FlavorProperties>

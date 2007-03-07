@@ -15,7 +15,6 @@
 
 using System;
 using MbUnit.Framework;
-using Subtext.Extensibility.Providers;
 using Subtext.Installation;
 
 namespace UnitTests.Subtext.Installation
@@ -34,7 +33,7 @@ namespace UnitTests.Subtext.Installation
 		[RollBack]
 		public void InstallationInformationGatheringProcessGathersCorrectInfo()
 		{
-			InstallationProvider provider = InstallationProvider.Instance();
+			global::Subtext.Extensibility.Providers.Installation provider = global::Subtext.Extensibility.Providers.Installation.Provider;
 			Assert.IsNotNull(provider, "The provider instance should not be null.");
 			SqlInstallationProvider sqlProvider = provider as SqlInstallationProvider;
 			Assert.IsNotNull(sqlProvider, "The sql provider instance should not be null.");

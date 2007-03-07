@@ -30,7 +30,7 @@ namespace Subtext.Installation
 	/// <summary>
 	/// Summary description for SqlInstallationProvider.
 	/// </summary>
-	public class SqlInstallationProvider : InstallationProvider
+	public class SqlInstallationProvider : Extensibility.Providers.Installation
 	{
 		Version _version = null;
 		string _connectionString = string.Empty;
@@ -243,6 +243,7 @@ namespace Subtext.Installation
 		/// Updates the value of the current installed version within the subtext_Version table.
 		/// </summary>
 		/// <param name="newVersion">New version.</param>
+		/// <param name="transaction">The transaction to perform this action within.</param>
 		public override void UpdateInstallationVersionNumber(Version newVersion, SqlTransaction transaction)
 		{
 			string sql = "subtext_VersionAdd";
@@ -255,7 +256,7 @@ namespace Subtext.Installation
 			SqlHelper.ExecuteNonQuery(transaction, CommandType.StoredProcedure, sql, p);
 		}
 
-		SqlParameter CreateParameter(string name, SqlDbType dbType, int size, object value)
+		static SqlParameter CreateParameter(string name, SqlDbType dbType, int size, object value)
 		{
 			SqlParameter param = new SqlParameter(name, dbType, size);
 			param.Value = value;
@@ -308,6 +309,7 @@ namespace Subtext.Installation
 		/// Returns a collection of installation script names with a version 
 		/// less than or equal to the max version.
 		/// </summary>
+		/// <param name="minVersionExclusive">The min verison exclusive.</param>
 		/// <param name="maxVersionInclusive">The max version inclusive.</param>
 		/// <returns></returns>
 		public string[] ListInstallationScripts(Version minVersionExclusive, Version maxVersionInclusive)
@@ -379,6 +381,25 @@ namespace Subtext.Installation
 			}
 
 			Version version;
+		}
+
+		/// <summary>
+		/// Determines whether the specified exception is due to a permission 
+		/// denied error.
+		/// </summary>
+		/// <param name="exception"></param>
+		/// <returns></returns>
+		public override bool IsPermissionDeniedException(Exception exception)
+		{
+			SqlException sqlexc = exception.InnerException as SqlException;
+			return sqlexc != null
+				&&
+				(
+				sqlexc.Number == (int)SqlErrorMessage.PermissionDeniedInDatabase
+				|| sqlexc.Number == (int)SqlErrorMessage.PermissionDeniedOnProcedure
+				|| sqlexc.Number == (int)SqlErrorMessage.PermissionDeniedInOnColumn
+				|| sqlexc.Number == (int)SqlErrorMessage.PermissionDeniedInOnObject
+				);
 		}
 	}
 }

@@ -41,7 +41,7 @@ namespace Subtext.Framework
 				return (bool)HttpContext.Current.Application["NeedsInstallation"];
 			}
 			
-			InstallationState currentState = InstallationProvider.Instance().GetInstallationStatus(assemblyVersion);
+			InstallationState currentState = Installation.Provider.GetInstallationStatus(assemblyVersion);
 			bool needsUpgrade = currentState  == InstallationState.NeedsInstallation 
 				|| currentState  == InstallationState.NeedsUpgrade
 				|| currentState  == InstallationState.NeedsRepair;
@@ -100,10 +100,10 @@ namespace Subtext.Framework
 			if(unhandledException is HostNotConfiguredException)
 				return true;
 
-			if(InstallationProvider.Instance().IsInstallationException(unhandledException))
+			if(Installation.Provider.IsInstallationException(unhandledException))
 				return true;
 
-			InstallationState status = InstallationProvider.Instance().GetInstallationStatus(assemblyVersion);
+			InstallationState status = Installation.Provider.GetInstallationStatus(assemblyVersion);
 			switch(status)
 			{
 				case InstallationState.NeedsInstallation:
@@ -194,7 +194,7 @@ namespace Subtext.Framework
 		/// <returns></returns>
 		public static InstallationState GetCurrentInstallationState(Version assemblyVersion)
 		{
-			return InstallationProvider.Instance().GetInstallationStatus(assemblyVersion);
+			return Installation.Provider.GetInstallationStatus(assemblyVersion);
 		}
 
 		/// <summary>
@@ -203,7 +203,7 @@ namespace Subtext.Framework
 		/// <returns></returns>
 		public static Control GetInstallationInformationControl()
 		{
-			return InstallationProvider.Instance().GatherInstallationInformation();	
+			return Installation.Provider.GatherInstallationInformation();	
 		}
 
 		/// <summary>
@@ -215,7 +215,7 @@ namespace Subtext.Framework
 		/// <returns></returns>
 		public static string ValidateInstallationAnswers(Control populatedControl)
 		{
-			return InstallationProvider.Instance().ValidateInstallationInformation(populatedControl);
+			return Installation.Provider.ValidateInstallationInformation(populatedControl);
 		}
 
 		/// <summary>
@@ -224,7 +224,7 @@ namespace Subtext.Framework
 		/// <param name="control">Control containing the user's answers.</param>
 		public static void SetInstallationQuestionAnswers(Control control)
 		{
-			InstallationProvider.Instance().ProvideInstallationInformation(control);
+			Installation.Provider.ProvideInstallationInformation(control);
 		}
 	}
 }

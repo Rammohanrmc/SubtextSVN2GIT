@@ -5,6 +5,11 @@
 <asp:Content id="sidebar" ContentPlaceHolderID="MPSideBar" runat="server"></asp:Content>
 <asp:Content id="mainContent" ContentPlaceHolderID="MPContent" runat="server">
 	<p>Welcome to the Subtext Upgrade Wizard.</p>
+	<asp:PlaceHolder ID="plcHolderUpgradeMessage" runat="server" Visible="false">
+		<p class="error">
+			<asp:Literal ID="messageLiteral" runat="server" />
+		</p>
+	</asp:PlaceHolder>
 	<p>
 		The database schema needs to be updated. 
 		To do this automatically, press the <em>Upgrade</em> button below.
@@ -20,6 +25,5 @@
 			<strong>We recommend making a database backup first.</strong>
 		</p>
 	</div>
-	<p>
 	<p><asp:Button id="btnUpgrade" runat="server" text="Upgrade"></asp:Button></p>
 </asp:Content>

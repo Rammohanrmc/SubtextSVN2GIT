@@ -32,15 +32,15 @@ namespace Subtext.Web.Install
 	public partial class Step01_InstallData : InstallationBase
 	{
 		InstallationState _state = InstallationState.None;
-		protected Subtext.Web.Controls.ContentRegion MPTitle;
-		protected Subtext.Web.Controls.ContentRegion MPSubTitle;
-		protected Subtext.Web.Controls.ContentRegion Content;
+		protected Controls.ContentRegion MPTitle;
+		protected Controls.ContentRegion MPSubTitle;
+		protected Controls.ContentRegion Content;
 		protected System.Web.UI.WebControls.CheckBox chkStoredProcs;
 		protected System.Web.UI.WebControls.RadioButton radUpgrade;
 		protected System.Web.UI.WebControls.RadioButton radInstallFresh;
-		protected Subtext.Web.Controls.MasterPage MPContainer;
+		protected Controls.MasterPage MPContainer;
 	
-		protected void Page_Load(object sender, System.EventArgs e)
+		protected void Page_Load(object sender, EventArgs e)
 		{
 			_state = InstallationManager.GetCurrentInstallationState(VersionInfo.FrameworkVersion);
 			switch(_state)
@@ -96,7 +96,7 @@ namespace Subtext.Web.Install
 		{
 			if(chkFullInstallation.Checked)
 			{
-				InstallationProvider.Instance().Install(VersionInfo.FrameworkVersion);
+				Extensibility.Providers.Installation.Provider.Install(VersionInfo.FrameworkVersion);
 				Response.Redirect(NextStepUrl);
 				return;
 			}
@@ -107,11 +107,11 @@ namespace Subtext.Web.Install
 			{
 				
 					case InstallationState.NeedsInstallation:
-						InstallationProvider.Instance().Install(VersionInfo.FrameworkVersion);
+						Extensibility.Providers.Installation.Provider.Install(VersionInfo.FrameworkVersion);
 						break;
 
 					case InstallationState.NeedsUpgrade:
-						InstallationProvider.Instance().Upgrade();
+						Extensibility.Providers.Installation.Provider.Upgrade();
 						break;
 
 					default:
@@ -121,7 +121,7 @@ namespace Subtext.Web.Install
 			}
 			catch (SqlScriptExecutionException ex)
 			{
-				if (IsPermissionDeniedException(ex))
+				if (Extensibility.Providers.Installation.Provider.IsPermissionDeniedException(ex))
 				{
 					installationStateMessage.Text = "<p class=\"error\">The database user specified in web.config does not have enough "
 						+ "permission to perform the installation.  Please give the user database owner (dbo) rights and try again. "
@@ -135,18 +135,6 @@ namespace Subtext.Web.Install
 			}
 
 			Response.Redirect(NextStepUrl);
-		}
-
-		private bool IsPermissionDeniedException(SqlScriptExecutionException exception)
-		{
-			SqlException sqlexc = exception.InnerException as SqlException;
-			return sqlexc != null 
-				&& 
-				(
-				sqlexc.Number == (int)SqlErrorMessage.PermissionDeniedInDatabase
-				||	sqlexc.Number == (int)SqlErrorMessage.PermissionDeniedInOnColumn
-				||	sqlexc.Number == (int)SqlErrorMessage.PermissionDeniedInOnObject
-				);
 		}
 	}
 }

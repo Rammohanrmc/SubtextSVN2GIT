@@ -24,24 +24,24 @@ namespace Subtext.Extensibility.Providers
 	/// This allows new data providers to implement their own installation 
 	/// code.
 	/// </summary>
-    public abstract class InstallationProvider : System.Configuration.Provider.ProviderBase
+    public abstract class Installation : System.Configuration.Provider.ProviderBase
 	{
-		private static InstallationProvider provider;
-		private static GenericProviderCollection<InstallationProvider> providers = ProviderConfigurationHelper.LoadProviderCollection<InstallationProvider>("Installation", out provider);
+		private static Installation provider;
+		private static GenericProviderCollection<Installation> providers = ProviderConfigurationHelper.LoadProviderCollection("Installation", out provider);
 
 		/// <summary>
 		/// Returns the currently configured InstallationProvider.
 		/// </summary>
 		/// <returns></returns>
-        public static InstallationProvider Instance()
+        public static Installation Provider
         {
-            return provider;
+			get { return provider; }
         }
 
 		/// <summary>
 		/// Returns all the configured InstallationProvider.
 		/// </summary>
-		public static GenericProviderCollection<InstallationProvider> Providers
+		public static GenericProviderCollection<Installation> Providers
 		{
 			get
 			{
@@ -118,6 +118,14 @@ namespace Subtext.Extensibility.Providers
         /// </returns>
         public abstract bool IsInstallationException(Exception exception);
 
+		/// <summary>
+		/// Determines whether the specified exception is due to a permission 
+		/// denied error.
+		/// </summary>
+		/// <param name="exception"></param>
+		/// <returns></returns>
+		public abstract bool IsPermissionDeniedException(Exception exception);
+
         /// <summary>
         /// Gets the <see cref="Version"/> of the current Subtext installation.
         /// </summary>
@@ -128,6 +136,7 @@ namespace Subtext.Extensibility.Providers
         /// Updates the current installed version.
         /// </summary>
         /// <param name="newVersion">The new version that is now current.</param>
+        /// <param name="transaction">The transaction to perform this upgrade within.</param>
         /// <returns></returns>
         public abstract void UpdateInstallationVersionNumber(Version newVersion, SqlTransaction transaction); 
         #endregion
