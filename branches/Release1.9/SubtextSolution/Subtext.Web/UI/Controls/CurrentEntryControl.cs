@@ -29,12 +29,6 @@ namespace Subtext.Web.UI.Controls
 	{
 		bool dataBound;
 		Entry currentEntry;
-		/// <summary>
-		/// Initializes a new instance of the <see cref="CurrentEntryControl"/> class.
-		/// </summary>
-		public CurrentEntryControl()
-		{
-		}
 		
 		/// <summary>
 		/// Gets the current entry.
@@ -70,7 +64,7 @@ namespace Subtext.Web.UI.Controls
 		/// </summary>
 		/// <param name="s">The s.</param>
 		/// <returns></returns>
-		protected string UrlEncode(string s)
+		protected static string UrlEncode(string s)
 		{
 			return HttpUtility.UrlEncode(s);
 		}
@@ -80,7 +74,7 @@ namespace Subtext.Web.UI.Controls
 		/// </summary>
 		/// <param name="s">The s.</param>
 		/// <returns></returns>
-		protected string UrlEncode(Uri s)
+		protected static string UrlEncode(Uri s)
 		{
 			return HttpUtility.UrlEncode(s.ToString());
 		}
@@ -90,7 +84,7 @@ namespace Subtext.Web.UI.Controls
 		/// </summary>
 		/// <param name="s">The s.</param>
 		/// <returns></returns>
-		protected string UrlEncode(object s)
+		protected static string UrlEncode(object s)
 		{
 			return HttpUtility.UrlEncode(s.ToString());
 		}

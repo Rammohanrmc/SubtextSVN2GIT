@@ -64,7 +64,7 @@ namespace Subtext.Web.UI.Controls
 			set{skinFilePath = value;}
 		}
 		
-		protected void BindCurrentEntryControls(Entry entry, Control root)
+		protected static void BindCurrentEntryControls(Entry entry, Control root)
 		{
 			foreach(Control control in root.Controls)
 			{
