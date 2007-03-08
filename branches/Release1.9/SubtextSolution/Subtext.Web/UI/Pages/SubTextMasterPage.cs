@@ -177,7 +177,7 @@ namespace Subtext.Web.UI.Pages
             {
                 authorMetaTag.Text = String.Format("<meta name=\"author\" content=\"{0}\" />", Config.CurrentBlog.Author);
             }
-            versionMetaTag.Text = String.Format("<meta name=\"Generator\" content=\"{0}\" />", Subtext.Framework.VersionInfo.VersionDisplayText);
+            versionMetaTag.Text = String.Format("<meta name=\"Generator\" content=\"{0}\" />", VersionInfo.VersionDisplayText);
             base.OnPreRender (e);
 
 		}
@@ -230,9 +230,10 @@ namespace Subtext.Web.UI.Pages
 
 			public static string RenderScriptElement(string skinPath, Script script)
 			{
-				return "<script" + 
-					RenderScriptAttribute("type", script.Type) + 
-					RenderScriptAttribute("src", GetScriptSourcePath(skinPath, script)) + 
+				return "<script" +
+				       RenderScriptAttribute("type", script.Type) +
+				       RenderScriptAttribute("src", GetScriptSourcePath(skinPath, script)) +
+				       RenderScriptAttribute("defer", script.Defer ? "defer" : null) +
 					"></script>" + Environment.NewLine;
 			}
 
@@ -354,7 +355,7 @@ namespace Subtext.Web.UI.Pages
 				}
 			}
 
-			private string CreateStylePath(string skinTemplateFolder)
+			private static string CreateStylePath(string skinTemplateFolder)
 			{
 				string applicationPath = HttpContext.Current.Request.ApplicationPath;
 				string path = (applicationPath == "/" ? String.Empty : applicationPath) + "/Skins/" + skinTemplateFolder + "/";
@@ -384,7 +385,7 @@ namespace Subtext.Web.UI.Pages
 		/// This will be used by other scripts.
 		/// </summary>
 		/// <value>The allowed HTML javascript declaration.</value>
-		protected string AllowedHtmlJavascriptDeclaration
+		protected static string AllowedHtmlJavascriptDeclaration
 		{
 			get
 			{
