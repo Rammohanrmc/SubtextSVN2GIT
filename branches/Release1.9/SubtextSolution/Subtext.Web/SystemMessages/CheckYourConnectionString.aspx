@@ -1,4 +1,4 @@
-<%@ Page language="c#" Title="Subtext - Your Blog Cannot Connect To The Database" MasterPageFile="~/SystemMessages/SystemMessageTemplate.Master" Codebehind="CheckYourConnectionString.aspx.cs" AutoEventWireup="True" Inherits="Subtext.Web.CheckYourConnectionString" %>
+<%@ Page Language="C#" EnableTheming="false"  Title="Subtext - Your Blog Cannot Connect To The Database" MasterPageFile="~/SystemMessages/SystemMessageTemplate.Master" Codebehind="CheckYourConnectionString.aspx.cs" AutoEventWireup="True" Inherits="Subtext.Web.CheckYourConnectionString" %>
 <asp:Content id="titleBar" ContentPlaceHolderID="MPTitle" runat="server">Your Blog Cannot Connect To The Database</asp:Content>
 <asp:Content id="subtitle" ContentPlaceHolderID="MPSubTitle" runat="server">But I Can Help You</asp:Content>
 <asp:Content id="mainContent" ContentPlaceHolderID="Content" runat="server">

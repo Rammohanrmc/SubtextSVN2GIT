@@ -1,4 +1,4 @@
-<%@ Control Language="c#" AutoEventWireup="false" Inherits="Subtext.Web.UI.Controls.CurrentEntryControl" %>
+<%@ Control Language="C#" EnableTheming="false"  AutoEventWireup="false" Inherits="Subtext.Web.UI.Controls.CurrentEntryControl" %>
 <div class="share">
 	<span class="shareIcon">Share this Post: </span>
 	<ul>

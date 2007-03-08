@@ -1,4 +1,4 @@
-﻿<%@ Page language="c#" AutoEventWireup="false" Inherits="Subtext.Web.UI.Pages.SubtextMasterPage" %>
+﻿<%@ Page Language="C#" EnableTheming="false"  AutoEventWireup="false" Inherits="Subtext.Web.UI.Pages.SubtextMasterPage" %>
 <%@ Register TagPrefix="DT" Namespace="Subtext.Web.UI.WebControls" Assembly="Subtext.Web" %>
 <%@ Register TagPrefix="st" Namespace="Subtext.Web.Controls" Assembly="Subtext.Web.Controls" %>
 <%@ Import Namespace="Subtext.Framework.Configuration" %>

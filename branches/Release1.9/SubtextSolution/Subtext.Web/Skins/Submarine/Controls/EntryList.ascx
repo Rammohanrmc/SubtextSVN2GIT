@@ -1,4 +1,4 @@
-<%@ Control Language="c#" Inherits="Subtext.Web.UI.Controls.EntryList" %>
+<%@ Control Language="C#" EnableTheming="false"  Inherits="Subtext.Web.UI.Controls.EntryList" %>
 <div class="posts">
 	<div class="title">
 		<asp:literal id="EntryCollectionTitle" runat="server" />

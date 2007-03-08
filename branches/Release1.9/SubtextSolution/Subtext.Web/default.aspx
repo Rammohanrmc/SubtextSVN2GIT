@@ -1,4 +1,4 @@
-<%@ Page CodeBehind="Default.aspx.cs" EnableViewState="false" Language="c#" AutoEventWireup="false" Inherits="Subtext.Web._default" %>
+<%@ Page CodeBehind="Default.aspx.cs" EnableViewState="false" Language="C#" EnableTheming="false"  AutoEventWireup="false" Inherits="Subtext.Web._default" %>
 <%@ OutputCache Duration="120" VaryByParam="GroupID" VaryByHeader="Accept-Language" %>
 
 <html>

@@ -1,4 +1,4 @@
-<%@ Page language="c#" Title="Subtext - Database Login Failure" MasterPageFile="~/SystemMessages/SystemMessageTemplate.Master" Codebehind="DatabaseLoginFailed.aspx.cs" AutoEventWireup="True" Inherits="Subtext.Web.DatabaseLoginFailed" %>
+<%@ Page Language="C#" EnableTheming="false"  Title="Subtext - Database Login Failure" MasterPageFile="~/SystemMessages/SystemMessageTemplate.Master" Codebehind="DatabaseLoginFailed.aspx.cs" AutoEventWireup="True" Inherits="Subtext.Web.DatabaseLoginFailed" %>
 <asp:Content id="titleBar" ContentPlaceHolderID="MPTitle" runat="server">Database Login Failure</asp:Content>
 <asp:Content id="subtitle" ContentPlaceHolderID="MPSubTitle" runat="server">But I Can Help You</asp:Content>
 <asp:Content id="mainContent" ContentPlaceHolderID="Content" runat="server">

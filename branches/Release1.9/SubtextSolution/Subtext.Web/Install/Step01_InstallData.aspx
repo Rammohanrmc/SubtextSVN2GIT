@@ -1,4 +1,4 @@
-<%@ Page language="c#" Title="Subtext Installation: Step 2 - Data Installation" MasterPageFile="~/Install/InstallTemplate.Master" Codebehind="Step01_InstallData.aspx.cs" AutoEventWireup="True" Inherits="Subtext.Web.Install.Step01_InstallData" %>
+<%@ Page Language="C#" EnableTheming="false"  Title="Subtext Installation: Step 2 - Data Installation" MasterPageFile="~/Install/InstallTemplate.Master" Codebehind="Step01_InstallData.aspx.cs" AutoEventWireup="True" Inherits="Subtext.Web.Install.Step01_InstallData" %>
 
 <asp:Content id="subTitleContent" ContentPlaceHolderID="MPSubTitle" runat="server">Step 2 - Data Installation</asp:Content>
 <asp:Content ID="mainContent" ContentPlaceHolderID="Content" runat="server">

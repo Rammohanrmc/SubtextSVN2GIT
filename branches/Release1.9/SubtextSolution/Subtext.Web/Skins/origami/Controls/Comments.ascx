@@ -1,4 +1,4 @@
-<%@ Control Language="c#" AutoEventWireup="false" Inherits="Subtext.Web.UI.Controls.Comments" %>
+<%@ Control Language="C#" EnableTheming="false"  AutoEventWireup="false" Inherits="Subtext.Web.UI.Controls.Comments" %>
 <div id="comments" class="section">
 	<h2 class="section-title">Your Comments.</h2>
 	<p><asp:Literal ID = "NoCommentMessage" Runat ="server" /></p>

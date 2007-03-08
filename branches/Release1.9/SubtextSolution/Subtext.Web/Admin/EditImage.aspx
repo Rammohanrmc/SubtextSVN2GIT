@@ -1,4 +1,4 @@
-<%@ Page language="c#" Title="Subtext Admin - Edit Image" MasterPageFile="~/Admin/WebUI/AdminPageTemplate.Master" Codebehind="EditImage.aspx.cs" AutoEventWireup="True" Inherits="Subtext.Web.Admin.Pages.EditImage" %>
+<%@ Page Language="C#" EnableTheming="false"  Title="Subtext Admin - Edit Image" MasterPageFile="~/Admin/WebUI/AdminPageTemplate.Master" Codebehind="EditImage.aspx.cs" AutoEventWireup="True" Inherits="Subtext.Web.Admin.Pages.EditImage" %>
 <%@ Register TagPrefix="st" Namespace="Subtext.Web.Admin.WebUI" Assembly="Subtext.Web" %>
 <%@ Register TagPrefix="st" TagName="CategoryLinks" Src="~/Admin/UserControls/CategoryLinkList.ascx" %>
 

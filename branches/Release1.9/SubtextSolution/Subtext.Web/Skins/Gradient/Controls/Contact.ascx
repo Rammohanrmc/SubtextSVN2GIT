@@ -1,4 +1,4 @@
-<%@ Control Language="c#" AutoEventWireup="false" Inherits="Subtext.Web.UI.Controls.Contact" %>
+<%@ Control Language="C#" EnableTheming="false"  AutoEventWireup="false" Inherits="Subtext.Web.UI.Controls.Contact" %>
 <P>Please use the form below if you have any comments, questions, or suggestions.</P>
 <table cellspacing="1" cellpadding="1" border="0">
 	<tr>

@@ -1,4 +1,4 @@
-<%@ Control Language="c#" Inherits="Subtext.Web.UI.Controls.MyLinks" %>
+<%@ Control Language="C#" EnableTheming="false"  Inherits="Subtext.Web.UI.Controls.MyLinks" %>
 <ul class="navlist">
     <li><asp:HyperLink Runat="server" NavigateUrl="~/Default.aspx" Text="Home" ID="HyperLink1" title="Home" /></li>
     <li><asp:HyperLink Runat="server" NavigateUrl="~/Archives.aspx" Text="Archives" ID="HyperLink2" title="Archives"></asp:HyperLink></li>
