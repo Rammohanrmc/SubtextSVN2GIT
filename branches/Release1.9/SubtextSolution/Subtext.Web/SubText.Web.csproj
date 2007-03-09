@@ -1321,7 +1321,6 @@
     <Content Include="Scripts\blank.gif" />
     <Content Include="Scripts\common.js" />
     <Content Include="Scripts\ExternalLinks.js" />
-    <Content Include="Scripts\FormFocus.js" />
     <Content Include="Scripts\lightbox.css" />
     <Content Include="Scripts\lightbox.js" />
     <Content Include="Scripts\LiveCommentPreview.js" />
