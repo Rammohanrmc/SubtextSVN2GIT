@@ -184,6 +184,7 @@ namespace Subtext.Framework.Format
 		/// <param name="parentId">The id of the parent entry.</param>
 		/// <param name="parentEntryName">If exists.</param>
 		/// <param name="feedback">The feedback.</param>
+		/// <param name="parentCreateDate"></param>
 		/// <param name="feedback">The feedback item.</param>
 		/// <returns></returns>
 		public virtual string FeedbackUrl(int parentId, string parentEntryName, DateTime parentCreateDate, FeedbackItem feedback)
@@ -197,6 +198,7 @@ namespace Subtext.Framework.Format
 		/// </summary>
 		/// <param name="parentId">The id of the parent entry.</param>
 		/// <param name="parentEntryName">If exists.</param>
+		/// <param name="parentCreateDate"></param>
 		/// <param name="feedback">The feedback.</param>
 		/// <returns></returns>
 		public virtual Uri FeedbackFullyQualifiedUrl(int parentId, string parentEntryName, DateTime parentCreateDate, FeedbackItem feedback)

@@ -26,7 +26,7 @@ namespace Subtext.Framework.Syndication
 	/// Abstract base class used to respond to requests for 
 	/// syndicated feeds such as RSS and ATOM.
 	/// </summary>
-	public abstract class BaseSyndicationHandler<T> : System.Web.IHttpHandler
+	public abstract class BaseSyndicationHandler<T> : IHttpHandler
 	{
 		const int HTTP_IM_USED = 226;
 		const int HTTP_MOVED_PERMANENTLY = 301;
@@ -80,7 +80,7 @@ namespace Subtext.Framework.Syndication
 					{
 						return DateTime.Parse(IfNonMatchHeader);
 					}
-					catch(System.FormatException)
+					catch(FormatException)
 					{
 						//Swallow it.
 					}
@@ -123,7 +123,12 @@ namespace Subtext.Framework.Syndication
 					//We need to allow some margin of error.
 					return Math.Abs(ts.TotalMilliseconds) <= 500;
 				}
-				catch{}
+				catch(Exception)
+				{
+					//swallow it for now.
+					//TODO: Why are we doing this?
+				}
+
 			}
 			return false;
 		}
@@ -155,7 +160,7 @@ namespace Subtext.Framework.Syndication
 		/// </summary>
 		/// <param name="dt"></param>
 		/// <returns></returns>
-		protected DateTime ConvertLastUpdatedDate(DateTime dt)
+		protected static DateTime ConvertLastUpdatedDate(DateTime dt)
 		{
 			DateTime utc = Config.CurrentBlog.TimeZone.ToUniversalTime(dt);
 			return TimeZone.CurrentTimeZone.ToLocalTime(utc);
@@ -212,7 +217,7 @@ namespace Subtext.Framework.Syndication
 		protected virtual CachedFeed BuildFeed()
 		{
 			CachedFeed feed = new CachedFeed();
-			feed.LastModified = this.ConvertLastUpdatedDate(CurrentBlog.LastUpdated);
+			feed.LastModified = ConvertLastUpdatedDate(CurrentBlog.LastUpdated);
 			BaseSyndicationWriter<T> writer = SyndicationWriter;
 			feed.Xml = writer.Xml;
 			feed.ClientHasAllFeedItems = writer.ClientHasAllFeedItems;
@@ -377,7 +382,7 @@ namespace Subtext.Framework.Syndication
 					{
 						current.Response.StatusCode = HTTP_MOVED_PERMANENTLY;
 						current.Response.Status = HTTP_MOVED_PERMANENTLY + " Moved Permanently";
-						current.Response.RedirectLocation = new Uri(new Uri("http://feeds.feedburner.com/"), Config.CurrentBlog.FeedBurnerName).ToString();
+						current.Response.RedirectLocation = Config.CurrentBlog.UrlFormats.FeedBurnerUrl.ToString();
 						return true;
 					}
 				}

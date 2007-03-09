@@ -54,6 +54,9 @@ namespace Subtext.Framework
 		/// </summary>
 		/// <param name="host">The host.</param>
 		/// <returns></returns>
+        /// <param name="pageIndex">Zero based index of the page to retrieve.</param>
+        /// <param name="pageSize">Number of records to display on the page.</param>
+        /// <param name="flags">Configuration flags to filter blogs retrieved.</param>
         public static IPagedCollection<BlogInfo> GetBlogsByHost(string host, int pageIndex, int pageSize, ConfigurationFlag flags)
 		{
 			if (String.IsNullOrEmpty(host))
