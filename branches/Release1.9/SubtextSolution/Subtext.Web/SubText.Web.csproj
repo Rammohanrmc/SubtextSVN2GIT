@@ -1318,6 +1318,7 @@
     <Content Include="Providers\BlogEntryEditor\FTB\ftb.imagegallery.aspx" />
     <Content Include="ReverseDOS.config" />
     <Content Include="Scripts\AmazonTooltips.js" />
+    <Content Include="Scripts\blank.gif" />
     <Content Include="Scripts\BlogInfo.js" />
     <Content Include="Scripts\common.js" />
     <Content Include="Scripts\ExternalLinks.js" />
