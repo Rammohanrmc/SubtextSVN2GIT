@@ -41,7 +41,7 @@ namespace Subtext.Framework.Syndication
 		{
 			if(ParentEntry == null)
 			{
-				ParentEntry = Cacher.GetEntryFromRequest(CacheDuration.Short);
+				ParentEntry = Cacher.GetEntryFromRequest(CacheDuration.Short, false);
 			}
 
 			if(ParentEntry != null && Comments == null)
