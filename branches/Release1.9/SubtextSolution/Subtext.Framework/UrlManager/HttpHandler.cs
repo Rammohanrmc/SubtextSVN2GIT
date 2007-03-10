@@ -16,6 +16,7 @@ using System;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Web.UI;
 using System.Xml.Serialization;
 using Subtext.Framework.Threading;
 
@@ -56,7 +57,7 @@ namespace Subtext.Framework.UrlManager
 		private string _PageLocation;
 		/// <summary>
 		/// <p>Gets or sets the page location.  This is the location 
-		/// of the page used when the handler type is <see cref="HandlerType.Page"/>. 
+		/// of the page used when the handler type is <see cref="Page"/>. 
 		/// </p>
 		/// <p>
 		/// The format for the page location should be a path relative to 
@@ -79,7 +80,7 @@ namespace Subtext.Framework.UrlManager
 		/// <summary>
 		/// <p>Gets or sets the actual directory location.  This is the location 
 		/// of the directory used to find the actual file when the handler type 
-		/// is <see cref="HandlerType.Page"/>. 
+		/// is <see cref="Page"/>. 
 		/// </p>
 		/// <p>
 		/// The format for the directory location should be a path relative to 
@@ -172,7 +173,7 @@ namespace Subtext.Framework.UrlManager
 				{
 					if(constructor == null)
 					{
-						System.Type t = System.Type.GetType(this.Type);
+						Type t = System.Type.GetType(this.Type);
 						constructor = t.GetConstructor(new Type[0]);
 					}
 				}
