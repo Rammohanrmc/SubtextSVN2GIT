@@ -2970,15 +2970,10 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_UTILITY_AddBlog]
 	@Email nvarchar(50),
 	@Host nvarchar(50),
 	@Application nvarchar(50),
-	@IsHashed bit
+	@Flag int
 )
 
 AS
-
-DECLARE @Flag int
-Set @Flag = 55
-if(@IsHashed = 1)
-	Set @Flag = 63
 
 IF NOT EXISTS(SELECT * FROM [<dbUser,varchar,dbo>].[subtext_config] WHERE Host = @Host AND Application = @Application)
 BEGIN

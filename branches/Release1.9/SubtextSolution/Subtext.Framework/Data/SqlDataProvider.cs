@@ -38,7 +38,7 @@ namespace Subtext.Framework.Data
 	{
 		private readonly static ILog log = new Log();
 		
-		private SqlParameter BlogIdParam
+		private static SqlParameter BlogIdParam
 		{
 			get
 			{
@@ -213,6 +213,7 @@ namespace Subtext.Framework.Data
 		/// <summary>
 		/// Returns a list of all the blogs within the specified range.
 		/// </summary>
+		/// <param name="host">The hostname for this blog.</param>
 		/// <param name="pageIndex">Page index.</param>
 		/// <param name="pageSize">Size of the page.</param>
 		/// <param name="flags">Flags for type of retrieval.</param>
@@ -993,6 +994,15 @@ namespace Subtext.Framework.Data
 		/// <returns></returns>
 		public override bool AddBlogConfiguration(string title, string userName, string password, string host, string subfolder)
 		{
+			ConfigurationFlag flag = ConfigurationFlag.IsActive
+			                         | ConfigurationFlag.CommentsEnabled
+			                         | ConfigurationFlag.CompressSyndicatedFeed
+									 | ConfigurationFlag.IsAggregated
+									 | ConfigurationFlag.IsPasswordHashed
+									 | ConfigurationFlag.AutoFriendlyUrlEnabled
+									 | ConfigurationFlag.CommentNotificationEnabled
+									 | ConfigurationFlag.RFC3229DeltaEncodingEnabled
+									 | ConfigurationFlag.CaptchaEnabled;
 			SqlParameter[] parameters = 
 			{
 				DataHelper.MakeInParam("@Title", SqlDbType.NVarChar, 100, title)
@@ -1001,8 +1011,7 @@ namespace Subtext.Framework.Data
 				, DataHelper.MakeInParam("@Email", SqlDbType.NVarChar, 50, string.Empty)
 				, DataHelper.MakeInParam("@Host", SqlDbType.NVarChar, 50, host)
 				, DataHelper.MakeInParam("@Application", SqlDbType.NVarChar, 50, subfolder)
-				, DataHelper.MakeInParam("@IsHashed", SqlDbType.Bit, 1, Config.Settings.UseHashedPasswords)
-				
+				, DataHelper.MakeInParam("@Flag", SqlDbType.Int, 4, flag)
 			};
 			return NonQueryBool("subtext_UTILITY_AddBlog", parameters);
 		}
@@ -1279,8 +1288,8 @@ namespace Subtext.Framework.Data
 		#endregion Host Data
 
 		#endregion
-		
-		void LogSql(string sql, SqlParameter[] parameters)
+
+		static void LogSql(string sql, SqlParameter[] parameters)
 		{
 #if DEBUG
 			string query = sql;
