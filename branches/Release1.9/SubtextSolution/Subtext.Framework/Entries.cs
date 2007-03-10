@@ -19,6 +19,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Web;
 using log4net;
@@ -276,7 +277,7 @@ namespace Subtext.Framework
 		/// <returns></returns>
 		public static string AutoGenerateFriendlyUrl(string title)
 		{
-			return Entries.AutoGenerateFriendlyUrl(title, 0);
+			return AutoGenerateFriendlyUrl(title, 0);
 		}
 
 
@@ -295,8 +296,11 @@ namespace Subtext.Framework
 			if(friendlyUrlSettings == null)
 			{
 				//Default to old behavior.
-				return AutoGenerateFriendlyUrl(title, char.MinValue, entryId);
+				return AutoGenerateFriendlyUrl(title, char.MinValue, entryId, TextTransform.None);
 			}
+
+        	TextTransform textTransform = ParseTextTransform(friendlyUrlSettings["textTransform"]);
+
 
 			string wordSeparator = friendlyUrlSettings["separatingCharacter"];
 			int wordCount;
@@ -334,12 +338,12 @@ namespace Subtext.Framework
 			// can cause. Only - _ and . are allowed
 			if ((wordSeparator == "_") || (wordSeparator == ".") || (wordSeparator =="-"))
 			{
-				return AutoGenerateFriendlyUrl(title, wordSeparator[0], entryId);
+				return AutoGenerateFriendlyUrl(title, wordSeparator[0], entryId, textTransform);
 			}
 			else
 			{
 				//invalid separator or none defined.
-				return AutoGenerateFriendlyUrl(title, char.MinValue, entryId);
+				return AutoGenerateFriendlyUrl(title, char.MinValue, entryId, textTransform);
 			}
 
 		}
@@ -353,9 +357,21 @@ namespace Subtext.Framework
 		/// <returns></returns>
 		public static string AutoGenerateFriendlyUrl(string title, char wordSeparator)
 		{
-			return Entries.AutoGenerateFriendlyUrl(title, wordSeparator, 0);
+			return AutoGenerateFriendlyUrl(title, wordSeparator, 0, TextTransform.None);
 		}
 
+		/// <summary>
+		/// Converts a title of a blog post into a friendly, but URL safe string.
+		/// Defaults entryId to 0 as if it was a new entry
+		/// </summary>
+		/// <param name="title">The original title of the blog post.</param>
+		/// <param name="wordSeparator">The string used to separate words in the title.</param>
+		/// <param name="textTransform">Used to specify a change to the casing of the string.</param>
+		/// <returns></returns>
+		public static string AutoGenerateFriendlyUrl(string title, char wordSeparator, TextTransform textTransform)
+		{
+			return AutoGenerateFriendlyUrl(title, wordSeparator, 0, textTransform);
+		}
 
 		/// <summary>
 		/// Converts a title of a blog post into a friendly, but URL safe string.
@@ -363,8 +379,9 @@ namespace Subtext.Framework
 		/// <param name="title">The original title of the blog post.</param>
 		/// <param name="wordSeparator">The string used to separate words in the title.</param>
 		/// <param name="entryId">The id of the current entry.</param>
+		/// <param name="textTransform">Used to specify a change to the casing of the string.</param>
 		/// <returns></returns>
-		public static string AutoGenerateFriendlyUrl(string title, char wordSeparator, int entryId)
+		public static string AutoGenerateFriendlyUrl(string title, char wordSeparator, int entryId, TextTransform textTransform)
 		{
 			if(title == null)
 				throw new ArgumentNullException("title", "Cannot generate friendly url from null title.");
@@ -381,7 +398,8 @@ namespace Subtext.Framework
                 entryName = "n" + wordSeparator + entryName;
 		    }
 
-			string newEntryName = entryName;
+			string newEntryName = TransformString(entryName, textTransform);
+
 			int tryCount = 0;
 			Entry currentEntry = ObjectProvider.Instance().GetEntry(newEntryName, false, false);
 
@@ -389,24 +407,64 @@ namespace Subtext.Framework
 			{
 				if (currentEntry.Id == entryId) //This means that we are updating the same entry, so should allow same entryname
 					break; 
-				if (tryCount == 1)
-					newEntryName = entryName + "Again";
-				if (tryCount == 2)
-					newEntryName = entryName + "YetAgain";
-				if (tryCount == 3)
-					newEntryName = entryName + "AndAgain";
-				if (tryCount == 4)
-					newEntryName = entryName + "OnceMore";
-				if (tryCount == 5)
-					newEntryName = entryName + "ToBeatADeadHorse";
-
+				switch(tryCount)
+				{
+					case 0:
+						newEntryName = entryName + wordSeparator + "Again";
+						break;
+					case 1:
+						newEntryName = entryName + wordSeparator + "Yet" + wordSeparator + "Again";
+						break;
+					case 2:
+						newEntryName = entryName + wordSeparator + "And" + wordSeparator + "Again";
+						break;
+					case 3:
+						newEntryName = entryName + wordSeparator + "Once" + wordSeparator + "More";
+						break;
+					case 4:
+						newEntryName = entryName + wordSeparator + "To" + wordSeparator + "Beat" + wordSeparator + "A" + wordSeparator +
+							               "Dead" + wordSeparator + "Horse";
+						break;
+				}
 				if (tryCount++ > 5)
 					break; //Allow an exception to get thrown later.
 
+				newEntryName = TransformString(newEntryName, textTransform);
 				currentEntry = ObjectProvider.Instance().GetEntry(newEntryName, false, false);
 			}
 
 			return newEntryName;
+		}
+
+		static string TransformString(string s, TextTransform textTransform)
+		{
+			switch (textTransform)
+			{
+				case TextTransform.None:
+					break;
+
+				case TextTransform.LowerCase:
+					return s.ToLower(CultureInfo.InvariantCulture);
+
+				case TextTransform.UpperCase:
+					return s.ToUpper(CultureInfo.InvariantCulture);
+			}
+			return s;
+		}
+
+		static TextTransform ParseTextTransform(string enumValue)
+		{
+			if (String.IsNullOrEmpty(enumValue))
+				return TextTransform.None;
+			try
+			{
+				return (TextTransform) Enum.Parse(typeof (TextTransform), enumValue);
+			}
+			catch(FormatException)
+			{
+				log.Warn("The 'textTransform' setting in the FriendlyUrlSettings section of Web.config has an incorrect value. It should be 'None', 'LowerCase', or 'UpperCase'");
+				return TextTransform.None;
+			}
 		}
 
 		static string ReplaceSpacesWithSeparator(string text, char wordSeparator)
@@ -502,6 +560,13 @@ namespace Subtext.Framework
 		}
 
 		#endregion
+	}
+
+	public enum TextTransform
+	{
+		None,
+		LowerCase,
+		UpperCase
 	}
 }
 
