@@ -191,7 +191,7 @@ namespace Subtext.Framework.Configuration
 			return info;
 		}
 
-		private BlogInfo GetAggregateBlog()
+		private static BlogInfo GetAggregateBlog()
 		{
 			BlogInfo aggregateBlog = new BlogInfo();
             aggregateBlog.Title = ConfigurationManager.AppSettings["AggregateTitle"];
@@ -209,7 +209,7 @@ namespace Subtext.Framework.Configuration
 		/// </summary>
 		/// <param name="Request">Request.</param>
 		/// <returns></returns>
-		protected string GetCurrentHost(HttpRequest Request)
+		protected static string GetCurrentHost(HttpRequest Request)
 		{
 			string host = Request.Url.Host;
 			if(!Request.Url.IsDefaultPort)

@@ -26,13 +26,6 @@ namespace Subtext.Web.UI.WebControls
 	public class RssHyperLink : HyperLink
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RssHyperLink"/> class.
-		/// </summary>
-		public RssHyperLink() : base()
-		{
-		}
-
-		/// <summary>
 		/// Overrides the NavigateUrl property to point too the RSS feed 
 		/// and raises the <see cref="E:System.Web.UI.Control.PreRender"/>
 		/// event.

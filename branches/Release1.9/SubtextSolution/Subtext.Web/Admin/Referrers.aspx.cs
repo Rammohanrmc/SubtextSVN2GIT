@@ -35,7 +35,7 @@ namespace Subtext.Web.Admin.Pages
 		private bool _isListHidden = false;
 		private int _entryID = NullValue.NullInt32;
 	    
-	    public Referrers() : base()
+	    public Referrers()
 	    {
             this.TabSectionId = "Stats";
 	    }

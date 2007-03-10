@@ -91,7 +91,7 @@ namespace Subtext
 			//This line will trigger the configuration.
 			log.Info("Application_Start - This is not a malfunction.");
 #if DEBUG
-			log4net.Repository.Hierarchy.Hierarchy h = LogManager.GetRepository() as log4net.Repository.Hierarchy.Hierarchy;
+			Hierarchy h = LogManager.GetRepository() as Hierarchy;
 			EnsureLog4NetConnectionString(h);
 #endif
 		}
@@ -156,9 +156,9 @@ namespace Subtext
 				HttpContext context = application.Context;
 				if (context.Request.Path.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase))
 				{
-					Version v =  Subtext.Framework.VersionInfo.FrameworkVersion; //t.Assembly.GetName().Version;
-					string machineName = System.Environment.MachineName;
-					Version framework = System.Environment.Version;
+					Version v =  VersionInfo.FrameworkVersion; //t.Assembly.GetName().Version;
+					string machineName = Environment.MachineName;
+					Version framework = Environment.Version;
 
 					string userInfo = "No User";
 					try
@@ -170,7 +170,7 @@ namespace Subtext
 							if(!InstallationManager.IsInHostAdminDirectory && !InstallationManager.IsInInstallDirectory && !InstallationManager.IsInSystemMessageDirectory)
 							{
 								userInfo += "<br />Is Admin: " + SecurityHelper.IsAdmin.ToString(CultureInfo.InvariantCulture);
-								userInfo += "<br />BlogId: " + Subtext.Framework.Configuration.Config.CurrentBlog.Id.ToString(CultureInfo.InvariantCulture);
+								userInfo += "<br />BlogId: " + Config.CurrentBlog.Id.ToString(CultureInfo.InvariantCulture);
 							}	
 						}
 					}
@@ -179,7 +179,7 @@ namespace Subtext
 
 					try
 					{
-						if (!MagicAjax.MagicAjaxContext.Current.IsAjaxCall)
+						if (!MagicAjaxContext.Current.IsAjaxCall)
 							context.Response.Write(string.Format(debugMessage, @"<!-- ", lb, v, machineName, framework, userInfo, lb, "//-->"));
 					}
 					catch(MagicAjaxException exc)

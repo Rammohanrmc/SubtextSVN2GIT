@@ -34,7 +34,7 @@ namespace Subtext.Framework.Providers
     public abstract class DbProvider : ProviderBase
 	{
 		private static DbProvider provider;
-		private static GenericProviderCollection<DbProvider> providers = ProviderConfigurationHelper.LoadProviderCollection<DbProvider>("Database", out provider);
+		private static GenericProviderCollection<DbProvider> providers = ProviderConfigurationHelper.LoadProviderCollection("Database", out provider);
 
 		/// <summary>
 		/// Returns the currently configured DbProvider.
@@ -345,8 +345,10 @@ namespace Subtext.Framework.Providers
 		/// <summary>
 		/// Returns a list of all the blogs within the specified range.
 		/// </summary>
+		/// <param name="host">Hostname for the blogs to grab</param>
 		/// <param name="pageIndex">Page index.</param>
 		/// <param name="pageSize">Size of the page.</param>
+		/// <param name="flags">Filter blogs retrieved.</param>
 		/// <returns></returns>
 		public abstract IDataReader GetPagedBlogs(string host, int pageIndex, int pageSize, ConfigurationFlag flags);
 
