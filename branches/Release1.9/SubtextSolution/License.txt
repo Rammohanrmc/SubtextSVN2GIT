@@ -6,6 +6,8 @@ Subtext (http://subtextproject.com/)
 Copyright (c) 2005 - 2006 
 by Phil Haack (http://haacked.com/)
 
+XML-RPC.NET Copyright (c) 2006 Charles Cook
+
 This work contains and builds upon code from the original .TEXT source Code 
 which is Copyright (c) 2003 Scott Watermasysk (http://scottwater.com/blog/), 
 and which is used herein pursuant to the BSD License.
