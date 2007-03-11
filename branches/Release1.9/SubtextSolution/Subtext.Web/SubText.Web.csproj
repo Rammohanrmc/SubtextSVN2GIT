@@ -249,6 +249,13 @@
     <Compile Include="Admin\WebUI\Controls\LinkList.cs" />
     <Compile Include="Admin\WebUI\Controls\MessagePanel.cs" />
     <Compile Include="Admin\WebUI\Controls\ScriptTag.cs" />
+    <Compile Include="Admin\Credits.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>Credits.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\Credits.aspx.designer.cs">
+      <DependentUpon>Credits.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Admin\WebUI\StatsPage.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -929,6 +936,7 @@
     <Content Include="Admin\UserControls\CategoryLinkList.ascx" />
     <Content Include="Admin\UserControls\EntryEditor.ascx" />
     <Content Include="Admin\EditPosts.aspx" />
+    <Content Include="Admin\Credits.aspx" />
     <Content Include="AspNetWithoutWebProjects.txt" />
     <Content Include="ExternalDependencies\FreeTextBox.xml" />
     <Content Include="ExternalDependencies\ICSharpCode.SharpZipLib.dll" />
