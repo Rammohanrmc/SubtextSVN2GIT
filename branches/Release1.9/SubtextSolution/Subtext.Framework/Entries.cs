@@ -16,13 +16,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Configuration;
 using System.Diagnostics;
-using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Web;
 using log4net;
+using Subtext.Configuration;
 using Subtext.Extensibility;
 using Subtext.Extensibility.Interfaces;
 using Subtext.Framework.Components;
@@ -292,28 +290,19 @@ namespace Subtext.Framework
 			if(title == null)
 				throw new ArgumentNullException("title", "Cannot generate friendly url from null title.");
 
-            NameValueCollection friendlyUrlSettings = (NameValueCollection)ConfigurationManager.GetSection("FriendlyUrlSettings");
+        	FriendlyUrlSettings friendlyUrlSettings = FriendlyUrlSettings.Settings;
 			if(friendlyUrlSettings == null)
 			{
 				//Default to old behavior.
 				return AutoGenerateFriendlyUrl(title, char.MinValue, entryId, TextTransform.None);
 			}
 
-        	TextTransform textTransform = ParseTextTransform(friendlyUrlSettings["textTransform"]);
+        	TextTransform textTransform = friendlyUrlSettings.TextTransformation;
 
 
-			string wordSeparator = friendlyUrlSettings["separatingCharacter"];
-			int wordCount;
+			string wordSeparator = friendlyUrlSettings.SeparatingCharacter;
+			int wordCount = friendlyUrlSettings.WordCountLimit;
 
-			if (friendlyUrlSettings["limitWordCount"] == null)
-			{
-				wordCount = 0;
-			}
-			else
-			{
-				wordCount = int.Parse(friendlyUrlSettings["limitWordCount"]);
-			}
-			
 			// break down to number of words. If 0 (or less) don't mess with the title
 			if (wordCount > 0)
 			{
@@ -398,7 +387,7 @@ namespace Subtext.Framework
                 entryName = "n" + wordSeparator + entryName;
 		    }
 
-			string newEntryName = TransformString(entryName, textTransform);
+			string newEntryName = FriendlyUrlSettings.TransformString(entryName, textTransform);
 
 			int tryCount = 0;
 			Entry currentEntry = ObjectProvider.Instance().GetEntry(newEntryName, false, false);
@@ -429,43 +418,16 @@ namespace Subtext.Framework
 				if (tryCount++ > 5)
 					break; //Allow an exception to get thrown later.
 
-				newEntryName = TransformString(newEntryName, textTransform);
+				newEntryName = FriendlyUrlSettings.TransformString(newEntryName, textTransform);
 				currentEntry = ObjectProvider.Instance().GetEntry(newEntryName, false, false);
 			}
 
 			return newEntryName;
 		}
 
-		static string TransformString(string s, TextTransform textTransform)
-		{
-			switch (textTransform)
-			{
-				case TextTransform.None:
-					break;
+		
 
-				case TextTransform.LowerCase:
-					return s.ToLower(CultureInfo.InvariantCulture);
-
-				case TextTransform.UpperCase:
-					return s.ToUpper(CultureInfo.InvariantCulture);
-			}
-			return s;
-		}
-
-		static TextTransform ParseTextTransform(string enumValue)
-		{
-			if (String.IsNullOrEmpty(enumValue))
-				return TextTransform.None;
-			try
-			{
-				return (TextTransform) Enum.Parse(typeof (TextTransform), enumValue);
-			}
-			catch(FormatException)
-			{
-				log.Warn("The 'textTransform' setting in the FriendlyUrlSettings section of Web.config has an incorrect value. It should be 'None', 'LowerCase', or 'UpperCase'");
-				return TextTransform.None;
-			}
-		}
+		
 
 		static string ReplaceSpacesWithSeparator(string text, char wordSeparator)
 		{
@@ -560,13 +522,6 @@ namespace Subtext.Framework
 		}
 
 		#endregion
-	}
-
-	public enum TextTransform
-	{
-		None,
-		LowerCase,
-		UpperCase
 	}
 }
 

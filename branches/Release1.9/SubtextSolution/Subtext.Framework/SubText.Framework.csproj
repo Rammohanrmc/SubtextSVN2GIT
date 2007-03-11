@@ -228,6 +228,7 @@
     <Compile Include="Configuration\ConfigurationFlag.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Configuration\FriendlyUrlSettings.cs" />
     <Compile Include="Configuration\SkinConfig.cs">
       <SubType>Code</SubType>
     </Compile>

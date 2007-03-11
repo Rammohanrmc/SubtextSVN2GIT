@@ -158,12 +158,12 @@ namespace Subtext.Framework.Data
 
 		private static readonly string LCKey="LC{0}BlogId{1}";
 
-        public static LinkCategory SingleCategory(CacheDuration cacheDuration, int categoryId)
+        static LinkCategory SingleCategory(CacheDuration cacheDuration, int categoryId)
         {
             return SingleCategory(cacheDuration, categoryId, true);
         }
 
-        public static LinkCategory SingleCategory(CacheDuration cacheDuration, string categoryName)
+        static LinkCategory SingleCategory(CacheDuration cacheDuration, string categoryName)
         {
             return SingleCategory(cacheDuration, categoryName, true);
         }
@@ -185,10 +185,14 @@ namespace Subtext.Framework.Data
 		{
 			ContentCache cache = ContentCache.Instantiate();
 			string key = string.Format(LCKey, categoryName, Config.CurrentBlog.Id);
+
+			/*if (FriendlyUrlSettings.Settings.Enabled)
+				categoryName = categoryName.Replace(FriendlyUrlSettings.Settings.SeparatingCharacter, " ");*/
+
 			LinkCategory lc = (LinkCategory)cache[key];
 			if(lc == null)
 			{
-				lc = Links.GetLinkCategory(categoryName,isActive);
+				lc = Links.GetLinkCategory(categoryName, isActive);
 				cache.Insert(key, lc, cacheDuration);
 			}
 			return lc;

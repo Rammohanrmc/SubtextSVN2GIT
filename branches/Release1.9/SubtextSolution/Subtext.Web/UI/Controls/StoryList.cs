@@ -33,7 +33,7 @@ namespace Subtext.Web.UI.Controls
 			set { EntryStoryList.DescriptionOnly = value; }
 		}
 
-		protected Subtext.Web.UI.Controls.EntryList EntryStoryList;
+		protected EntryList EntryStoryList;
 
 
 		protected override void OnLoad(EventArgs e)
@@ -43,7 +43,6 @@ namespace Subtext.Web.UI.Controls
 			{
 				BlogInfo info = Config.CurrentBlog;
 
-				//int catID = Globals.GetPostIDFromUrl(Request.Path);
 				LinkCategory lc = Cacher.SingleCategory(CacheDuration.Short);
 				
 				int count = Request.QueryString["Show"] != null ? 0 : info.CategoryListPostCount;//as of 3sep2006, this is a configurable option. 
@@ -67,7 +66,7 @@ namespace Subtext.Web.UI.Controls
 
 					}
 
-					Subtext.Web.UI.Globals.SetTitle(string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0} - {1}",CurrentBlog.Title,lc.Title),Context);
+					Globals.SetTitle(string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0} - {1}",CurrentBlog.Title,lc.Title),Context);
 				}
 
 			}
