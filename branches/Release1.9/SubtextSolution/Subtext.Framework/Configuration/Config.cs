@@ -15,9 +15,11 @@
 
 using System;
 using System.Configuration;
+using log4net;
 using Subtext.Extensibility.Interfaces;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Format;
+using Subtext.Framework.Logging;
 using Subtext.Framework.Providers;
 using Subtext.Framework.Security;
 
@@ -29,6 +31,8 @@ namespace Subtext.Framework.Configuration
 	/// </summary>
 	public static class Config
 	{
+		private readonly static ILog Log = new Log();
+
 	    static UrlBasedBlogInfoProvider _configProvider;
 
 		/// <summary>
@@ -157,6 +161,7 @@ namespace Subtext.Framework.Configuration
 		/// allowing a user with a freshly installed blog to immediately gain access 
 		/// to the admin section to edit the blog.
 		/// </summary>
+		/// <param name="title">Title of the blog.</param>
 		/// <param name="userName">Name of the user.</param>
 		/// <param name="password">Password.</param>
 		/// <param name="subfolder"></param>
@@ -192,7 +197,7 @@ namespace Subtext.Framework.Configuration
             }
 			
 			subfolder = UrlFormats.StripSurroundingSlashes(subfolder);
-			Console.WriteLine("Creating a blog with subfolder '" + subfolder + "'");
+			Log.Debug(string.Format("Creating a blog with subfolder '{0}'", subfolder));
 
 			if(subfolder == null || subfolder.Length == 0)
 			{

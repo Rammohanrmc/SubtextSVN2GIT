@@ -34,6 +34,7 @@
 #endregion
 using System;
 using System.Globalization;
+using System.IO;
 using System.Web;
 using System.Xml;
 using Subtext.Extensibility;
@@ -42,7 +43,6 @@ using Subtext.Framework.Configuration;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Logging;
 using Subtext.Framework.Text;
-using Subtext.Framework.Util;
 
 namespace Subtext.Framework.Tracking
 {
@@ -53,13 +53,6 @@ namespace Subtext.Framework.Tracking
 	{
 		static Log Log = new Log();
 		
-		/// <summary>
-		/// Initializes a new instance of the <see cref="TrackBackHandler"/> class.
-		/// </summary>
-		public TrackBackHandler() 
-		{
-		}
-	
 		/// <summary>
 		/// Enables processing of HTTP Web requests by a custom
 		/// <see langword="HttpHandler "/>
@@ -84,31 +77,33 @@ namespace Subtext.Framework.Tracking
 		{
 			context.Response.ContentType = "text/xml";
 
-			int postId = 0 ;
-			try 
-			{
-				postId = WebPathStripper.GetEntryIDFromUrl(context.Request.Path);
-			}
-			catch(ArgumentException e)
-			{
-				Log.Info("Could not extract entry id from incoming URL." + e.Message, e);
-				SendTrackbackResponse(context, 1, "EntryID is invalid or missing") ;
-			}
+			Entry entry;
 
-			Entry entry = Entries.GetEntry(postId, PostConfig.IsActive, false);
-			if(entry == null)
+			int postId;
+			string entryIdentifier = Path.GetFileNameWithoutExtension(context.Request.Path);
+			if (int.TryParse(entryIdentifier, out postId))
 			{
-				SendTrackbackResponse(context, 1, "EntryID is invalid or missing");
-				return;
-			}
-
-			if(context.Request.HttpMethod == "POST")
-			{
-				CreateTrackbackAndSendResponse(context, entry, postId);
+				entry = Entries.GetEntry(postId, PostConfig.IsActive, false);
 			}
 			else
 			{
-				SendTrackbackRss(context, entry, postId);
+				entry = Entries.GetEntry(entryIdentifier, PostConfig.IsActive, false);
+			}
+			
+			if(entry == null)
+			{
+				Log.Info(string.Format("Could not extract entry id from incoming URL '{0}' .", context.Request.Path));
+				SendTrackbackResponse(context, 1, "EntryID is invalid or missing");
+				return;
+			}
+					
+			if(context.Request.HttpMethod == "POST")
+			{
+				CreateTrackbackAndSendResponse(context, entry, entry.Id);
+			}
+			else
+			{
+				SendTrackbackRss(context, entry, entry.Id);
 			}
 		}
 
@@ -188,7 +183,7 @@ namespace Subtext.Framework.Tracking
 			context.Response.Output.Flush();
 		}
 
-		private string SafeParam(HttpContext context, string pName)
+		private static string SafeParam(HttpContext context, string pName)
 		{
 			if (context.Request.Form[pName] != null)
 				return HtmlHelper.SafeFormat(context.Request.Form[pName]);
@@ -229,7 +224,7 @@ namespace Subtext.Framework.Tracking
 		/// </summary>
 		/// <param name="sourceUrl">The source URL.</param>
 		/// <param name="entryUrl">The entry URL.</param>
-		public SourceVerificationEventArgs(Uri sourceUrl, Uri entryUrl) : base()
+		public SourceVerificationEventArgs(Uri sourceUrl, Uri entryUrl)
 		{
 			this.sourceUrl = sourceUrl;
 			this.entryUrl = entryUrl;

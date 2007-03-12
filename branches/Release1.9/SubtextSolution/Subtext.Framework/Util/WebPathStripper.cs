@@ -39,7 +39,7 @@ namespace Subtext.Framework.Util
 
 		public static DateTime GetDateFromRequest(string uri, string archiveText)
 		{
-			uri = uri.ToLower(System.Globalization.CultureInfo.InvariantCulture);
+			uri = uri.ToLower(CultureInfo.InvariantCulture);
 			uri = CleanStartDateString(uri,archiveText);
 			uri = CleanEndDateString(uri);
 			return DateTime.ParseExact(uri,dateFormats,new CultureInfo("en-US"),DateTimeStyles.None);
@@ -64,7 +64,7 @@ namespace Subtext.Framework.Util
 		/// <returns></returns>
 		public static string GetCategryFromRss(string url)
 		{
-			url = url.ToLower(System.Globalization.CultureInfo.InvariantCulture);
+			url = url.ToLower(CultureInfo.InvariantCulture);
 			int start = url.IndexOf("/category/");
 			int stop = url.IndexOf("/rss");
 			return url.Substring(start+10,stop-(start+10)).Replace(".aspx",string.Empty);			
@@ -98,7 +98,7 @@ namespace Subtext.Framework.Util
 			{
 				return Int32.Parse(Path.GetFileNameWithoutExtension(url));
 			}
-			catch(System.FormatException e)
+			catch(FormatException e)
 			{
 				throw new ArgumentException("The specified URL does not contain an entry id.", "url", e);
 			}

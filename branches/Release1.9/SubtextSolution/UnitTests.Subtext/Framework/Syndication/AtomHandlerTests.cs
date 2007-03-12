@@ -56,7 +56,7 @@ namespace UnitTests.Subtext.Framework.Syndication
 			Assert.AreEqual("testtitle", itemNodes[0].SelectSingleNode("atom:title", nsmanager).InnerText, "Not what we expected for the title.");
 			string urlFormat = "http://{0}/archive/{1:yyyy/MM/dd}/{2}.aspx";
 
-			string expectedUrl = string.Format(urlFormat, hostName, dateCreated, id);
+			string expectedUrl = string.Format(urlFormat, hostName, dateCreated, "testtitle");
 
 			Assert.AreEqual(expectedUrl, itemNodes[0].SelectSingleNode("atom:id", nsmanager).InnerText, "Not what we expected for the link.");
 			Assert.AreEqual(expectedUrl, itemNodes[0].SelectSingleNode("atom:link/@href", nsmanager).InnerText, "Not what we expected for the link.");

@@ -27,7 +27,7 @@ namespace UnitTests.Subtext.Framework.Syndication
 		[RollBack]
 		public void RssWriterProducesValidFeedFromDatabase()
 		{
-			string hostName = System.Guid.NewGuid().ToString().Replace("-", "") + ".com";
+			string hostName = UnitTestHelper.GenerateRandomString() + ".com";
 			Assert.IsTrue(Config.CreateBlog("Test", "username", "password", hostName, string.Empty));
 
 			StringBuilder sb = new StringBuilder();
@@ -39,13 +39,13 @@ namespace UnitTests.Subtext.Framework.Syndication
 
 			DateTime dateCreated = DateTime.Now;
 			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("Author", "testtitle", "testbody", null, dateCreated);
-			int id = Entries.Create(entry); //persist to db.
+			Entries.Create(entry); //persist to db.
 
 			XmlNodeList itemNodes = GetRssHandlerItemNodes(sb);
 			Assert.AreEqual(1, itemNodes.Count, "expected one item nodes.");
 
 			string urlFormat = "http://{0}/archive/{1:yyyy/MM/dd}/{2}.aspx";
-			string expectedUrl = string.Format(urlFormat, hostName, dateCreated, id);
+			string expectedUrl = string.Format(urlFormat, hostName, dateCreated, "testtitle");
 
 			Assert.AreEqual("testtitle", itemNodes[0].SelectSingleNode("title").InnerText, "Not what we expected for the title.");
 			Assert.AreEqual(expectedUrl, itemNodes[0].SelectSingleNode("link").InnerText, "Not what we expected for the link.");
@@ -60,7 +60,7 @@ namespace UnitTests.Subtext.Framework.Syndication
 		[RollBack]
 		public void RssHandlerProducesValidRssFeed()
 		{
-			string hostName = System.Guid.NewGuid().ToString().Replace("-", "") + ".com";
+			string hostName = Guid.NewGuid().ToString().Replace("-", "") + ".com";
 			StringBuilder sb = new StringBuilder();
 			TextWriter output = new StringWriter(sb);
 			UnitTestHelper.SetHttpContextWithBlogRequest(hostName, "", "", "", output);
@@ -88,7 +88,7 @@ namespace UnitTests.Subtext.Framework.Syndication
 		public void RssHandlerHandlesDateSyndicatedProperly()
 		{
 			// Setup
-			string hostName = System.Guid.NewGuid().ToString().Replace("-", "") + ".com";
+			string hostName = Guid.NewGuid().ToString().Replace("-", "") + ".com";
 			StringBuilder sb = new StringBuilder();
 			TextWriter output = new StringWriter(sb);
 			UnitTestHelper.SetHttpContextWithBlogRequest(hostName, "", "", "", output);
@@ -127,7 +127,7 @@ namespace UnitTests.Subtext.Framework.Syndication
 		public void RssHandlerSortsByDateSyndicated()
 		{
 			// Setup
-			string hostName = System.Guid.NewGuid().ToString().Replace("-", "") + ".com";
+			string hostName = Guid.NewGuid().ToString().Replace("-", "") + ".com";
 			StringBuilder sb = new StringBuilder();
 			TextWriter output = new StringWriter(sb);
 			UnitTestHelper.SetHttpContextWithBlogRequest(hostName, "", "", "", output);
@@ -184,7 +184,7 @@ namespace UnitTests.Subtext.Framework.Syndication
 		[RollBack]
 		public void TestCompressedFeedWorks()
 		{
-			string hostName = System.Guid.NewGuid().ToString().Replace("-", "") + ".com";
+			string hostName = Guid.NewGuid().ToString().Replace("-", "") + ".com";
 			StringBuilder sb = new StringBuilder();
 			TextWriter output = new StringWriter(sb);
 

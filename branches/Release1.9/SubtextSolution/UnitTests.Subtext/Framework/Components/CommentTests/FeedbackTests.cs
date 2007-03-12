@@ -395,8 +395,10 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 
 			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("blah", "blah", "blah");
 			int entryId = Entries.Create(entry);
+			entry = Entries.GetEntry(entryId, PostConfig.None, false);
 
 			FeedbackItem feedbackItem = new FeedbackItem(FeedbackType.Comment);
+			feedbackItem.ParentEntryName = entry.EntryName;
 			feedbackItem.Author = "Billy Bob";
 			feedbackItem.Email = commenterEmail;
 			feedbackItem.DateCreated = DateTime.Now;
