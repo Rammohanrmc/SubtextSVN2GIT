@@ -117,7 +117,7 @@ namespace UnitTests.Subtext
 		/// <returns></returns>
 		public static string GenerateRandomString()
 		{
-			return System.Guid.NewGuid().ToString().Replace("-", "") + ".com";
+			return Guid.NewGuid().ToString().Replace("-", "") + ".com";
 		}
 
 
@@ -205,7 +205,7 @@ namespace UnitTests.Subtext
 			HttpContext.Current.Items["Subtext__CurrentRequest"] = new BlogRequest(host, subfolder);
 
 			#region Console Debug INfo
-			
+			/*
 			Console.WriteLine("host: " + host);
 			Console.WriteLine("blogName: " + subfolder);
 			Console.WriteLine("virtualDir: " + applicationPath);
@@ -219,7 +219,7 @@ namespace UnitTests.Subtext
             Console.WriteLine("Request.Url.Port: " + HttpContext.Current.Request.Url.Port);
 			Console.WriteLine("Request.ApplicationPath: " + HttpContext.Current.Request.ApplicationPath);
 			Console.WriteLine("Request.PhysicalPath: " + HttpContext.Current.Request.PhysicalPath);
-
+			*/
 			#endregion
 
 			return workerRequest;
@@ -581,7 +581,7 @@ namespace UnitTests.Subtext
 							}
 						}
 					} 
-					catch (ICSharpCode.SharpZipLib.GZip.GZipException) 
+					catch (GZipException) 
 					{
 						if (tryAgainDeflate && (encoding=="deflate")) 
 						{
@@ -629,6 +629,7 @@ namespace UnitTests.Subtext
 		/// </summary>
 		/// <param name="first">The first.</param>
 		/// <param name="compare">The compare.</param>
+		/// <param name="message"></param>
 		public static void AssertAreNotEqual(int first, int compare, string message)
 		{
 			Assert.IsTrue(first != compare, message + "{0} is equal to {1}", first, compare);
@@ -649,6 +650,7 @@ namespace UnitTests.Subtext
 		/// </summary>
 		/// <param name="first">The first.</param>
 		/// <param name="compare">The compare.</param>
+		/// <param name="message"></param>
 		public static void AssertAreNotEqual(string first, string compare, string message)
 		{
 			Assert.IsTrue(first != compare, message + "{0} is equal to {1}", first, compare);
