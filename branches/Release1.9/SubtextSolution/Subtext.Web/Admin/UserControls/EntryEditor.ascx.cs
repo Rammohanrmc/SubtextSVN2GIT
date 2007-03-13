@@ -417,11 +417,9 @@ namespace Subtext.Web.Admin.UserControls
 						entry.DateModified = Config.CurrentBlog.TimeZone.Now;
 						entry.Id = PostID;
 						
-						//TODO: Add here code to be called before updating a post
-						
 						Entries.Update(entry);
-						
-						//TODO: Add here code to be called after updating a post
+
+						UpdateCategories();
 
 						if(ReturnToOriginalPost)
 						{
@@ -436,17 +434,11 @@ namespace Subtext.Web.Admin.UserControls
 					}
 					else
 					{
-						entry.DateCreated = Config.CurrentBlog.TimeZone.Now;
-						
-						//TODO: Add here code to be called before creating a post
-						
+						entry.DateCreated = Config.CurrentBlog.TimeZone.Now;						
 						PostID = Entries.Create(entry);
-						
-						//TODO: Add here code to be called after creating a post
+						UpdateCategories();
 						AddCommunityCredits(entry);
 					}
-
-					UpdateCategories();
 				}
 				catch(Exception ex)
 				{
@@ -463,13 +455,11 @@ namespace Subtext.Web.Admin.UserControls
 
 		private void UpdateCategories()
 		{ 
-			string successMessage;
-
 			try
 			{
 				if (PostID > 0)
 				{
-					successMessage = Constants.RES_SUCCESSCATEGORYUPDATE;
+					string successMessage = Constants.RES_SUCCESSCATEGORYUPDATE;
 					ArrayList al = new ArrayList();
 
 					foreach(ListItem item in cklCategories.Items)
@@ -517,14 +507,17 @@ namespace Subtext.Web.Admin.UserControls
 
 		private void SetEditorText(string bodyValue)
 		{
-//			txbBody.Text = bodyValue;
 			richTextEditor.Text = bodyValue;
 		}
 
 		private void ConfirmDelete(int postID)
 		{
-			(Page as AdminPage).Command = new DeletePostCommand(postID);
-			(Page as AdminPage).Command.RedirectUrl = Request.Url.ToString();
+			AdminPage page = (AdminPage)Page;
+			if (page != null)
+			{
+				page.Command = new DeletePostCommand(postID);
+				page.Command.RedirectUrl = Request.Url.ToString();
+			}
 			Server.Transfer(Constants.URL_CONFIRM);
 		}
 
