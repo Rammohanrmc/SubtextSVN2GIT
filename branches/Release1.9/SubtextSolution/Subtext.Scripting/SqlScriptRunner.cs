@@ -29,7 +29,7 @@ namespace Subtext.Scripting
 	/// </summary>
 	public class SqlScriptRunner : IScript, ITemplateScript
 	{
-		ScriptCollection _scripts;
+		ScriptCollection scripts;
 		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SqlScriptRunner"/> class.  
@@ -103,7 +103,7 @@ namespace Subtext.Scripting
 		/// <param name="scripts">The scripts.</param>
 		public SqlScriptRunner(ScriptCollection scripts)
 		{
-			_scripts = scripts;
+			this.scripts = scripts;
 		}
 
 		/// <summary>
@@ -114,7 +114,7 @@ namespace Subtext.Scripting
 		{
 			get
 			{
-				return _scripts;
+				return scripts;
 			}
 		}
 
@@ -128,61 +128,60 @@ namespace Subtext.Scripting
 		/// <param name="transaction">The current transaction.</param>
 		public int Execute(SqlTransaction transaction)
 		{
+            int recordsAffectedTotal = 0;
+            SetNoCountOff(transaction);
+
 			// the following reg exp will be used to determine if each script is an
 			// INSERT, UPDATE, or DELETE operation. The reg exp is also only looking
 			// for these actions on the SubtextData database. <- do we need this last part?
 			string regextStr = @"(INSERT\sINTO\s[\s\w\d\)\(\,\.\]\[\>\<]+)|(UPDATE\s[\s\w\d\)\(\,\.\]\[\>\<]+SET\s)|(DELETE\s[\s\w\d\)\(\,\.\]\[\>\<]+FROM\s[\s\w\d\)\(\,\.\]\[\>\<]+WHERE\s)";
 			Regex regex = new Regex(regextStr, RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 	
-			int recordsAffectedTotal = 0;
-			int scriptsExecutedCount = 0;
-			
-			_scripts.ApplyTemplatesToScripts();
-			foreach(Script script in _scripts)
+			scripts.ApplyTemplatesToScripts();
+			foreach(Script script in scripts)
 			{
 				int returnValue = script.Execute(transaction);
 				
 				Match match = regex.Match(script.ScriptText);
-				if(match.Success)
+				if (match.Success)
 				{
 					/* 
 					 * For UPDATE, INSERT, and DELETE statements, the return value is the 
 					 * number of rows affected by the command. For all other types of statements, 
 					 * the return value is -1. If a rollback occurs, the return value is also -1. 
 					 */
-					if(script.ScriptText.IndexOf("TRIGGER")==-1 && script.ScriptText.IndexOf("PROC")==-1)
-					{
-						if(returnValue > -1)
-						{
-							recordsAffectedTotal += returnValue;
-							OnProgressEvent(++scriptsExecutedCount, returnValue, script);
-						}
-						else
-						{
-							throw new SqlScriptExecutionException("An error occurred while executing the script.", script, returnValue);
-						}
-					}
-					else 
-					{
-						OnProgressEvent(++scriptsExecutedCount, returnValue, script);
-					}
-				}
-				else
-				{
-					OnProgressEvent(++scriptsExecutedCount, returnValue, script);
+					if (!IsCrudScript(script))
+					    continue;
+
+                    if (returnValue > -1)
+                    {
+                        recordsAffectedTotal += returnValue;
+                    }
+                    else
+                    {
+                        throw new SqlScriptExecutionException("An error occurred while executing the script.", script, returnValue);
+                    }
 				}
 			}
 			return recordsAffectedTotal;
 		}
 
-		public event ScriptProgressEventHandler ScriptProgress;
+        private static bool IsCrudScript(Script script)
+        {
+            return script.ScriptText.IndexOf("TRIGGER") == -1 && script.ScriptText.IndexOf("PROC") == -1;
+        }
 
-		void OnProgressEvent(int scriptCount, int rowsAffected, Script script)
-		{
-			ScriptProgressEventHandler progressEvent = this.ScriptProgress;
-			if(progressEvent != null)
-				progressEvent(this, new ScriptProgressEventArgs(scriptCount, rowsAffected, script));
-		}
+        /// <summary>
+        /// Temporarily set NOCOUNT OFF on the connection. We must do this b/c the SqlScriptRunner 
+        /// depends on all CRUD statements returning the number of effected rows to determine if an 
+        /// error occured. This isn't a perfect solution, but it's what we've got.
+        /// </summary>
+        /// <param name="transaction"></param>
+        private static void SetNoCountOff(SqlTransaction transaction)
+        {
+            Script noCount = new Script("SET NOCOUNT OFF");
+            noCount.Execute(transaction);
+        }
 
 		#region ... Methods for unpacking embedded resources and reading from streams ...
 		static string ReadStream(Stream stream, Encoding encoding)
@@ -218,77 +217,8 @@ namespace Subtext.Scripting
 		{
 			get
 			{
-				return this._scripts.TemplateParameters;
+				return this.scripts.TemplateParameters;
 			}
 		}
 	}
-
-	#region ...ScriptProgressEvent Declarations...
-	/// <summary>
-	/// Event handler delegate for the ScriptProgress event.
-	/// </summary>
-	public delegate void ScriptProgressEventHandler(object sender, ScriptProgressEventArgs e);
-
-	/// <summary>
-	/// Provides information about the progress of a running script.
-	/// </summary>
-	public class ScriptProgressEventArgs : EventArgs
-	{
-		int _scriptsExecutedCount;
-		int _rowsAffected;
-		Script _script;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ScriptProgressEventArgs"/> class.
-		/// </summary>
-		/// <param name="scriptsExecutedCount">The scripts processed.</param>
-		public ScriptProgressEventArgs(int scriptsExecutedCount, int rowsAffected, Script script)
-		{
-			_scriptsExecutedCount = scriptsExecutedCount;
-			_rowsAffected = rowsAffected;
-			_script = script;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ScriptProgressEventArgs"/> class.
-		/// </summary>
-		/// <param name="scriptsExecutedCount">The scripts executed count.</param>
-		public ScriptProgressEventArgs(int scriptsExecutedCount, Script script) : this(scriptsExecutedCount, 0, script)
-		{
-		}
-
-		/// <summary>
-		/// Gets the scripts executed count.
-		/// </summary>
-		/// <value>The scripts executed count.</value>
-		public int ScriptsExecutedCount
-		{
-			get { return _scriptsExecutedCount; }
-		}
-
-		/// <summary>
-		/// Gets the number of rows affected by the last script.
-		/// </summary>
-		/// <value>The rows affected.</value>
-		public int RowsAffectedCount
-		{
-			get
-			{
-				return _rowsAffected;
-			}
-		}
-
-		/// <summary>
-		/// Gets the script.
-		/// </summary>
-		/// <value>The script.</value>
-		public Script Script
-		{
-			get
-			{
-				return _script;
-			}
-		}
-	}
-	#endregion
 }
