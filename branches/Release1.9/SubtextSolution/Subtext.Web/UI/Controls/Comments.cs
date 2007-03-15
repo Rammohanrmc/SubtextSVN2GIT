@@ -35,16 +35,21 @@ namespace Subtext.Web.UI.Controls
 	/// <summary>
 	///	Codebehind for the control that displays comments/trackbacks/pingbacks.
 	/// </summary>
-	public class Comments : BaseControl
+	public class Comments : BaseControl, ICommentControl
 	{
 		static ILog log = new Log();
 		
 		protected Repeater CommentList;
 		protected Literal NoCommentMessage;
-
+		private FeedbackItem comment;
 		private bool gravatarEnabled;
 		private string gravatarUrlFormatString;
 		private string gravatarEmailFormat;
+
+		public FeedbackItem Comment
+		{
+			get { return comment; }
+		}
 
 		protected override void OnLoad(EventArgs e)
 		{
@@ -74,6 +79,16 @@ namespace Subtext.Web.UI.Controls
 				Visible = false;
 			}
 			
+		}
+
+		/// <summary>
+		/// If the currecnt comment was written by the author, 
+		/// writes the specified css class
+		/// </summary>
+		/// <returns></returns>
+		protected string AuthorCssClass
+		{
+			get { return Comment.IsBlogAuthor ? " author" : ""; }
 		}
 
 		internal void BindFeedback(bool fromCache)
@@ -109,6 +124,7 @@ namespace Subtext.Web.UI.Controls
 			if(e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
 			{
 				FeedbackItem feedbackItem = (FeedbackItem)e.Item.DataItem;
+				this.comment = feedbackItem;
 				if(feedbackItem != null)
 				{
 					Literal title = (Literal)(e.Item.FindControl("Title"));

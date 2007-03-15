@@ -29,6 +29,12 @@ namespace Subtext.Web.UI.Controls
 	/// </summary>
 	public class BaseControl : UserControl
 	{
+		protected static string Format(string format, params object[] arguments)
+		{
+			return String.Format(format, arguments);
+		}
+
+
 		/// <summary>
 		/// Url encodes the string.
 		/// </summary>
