@@ -15,6 +15,7 @@
 
 using System;
 using System.Configuration;
+using System.Web.Configuration;
 using log4net;
 using Subtext.Extensibility.Interfaces;
 using Subtext.Framework.Exceptions;
@@ -46,6 +47,24 @@ namespace Subtext.Framework.Configuration
 			{
 				return ((BlogConfigurationSettings)ConfigurationManager.GetSection("BlogConfigurationSettings"));
 			}
+		}
+
+		/// <summary>
+		/// Gets the file not found page from web.config.
+		/// </summary>
+		/// <returns></returns>
+		public static string GetFileNotFoundPage()
+		{
+			CustomErrorsSection errorsSection = WebConfigurationManager.GetWebApplicationSection("system.web/customErrors") as CustomErrorsSection;
+			if (errorsSection != null)
+			{
+				CustomError fileNotFoundError = errorsSection.Errors["404"];
+				if (fileNotFoundError != null)
+				{
+					return fileNotFoundError.Redirect;
+				}
+			}
+			return null;
 		}
 
 		/// <summary>

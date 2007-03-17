@@ -30,7 +30,7 @@ using Velocit.RegularExpressions;
 namespace Subtext.Framework.Text
 {
 	/// <summary>
-	/// Static class used for parseing, formatting, and validating HTML.
+	/// Static class used for parsing, formatting, and validating HTML.
 	/// </summary>
 	public static class HtmlHelper
 	{

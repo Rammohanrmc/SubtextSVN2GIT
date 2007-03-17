@@ -732,15 +732,25 @@ namespace Subtext.Framework.Data
 
 		#region LinkCategory
 
+		/// <summary>
+		/// Gets the link category.
+		/// </summary>
+		/// <param name="categoryId">The category id.</param>
+		/// <param name="activeOnly">if set to <c>true</c> [active only].</param>
+		/// <returns></returns>
 		public override LinkCategory GetLinkCategory(int categoryId, bool activeOnly)
 		{
 			IDataReader reader = DbProvider.Instance().GetLinkCategory(categoryId, activeOnly);
 			
 			try
 			{
-				reader.Read();
-				LinkCategory lc = DataHelper.LoadLinkCategory(reader);
-				return lc;
+				if (reader.Read())
+				{
+					LinkCategory lc = DataHelper.LoadLinkCategory(reader);
+					return lc;
+				}
+				return null;
+				
 			}
 			finally
 			{
@@ -748,6 +758,12 @@ namespace Subtext.Framework.Data
 			}
 		}
 
+		/// <summary>
+		/// Gets the link category.
+		/// </summary>
+		/// <param name="categoryName">Name of the category.</param>
+		/// <param name="activeOnly">if set to <c>true</c> [active only].</param>
+		/// <returns></returns>
 		public override LinkCategory GetLinkCategory(string categoryName, bool activeOnly)
 		{
 			IDataReader reader = DbProvider.Instance().GetLinkCategory(categoryName, activeOnly);

@@ -141,8 +141,16 @@ namespace Subtext.Framework.Data
 
 		#region LinkCategory
 
+		/// <summary>
+		/// Returns a LinkCategory for a single category based on the request url.
+		/// </summary>
+		/// <param name="cacheDuration">The cache duration.</param>
+		/// <returns></returns>
 		public static LinkCategory SingleCategory(CacheDuration cacheDuration)
 		{
+			if (HttpContext.Current == null)
+				throw new InvalidOperationException("This method requires the HttpContext. Argue all you want about whether that is good design. That's just the way it is for now.");
+
 			string path = WebPathStripper.RemoveRssSlash(HttpContext.Current.Request.Path);
 			string categoryName = Path.GetFileNameWithoutExtension(path);
 			if(StringHelper.IsNumeric(categoryName))
@@ -176,7 +184,8 @@ namespace Subtext.Framework.Data
 			if(lc == null)
 			{
 				lc = Links.GetLinkCategory(categoryID,isActive);
-				cache.Insert(key, lc, cacheDuration);
+				if (lc != null)
+					cache.Insert(key, lc, cacheDuration);
 			}
 			return lc;
 		}
@@ -193,7 +202,8 @@ namespace Subtext.Framework.Data
 			if(lc == null)
 			{
 				lc = Links.GetLinkCategory(categoryName, isActive);
-				cache.Insert(key, lc, cacheDuration);
+				if(lc != null)
+					cache.Insert(key, lc, cacheDuration);
 			}
 			return lc;
 		}
