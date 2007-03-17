@@ -4,7 +4,6 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Web;
-using System.Web.Configuration;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Text;
 
@@ -30,7 +29,8 @@ namespace Subtext.Framework.Web
 		private static void SetFileNotFoundResponse(string fileNotFoundPage)
 		{
 			HttpContext.Current.Response.StatusCode = 404;
-			HttpContext.Current.Response.Redirect(fileNotFoundPage, true);
+			if (fileNotFoundPage != null)
+				HttpContext.Current.Response.Redirect(fileNotFoundPage, true);
 		}
 
 		/// <summary>
