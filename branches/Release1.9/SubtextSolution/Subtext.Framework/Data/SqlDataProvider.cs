@@ -813,22 +813,27 @@ namespace Subtext.Framework.Data
 			return NonQueryBool("subtext_UpdateLink", p);
 		}
 
-
+		/// <summary>
+		/// Returns a data reader with every category for the specified category type.
+		/// </summary>
+		/// <param name="catType"></param>
+		/// <param name="activeOnly"></param>
+		/// <returns></returns>
 		public override IDataReader GetCategories(CategoryType catType, bool activeOnly)
 		{
-			SqlParameter[] p ={DataHelper.MakeInParam("@CategoryType",SqlDbType.TinyInt,1,catType),
-							  DataHelper.MakeInParam("@IsActive",SqlDbType.Bit,1, activeOnly),
+			SqlParameter[] p ={DataHelper.MakeInParam("@CategoryType", SqlDbType.TinyInt, 1, catType),
+							  DataHelper.MakeInParam("@IsActive", SqlDbType.Bit, 1, activeOnly),
 								  BlogIdParam};
-			return GetReader("subtext_GetAllCategories", p);
+			return GetReader("subtext_GetCategory", p);
 		}
 
 		//maps to blog_GetActiveCategoriesWithLinkCollection
 		public override DataSet GetActiveCategories()
 		{
 			SqlParameter[] p ={BlogIdParam};
-			DataSet ds = SqlHelper.ExecuteDataset(ConnectionString,CommandType.StoredProcedure,"subtext_GetActiveCategoriesWithLinkCollection",p);
+			DataSet ds = SqlHelper.ExecuteDataset(ConnectionString, CommandType.StoredProcedure, "subtext_GetActiveCategoriesWithLinkCollection", p);
 
-			DataRelation dl = new DataRelation("CategoryID",ds.Tables[0].Columns["CategoryID"],ds.Tables[1].Columns["CategoryID"],false);
+			DataRelation dl = new DataRelation("CategoryID", ds.Tables[0].Columns["CategoryID"], ds.Tables[1].Columns["CategoryID"], false);
 			ds.Relations.Add(dl);
 
 			return ds;
@@ -863,28 +868,54 @@ namespace Subtext.Framework.Data
 
 		}
 
-		//maps to blog_GetCategory
-		public override IDataReader GetLinkCategory(int catID, bool isActive)
+		/// <summary>
+		/// Returns a data reader for the specified category id.
+		/// </summary>
+		/// <param name="categoryId"></param>
+		/// <param name="isActive"></param>
+		/// <returns></returns>
+		public override IDataReader GetLinkCategory(int categoryId, bool isActive)
 		{
-			SqlParameter[] p = 
-			{
-				DataHelper.MakeInParam("@CategoryID",SqlDbType.Int,4,DataHelper.CheckNull(catID)),
-				DataHelper.MakeInParam("@IsActive",SqlDbType.Bit,1,isActive),
-				BlogIdParam
-			};
-			return GetReader("subtext_GetCategory",p);
+			return GetLinkCategoryGeneric(categoryId, isActive);
 		}
-		
 
-		public override IDataReader GetLinkCategory(string categoryName, bool IsActive)
+		/// <summary>
+		/// Returns a data reader for the specified category name.
+		/// </summary>
+		/// <param name="categoryName"></param>
+		/// <param name="isActive"></param>
+		/// <returns></returns>
+		public override IDataReader GetLinkCategory(string categoryName, bool isActive)
 		{
+			return GetLinkCategoryGeneric(categoryName, isActive);
+		}
+
+		/// <summary>
+		/// Returns a data reader for the specified category. The Category Key should either 
+		/// be an Int (category id) or a string (category name).
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="categoryKey"></param>
+		/// <param name="isActive"></param>
+		/// <returns></returns>
+		private IDataReader GetLinkCategoryGeneric<T>(T categoryKey, bool isActive)
+		{
+			SqlParameter id = DataHelper.MakeInParam("@CategoryID", SqlDbType.Int, 4, null);
+			SqlParameter name = DataHelper.MakeInParam("@CategoryName", SqlDbType.NVarChar, 150, null);
+
+			if(typeof(T) == typeof(int))
+				id.Value = categoryKey;
+			if (typeof(T) == typeof(string))
+				name.Value = categoryKey;
+
 			SqlParameter[] p = 
 			{
-				DataHelper.MakeInParam("@CategoryName",SqlDbType.NVarChar,150,categoryName),
-				DataHelper.MakeInParam("@IsActive",SqlDbType.Bit,1,IsActive),
+				id,
+				name,
+				DataHelper.MakeInParam("@IsActive", SqlDbType.Bit, 1, isActive),
 				BlogIdParam
 			};
-			return GetReader("subtext_GetCategoryByName",p);
+			return GetReader("subtext_GetCategory", p);
 		}
 
 		public override bool UpdateCategory(LinkCategory lc)

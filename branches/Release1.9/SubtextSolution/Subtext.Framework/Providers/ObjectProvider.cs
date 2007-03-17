@@ -14,6 +14,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Subtext.Extensibility;
 using Subtext.Extensibility.Interfaces;
@@ -32,7 +33,7 @@ namespace Subtext.Framework.Providers
     public abstract class ObjectProvider : ProviderBase
 	{
 		private static ObjectProvider provider = null;
-		private static GenericProviderCollection<ObjectProvider> providers = ProviderConfigurationHelper.LoadProviderCollection<ObjectProvider>("ObjectProvider", out provider);
+		private static GenericProviderCollection<ObjectProvider> providers = ProviderConfigurationHelper.LoadProviderCollection("ObjectProvider", out provider);
 
 		/// <summary>
 		/// Returns the currently configured ObjectProvider.
@@ -76,6 +77,7 @@ namespace Subtext.Framework.Providers
 		/// <summary>
 		/// Gets a pageable <see cref="IList"/> of <see cref="BlogInfo"/> instances.
 		/// </summary>
+		/// <param name="host">The host to filter by.</param>
 		/// <param name="pageIndex">Page index.</param>
 		/// <param name="pageSize">Size of the page.</param>
 		/// <returns></returns>
@@ -303,10 +305,21 @@ namespace Subtext.Framework.Providers
 		#endregion
 
 		#region LinkCategory
-
+		/// <summary>
+		/// Gets the link category for the specified category id.
+		/// </summary>
+		/// <param name="categoryId">The category id.</param>
+		/// <param name="activeOnly">if set to <c>true</c> [active only].</param>
+		/// <returns></returns>
 		public abstract LinkCategory GetLinkCategory(int categoryId, bool activeOnly);
-		public abstract LinkCategory GetLinkCategory(string categoryName, bool activeOnly);
 
+		/// <summary>
+		/// Gets the link category for the specified category name.
+		/// </summary>
+		/// <param name="categoryName">The category name.</param>
+		/// <param name="activeOnly">if set to <c>true</c> [active only].</param>
+		/// <returns></returns>
+		public abstract LinkCategory GetLinkCategory(string categoryName, bool activeOnly);
 		#endregion
 
 		#region Edit Links/Categories

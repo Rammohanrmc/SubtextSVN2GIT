@@ -19,6 +19,7 @@ using System.Globalization;
 using System.IO;
 using System.Web;
 using System.Web.Caching;
+using Subtext.Configuration;
 using Subtext.Extensibility;
 using Subtext.Framework;
 using Subtext.Framework.Components;
@@ -156,61 +157,64 @@ namespace Subtext.Framework.Data
 			if(StringHelper.IsNumeric(categoryName))
 			{
 				int categoryID = Int32.Parse(categoryName);
-				return SingleCategory(cacheDuration, categoryID);
+				return SingleCategory(cacheDuration, categoryID, true);
 			}
 			else
 			{
-				return SingleCategory(cacheDuration, categoryName);
+				return SingleCategory(cacheDuration, categoryName, true);
 			}
 		}
 
 		private static readonly string LCKey="LC{0}BlogId{1}";
 
-        static LinkCategory SingleCategory(CacheDuration cacheDuration, int categoryId)
+        public static LinkCategory SingleCategory(CacheDuration cacheDuration, int categoryId, bool isActive)
         {
-            return SingleCategory(cacheDuration, categoryId, true);
+			LinkCategoryRetrieval retrieval = delegate { return Links.GetLinkCategory(categoryId, isActive); };
+			return SingleCategory(retrieval, cacheDuration, categoryId);
         }
 
-        static LinkCategory SingleCategory(CacheDuration cacheDuration, string categoryName)
+		public static LinkCategory SingleCategory(CacheDuration cacheDuration, string categoryName, bool isActive)
         {
-            return SingleCategory(cacheDuration, categoryName, true);
+        	LinkCategoryRetrieval retrieval = delegate { return Links.GetLinkCategory(categoryName, isActive); }; 
+            LinkCategory category = SingleCategory(retrieval, cacheDuration, categoryName);
+			if(category != null)
+				return category;
+			
+			if(Config.CurrentBlog.AutoFriendlyUrlEnabled)
+			{
+				categoryName = categoryName.Replace(FriendlyUrlSettings.Settings.SeparatingCharacter, " ");
+				retrieval = delegate { return Links.GetLinkCategory(categoryName, isActive); };
+				return SingleCategory(retrieval, cacheDuration, categoryName);
+			}
+			
+			return null; //couldn't find category
         }
-        
-        public static LinkCategory SingleCategory(CacheDuration cacheDuration, int categoryID, bool isActive)
+
+		private static LinkCategory SingleCategory<T>(LinkCategoryRetrieval retrievalDelegate, CacheDuration cacheDuration, T categoryKey)
 		{
 			ContentCache cache = ContentCache.Instantiate();
-			string key = string.Format(LCKey, categoryID, Config.CurrentBlog.Id);
+			string key = string.Format(LCKey, categoryKey, Config.CurrentBlog.Id);
 			LinkCategory lc = (LinkCategory)cache[key];
 			if(lc == null)
 			{
-				lc = Links.GetLinkCategory(categoryID,isActive);
+				lc = retrievalDelegate();
 				if (lc != null)
 					cache.Insert(key, lc, cacheDuration);
 			}
 			return lc;
 		}
 
-		public static LinkCategory SingleCategory(CacheDuration cacheDuration, string categoryName, bool isActive)
-		{
-			ContentCache cache = ContentCache.Instantiate();
-			string key = string.Format(LCKey, categoryName, Config.CurrentBlog.Id);
-
-			/*if (FriendlyUrlSettings.Settings.Enabled)
-				categoryName = categoryName.Replace(FriendlyUrlSettings.Settings.SeparatingCharacter, " ");*/
-
-			LinkCategory lc = (LinkCategory)cache[key];
-			if(lc == null)
-			{
-				lc = Links.GetLinkCategory(categoryName, isActive);
-				if(lc != null)
-					cache.Insert(key, lc, cacheDuration);
-			}
-			return lc;
-		}
-
+		delegate LinkCategory LinkCategoryRetrieval();
 		#endregion
 
 		#region Entry
+		/// <summary>
+		/// Returns an Entry requested by the current Http Request. 
+		/// The URL must be correctly formatted for requesting an entry.
+		/// </summary>
+		/// <param name="cacheDuration">The cache duration.</param>
+		/// <param name="allowRedirectToEntryName">if set to <c>true</c> [allow redirect to entry name].</param>
+		/// <returns></returns>
 		public static Entry GetEntryFromRequest(CacheDuration cacheDuration, bool allowRedirectToEntryName)
 		{
 			string id = Path.GetFileNameWithoutExtension(HttpContext.Current.Request.Path);

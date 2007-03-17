@@ -282,22 +282,16 @@ namespace Subtext.Framework.Data
 		/// <returns></returns>
 		public override IList<FeedbackItem> GetFeedbackForEntry(Entry parentEntry)
 		{
-			IDataReader reader = DbProvider.Instance().GetFeedBackItems(parentEntry.Id);
-			try
+			using (IDataReader reader = DbProvider.Instance().GetFeedBackItems(parentEntry.Id))
 			{
 				List<FeedbackItem> ec = new List<FeedbackItem>();
-				FeedbackItem feedbackItem;
-				while(reader.Read())
+				while (reader.Read())
 				{
 					//Don't build links.
-					feedbackItem = DataHelper.LoadFeedbackItem(reader);
+					FeedbackItem feedbackItem = DataHelper.LoadFeedbackItem(reader);
 					ec.Add(feedbackItem);
 				}
 				return ec;
-			}
-			finally
-			{
-				reader.Close();
 			}
 		}
 
@@ -693,6 +687,12 @@ namespace Subtext.Framework.Data
 
         #region ICollection<LinkCategory>
 
+		/// <summary>
+		/// Gets the categories for the specified category type.
+		/// </summary>
+		/// <param name="catType">Type of the cat.</param>
+		/// <param name="activeOnly">if set to <c>true</c> [active only].</param>
+		/// <returns></returns>
         public override ICollection<LinkCategory> GetCategories(CategoryType catType, bool activeOnly)
 		{
 			IDataReader reader = DbProvider.Instance().GetCategories(catType, activeOnly);
@@ -733,56 +733,43 @@ namespace Subtext.Framework.Data
 		#region LinkCategory
 
 		/// <summary>
-		/// Gets the link category.
+		/// Gets the link category for the specified category id.
 		/// </summary>
 		/// <param name="categoryId">The category id.</param>
 		/// <param name="activeOnly">if set to <c>true</c> [active only].</param>
 		/// <returns></returns>
 		public override LinkCategory GetLinkCategory(int categoryId, bool activeOnly)
 		{
-			IDataReader reader = DbProvider.Instance().GetLinkCategory(categoryId, activeOnly);
-			
-			try
+			using(IDataReader reader = DbProvider.Instance().GetLinkCategory(categoryId, activeOnly))
 			{
-				if (reader.Read())
-				{
-					LinkCategory lc = DataHelper.LoadLinkCategory(reader);
-					return lc;
-				}
-				return null;
-				
-			}
-			finally
-			{
-				reader.Close();
+				return LoadLinkCategoryFromReader(reader);
 			}
 		}
 
 		/// <summary>
-		/// Gets the link category.
+		/// Gets the link category for the specified category name.
 		/// </summary>
-		/// <param name="categoryName">Name of the category.</param>
+		/// <param name="categoryName">The category name.</param>
 		/// <param name="activeOnly">if set to <c>true</c> [active only].</param>
 		/// <returns></returns>
 		public override LinkCategory GetLinkCategory(string categoryName, bool activeOnly)
 		{
-			IDataReader reader = DbProvider.Instance().GetLinkCategory(categoryName, activeOnly);
-			
-			try
+			using(IDataReader reader = DbProvider.Instance().GetLinkCategory(categoryName, activeOnly))
 			{
-				if (reader.Read())
-				{
-					LinkCategory lc = DataHelper.LoadLinkCategory(reader);
-					return lc;
-				}
-				return null;
-			}
-			finally
-			{
-				reader.Close();
+				return LoadLinkCategoryFromReader(reader);
 			}
 		}
 
+		// Expects that the caller will dispose of the reader.
+		private static LinkCategory LoadLinkCategoryFromReader(IDataReader reader)
+		{
+			if (reader.Read())
+			{
+				LinkCategory lc = DataHelper.LoadLinkCategory(reader);
+				return lc;
+			}
+			return null;
+		}
 		#endregion
 
 		#region Edit Links/Categories

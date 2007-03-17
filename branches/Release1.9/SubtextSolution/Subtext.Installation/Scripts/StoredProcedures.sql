@@ -8,6 +8,14 @@ Be sure to hit CTRL+SHIFT+M in Query Analyzer if running manually.
 	These are stored procs that used to be in the system but are no longer needed.
 	The statements will only drop the procs if they exist as a form of cleanup.
 */
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetAllCategories]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetAllCategories]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetCategoryByName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetCategoryByName]
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPageableReferrersByEntryID]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [<dbUser,varchar,dbo>].[subtext_GetPageableReferrersByEntryID]
 GO
@@ -159,20 +167,12 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,
 drop procedure [<dbUser,varchar,dbo>].[subtext_GetActiveCategoriesWithLinkCollection]
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetAllCategories]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [<dbUser,varchar,dbo>].[subtext_GetAllCategories]
-GO
-
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetBlogKeyWords]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [<dbUser,varchar,dbo>].[subtext_GetBlogKeyWords]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetCategory]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [<dbUser,varchar,dbo>].[subtext_GetCategory]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetCategoryByName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [<dbUser,varchar,dbo>].[subtext_GetCategoryByName]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetConditionalEntries]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
@@ -942,35 +942,6 @@ SET ANSI_NULLS ON
 GO
 
 
-CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetAllCategories]
-(
-	@BlogId int = NULL
-	, @IsActive bit
-	, @CategoryType tinyint
-)
-As
-SELECT subtext_LinkCategories.CategoryID
-	, subtext_LinkCategories.Title
-	, subtext_LinkCategories.Active
-	, subtext_LinkCategories.CategoryType
-	, subtext_LinkCategories.[Description]
-FROM [<dbUser,varchar,dbo>].[subtext_LinkCategories]
-WHERE (subtext_LinkCategories.BlogId = @BlogId OR @BlogId IS NULL)
-	AND subtext_LinkCategories.CategoryType = @CategoryType 
-	AND subtext_LinkCategories.Active <> CASE @IsActive WHEN 1 THEN 0 ELSE -1 END
-ORDER BY subtext_LinkCategories.Title;
-
-
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetAllCategories]  TO [public]
-GO
-
-
 SET QUOTED_IDENTIFIER ON 
 GO
 SET ANSI_NULLS ON 
@@ -979,22 +950,25 @@ GO
 
 CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetCategory]
 (
-	@CategoryID int,
-	@IsActive bit,
-	@BlogId int
+	@CategoryName nvarchar(150) = NULL
+	, @CategoryID int = NULL
+	, @IsActive bit
+	, @BlogId int = NULL
+	, @CategoryType tinyint = NULL
 )
 AS
-SELECT	subtext_LinkCategories.CategoryID
-		, subtext_LinkCategories.Title
-		, subtext_LinkCategories.Active
-		, subtext_LinkCategories.CategoryType
-		, subtext_LinkCategories.[Description]
-FROM [<dbUser,varchar,dbo>].[subtext_LinkCategories]
-WHERE subtext_LinkCategories.CategoryID=@CategoryID 
-	AND subtext_LinkCategories.BlogId = @BlogId 
-	AND subtext_LinkCategories.Active <> CASE @IsActive WHEN 0 THEN -1 else 0 END
-
-
+SELECT	c.CategoryID
+		, c.Title
+		, c.Active
+		, c.CategoryType
+		, c.[Description]
+FROM [<dbUser,varchar,dbo>].[subtext_LinkCategories] c
+WHERE (c.CategoryID = @CategoryID OR @CategoryID IS NULL)
+	AND (c.Title = @CategoryName OR @CategoryName IS NULL)
+	AND (c.CategoryType = @CategoryType OR @CategoryType IS NULL)
+	AND (c.BlogId = @BlogId OR @BlogId IS NULL)
+	AND c.Active <> CASE @IsActive WHEN 0 THEN -1 else 0 END
+	
 
 GO
 SET QUOTED_IDENTIFIER OFF 
@@ -1010,33 +984,6 @@ GO
 SET ANSI_NULLS ON 
 GO
 
-
-CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetCategoryByName] 
-(
-	@CategoryName nvarchar(150),
-	@IsActive bit,
-	@BlogId int
-)
-AS
-SELECT	subtext_LinkCategories.CategoryID
-		, subtext_LinkCategories.Title
-		, subtext_LinkCategories.Active
-		, subtext_LinkCategories.CategoryType
-		, subtext_LinkCategories.[Description]
-FROM [<dbUser,varchar,dbo>].[subtext_LinkCategories]
-WHERE	subtext_LinkCategories.Title=@CategoryName 
-	AND subtext_LinkCategories.BlogId = @BlogId 
-	AND subtext_LinkCategories.Active <> CASE @IsActive WHEN 0 THEN -1 else 0 END
-
-
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetCategoryByName]  TO [public]
-GO
 
 SET QUOTED_IDENTIFIER OFF 
 GO

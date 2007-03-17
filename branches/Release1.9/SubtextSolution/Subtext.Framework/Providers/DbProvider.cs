@@ -255,8 +255,21 @@ namespace Subtext.Framework.Providers
 		#region Categories
 
 		public abstract bool DeleteCategory(int catId);
-		public abstract IDataReader GetLinkCategory(int catID, bool isActive);
-		public abstract IDataReader GetLinkCategory(string categoryName, bool IsActive);
+		/// <summary>
+		/// Returns a data reader for the specified category id.
+		/// </summary>
+		/// <param name="categoryId"></param>
+		/// <param name="isActive"></param>
+		/// <returns></returns>
+		public abstract IDataReader GetLinkCategory(int categoryId, bool isActive);
+
+		/// <summary>
+		/// Returns a data reader for the specified category name.
+		/// </summary>
+		/// <param name="categoryName"></param>
+		/// <param name="isActive"></param>
+		/// <returns></returns>
+		public abstract IDataReader GetLinkCategory(string categoryName, bool isActive);
 
 		public abstract bool UpdateCategory(LinkCategory lc);
 

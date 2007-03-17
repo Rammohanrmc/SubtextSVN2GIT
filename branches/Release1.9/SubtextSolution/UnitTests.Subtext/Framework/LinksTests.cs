@@ -29,8 +29,7 @@ namespace UnitTests.Subtext.Framework
 	[TestFixture]
 	public class LinksTests
 	{
-		string _hostName = System.Guid.NewGuid().ToString().Replace("-", string.Empty) + ".com";
-		public LinksTests() {}
+		string _hostName = Guid.NewGuid().ToString().Replace("-", string.Empty) + ".com";
 
 		/// <summary>
 		/// Ensures CreateLinkCategory assigns unique CatIDs
@@ -114,14 +113,14 @@ namespace UnitTests.Subtext.Framework
 			Assert.AreEqual(false, updatedCategory.IsActive);
 		}
 
-		void CreateSomeLinkCategories()
+		static void CreateSomeLinkCategories()
 		{
 			Links.CreateLinkCategory(CreateCategory("My Favorite Feeds", "Some of my favorite RSS feeds", CategoryType.LinkCollection, true));
 			Links.CreateLinkCategory(CreateCategory("Google Blogs", "My favorite Google blogs", CategoryType.LinkCollection, true));
 			Links.CreateLinkCategory(CreateCategory("Microsoft Blogs", "My favorite Microsoft blogs", CategoryType.LinkCollection, false));
 		}
 
-		LinkCategory CreateCategory(string title, string description, CategoryType categoryType, bool isActive)
+		static LinkCategory CreateCategory(string title, string description, CategoryType categoryType, bool isActive)
 		{
 			LinkCategory linkCategory = new LinkCategory();
 			linkCategory.BlogId = Config.CurrentBlog.Id;
