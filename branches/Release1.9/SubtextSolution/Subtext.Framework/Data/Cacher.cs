@@ -222,7 +222,10 @@ namespace Subtext.Framework.Data
 			if (StringHelper.IsNumeric(id))
 			{
 				Entry entry = GetEntry(Int32.Parse(id), cacheDuration);
-				//Second condition avoids infinite loop. Should never happen.
+				if (entry == null)
+					return null;
+
+				//Second condition avoids infinite redirect loop. Should never happen.
 				if (allowRedirectToEntryName && entry.HasEntryName && !StringHelper.IsNumeric(entry.EntryName))
 				{
 					HttpContext.Current.Response.StatusCode = 301;

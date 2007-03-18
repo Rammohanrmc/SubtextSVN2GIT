@@ -10,6 +10,19 @@ namespace UnitTests.Subtext.SubtextWeb.Controls
 	[TestFixture]
 	public class CacherTests
 	{
+		/// <summary>
+		/// This test is to make sure a bug I introduced never happens again.
+		/// </summary>
+		[Test]
+		[RollBack]
+		public void GetEntryFromRequestDoesNotThrowNullReferenceException()
+		{
+			string host = UnitTestHelper.GenerateRandomString();
+			Config.CreateBlog("test", UnitTestHelper.GenerateRandomString(), UnitTestHelper.GenerateRandomString(), host, "");
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, "", "", "/archive/999999.aspx");
+			Assert.IsNull(Cacher.GetEntryFromRequest(CacheDuration.Short));
+		}
+
 		[Test]
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void SingleCategoryThrowsExceptionIfContextNull()
