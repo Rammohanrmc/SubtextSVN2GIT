@@ -18,11 +18,11 @@ using System.Configuration;
 using System.Globalization;
 using System.Web.Security;
 using System.Web.UI.WebControls;
+using Docuverse.Identicon;
 using log4net;
 using Subtext.Extensibility;
 using Subtext.Framework;
 using Subtext.Framework.Components;
-using Subtext.Framework.Configuration;
 using Subtext.Framework.Data;
 using Subtext.Framework.Logging;
 using Subtext.Framework.Text;
@@ -203,9 +203,9 @@ namespace Subtext.Web.UI.Controls
                                 {
                                     int.TryParse(identiconSizeSetting, out identiconSize);
                                 }
-                                defaultGravatarImage = string.Format("~/images/IdenticonHandler.ashx?size={0}&hash={1}"
+                                defaultGravatarImage = string.Format("~/images/IdenticonHandler.ashx?size={0}&code={1}"
                                     , identiconSize
-                                    , SecurityHelper.HashPassword(ip + "-" + Config.CurrentBlog.RootUrl));
+									, IdenticonUtil.Code(ip));
                             }
 
 						    //This allows a host-wide setting of the default gravatar image.

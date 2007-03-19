@@ -1,5 +1,6 @@
 using System;
 using System.Web;
+using System.Web.UI;
 using System.Web.UI.WebControls;
 using Subtext.Extensibility;
 using Subtext.Extensibility.Providers;
@@ -52,6 +53,7 @@ namespace Subtext.Web.UI.Controls
 		{
 			this.btnSend.Click += new EventHandler(this.btnSend_Click);
 
+			EnsureEmailRequired();
 			//Captcha should not be given to admin.
 			if (!SecurityHelper.IsAdmin)
 			{
@@ -65,6 +67,24 @@ namespace Subtext.Web.UI.Controls
 			base.OnInit(e);
 		}
 		
+		private void EnsureEmailRequired()
+		{
+			foreach(Control control in this.Controls)
+			{
+				RequiredFieldValidator validator = control as RequiredFieldValidator;
+				if (validator == null)
+					continue;
+
+				if (validator.ControlToValidate == tbEmail.ID)
+					return;
+			}
+			RequiredFieldValidator emailRequiredValidator = new RequiredFieldValidator();
+			emailRequiredValidator.ControlToValidate = tbEmail.ID;
+			emailRequiredValidator.ErrorMessage = "* Please enter your email address";
+			emailRequiredValidator.Display = ValidatorDisplay.Dynamic;
+			Controls.AddAt(Controls.IndexOf(tbEmail) + 1, emailRequiredValidator);
+		}
+
 
 		private void btnSend_Click(object sender, EventArgs e)
 		{
@@ -90,10 +110,10 @@ namespace Subtext.Web.UI.Controls
 						lblMessage.Text = exc.Message;
 					}
 
-					tbName.Text = "";
-					tbEmail.Text = "";
-					tbSubject.Text = "";
-					tbMessage.Text = "";
+					tbName.Text = string.Empty;
+					tbEmail.Text = string.Empty;
+					tbSubject.Text = string.Empty;
+					tbMessage.Text = string.Empty;
 					return;
 				}
 
@@ -130,7 +150,7 @@ namespace Subtext.Web.UI.Controls
 			}
 		}
 
-		bool SendContactMessageToFeedback
+		static bool SendContactMessageToFeedback
 		{
 			get
 			{
