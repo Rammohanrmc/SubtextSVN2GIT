@@ -22,6 +22,7 @@
 						<th width="50">Word</th>
 						<th width="150">Text</th>
 						<th>Url</th>
+						<th width="150">Rel</th>
 						<th width="50">&nbsp;</th>
 						<th width="50">&nbsp;</th>
 					</tr>
@@ -38,6 +39,9 @@
 						<a target =_blank href='<%# DataBinder.Eval(Container.DataItem, "Url") %>'>
 							<%# DataBinder.Eval(Container.DataItem, "Url") %>
 						</a>
+					</td>
+					<td>
+						<%# DataBinder.Eval(Container.DataItem, "Rel") %>
 					</td>
 					<td>
 						<asp:LinkButton id="lnkEdit" CssClass="buttonSubmit" CommandName="Edit" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "Id") %>' Text="Edit" runat="server" /></td>
@@ -57,6 +61,9 @@
 						<a target =_blank href='<%# DataBinder.Eval(Container.DataItem, "Url") %>'>
 							<%# DataBinder.Eval(Container.DataItem, "Url") %>
 						</a>
+					</td>
+					<td>
+						<%# DataBinder.Eval(Container.DataItem, "Rel") %>
 					</td>
 					<td>
 						<asp:LinkButton id="Linkbutton1" CssClass="buttonSubmit" CommandName="Edit" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "Id") %>' Text="Edit" runat="server" /></td>
@@ -94,10 +101,12 @@
 					ErrorMessage="You must enter a Url"></asp:RequiredFieldValidator></p>
 			<p>
 				<asp:TextBox id="txbUrl" runat="server" columns="255" width="98%"></asp:TextBox></p>
-			<p class="Label">Title
-			</p>
+			<p class="Label">Title</p>
 			<p>
 				<asp:TextBox id="txbTitle" runat="server" columns="255" width="98%"></asp:TextBox></p>
+			<p class="Label">Rel data</p>
+			<p>
+				<asp:TextBox id="txbRel" runat="server" columns="255" width="98%"></asp:TextBox></p>
 			<p class="ValueLabel">New Window
 				<asp:CheckBox id="chkNewWindow" runat="server" textalign="Left"></asp:CheckBox>&nbsp; 
 				Replace First Occurrence Only

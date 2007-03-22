@@ -1387,7 +1387,7 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetKeyWord]
 AS
 
 SELECT 
-	KeyWordID, Word,[Text],ReplaceFirstTimeOnly,OpenInNewWindow, CaseSensitive,Url,Title,BlogId
+	KeyWordID, Word,Rel,[Text],ReplaceFirstTimeOnly,OpenInNewWindow, CaseSensitive,Url,Title,BlogId
 FROM
 	subtext_keywords
 WHERE 
@@ -1865,6 +1865,7 @@ SET ROWCOUNT @PageSize
 
 SELECT 	words.KeyWordID
 		, words.Word
+		, words.Rel
 		, words.[Text]
 		, words.ReplaceFirstTimeOnly
 		, words.OpenInNewWindow
@@ -2637,6 +2638,7 @@ GO
 CREATE PROC [<dbUser,varchar,dbo>].[subtext_InsertKeyWord]
 (
 	@Word nvarchar(100),
+	@Rel nvarchar(100),
 	@Text nvarchar(100),
 	@ReplaceFirstTimeOnly bit,
 	@OpenInNewWindow bit,
@@ -2650,9 +2652,9 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_InsertKeyWord]
 AS
 
 Insert subtext_keywords 
-	(Word,[Text],ReplaceFirstTimeOnly,OpenInNewWindow, CaseSensitive,Url,Title,BlogId)
+	(Word,Rel,[Text],ReplaceFirstTimeOnly,OpenInNewWindow, CaseSensitive,Url,Title,BlogId)
 Values
-	(@Word,@Text,@ReplaceFirstTimeOnly,@OpenInNewWindow, @CaseSensitive,@Url,@Title,@BlogId)
+	(@Word,@Rel,@Text,@ReplaceFirstTimeOnly,@OpenInNewWindow, @CaseSensitive,@Url,@Title,@BlogId)
 
 SELECT @KeyWordID = SCOPE_IDENTITY()
 
@@ -3217,6 +3219,7 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateKeyWord]
 (
 	@KeyWordID int,
 	@Word nvarchar(100),
+	@Rel nvarchar(100),
 	@Text nvarchar(100),
 	@ReplaceFirstTimeOnly bit,
 	@OpenInNewWindow bit,
@@ -3231,6 +3234,7 @@ AS
 UPDATE [<dbUser,varchar,dbo>].[subtext_keywords] 
 	Set
 		Word = @Word,
+		Rel = @Rel,
 		[Text] = @Text,
 		ReplaceFirstTimeOnly = @ReplaceFirstTimeOnly,
 		OpenInNewWindow = @OpenInNewWindow,

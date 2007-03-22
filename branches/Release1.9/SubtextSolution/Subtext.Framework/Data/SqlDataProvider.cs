@@ -1209,6 +1209,7 @@ namespace Subtext.Framework.Data
 			SqlParameter[] p =
 			{
 				DataHelper.MakeInParam("@Word",SqlDbType.NVarChar,100,keyword.Word),
+				DataHelper.MakeInParam("@Rel",SqlDbType.NVarChar,100,keyword.Rel),
 				DataHelper.MakeInParam("@Text",SqlDbType.NVarChar,100,keyword.Text),
 				DataHelper.MakeInParam("@ReplaceFirstTimeOnly",SqlDbType.Bit,1,keyword.ReplaceFirstTimeOnly),
 				DataHelper.MakeInParam("@OpenInNewWindow",SqlDbType.Bit,1,keyword.OpenInNewWindow),
@@ -1228,6 +1229,7 @@ namespace Subtext.Framework.Data
 			{
 				DataHelper.MakeInParam("@KeyWordID",SqlDbType.Int,4,kw.Id),
 				DataHelper.MakeInParam("@Word",SqlDbType.NVarChar,100,kw.Word),
+				DataHelper.MakeInParam("@Rel",SqlDbType.NVarChar,100,kw.Rel),
 				DataHelper.MakeInParam("@Text",SqlDbType.NVarChar,100,kw.Text),
 				DataHelper.MakeInParam("@ReplaceFirstTimeOnly",SqlDbType.Bit,1,kw.ReplaceFirstTimeOnly),
 				DataHelper.MakeInParam("@OpenInNewWindow",SqlDbType.Bit,1,kw.OpenInNewWindow),

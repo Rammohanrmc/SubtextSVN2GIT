@@ -609,6 +609,7 @@ namespace Subtext.Framework.Data
 			kw.ReplaceFirstTimeOnly = (bool)reader["ReplaceFirstTimeOnly"];
 			kw.CaseSensitive = (bool)reader["CaseSensitive"];
 			kw.Text = ReadString(reader, "Text");
+			kw.Rel = ReadString(reader, "Rel");
 			if(reader["Title"] != DBNull.Value)
 			{
 				kw.Title = DataHelper.CheckNullString(reader["Title"]);
