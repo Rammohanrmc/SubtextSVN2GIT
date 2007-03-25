@@ -7,7 +7,8 @@
 			<div id="postcomment">
 				<div>
 					Name<br />
-					<asp:TextBox id="tbName" Size = "50" runat="server" Width="400px" CssClass="text"></asp:TextBox>
+					<asp:TextBox id="tbName" Size = "50" runat="server" Width="400px" CssClass="text" />
+					<asp:RequiredFieldValidator id="RequiredFieldValidator3" runat="server" ErrorMessage="Please enter your name" ControlToValidate="tbName" Display="Dynamic">*</asp:RequiredFieldValidator>
 				</div>
 				<div>
 					Email<br />
