@@ -32,9 +32,10 @@
 				<img id="Img2" src="~/Admin/Resources/Scripts/Images/ms_information_small.gif" runat="Server" /></st:HelpToolTip>
 		</p>
 		<p>
-			<label accessKey="f" for="Edit_txtFeedBurnerName"><u>F</u>eedBurner Name</label>
+			<label accessKey="f" for="Edit_txtFeedBurnerName"><u>F</u>eedBurner Name or URL</label>
 			<asp:TextBox id="txtFeedBurnerName" runat="server"></asp:TextBox>
-			<st:HelpToolTip id="hlpFeedburner" runat="server" HelpText="If specified, will redirect your main feed to use <a href='http://feedburner.com/' title='feedburner'>Feedburner</a>.  The URL of your feed will become: http://feeds.feedburner.com/FEED-BURNER-NAME. ">
+			<st:HelpToolTip id="hlpFeedburner" runat="server" 
+				HelpText="<p>Entering your FeedBurner feed name will redirect your main feed to use <a href='http://feedburner.com/' title='feedburner'>Feedburner</a>.  The URL of your feed will become: <strong>http://feeds.feedburner.com/<i>FEED-BURNER-NAME</i></strong>.</p><p>If you are using the MyBrand service, then enter <strong>your full feedburner URL</strong>.</p>">
 				<img id="Img4" src="~/Admin/Resources/Scripts/Images/ms_information_small.gif" runat="Server" />
 			</st:HelpToolTip>
 		</p>

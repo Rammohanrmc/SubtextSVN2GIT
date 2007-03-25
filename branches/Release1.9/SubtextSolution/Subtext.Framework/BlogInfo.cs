@@ -758,7 +758,7 @@ namespace Subtext.Framework
 				if(!String.IsNullOrEmpty(value))
 				{
 					if (value.Contains("\\"))
-						throw new InvalidOperationException("Cannot specify a feedburner name with invalid characters.");
+						throw new InvalidOperationException("Backslashes are not allowed in the feedburner name.");
 				}
 				this.feedBurnerName = value;
 			}

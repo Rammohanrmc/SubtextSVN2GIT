@@ -123,10 +123,11 @@ namespace Subtext.Framework.Syndication
 					//We need to allow some margin of error.
 					return Math.Abs(ts.TotalMilliseconds) <= 500;
 				}
-				catch(Exception)
+				catch(FormatException)
 				{
 					//swallow it for now.
-					//TODO: Why are we doing this?
+					//Some browsers send a funky last modified header.
+					//We don't want to throw an exception in those cases.
 				}
 
 			}

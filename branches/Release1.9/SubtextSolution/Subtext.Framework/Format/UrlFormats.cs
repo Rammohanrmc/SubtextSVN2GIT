@@ -46,6 +46,14 @@ namespace Subtext.Framework.Format
 		{
 			get
 			{
+				//FeedBurnerName could be a fully qualified URL.
+				//For example, for users with the MyBrand service.
+				string feedBurnerName = Config.CurrentBlog.FeedBurnerName;
+				if (feedBurnerName.StartsWith("http://") || feedBurnerName.StartsWith("https://"))
+				{
+					return new Uri(feedBurnerName);
+				}
+
 				string feedburnerUrl = ConfigurationManager.AppSettings["FeedBurnerUrl"];
 				feedburnerUrl = String.IsNullOrEmpty(feedburnerUrl) ? "http://feeds.feedburner.com/" : feedburnerUrl;
 				return new Uri(new Uri(feedburnerUrl), Config.CurrentBlog.FeedBurnerName);
