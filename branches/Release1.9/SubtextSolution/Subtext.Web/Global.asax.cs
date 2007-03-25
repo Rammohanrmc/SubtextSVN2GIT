@@ -154,7 +154,7 @@ namespace Subtext
 			#if DEBUG
 				HttpApplication application = (HttpApplication)sender;
 				HttpContext context = application.Context;
-				if (context.Request.Path.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase))
+				if (context.Request.Path.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase) && context.Request.ContentType == "text/html")
 				{
 					Version v =  VersionInfo.FrameworkVersion; //t.Assembly.GetName().Version;
 					string machineName = Environment.MachineName;
@@ -174,7 +174,7 @@ namespace Subtext
 							}	
 						}
 					}
-					catch
+					catch(Exception)
 					{}
 
 					try

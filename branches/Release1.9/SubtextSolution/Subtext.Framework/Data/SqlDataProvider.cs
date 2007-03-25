@@ -36,7 +36,7 @@ namespace Subtext.Framework.Data
 	/// </summary>
 	public class SqlDataProvider : DbProvider
 	{
-		private readonly static ILog log = new Log();
+		private readonly static ILog Log = new Log();
 		
 		private static SqlParameter BlogIdParam
 		{
@@ -436,7 +436,7 @@ namespace Subtext.Framework.Data
 				DataHelper.MakeInParam("@ItemCount", SqlDbType.Int, 4,itemCount),
 				DataHelper.MakeInParam("@PostType", SqlDbType.Int, 4, postType),
 				DataHelper.MakeInParam("@PostConfig", SqlDbType.Int, 4, postConfiguration),
-				DataHelper.MakeInParam("@IncludeCategories", SqlDbType.Bit, 0, includeCategories),
+				DataHelper.MakeInParam("@IncludeCategories", SqlDbType.Bit, 1, includeCategories),
 				BlogIdParam				
 			};
 
@@ -1336,7 +1336,7 @@ namespace Subtext.Framework.Data
 					query = StringHelper.Left(query, query.Length - 1);
 			}
 
-			log.Debug("SQL: " + query);
+			Log.Debug("SQL: " + query);
 #endif
 		}
 	}

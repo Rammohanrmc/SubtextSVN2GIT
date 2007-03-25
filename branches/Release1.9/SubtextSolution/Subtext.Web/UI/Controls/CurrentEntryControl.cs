@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Web;
 using Subtext.Framework.Components;
 
 namespace Subtext.Web.UI.Controls
@@ -25,7 +24,7 @@ namespace Subtext.Web.UI.Controls
 	/// data binding syntax to display information about the current 
 	/// entry.
 	/// </summary>
-	public class CurrentEntryControl : BaseControl
+	public class CurrentEntryControl : BaseControl, IEntryControl
 	{
 		bool dataBound;
 		Entry currentEntry;

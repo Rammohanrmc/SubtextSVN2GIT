@@ -1009,6 +1009,9 @@ CREATE Table #IDs
 	 TempId int IDENTITY (0, 1) NOT NULL,  
 	 Id int not NULL  
 )
+-- Create a temp table to store the Post IDs 
+-- of the posts we're interested in.
+SET ROWCOUNT @ItemCount
 
 INSERT #IDs (Id)  
 SELECT [Id]   
@@ -1018,7 +1021,10 @@ WHERE	PostType = @PostType
 	AND PostConfig & @PostConfig = @PostConfig
 ORDER BY ISNULL([DateSyndicated], [DateAdded]) DESC
 
-SET ROWCOUNT @ItemCount
+SET ROWCOUNT 0
+
+-- Now select the content etc... for the posts 
+-- in the temp table.
 SELECT BlogId
 	, [<dbUser,varchar,dbo>].[subtext_Content].[Id]
 	, Title
@@ -1039,6 +1045,7 @@ ORDER BY #IDs.TempId
 
 IF @IncludeCategories = 1
 BEGIN
+	-- Select the category title and the associated post id
 	SELECT	c.Title  
 			, p.[Id]
 	FROM [<dbUser,varchar,dbo>].[subtext_Links] l
