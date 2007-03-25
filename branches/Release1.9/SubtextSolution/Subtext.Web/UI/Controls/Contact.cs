@@ -90,35 +90,15 @@ namespace Subtext.Web.UI.Controls
 		{
 			if(Page.IsValid)
 			{
-				if(SendContactMessageToFeedback)
-				{
-					FeedbackItem contactMessage = new FeedbackItem(FeedbackType.None);
-					
-					contactMessage.Author = tbName.Text;
-					contactMessage.Email = tbEmail.Text;
-					contactMessage.Body = tbMessage.Text;
-					contactMessage.Title = "CONTACT: " + tbSubject.Text;
-					contactMessage.IpAddress = HttpHelper.GetUserIpAddress(Context);
-					
-					try
-					{
-						FeedbackItem.Create(contactMessage, new CommentFilter(HttpContext.Current.Cache));
-						lblMessage.Text = "Your message was sent.";
-					}
-					catch(BaseCommentException exc)
-					{
-						lblMessage.Text = exc.Message;
-					}
+				BlogInfo info = Config.CurrentBlog;
 
-					tbName.Text = string.Empty;
-					tbEmail.Text = string.Empty;
-					tbSubject.Text = string.Empty;
-					tbMessage.Text = string.Empty;
+				if(SendContactMessageToFeedback || String.IsNullOrEmpty(info.Email))
+				{
+					CreateCommentWithContactMessage();
 					return;
 				}
 
 				EmailProvider email = EmailProvider.Instance();
-				BlogInfo info = Config.CurrentBlog;
 				string toEmail = info.Email;
 				string fromEmail = tbEmail.Text;
 				
@@ -148,6 +128,32 @@ namespace Subtext.Web.UI.Controls
 					lblMessage.Text = "Your message could not be sent, most likely due to a problem with the mail server.";
 				}
 			}
+		}
+
+		private void CreateCommentWithContactMessage()
+		{
+			FeedbackItem contactMessage = new FeedbackItem(FeedbackType.None);
+
+			contactMessage.Author = tbName.Text;
+			contactMessage.Email = tbEmail.Text;
+			contactMessage.Body = tbMessage.Text;
+			contactMessage.Title = "CONTACT: " + tbSubject.Text;
+			contactMessage.IpAddress = HttpHelper.GetUserIpAddress(Context);
+
+			try
+			{
+				FeedbackItem.Create(contactMessage, new CommentFilter(HttpContext.Current.Cache));
+				lblMessage.Text = "Your message was sent.";
+			}
+			catch (BaseCommentException exc)
+			{
+				lblMessage.Text = exc.Message;
+			}
+
+			tbName.Text = string.Empty;
+			tbEmail.Text = string.Empty;
+			tbSubject.Text = string.Empty;
+			tbMessage.Text = string.Empty;
 		}
 
 		static bool SendContactMessageToFeedback
