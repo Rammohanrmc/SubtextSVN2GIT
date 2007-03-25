@@ -757,7 +757,7 @@ namespace Subtext.Framework
 			{
 				if(!String.IsNullOrEmpty(value))
 				{
-					if (value.Contains("/") || value.Contains("\\"))
+					if (value.Contains("\\"))
 						throw new InvalidOperationException("Cannot specify a feedburner name with invalid characters.");
 				}
 				this.feedBurnerName = value;
