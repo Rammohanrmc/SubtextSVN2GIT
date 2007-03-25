@@ -2,6 +2,7 @@
 <div id="comments">
 <div id="commentform">
 <h3>Your comment:</h3>
+<div id="comment-fields">
 <div class="label">
 	<label for="PostComment_ascx_tbTitle">Title:</label>
 </div>
@@ -66,5 +67,5 @@
 	<h4>Live Comment Preview:</h4>
 	<div id="commentPreview">&nbsp;</div>
 </div>
-
+</div>
 </div></div>

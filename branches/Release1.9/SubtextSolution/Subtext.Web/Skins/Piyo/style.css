@@ -424,6 +424,13 @@ div.comment .gravatar
 #commentform {
 	display: block;
 }
+
+#comment-fields
+{
+	width: 600px;
+	float: left;
+}
+
 #commentform .label {
 	width: 8em;
 	clear: both;
