@@ -17,6 +17,7 @@ body {
 input, textarea, select {
 	font: 100% 'Lucida Sans Unicode', 'Lucida Grande', 'Bitstream Vera Sans', 'Trebuchet MS', Geneva, Arial, sans-serif;
 }
+
 body, div, p, img, ul, li, h1, h2, h3, h4, h5, h6, form {
 	margin: 0;
 	padding: 0;
@@ -650,4 +651,12 @@ div.previousNext
 {
 	width: 550px;
 	margin-bottom: 10px;
+}
+
+
+/*
+This to fix a problem with coComment bar
+*/
+.cocomment-minibar {
+clear:both;
 }
