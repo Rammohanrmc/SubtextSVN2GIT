@@ -1011,7 +1011,6 @@
     <Content Include="Images\ms_help.gif" />
     <Content Include="Images\next.gif" />
     <Content Include="Images\nextlabel.gif" />
-    <Content Include="Images\overlay.png" />
     <Content Include="Images\permalink.gif" />
     <Content Include="Images\PoweredByAsp.Net.gif" />
     <Content Include="Images\PoweredBySubtext85x33.png" />
@@ -1339,8 +1338,6 @@
     <Content Include="Scripts\ExternalLinks.js" />
     <Content Include="Scripts\lightbox.css" />
     <Content Include="Scripts\lightbox.js" />
-    <Content Include="Scripts\lightbox.v2.css" />
-    <Content Include="Scripts\lightbox.v2.js" />
     <Content Include="Scripts\LiveCommentPreview.js" />
     <Content Include="Scripts\prototype.js" />
     <Content Include="Scripts\scriptaculous.js" />
@@ -1820,15 +1817,11 @@
     <Content Include="Skins\Piyo\Images\asual-search.jpg" />
     <Content Include="Skins\Piyo\Images\asual-trackbacks.jpg" />
     <Content Include="Skins\Piyo\Images\asual-trackbackslink.jpg" />
-    <Content Include="Skins\Piyo\Images\close.gif" />
-    <Content Include="Skins\Piyo\Images\loading.gif" />
-    <Content Include="Skins\Piyo\Images\overlay.png" />
     <Content Include="Skins\Piyo\PageTemplate.ascx" />
     <Content Include="Skins\Piyo\piyo-elastic.css" />
     <Content Include="Skins\Piyo\piyo-fixed.css" />
     <Content Include="Skins\Piyo\print.css" />
     <Content Include="Skins\Piyo\README.txt" />
-    <Content Include="Skins\Piyo\Scripts\lightbox.js" />
     <Content Include="Skins\Piyo\Scripts\piyo.js" />
     <Content Include="Skins\Piyo\style.css" />
     <Content Include="Skins\RedBook\Blue.css" />
