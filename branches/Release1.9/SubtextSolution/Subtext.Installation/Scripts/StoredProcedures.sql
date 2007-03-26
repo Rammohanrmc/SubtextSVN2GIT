@@ -1357,6 +1357,10 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetImageCategory]
 AS
 EXEC [<dbUser,varchar,dbo>].[subtext_GetCategory] @CategoryID, @IsActive, @BlogId
 
+/* Maybe this fix is needed
+EXEC [dbo].[subtext_GetCategory] @CategoryID=@CategoryID, @IsActive=@IsActive, @BlogId=@BlogId
+*/
+
 SELECT	Title
 		, CategoryID
 		, Height
