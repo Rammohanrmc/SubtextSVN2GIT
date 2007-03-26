@@ -1339,6 +1339,8 @@
     <Content Include="Scripts\ExternalLinks.js" />
     <Content Include="Scripts\lightbox.css" />
     <Content Include="Scripts\lightbox.js" />
+    <Content Include="Scripts\lightbox.v2.css" />
+    <Content Include="Scripts\lightbox.v2.js" />
     <Content Include="Scripts\LiveCommentPreview.js" />
     <Content Include="Scripts\prototype.js" />
     <Content Include="Scripts\scriptaculous.js" />
