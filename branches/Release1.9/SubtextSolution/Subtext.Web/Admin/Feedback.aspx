@@ -27,7 +27,7 @@
         <st:AdvancedPanel id="Results" runat="server" Collapsible="False" HeaderText="Comments" HeaderCssClass="CollapsibleHeader" DisplayHeader="true">
 		<asp:Repeater id="rprSelectionList" runat="server">
 			<HeaderTemplate>
-				<table id="feedback" class="Listing" style="<%= CheckHiddenStyle() %>">
+				<table id="feedback" class="Listing highlightTable" style="<%= CheckHiddenStyle() %>">
 					<tr>
 						<th>Title</th>						
 						<th>Posted By</th>
