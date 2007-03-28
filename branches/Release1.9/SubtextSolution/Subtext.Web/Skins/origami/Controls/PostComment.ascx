@@ -37,11 +37,11 @@
 				<div class="required clearfix">
 					<label for="PostComment.ascx_tbComment">
 						<em>*</em>Your message:</label>
-					<asp:TextBox ID="tbComment" runat="server" Rows="7" cols="55" CssClass="fixed" TextMode="MultiLine" onkeyup="reloadPreviewDiv();" />
+					<asp:TextBox ID="tbComment" runat="server" Rows="7" cols="55" CssClass="fixed" TextMode="MultiLine" />
 					<br />
 					<asp:RequiredFieldValidator ID="Requiredfieldvalidator4" runat="server" ErrorMessage="Please enter a comment" ControlToValidate="tbComment" />
 				</div>
-				<asp:CheckBox ID="chkRemember" runat="server" Text="Remember Me?" Visible="false" Checked="false" />
+				<asp:CheckBox ID="chkRemember" runat="server" Text="Remember Me?" Visible="false" Checked="true" />
 				<div id="frm-btns" class="buttons">
 					<asp:Button ID="btnSubmit" runat="server" Text="Publish Comment" CssClass="button" />
 				</div>

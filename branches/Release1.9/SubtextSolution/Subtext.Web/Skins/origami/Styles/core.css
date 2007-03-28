@@ -760,7 +760,8 @@ body > #top-link {position:fixed;}
 						border-color:#ede5d9;
 						margin-top:1.5em;
 						padding-top:1em;
-						margin-bottom:0
+						margin-bottom:0;
+						clear:both;
 					}
 					.post .meta a {
 						text-transform:capitalize;

@@ -180,6 +180,29 @@ a:hover
 	color: #000;
 }
 
+.post h3 
+{
+	font-size: 1.6em;
+	border-bottom:none;
+}
+
+.post h4 
+{
+	font-size: 1.4em;
+	border-bottom:none;
+}
+
+.post h5 
+{
+	font-size: 1.2em;
+	border-bottom:none;
+}
+
+.postfoot
+{
+	clear:both;
+}
+
 div.comment
 {
 	margin: 0 0 1em 0;
