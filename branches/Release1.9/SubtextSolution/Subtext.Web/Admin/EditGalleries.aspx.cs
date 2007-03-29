@@ -19,10 +19,10 @@ using System.Globalization;
 using System.IO;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using ICSharpCode.SharpZipLib.Zip;
 using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
-using ICSharpCode.SharpZipLib.Zip;
 using Image=Subtext.Framework.Components.Image;
 
 namespace Subtext.Web.Admin.Pages
@@ -51,7 +51,7 @@ namespace Subtext.Web.Admin.Pages
             this.TabSectionId = "Galleries";
 	    }
 	    
-		protected void Page_Load(object sender, System.EventArgs e)
+		protected void Page_Load(object sender, EventArgs e)
 		{
 			if(!Config.Settings.AllowImages)
 			{
@@ -104,7 +104,7 @@ namespace Subtext.Web.Admin.Pages
 			ICollection<Image> imageList = Images.GetImagesByCategoryID(galleryID, false);
 
 			plhImageHeader.Controls.Clear();
-			string galleryTitle = string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0} - {1} images", selectedGallery.Title, imageList.Count);
+			string galleryTitle = string.Format(CultureInfo.InvariantCulture, "{0} - {1} images", selectedGallery.Title, imageList.Count);
 			plhImageHeader.Controls.Add(new LiteralControl(galleryTitle));
 
 			rprImages.DataSource = imageList;
@@ -114,7 +114,7 @@ namespace Subtext.Web.Admin.Pages
 
 			if(AdminMasterPage != null && AdminMasterPage.BreadCrumb != null)
             {
-				string title = string.Format(System.Globalization.CultureInfo.InvariantCulture, "Viewing Gallery \"{0}\"", selectedGallery.Title);
+				string title = string.Format(CultureInfo.InvariantCulture, "Viewing Gallery \"{0}\"", selectedGallery.Title);
 
 				AdminMasterPage.BreadCrumb.AddLastItem(title);
 				AdminMasterPage.Title = title;
@@ -149,10 +149,10 @@ namespace Subtext.Web.Admin.Pages
 
 		protected string EvalImageUrl(object potentialImage)
 		{
-			Subtext.Framework.Components.Image image = potentialImage as Subtext.Framework.Components.Image;
+			Image image = potentialImage as Image;
 			if (image != null)
 			{
-				return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}{1}", Images.HttpGalleryFilePath(Context, image.CategoryID), 
+				return string.Format(CultureInfo.InvariantCulture, "{0}{1}", Images.HttpGalleryFilePath(Context, image.CategoryID), 
 					image.ThumbNailFile);
 			}
 			else
@@ -161,10 +161,10 @@ namespace Subtext.Web.Admin.Pages
 
 		protected string EvalImageNavigateUrl(object potentialImage)
 		{
-			Subtext.Framework.Components.Image image = potentialImage as Subtext.Framework.Components.Image;
+			Image image = potentialImage as Image;
 			if (image != null)
 			{
-				return Subtext.Framework.Configuration.Config.CurrentBlog.UrlFormats.ImageUrl(null, image.ImageID);
+				return Config.CurrentBlog.UrlFormats.ImageUrl(null, image.ImageID);
 			}
 			else
 				return String.Empty;
@@ -177,7 +177,7 @@ namespace Subtext.Web.Admin.Pages
 			const int CHAR_PER_LINE = 19;
 			const int LINE_HEIGHT_PIXELS = 16;
 
-			Subtext.Framework.Components.Image image = potentialImage as Subtext.Framework.Components.Image;
+			Image image = potentialImage as Image;
 			if (image != null)
 			{
 				// do a rough calculation of how many chars we can shoehorn into the title space
@@ -202,12 +202,12 @@ namespace Subtext.Web.Admin.Pages
 				if (category.Id > 0)
 				{
 					Links.UpdateLinkCategory(category);
-					Messages.ShowMessage(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Category \"{0}\" was updated.", category.Title));
+					Messages.ShowMessage(string.Format(CultureInfo.InvariantCulture, "Category \"{0}\" was updated.", category.Title));
 				}
 				else
 				{
 					category.Id = Links.CreateLinkCategory(category);
-					Messages.ShowMessage(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Category \"{0}\" was added.", category.Title));
+					Messages.ShowMessage(string.Format(CultureInfo.InvariantCulture, "Category \"{0}\" was added.", category.Title));
 				}					
 			}
 			catch(Exception ex)
@@ -222,7 +222,7 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		protected void OnAddImage(object sender, System.EventArgs e)
+		protected void OnAddImage(object sender, EventArgs e)
 		{
             string fileName = ImageFile.PostedFile.FileName;
 
@@ -249,11 +249,11 @@ namespace Subtext.Web.Admin.Pages
                 badFiles = new List<string>(),
                 updatedFiles = new List<string>();
 
-            Subtext.Framework.Components.Image image;
+            Image image;
 
             byte[] archiveData = Images.GetFileStream(ImageFile.PostedFile),
                 fileData;
-            System.IO.MemoryStream ms = new System.IO.MemoryStream(archiveData);
+            MemoryStream ms = new MemoryStream(archiveData);
 
             using (ZipInputStream zip = new ZipInputStream(ms))
             {
@@ -265,7 +265,7 @@ namespace Subtext.Web.Admin.Pages
                     // TODO: Filter for image types?
                     if (!String.IsNullOrEmpty(fileName))
                     {
-                        image = new Subtext.Framework.Components.Image();
+                        image = new Image();
                         image.CategoryID = CategoryID;
                         image.Title = fileName;
                         image.IsActive = ckbIsActiveImage.Checked;
@@ -273,7 +273,7 @@ namespace Subtext.Web.Admin.Pages
                         image.LocalFilePath = Images.LocalGalleryFilePath(Context, CategoryID);
 
                         // Read the next file from the Zip stream
-                        using (System.IO.MemoryStream currentFileData = new System.IO.MemoryStream((int)theEntry.Size))
+                        using (MemoryStream currentFileData = new MemoryStream((int)theEntry.Size))
                         {
                             int size = 2048;
                             byte[] data = new byte[size];
@@ -293,7 +293,7 @@ namespace Subtext.Web.Admin.Pages
                         try
                         {
                             // If it exists, update it
-                            if (System.IO.File.Exists(image.OriginalFilePath))
+                            if (File.Exists(image.OriginalFilePath))
                             {
                                 Images.Update(image, fileData);
                                 updatedFiles.Add(theEntry.Name);
@@ -349,7 +349,7 @@ namespace Subtext.Web.Admin.Pages
 		/// <summary>
 		/// The user is providing the file name here. 
 		/// </summary>
-		protected void OnAddImageUserProvidedName(object sender, System.EventArgs e)
+		protected void OnAddImageUserProvidedName(object sender, EventArgs e)
 		{
 			if (TextBoxImageFileName.Text.Length == 0)
 			{
@@ -369,7 +369,7 @@ namespace Subtext.Web.Admin.Pages
 		{
 			if (Page.IsValid)
 			{
-				Subtext.Framework.Components.Image image = new Subtext.Framework.Components.Image();
+				Image image = new Image();
 				image.CategoryID = CategoryID;
 				image.Title = txbImageTitle.Text;
 				image.IsActive = ckbIsActiveImage.Checked;
@@ -378,7 +378,7 @@ namespace Subtext.Web.Admin.Pages
 				{
 					image.File = Images.GetFileName(targetFileName);
 					image.LocalFilePath = Images.LocalGalleryFilePath(Context, CategoryID);
-					if (System.IO.File.Exists(image.OriginalFilePath))
+					if (File.Exists(image.OriginalFilePath))
 					{
 						// tell the user we can't accept this file.
 						Messages.ShowError("This file already exists on the server. Please provide a name for the file.");
@@ -467,9 +467,9 @@ namespace Subtext.Web.Admin.Pages
 		}
 		#endregion
 
-		private void dgrSelectionList_ItemCommand(object source, System.Web.UI.WebControls.DataGridCommandEventArgs e)
+		private void dgrSelectionList_ItemCommand(object source, DataGridCommandEventArgs e)
 		{
-			switch (e.CommandName.ToLower(System.Globalization.CultureInfo.InvariantCulture)) 
+			switch (e.CommandName.ToLower(CultureInfo.InvariantCulture)) 
 			{
 				case "view" :
 					int galleryID = Convert.ToInt32(e.CommandArgument);
@@ -480,7 +480,7 @@ namespace Subtext.Web.Admin.Pages
 			}		
 		}
 
-		private void dgrSelectionList_EditCommand(object source, System.Web.UI.WebControls.DataGridCommandEventArgs e)
+		private void dgrSelectionList_EditCommand(object source, DataGridCommandEventArgs e)
 		{
 			HideImages();
 			dgrSelectionList.EditItemIndex = e.Item.ItemIndex;
@@ -488,7 +488,7 @@ namespace Subtext.Web.Admin.Pages
 			this.Messages.Clear();
 		}
 
-		private void dgrSelectionList_UpdateCommand(object source, System.Web.UI.WebControls.DataGridCommandEventArgs e)
+		private void dgrSelectionList_UpdateCommand(object source, DataGridCommandEventArgs e)
 		{
 			TextBox title = e.Item.FindControl("txbTitle") as TextBox;
 			TextBox desc = e.Item.FindControl("txbDescription") as TextBox;
@@ -512,21 +512,21 @@ namespace Subtext.Web.Admin.Pages
 			}		
 		}
 
-		private void dgrSelectionList_DeleteCommand(object source, System.Web.UI.WebControls.DataGridCommandEventArgs e)
+		private void dgrSelectionList_DeleteCommand(object source, DataGridCommandEventArgs e)
 		{
 			int id = Convert.ToInt32(dgrSelectionList.DataKeys[e.Item.ItemIndex]);
 			LinkCategory lc = Links.GetLinkCategory(id,false);
 			ConfirmDeleteGallery(id, lc.Title);		
 		}
 
-		private void dgrSelectionList_CancelCommand(object source, System.Web.UI.WebControls.DataGridCommandEventArgs e)
+		private void dgrSelectionList_CancelCommand(object source, DataGridCommandEventArgs e)
 		{
 			dgrSelectionList.EditItemIndex = -1;			
 			BindList();
 			Messages.Clear();
 		}
 
-		protected void lkbPost_Click(object sender, System.EventArgs e)
+		protected void lkbPost_Click(object sender, EventArgs e)
 		{
 			LinkCategory newCategory = new LinkCategory();
 			newCategory.CategoryType = CategoryType.ImageCollection;
@@ -540,9 +540,9 @@ namespace Subtext.Web.Admin.Pages
 			ckbNewIsActive.Checked = Preferences.AlwaysCreateIsActive;
 		}
 
-		private void rprImages_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
+		private void rprImages_ItemCommand(object source, RepeaterCommandEventArgs e)
 		{
-			switch (e.CommandName.ToLower(System.Globalization.CultureInfo.InvariantCulture)) 
+			switch (e.CommandName.ToLower(CultureInfo.InvariantCulture)) 
 			{
 				case "deleteimage" :
 					ConfirmDeleteImage(Convert.ToInt32(e.CommandArgument));
