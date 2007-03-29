@@ -19,6 +19,7 @@ using Subtext.Framework.Data;
 using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Syndication;
+using Subtext.Framework.Web;
 
 namespace Subtext.Framework.Syndication
 {
@@ -43,6 +44,12 @@ namespace Subtext.Framework.Syndication
 			{
 				ParentEntry = Cacher.GetEntryFromRequest(CacheDuration.Short, false);
 			}
+
+            if (ParentEntry == null)
+            {
+                // bad news... we couldn't find the entry the request is looking for - return 404.
+                HttpHelper.SetFileNotFoundResponse();
+            }
 
 			if(ParentEntry != null && Comments == null)
 			{
