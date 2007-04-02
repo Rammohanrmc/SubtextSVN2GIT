@@ -81,6 +81,7 @@ namespace Subtext.Framework.Providers
 		/// <param name="pageIndex">Page index.</param>
 		/// <param name="pageSize">Size of the page.</param>
 		/// <returns></returns>
+		/// <param name="flags"></param>
 		public abstract PagedCollection<BlogInfo> GetPagedBlogs(string host, int pageIndex, int pageSize, ConfigurationFlag flags);
 		
 		/// <summary>
@@ -414,8 +415,8 @@ namespace Subtext.Framework.Providers
 
         public abstract ImageCollection GetImagesByCategoryID(int catID, bool activeOnly);
 		public abstract Image GetImage(int imageID, bool activeOnly);
-		public abstract int InsertImage(Subtext.Framework.Components.Image _image);
-		public abstract bool UpdateImage(Subtext.Framework.Components.Image _image);
+		public abstract int InsertImage(Image _image);
+		public abstract bool UpdateImage(Image _image);
 		public abstract bool DeleteImage(int ImageID);
 
 		#endregion
