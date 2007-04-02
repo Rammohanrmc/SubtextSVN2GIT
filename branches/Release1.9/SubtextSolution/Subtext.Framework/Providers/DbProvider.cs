@@ -246,7 +246,7 @@ namespace Subtext.Framework.Providers
 
 		public abstract DataSet GetActiveCategories(); //Rename, since it includes LinkCollection as well
 
-		public abstract IDataReader GetLinksByCategoryID(int catID, bool activeOnly); //Add another method for by name
+		public abstract IDataReader GetLinksByCategoryID(int categoryId, bool activeOnly); //Add another method for by name
 
 
 
