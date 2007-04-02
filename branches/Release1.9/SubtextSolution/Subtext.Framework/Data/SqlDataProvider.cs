@@ -838,20 +838,6 @@ namespace Subtext.Framework.Data
 
 			return ds;
 		}
-
-		//maps to blog_GetLinksByCategoryID
-		public override IDataReader GetLinksByCategoryID(int categoryId, bool activeOnly)
-		{
-			string sql = activeOnly ? "subtext_GetLinksByActiveCategoryID" : "subtext_GetLinksByCategoryID";
-			SqlParameter[] p = 
-			{
-				DataHelper.MakeInParam("@CategoryID", SqlDbType.Int, 4, DataHelper.CheckNull(categoryId)),
-				BlogIdParam
-			};
-			//return SqlHelper.ExecuteDataset(ConnectionString,CommandType.StoredProcedure,sql,p);
-			return GetReader(sql,p);
-		}
-
 		#endregion
 
 		#region Categories

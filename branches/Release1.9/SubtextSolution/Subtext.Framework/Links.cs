@@ -50,11 +50,6 @@ namespace Subtext.Framework
 			return ObjectProvider.Instance().GetLinkCollectionByPostID(PostID);
 		}
 
-		public static ICollection<Link> GetLinksByCategoryID(int catID, bool activeOnly)
-		{
-			return ObjectProvider.Instance().GetLinksByCategoryID(catID, activeOnly);
-		}
-
 		#endregion
 
 		#region Single Link

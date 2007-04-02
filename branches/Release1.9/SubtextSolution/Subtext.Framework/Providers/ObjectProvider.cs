@@ -287,7 +287,6 @@ namespace Subtext.Framework.Providers
 		#region LinkCollection
 
         public abstract ICollection<Link> GetLinkCollectionByPostID(int PostID);
-        public abstract ICollection<Link> GetLinksByCategoryID(int catID, bool activeOnly);
 
 		#endregion
 

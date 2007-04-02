@@ -8,6 +8,10 @@ Be sure to hit CTRL+SHIFT+M in Query Analyzer if running manually.
 	These are stored procs that used to be in the system but are no longer needed.
 	The statements will only drop the procs if they exist as a form of cleanup.
 */
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetLinksByActiveCategoryID]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetLinksByActiveCategoryID]
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetAllCategories]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [<dbUser,varchar,dbo>].[subtext_GetAllCategories]
 GO
@@ -209,10 +213,6 @@ GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetLinkCollectionByPostID]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [<dbUser,varchar,dbo>].[subtext_GetLinkCollectionByPostID]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetLinksByActiveCategoryID]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [<dbUser,varchar,dbo>].[subtext_GetLinksByActiveCategoryID]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetLinksByCategoryID]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
@@ -1452,37 +1452,6 @@ GO
 SET QUOTED_IDENTIFIER ON 
 GO
 SET ANSI_NULLS ON 
-GO
-
-
-CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetLinksByActiveCategoryID]
-(
-	@CategoryID int
-	, @BlogId int
-)
-AS
-EXEC [<dbUser,varchar,dbo>].[subtext_GetCategory] @CategoryID, 0, @BlogId
-SELECT	LinkID
-		, Title
-		, Url
-		, Rss
-		, Active
-		, CategoryID
-		, PostID = ISNULL(PostID, -1)
-FROM [<dbUser,varchar,dbo>].[subtext_Links]
-WHERE Active = 1 
-	AND CategoryID = @CategoryID 
-	AND BlogId = @BlogId
-ORDER BY Title
-
-
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetLinksByActiveCategoryID]  TO [public]
 GO
 
 SET QUOTED_IDENTIFIER ON 

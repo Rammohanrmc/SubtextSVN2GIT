@@ -641,25 +641,6 @@ namespace Subtext.Framework.Data
 				reader.Close();
 			}
 		}
-
-		public override ICollection<Link> GetLinksByCategoryID(int catID, bool activeOnly)
-		{
-			IDataReader reader = DbProvider.Instance().GetLinksByCategoryID(catID, activeOnly);
-            List<Link> lc = new List<Link>();
-			try
-			{
-				while(reader.Read())
-				{
-					lc.Add(DataHelper.LoadLink(reader));
-				}
-				return lc;
-			}
-			finally
-			{
-				reader.Close();
-			}
-		}
-
 		#endregion
 
 		#region Single Link
