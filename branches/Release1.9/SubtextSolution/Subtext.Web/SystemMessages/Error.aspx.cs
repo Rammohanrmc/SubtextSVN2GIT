@@ -21,6 +21,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using log4net;
 using Subtext.Framework.Configuration;
+using Subtext.Framework.Exceptions;
 using Subtext.Framework.Logging;
 
 namespace Subtext.Web.Pages
@@ -66,6 +67,11 @@ namespace Subtext.Web.Pages
 				if (exception is FileNotFoundException)
 				{
 					exceptionMsgs.Append("<p>The resource you requested could not be found.</p>");
+				}
+				else if(exception is BlogInactiveException)
+				{
+					log.Warn("Blog Inactive Exception", exception);
+					exceptionMsgs.AppendFormat("<p>{0}</p>", exception.Message);
 				}
 				else
 				{

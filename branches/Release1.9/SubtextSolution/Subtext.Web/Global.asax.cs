@@ -17,6 +17,7 @@ using System;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.Security;
 using System.Web;
 using log4net;
 using log4net.Appender;
@@ -174,8 +175,23 @@ namespace Subtext
 							}	
 						}
 					}
-					catch(Exception)
-					{}
+					//We don't care about exceptions in this case.
+					//But we don't want to catch OutOfMemoryException etc...
+					catch(FormatException)
+					{
+					}
+					catch(ArgumentException)
+					{
+					}
+					catch(NullReferenceException)
+					{
+					}
+					catch(ApplicationException)
+					{
+					}
+					catch(SecurityException)
+					{
+					}
 
 					try
 					{
