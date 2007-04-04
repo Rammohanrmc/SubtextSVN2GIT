@@ -36,7 +36,7 @@
     </Reference>
     <Reference Include="freetextbox, Version=3.1.4.36150, Culture=neutral, PublicKeyToken=5962a4e684a48b87" />
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.84.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="Identicon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="Identicon, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=227c66cf5503649a, processorArchitecture=MSIL" />
     <Reference Include="MagicAjax, Version=0.3.0.0, Culture=neutral, PublicKeyToken=bf4053b35db106f3, processorArchitecture=MSIL" />
     <Reference Include="System" />
@@ -1620,6 +1620,7 @@
     <Content Include="Skins\Nature\Controls\ViewPicture.ascx" />
     <Content Include="Skins\Nature\Controls\ViewPost.ascx" />
     <Content Include="Skins\Nature\images\article.jpg" />
+    <Content Include="Skins\Nature\images\CommentAuthorGradient.gif" />
     <Content Include="Skins\Nature\images\CommentIcon.gif" />
     <Content Include="Skins\Nature\images\leafy\articlenormal.jpg" />
     <Content Include="Skins\Nature\images\leafy\headers.jpg" />
@@ -1871,6 +1872,7 @@
     <Content Include="Skins\RedBook\Images\Blue\rondobottom.jpg" />
     <Content Include="Skins\RedBook\Images\button.gif" />
     <Content Include="Skins\RedBook\Images\checkbox.gif" />
+    <Content Include="Skins\RedBook\Images\CommentAuthorGradient.gif" />
     <Content Include="Skins\RedBook\Images\Green\back.jpg" />
     <Content Include="Skins\RedBook\Images\Green\backback.jpg" />
     <Content Include="Skins\RedBook\Images\Green\rondo.jpg" />
