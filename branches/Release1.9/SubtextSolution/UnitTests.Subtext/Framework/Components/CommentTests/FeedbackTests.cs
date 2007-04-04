@@ -383,13 +383,16 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		/// Makes sure that the content checksum hash is being created correctly.
 		/// </summary>
 		[RowTest]
-		[Row("commenter@example.com", "http://haacked.com/", "commenter@example.com", "http://haacked.com/")]
-		[Row("", "http://haacked.com/", "no email given", "http://haacked.com/")]
-		[Row("commenter@example.com", "", "commenter@example.com", "none given")]
+		[Row("commenter@example.com", "http://haacked.com/", "", "/", "commenter@example.com", "http://haacked.com/")]
+		[Row("", "http://haacked.com/", "", "/", "no email given", "http://haacked.com/")]
+		[Row("commenter@example.com", "", "", "/", "commenter@example.com", "none given")]
+		[Row("commenter@example.com", "", "/", "TEST", "commenter@example.com", "none given")]
+		[Row("commenter@example.com", "", "/Subtext.Web", "TEST", "commenter@example.com", "none given")]
 		[RollBack]
-		public void CreateFeedbackSendsCorrectEmail(string commenterEmail, string commenterUrl, string expectedEmail, string expectedUrl)
+		public void CreateFeedbackSendsCorrectEmail(string commenterEmail, string commenterUrl, string applicationPath, string subfolder, string expectedEmail, string expectedUrl)
 		{
-			Assert.IsTrue(Config.CreateBlog(string.Empty, "username", "password", _hostName, string.Empty));
+			Assert.IsTrue(Config.CreateBlog(string.Empty, "username", "password", _hostName, subfolder));
+			UnitTestHelper.SetHttpContextWithBlogRequest(_hostName, subfolder, applicationPath);
 			Config.CurrentBlog.Email = "test@example.com";
 			Config.CurrentBlog.Title = "You've been haacked";
 

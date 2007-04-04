@@ -1877,6 +1877,7 @@
     <Content Include="Skins\RedBook\Images\Green\rondobottom.jpg" />
     <Content Include="Skins\RedBook\Images\header.jpg" />
     <Content Include="Skins\RedBook\Images\input.gif" />
+    <Content Include="Skins\RedBook\Images\list-arrow.gif" />
     <Content Include="Skins\RedBook\Images\mitem.gif" />
     <Content Include="Skins\RedBook\Images\radio.gif" />
     <Content Include="Skins\RedBook\Images\Red\back.jpg" />
