@@ -65,6 +65,7 @@ a:hover
 	margin:0;
 	border-bottom:2px solid #ffffff;
 	background-image:none;
+	line-height: 0.7em;
 }
 
 #menu 
@@ -201,6 +202,12 @@ a:hover
 .postfoot
 {
 	clear:both;
+}
+
+div.author div.commentText
+{
+	background: #ffffef url(images/CommentAuthorGradient.gif) repeat-x top left;
+	border: solid 1px #967758;
 }
 
 div.comment
