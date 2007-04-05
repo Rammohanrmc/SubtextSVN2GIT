@@ -1,6 +1,6 @@
 body
 {
-	background: #fff url(images/bg.gif) repeat-x;
+	background: #fff url(images/bg-stripe.gif) repeat-x;
 	color: #333;
 	font: 100%/1.45 Helvetica, Arial, Verdana, sans-serif;
 	min-width: 600px;
@@ -10,6 +10,7 @@ body
 /*----------{links}--------------------*/
 a {color: #802A2A;}
 a:hover {color: #000;}
+a img {border: none;}
 
 /*----------{structure}----------------*/	
 #main
@@ -21,7 +22,7 @@ a:hover {color: #000;}
 #header
 {
 	text-align: center;
-	margin:20px 0 30px 0;
+	margin:30px 0 30px 0;
 	padding:0;
 }
 
