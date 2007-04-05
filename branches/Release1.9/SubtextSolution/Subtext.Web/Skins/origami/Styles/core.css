@@ -898,7 +898,7 @@ body > #top-link {position:fixed;}
 				{
 				    border-bottom-color:#607F26;
 				}
-				.author .comment-body{ background: #fff url(../images/bg_commentAuthorGradient.gif) repeat-x top left; }
+				.author .comment-body{ background: #fff url(../images/bg_commentAuthorGradient.png) repeat-x top left; }
 				.author .comment-body .comment-text { color:#3B0B00 ! important; }
 							
 				.normal-comment .comment-body {

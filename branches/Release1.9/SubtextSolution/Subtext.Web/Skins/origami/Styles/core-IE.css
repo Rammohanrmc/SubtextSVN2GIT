@@ -46,3 +46,5 @@ ul, ol, dl, p.important, .sidebar-node{position: relative;}
 {
     white-space:nowrap;
 }
+
+#main .author .comment-body{ background-image:url(../images/bg_commentAuthorGradient.gif); }
