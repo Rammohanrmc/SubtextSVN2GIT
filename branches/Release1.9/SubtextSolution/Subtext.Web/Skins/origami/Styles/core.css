@@ -880,7 +880,7 @@ body > #top-link {position:fixed;}
 				background:none;
 				
 			}
-				#main #commentList li a{
+				#main #commentList li a {
 					margin:0;
 					padding:0;
 					background:none;
@@ -902,8 +902,10 @@ body > #top-link {position:fixed;}
 					border-color:#D78707;
 				}
 				
-				.preview-comment .comment-body {
-					border-color:#eee;
+				.preview-comment .comment-body
+				{
+				    border-bottom-width:1px;
+					border-color:#628636;
 				}
 				
 				.preview-comment {margin-bottom:20px;}
