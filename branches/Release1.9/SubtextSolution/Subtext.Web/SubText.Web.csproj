@@ -1661,6 +1661,7 @@
     <Content Include="Skins\origami\images\bg_body.jpg" />
     <Content Include="Skins\origami\images\bg_body.png" />
     <Content Include="Skins\origami\images\bg_commentAlternate.png" />
+    <Content Include="Skins\origami\images\bg_commentAuthorGradient.png" />
     <Content Include="Skins\origami\images\bg_commentNormal.png" />
     <Content Include="Skins\origami\images\bg_commentPreview.png" />
     <Content Include="Skins\origami\images\bg_contentLeftNav.png" />
@@ -1724,6 +1725,7 @@
     <Content Include="Skins\origami\images\bullet_sideBar_h.png" />
     <Content Include="Skins\origami\images\bullet_sideBar_v.png" />
     <Content Include="Skins\origami\images\bullet_UL.png" />
+    <Content Include="Skins\origami\images\bg_commentAuthorGradient.gif" />
     <Content Include="Skins\origami\images\div_head.png" />
     <Content Include="Skins\origami\images\header_Personalize.png" />
     <Content Include="Skins\origami\images\icon_download.gif" />
