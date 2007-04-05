@@ -373,6 +373,12 @@ div.comment .post, div.trackback .post
 	padding: 1.2em 1.2em 1.2em 26px;
 	display: block;
 }
+
+div.author .post
+{
+	background: #fff url(images/CommentAuthorGradient.gif) repeat-x top;
+}
+
 #trackback {
 	margin: 0 18em 3em 0;
 }
