@@ -376,7 +376,7 @@ div.comment .post, div.trackback .post
 
 div.author .post
 {
-	background: #fff url(images/CommentAuthorGradient.gif) repeat-x top;
+	background: #f3fafc url(images/CommentAuthorGradient.gif) repeat-x top;
 }
 
 #trackback {
