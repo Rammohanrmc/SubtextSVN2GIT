@@ -1652,6 +1652,7 @@
     <Content Include="Skins\origami\Controls\PostComment.ascx" />
     <Content Include="Skins\origami\Controls\PreviousNext.ascx" />
     <Content Include="Skins\origami\Controls\SingleColumn.ascx" />
+    <Content Include="Skins\origami\Controls\SyndicationLinks.ascx" />
     <Content Include="Skins\origami\Controls\ViewPicture.ascx" />
     <Content Include="Skins\origami\Controls\ViewPost.ascx" />
     <Content Include="Skins\origami\images\bg_85PercentWhite.png" />
@@ -1751,7 +1752,6 @@
     <Content Include="Skins\origami\Scripts\coreFunctions.js" />
     <Content Include="Skins\origami\Scripts\effects.js" />
     <Content Include="Skins\origami\Scripts\init.js" />
-    <Content Include="Skins\origami\Scripts\prototype.js" />
     <Content Include="Skins\origami\Scripts\searchResults.js" />
     <Content Include="Skins\origami\Scripts\styleSwitcher.js" />
     <Content Include="Skins\origami\Scripts\typo.js" />
