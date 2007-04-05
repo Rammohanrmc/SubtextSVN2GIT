@@ -386,11 +386,17 @@ div.comment .post, div.trackback .post {
 	margin-left:58px;
 }
 
-div.comment .post p, div.trackback .post p {
+div.comment .post div, div.trackback .post div {
 	border: 1px solid #285090;
 	background: #F1F7FB;
 	padding: 1.2em 1.2em 1.2em 26px;
 	display: block;
+}
+
+div.author .post div
+{
+	border: solid 1px #967758;
+	background: #ffffef url(images/CommentAuthorGradient.gif) repeat-x top left;
 }
 
 div.comment .gravatar 
