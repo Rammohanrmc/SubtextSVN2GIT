@@ -1355,7 +1355,7 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetImageCategory]
 	, @BlogId int
 )
 AS
-EXEC [dbo].[subtext_GetCategory] @CategoryID=@CategoryID, @IsActive=@IsActive, @BlogId=@BlogId
+EXEC [<dbUser,varchar,dbo>].[subtext_GetCategory] @CategoryID=@CategoryID, @IsActive=@IsActive, @BlogId=@BlogId
 
 
 SELECT	Title
