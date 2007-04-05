@@ -17,7 +17,6 @@ using System;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.SqlClient;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Web.UI;
 using Microsoft.ApplicationBlocks.Data;
@@ -32,9 +31,19 @@ namespace Subtext.Installation
 	/// </summary>
 	public class SqlInstallationProvider : Extensibility.Providers.Installation
 	{
-		Version _version = null;
 		string _connectionString = string.Empty;
-		
+		SqlInstaller installer = null;
+
+		public SqlInstallationProvider()
+		{
+		}
+
+		public SqlInstallationProvider(string connectionString)
+		{
+			this.installer = new SqlInstaller(connectionString);
+			this._connectionString = connectionString;
+		}
+
 		/// <summary>
 		/// Initializes the specified provider.
 		/// </summary>
@@ -43,10 +52,10 @@ namespace Subtext.Installation
 		public override void Initialize(string name, NameValueCollection configValue)
 		{
             _connectionString = ProviderConfigurationHelper.GetConnectionStringSettingValue("connectionStringName", configValue);
+			this.installer = new SqlInstaller(_connectionString);
             base.Initialize(name, configValue);
 		}
-
-
+		
 		/// <summary>
 		/// <p>
 		/// This method is called by the installation engine in order to ask the 
@@ -141,38 +150,7 @@ namespace Subtext.Installation
 		/// <returns></returns>
 		public override void Upgrade()
 		{
-			using(SqlConnection connection = new SqlConnection(_connectionString))
-			{
-				connection.Open();
-				using(SqlTransaction transaction = connection.BeginTransaction())
-				{
-					try
-					{
-						Version installationVersion = this.GetCurrentInstallationVersion();
-						if(installationVersion == null)
-						{
-							//This is the base version.  We need to hardcode this 
-							//because Subtext 1.0 didn't write the assembly version 
-							//into the database.
-							installationVersion = new Version(1, 0, 0, 0);
-						}
-						string[] scripts = ListInstallationScripts(installationVersion, this.CurrentAssemblyVersion);
-						foreach(string scriptName in scripts)
-						{
-							ScriptHelper.ExecuteScript(scriptName, transaction);	
-						}
-						ScriptHelper.ExecuteScript("StoredProcedures.sql", transaction);
-
-						UpdateInstallationVersionNumber(this.CurrentAssemblyVersion, transaction);
-						transaction.Commit();
-					}
-					catch(Exception)
-					{
-						transaction.Rollback();
-						throw;
-					}
-				}
-			}
+			this.installer.Upgrade();
 		}
 
 		/// <summary>
@@ -182,30 +160,7 @@ namespace Subtext.Installation
 		/// <returns></returns>
 		public override void Install(Version assemblyVersion)
 		{
-			using(SqlConnection connection = new SqlConnection(_connectionString))
-			{
-				connection.Open();
-				using(SqlTransaction transaction = connection.BeginTransaction())
-				{
-					try
-					{
-						string[] scripts = ListInstallationScripts(this.GetCurrentInstallationVersion(), this.CurrentAssemblyVersion);
-						foreach(string scriptName in scripts)
-						{
-							ScriptHelper.ExecuteScript(scriptName, transaction);	
-						}
-
-						ScriptHelper.ExecuteScript("StoredProcedures.sql", transaction);
-						UpdateInstallationVersionNumber(assemblyVersion, transaction);
-						transaction.Commit();
-					}
-					catch(Exception)
-					{
-						transaction.Rollback();
-						throw;
-					}
-				}
-			}
+			
 		}
 
 		/// <summary>
@@ -240,47 +195,6 @@ namespace Subtext.Installation
 		}
 
 		/// <summary>
-		/// Updates the value of the current installed version within the subtext_Version table.
-		/// </summary>
-		/// <param name="newVersion">New version.</param>
-		/// <param name="transaction">The transaction to perform this action within.</param>
-		public override void UpdateInstallationVersionNumber(Version newVersion, SqlTransaction transaction)
-		{
-			string sql = "subtext_VersionAdd";
-			SqlParameter[] p =
-			{
-				CreateParameter("@Major", SqlDbType.Int, 4, newVersion.Major), 
-				CreateParameter("@Minor", SqlDbType.Int, 4, newVersion.Minor), 
-				CreateParameter("@Build", SqlDbType.Int, 4, newVersion.Build)
-			};
-			SqlHelper.ExecuteNonQuery(transaction, CommandType.StoredProcedure, sql, p);
-		}
-
-		static SqlParameter CreateParameter(string name, SqlDbType dbType, int size, object value)
-		{
-			SqlParameter param = new SqlParameter(name, dbType, size);
-			param.Value = value;
-			return param;
-		}
-
-		/// <summary>
-		/// Gets the framework version.
-		/// </summary>
-		/// <value></value>
-		public Version CurrentAssemblyVersion
-		{
-			get
-			{
-				if(_version == null)
-				{
-					_version = this.GetType().Assembly.GetName().Version;
-				}
-
-				return _version;
-			}
-		}
-
-		/// <summary>
 		/// Gets a value indicating whether the subtext installation needs an upgrade 
 		/// to occur.
 		/// </summary>
@@ -289,52 +203,8 @@ namespace Subtext.Installation
 		/// </value>
 		public bool NeedsUpgrade(Version installationVersion)
 		{
-			if(installationVersion >= CurrentAssemblyVersion)
-			{
-				return false;
-			}
-
-			if(installationVersion == null)
-			{
-				//This is the base version.  We need to hardcode this 
-				//because Subtext 1.0 didn't write the assembly version 
-				//into the database.
-				installationVersion = new Version(1, 0, 0, 0);
-			}
-			string[] scripts = ListInstallationScripts(installationVersion, CurrentAssemblyVersion);
-			return scripts.Length > 0;
-		}
-
-		/// <summary>
-		/// Returns a collection of installation script names with a version 
-		/// less than or equal to the max version.
-		/// </summary>
-		/// <param name="minVersionExclusive">The min verison exclusive.</param>
-		/// <param name="maxVersionInclusive">The max version inclusive.</param>
-		/// <returns></returns>
-		public string[] ListInstallationScripts(Version minVersionExclusive, Version maxVersionInclusive)
-		{
-			Assembly assembly = Assembly.GetExecutingAssembly();
-			string[] resourceNames = assembly.GetManifestResourceNames();
-			StringCollection collection = new StringCollection();
-			foreach(string resourceName in resourceNames)
-			{
-				InstallationScriptInfo scriptInfo = InstallationScriptInfo.Parse(resourceName);
-				if(scriptInfo == null) continue;
-				
-				if((minVersionExclusive == null || scriptInfo.Version > minVersionExclusive)
-					&& (maxVersionInclusive == null || scriptInfo.Version <= maxVersionInclusive))
-				{
-					collection.Add(scriptInfo.ScriptName);
-				}
-			}
-
-			string[] scripts = new string[collection.Count];
-			collection.CopyTo(scripts, 0);
-			Array.Sort(scripts);
-
-			return scripts;
-		}
+			return installer.NeedsUpgrade(installationVersion);
+		}		
 
 		/// <summary>
 		/// Attempts to repair this instance. Returns true if it was successful.
@@ -400,6 +270,17 @@ namespace Subtext.Installation
 				|| sqlexc.Number == (int)SqlErrorMessage.PermissionDeniedInOnColumn
 				|| sqlexc.Number == (int)SqlErrorMessage.PermissionDeniedInOnObject
 				);
+		}
+
+		/// <summary>
+		/// Updates the current installed version.
+		/// </summary>
+		/// <param name="newVersion">The new version that is now current.</param>
+		/// <param name="transaction">The transaction to perform this upgrade within.</param>
+		/// <returns></returns>
+		public override void UpdateInstallationVersionNumber(Version newVersion, SqlTransaction transaction)
+		{
+			this.installer.UpdateInstallationVersionNumber(newVersion, transaction);
 		}
 	}
 }
