@@ -160,7 +160,7 @@ namespace Subtext.Installation
 		/// <returns></returns>
 		public override void Install(Version assemblyVersion)
 		{
-			
+			this.installer.Install(assemblyVersion);
 		}
 
 		/// <summary>
