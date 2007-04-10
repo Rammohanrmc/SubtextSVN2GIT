@@ -28,6 +28,8 @@
 	</head>
 	<body>
 		<form id="Form1" method="post" runat="server">
+            <asp:ScriptManager ID="SubtextScriptManager" runat="server" EnablePartialRendering="true">
+            </asp:ScriptManager>
 			<DT:MasterPage id="MPContainer" runat="server">
 				<DT:ContentRegion id="MPMain" runat="server">
 					<asp:PlaceHolder id="CenterBodyControl" runat="server"></asp:PlaceHolder>

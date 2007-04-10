@@ -22,7 +22,6 @@ using System.Web;
 using log4net;
 using log4net.Appender;
 using log4net.Repository.Hierarchy;
-using MagicAjax;
 using Subtext.Framework;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Data;
@@ -164,11 +163,11 @@ namespace Subtext
 					string userInfo = "No User";
 					try
 					{
-						if(context.Request.IsAuthenticated)
+						if (context.Request.IsAuthenticated)
 						{
 							userInfo = context.User.Identity.Name;
 							userInfo += "<br />Is Host Admin: " + SecurityHelper.IsHostAdmin.ToString(CultureInfo.InvariantCulture);
-							if(!InstallationManager.IsInHostAdminDirectory && !InstallationManager.IsInInstallDirectory && !InstallationManager.IsInSystemMessageDirectory)
+							if (!InstallationManager.IsInHostAdminDirectory && !InstallationManager.IsInInstallDirectory && !InstallationManager.IsInSystemMessageDirectory)
 							{
 								userInfo += "<br />Is Admin: " + SecurityHelper.IsAdmin.ToString(CultureInfo.InvariantCulture);
 								userInfo += "<br />BlogId: " + Config.CurrentBlog.Id.ToString(CultureInfo.InvariantCulture);
@@ -177,31 +176,35 @@ namespace Subtext
 					}
 					//We don't care about exceptions in this case.
 					//But we don't want to catch OutOfMemoryException etc...
-					catch(FormatException)
+					catch (FormatException)
 					{
 					}
-					catch(ArgumentException)
+					catch (ArgumentException)
 					{
 					}
-					catch(NullReferenceException)
+					catch (NullReferenceException)
 					{
 					}
-					catch(ApplicationException)
+					catch (ApplicationException)
 					{
 					}
-					catch(SecurityException)
+					catch (SecurityException)
 					{
 					}
 
-					try
-					{
-						if (!MagicAjaxContext.Current.IsAjaxCall)
-							context.Response.Write(string.Format(debugMessage, @"<!-- ", lb, v, machineName, framework, userInfo, lb, "//-->"));
-					}
-					catch(MagicAjaxException exc)
-					{
-						log.Error("magic Ajax Exception in DEBUG build.", exc);
-					}
+                    /* 
+                     * We don't want to spit this debug info out into an AJAX request, so we'll try to determine if this
+                     * request is an asp.net AJAX request. According to Scott Guthrie's post, asp.net AJAX will ALWAYS use
+                     * a Content-Type="application/json" and by default will only use HTTP POST method. So we'll use those
+                     * facts/conventions to calculate isAjax. Scott's article is here:
+                     * http://weblogs.asp.net/scottgu/archive/2007/04/04/json-hijacking-and-how-asp-net-ajax-1-0-mitigates-these-attacks.aspx
+                     */
+                    bool isAjax = context.Request.ContentType.Equals("application/json", StringComparison.InvariantCultureIgnoreCase)
+                        && context.Request.HttpMethod.Equals("POST", StringComparison.InvariantCultureIgnoreCase);
+				    if (!isAjax)
+				    {
+				        context.Response.Write(string.Format(debugMessage, @"<!-- ", lb, v, machineName, framework, userInfo, lb, "//-->"));
+				    }
 				}	
 #endif
 			#endregion
