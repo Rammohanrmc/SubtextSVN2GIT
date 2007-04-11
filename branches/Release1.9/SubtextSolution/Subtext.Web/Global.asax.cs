@@ -192,19 +192,7 @@ namespace Subtext
 					{
 					}
 
-                    /* 
-                     * We don't want to spit this debug info out into an AJAX request, so we'll try to determine if this
-                     * request is an asp.net AJAX request. According to Scott Guthrie's post, asp.net AJAX will ALWAYS use
-                     * a Content-Type="application/json" and by default will only use HTTP POST method. So we'll use those
-                     * facts/conventions to calculate isAjax. Scott's article is here:
-                     * http://weblogs.asp.net/scottgu/archive/2007/04/04/json-hijacking-and-how-asp-net-ajax-1-0-mitigates-these-attacks.aspx
-                     */
-                    bool isAjax = context.Request.ContentType.Equals("application/json", StringComparison.InvariantCultureIgnoreCase)
-                        && context.Request.HttpMethod.Equals("POST", StringComparison.InvariantCultureIgnoreCase);
-				    if (!isAjax)
-				    {
-				        context.Response.Write(string.Format(debugMessage, @"<!-- ", lb, v, machineName, framework, userInfo, lb, "//-->"));
-				    }
+				    context.Response.Write(string.Format(debugMessage, @"<!-- ", lb, v, machineName, framework, userInfo, lb, "//-->"));
 				}	
 #endif
 			#endregion
