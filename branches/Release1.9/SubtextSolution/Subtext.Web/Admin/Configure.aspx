@@ -1,6 +1,4 @@
 <%@ Page Language="C#" EnableTheming="false"  Title="Subtext Admin - Configure" MasterPageFile="~/Admin/WebUI/AdminPageTemplate.Master" Codebehind="Configure.aspx.cs" Inherits="Subtext.Web.Admin.Pages.Configure" %>
-<%@ Register TagPrefix="st" Namespace="Subtext.Web.Admin.WebUI" Assembly="Subtext.Web" %>
-<%@ Register TagPrefix="st" Namespace="Subtext.Web.Controls" Assembly="Subtext.Web.Controls" %>
 
 <asp:Content ID="actions" ContentPlaceHolderID="actionsHeading" runat="server">
     Actions
@@ -13,10 +11,18 @@
 </asp:Content>
     
 <asp:Content ID="configurationOptions" ContentPlaceHolderID="pageContent" runat="server">
-    <asp:ScriptManager ID="ScriptManager1" runat="server" EnablePartialRendering="true"></asp:ScriptManager>
 	<st:MessagePanel id="Messages" runat="server"></st:MessagePanel>
-	<st:AdvancedPanel id="Edit" runat="server" Collapsible="False" HeaderText="Configure" HeaderCssClass="CollapsibleHeader"
-		BodyCssClass="Edit" DisplayHeader="true">
+	<%  /*
+	        Removing the AdvancedPanel b/c it is incompatible with asp.net AJAX UpdatePanels (due 
+	        to the Collapsible control's OnInit method moving its child controls around. In a 
+	        future version of Subtext we will replace all AdvancedPanel controls with an Extender
+	        from the AJAX Control Toolkit.
+        */
+	%>
+	<div class="CollapsibleHeader">
+	    <span>Configure</span>
+	</div>
+	<div class="Edit">
 		<asp:Panel runat="server" GroupingText="Main Settings" CssClass="options" >
 			<p>
 				<label class="Block" accesskey="t" for="Edit_txbTitle"><u>T</u>itle</label>
@@ -304,5 +310,5 @@
 		<div class="clear">
 			<asp:Button id="btnPost" runat="server" CssClass="buttonSubmit" Text="Save" />
 		</div>
-	</st:AdvancedPanel>
+	</div>
 </asp:Content>
