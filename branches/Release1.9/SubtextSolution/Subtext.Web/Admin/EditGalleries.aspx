@@ -1,6 +1,4 @@
-<%@ Page Language="C#" EnableTheming="false"  Title="Subtext Admin - Edit Galleries" MasterPageFile="~/Admin/WebUI/AdminPageTemplate.Master" Codebehind="EditGalleries.aspx.cs" AutoEventWireup="True" Inherits="Subtext.Web.Admin.Pages.EditGalleries" %>
-<%@ Register TagPrefix="sub" Namespace="Subtext.Web.Controls" Assembly="Subtext.Web.Controls" %>
-<%@ Register TagPrefix="ANW" Namespace="Subtext.Web.Admin.WebUI" Assembly="Subtext.Web" %>
+<%@ Page Language="C#" EnableTheming="false" Title="Subtext Admin - Edit Galleries" MasterPageFile="~/Admin/WebUI/AdminPageTemplate.Master" Codebehind="EditGalleries.aspx.cs" AutoEventWireup="True" Inherits="Subtext.Web.Admin.Pages.EditGalleries" %>
 <%@ Register TagPrefix="st" TagName="CategoryLinks" Src="~/Admin/UserControls/CategoryLinkList.ascx" %>
 
 <asp:Content ID="actions" ContentPlaceHolderID="actionsHeading" runat="server">
@@ -15,9 +13,9 @@
 </asp:Content>
 
 <asp:Content ID="galleriesContainer" ContentPlaceHolderID="pageContent" runat="server">
-	<sub:ScrollPositionSaver id="scrollsaver" runat="server" />
-	<ANW:MessagePanel id="Messages" runat="server" ErrorIconUrl="~/images/icons/ico_critical.gif" ErrorCssClass="ErrorPanel" MessageIconUrl="~/admin/resources/ico_info.gif" MessageCssClass="MessagePanel"></ANW:MessagePanel>
-	<ANW:AdvancedPanel id="Results" runat="server" LinkStyle="Image" LinkBeforeHeader="True" DisplayHeader="True" HeaderCssClass="CollapsibleHeader" HeaderText="Galleries" Collapsible="True">
+	<st:ScrollPositionSaver id="scrollsaver" runat="server" />
+	<st:MessagePanel id="Messages" runat="server" ErrorIconUrl="~/images/icons/ico_critical.gif" ErrorCssClass="ErrorPanel" MessageIconUrl="~/admin/resources/ico_info.gif" MessageCssClass="MessagePanel"></st:MessagePanel>
+	<st:AdvancedPanel id="Results" runat="server" LinkStyle="Image" LinkBeforeHeader="True" DisplayHeader="True" HeaderCssClass="CollapsibleHeader" HeaderText="Galleries" Collapsible="True">
 	
 		<asp:DataGrid id="dgrSelectionList" runat="server" CssClass="Listing highlightTable" GridLines="None" AutoGenerateColumns="False">
 			<AlternatingItemStyle CssClass="Alt"></AlternatingItemStyle>
@@ -56,7 +54,7 @@
 			</asp:DataGrid>
 		
 			<!-- add new item panel -->
-			<ANW:AdvancedPanel id="Add" runat="server" DisplayHeader="true" HeaderCssClass="CollapsibleTitle" HeaderText="Add New Gallery" Collapsible="False" BodyCssClass="Edit">
+			<st:AdvancedPanel id="Add" runat="server" DisplayHeader="true" HeaderCssClass="CollapsibleTitle" HeaderText="Add New Gallery" Collapsible="False" BodyCssClass="Edit">
 				<label class="Block">Title</label> 
 					<asp:TextBox id="txbNewTitle" runat="server" CssClass="textinput"></asp:TextBox>&nbsp; 
 					Visible <asp:CheckBox id="ckbNewIsActive" runat="server" Checked="true"></asp:CheckBox>
@@ -66,13 +64,13 @@
 				<div style="MARGIN-TOP: 8px">
 					<asp:Button id="lkbPost" runat="server" CssClass="buttonSubmit" Text="Add" onclick="lkbPost_Click"></asp:Button><br />&nbsp; 
 				</div>
-			</ANW:AdvancedPanel>
+			</st:AdvancedPanel>
 		
-		</ANW:AdvancedPanel>
+		</st:AdvancedPanel>
 		
 		<!-- add/upload a new file -->
 		<ASP:Panel id="ImagesDiv" runat="server">
-			<ANW:AdvancedPanel id="AddImages" runat="server" LinkStyle="Image" LinkBeforeHeader="True" DisplayHeader="true" HeaderCssClass="CollapsibleTitle" HeaderText="Add New Image (Single file or ZIP archive)" Collapsible="True" BodyCssClass="Edit">		
+			<st:AdvancedPanel id="AddImages" runat="server" LinkStyle="Image" LinkBeforeHeader="True" DisplayHeader="true" HeaderCssClass="CollapsibleTitle" HeaderText="Add New Image (Single file or ZIP archive)" Collapsible="True" BodyCssClass="Edit">		
 				<label class="Block">Local File Location</label> 
 				<input class="FileUpload" id="ImageFile" type="file" size="82" name="ImageFile" runat="server" /> 
 				<br class="clear" />
@@ -94,7 +92,7 @@
 					</div>
 				</asp:Panel>
 								
-			</ANW:AdvancedPanel>
+			</st:AdvancedPanel>
 		
 		
 			<h1><ASP:PlaceHolder id="plhImageHeader" runat="server"/></h1>
