@@ -80,7 +80,7 @@
 			</table>
 		</FooterTemplate>
 		</asp:Repeater>
-		<sub:PagingControl id="resultsPager" runat="server" 
+		<st:PagingControl id="resultsPager" runat="server" 
 			PrefixText="<div>Goto page</div>" 
 			LinkFormatActive='<a href="{0}" class="Current">{1}</a>' 
 			UrlFormat="Feedback.aspx?pg={0}" 
