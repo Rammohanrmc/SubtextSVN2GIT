@@ -633,14 +633,4 @@
             <li>You don't attempt to hold me liable for any problems you have with them. </li>
         </ol>
     </blockquote>
-    <h2>
-        MagicAjax</h2>
-    <p>
-        SubText links to <a href="http://www.magicajax.net/">MagicAjax.NET</a> for the admin
-        screens and some skins.</p>
-    <blockquote>
-        <p>
-            The editor is distributed under the <a href="http://www.gnu.org/licenses/gpl.html">GPL</a>
-            and the <a href="http://www.gnu.org/licenses/lgpl.html">LGPL</a>.</p>
-    </blockquote>
 </asp:Content>
