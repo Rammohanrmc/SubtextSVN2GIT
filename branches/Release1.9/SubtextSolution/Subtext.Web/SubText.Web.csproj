@@ -255,7 +255,6 @@
     <Compile Include="Admin\WebUI\Controls\HeaderLink.cs" />
     <Compile Include="Admin\WebUI\Controls\LinkList.cs" />
     <Compile Include="Admin\WebUI\Controls\MessagePanel.cs" />
-    <Compile Include="Admin\WebUI\Controls\ScriptTag.cs" />
     <Compile Include="Admin\Credits.aspx.cs">
       <SubType>ASPXCodeBehind</SubType>
       <DependentUpon>Credits.aspx</DependentUpon>
@@ -647,7 +646,7 @@
   <ItemGroup>
     <Content Include="blue.css" />
     <Content Include="default.aspx" />
-    <Content Include="DTP.aspx">
+    <Content Include="Providers\DTP.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="emoticons.txt" />
