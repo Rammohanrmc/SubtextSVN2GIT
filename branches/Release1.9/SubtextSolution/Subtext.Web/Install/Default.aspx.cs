@@ -28,13 +28,8 @@ namespace Subtext.Web.Install
 	/// blog configurations within the database.
 	/// </remarks>
 	public partial class Default : System.Web.UI.Page
-	{
-		protected Subtext.Web.Controls.ContentRegion MPTitle;
-		protected Subtext.Web.Controls.ContentRegion MPSubTitle;
-		protected System.Web.UI.WebControls.HyperLink lnkNextStep;
-		protected Subtext.Web.Controls.MasterPage MPContainer;
-	
-		protected void Page_Load(object sender, System.EventArgs e)
+	{		
+		protected void Page_Load(object sender, EventArgs e)
 		{
 			if(InstallationManager.GetCurrentInstallationState(VersionInfo.FrameworkVersion) == InstallationState.Complete)
 			{

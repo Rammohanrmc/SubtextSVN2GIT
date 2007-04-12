@@ -29,12 +29,7 @@ namespace Subtext.Web.Install
 	/// </remarks>
 	public partial class Step02_ConfigureHost : InstallationBase
 	{
-		protected Subtext.Web.Controls.ContentRegion MPTitle;
-		protected Subtext.Web.Controls.ContentRegion MPSubTitle;
-		protected Subtext.Web.Controls.ContentRegion Content;
-		protected Subtext.Web.Controls.MasterPage MPContainer;
-	
-		protected void Page_Load(object sender, System.EventArgs e)
+		protected void Page_Load(object sender, EventArgs e)
 		{
 			//We need to make sure that the form is ONLY displayed 
 			//if there really is no Host record.
@@ -88,7 +83,7 @@ namespace Subtext.Web.Install
 		}
 		#endregion
 
-		protected void btnSave_Click(object sender, System.EventArgs e)
+		protected void btnSave_Click(object sender, EventArgs e)
 		{
 			if(Page.IsValid)
 			{
@@ -102,7 +97,7 @@ namespace Subtext.Web.Install
 					{
 						//Changed the following method to public so all authentication tickets are handled by the same code.
 						SecurityHelper.SetAuthenticationTicket("HostAdmin", false, "HostAdmin");
-						Response.Redirect(InstallationBase.NextStepUrl);
+						Response.Redirect(NextStepUrl);
 					}
 					else
 					{

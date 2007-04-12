@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Web;
 using log4net;
 using Subtext.Framework;
 using Subtext.Framework.Configuration;
@@ -33,13 +32,8 @@ namespace Subtext.Web.Install
 	public partial class Step03_CreateBlog : InstallationBase
 	{
 		static ILog log = new Log();
-		protected System.Web.UI.WebControls.Literal ltlMessage;
-		protected Subtext.Web.Controls.ContentRegion MPTitle;
-		protected Subtext.Web.Controls.ContentRegion MPSubTitle;
-		protected Subtext.Web.Controls.MasterPage MPContainer;
-		protected Subtext.Web.Controls.ContentRegion Content;
-	
-		protected void Page_Load(object sender, System.EventArgs e)
+		
+		protected void Page_Load(object sender, EventArgs e)
 		{
 			bool _anyBlogsExist = true;
 			try
@@ -77,7 +71,7 @@ namespace Subtext.Web.Install
 		}
 		#endregion
 
-		protected void btnQuickCreate_Click(object sender, System.EventArgs e)
+		protected void btnQuickCreate_Click(object sender, EventArgs e)
 		{
 			// Create the blog_config record using default values 
 			// and the specified user info
@@ -103,7 +97,7 @@ namespace Subtext.Web.Install
 			}
 		}
 
-		protected void btnImportBlog_Click(object sender, System.EventArgs e)
+		protected void btnImportBlog_Click(object sender, EventArgs e)
 		{
 			// We need to get over to the Import pages... 
 			// So we automatically authenticate here.

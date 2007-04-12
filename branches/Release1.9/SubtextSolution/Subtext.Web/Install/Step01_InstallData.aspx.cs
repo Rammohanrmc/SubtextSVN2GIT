@@ -14,10 +14,8 @@
 #endregion
 
 using System;
-using System.Data.SqlClient;
 using Subtext.Extensibility.Providers;
 using Subtext.Framework;
-using Subtext.Framework.Data;
 using Subtext.Scripting.Exceptions;
 
 namespace Subtext.Web.Install
@@ -32,13 +30,6 @@ namespace Subtext.Web.Install
 	public partial class Step01_InstallData : InstallationBase
 	{
 		InstallationState _state = InstallationState.None;
-		protected Controls.ContentRegion MPTitle;
-		protected Controls.ContentRegion MPSubTitle;
-		protected Controls.ContentRegion Content;
-		protected System.Web.UI.WebControls.CheckBox chkStoredProcs;
-		protected System.Web.UI.WebControls.RadioButton radUpgrade;
-		protected System.Web.UI.WebControls.RadioButton radInstallFresh;
-		protected Controls.MasterPage MPContainer;
 	
 		protected void Page_Load(object sender, EventArgs e)
 		{

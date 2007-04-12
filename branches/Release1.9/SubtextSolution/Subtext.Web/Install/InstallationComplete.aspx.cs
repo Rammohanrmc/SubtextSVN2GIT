@@ -24,13 +24,7 @@ namespace Subtext.Web.Install
 	/// </summary>
 	public partial class InstallationComplete : InstallationBase
 	{
-		#region Declared Controls
-		protected Subtext.Web.Controls.ContentRegion MPTitle;
-		protected Subtext.Web.Controls.ContentRegion MPSubTitle;
-		protected Subtext.Web.Controls.MasterPage MPContainer;
-		#endregion
-	
-		protected void Page_Load(object sender, System.EventArgs e)
+		protected void Page_Load(object sender, EventArgs e)
 		{
 			InstallationManager.ResetInstallationStatusCache();
 			if(paraBlogLink != null) paraBlogLink.Visible = false;
