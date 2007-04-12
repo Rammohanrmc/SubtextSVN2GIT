@@ -951,7 +951,6 @@
     <Content Include="ExternalDependencies\Identicon.dll" />
     <Content Include="ExternalDependencies\log4net.dll" />
     <Content Include="ExternalDependencies\log4net.xml" />
-    <Content Include="ExternalDependencies\MagicAjax.dll" />
     <Content Include="HostAdmin\ChangePassword.aspx" />
     <Content Include="HostAdmin\Default.aspx" />
     <Content Include="HostAdmin\ErrorLog.aspx" />
