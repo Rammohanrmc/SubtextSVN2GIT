@@ -125,6 +125,7 @@ namespace UnitTests.Subtext.Framework.Text
 		[Row("<span>This is some text</span>", "<span>This is some text</span>")]
 		[Row("<p><span>This is some text</span> <span>this is more text</span></p>", "<p><span>This is some text</span> <span>this is more text</span></p>")]
 		[Row("<img src=\"blah\" />", "<img src=\"blah\" />")]
+      [Row("<style type=\"text/css\"><![CDATA[\r\n.blah\r\n{\r\n  font-size: small;\r\n}\r\n]]></style>", "<style type=\"text/css\"><![CDATA[\r\n.blah\r\n{\r\n  font-size: small;\r\n}\r\n]]></style>")]
 		public void ConvertHtmlToXHtmlLeavesValidMarkupAlone(string goodMarkup, string expected)
 		{
 			Entry entry = new Entry(PostType.BlogPost);
@@ -139,6 +140,8 @@ namespace UnitTests.Subtext.Framework.Text
 		[RowTest]
 		[Row("This <br /><br />is bad <p> XHTML.", "This <br /><br />is bad <p> XHTML.</p>")]
 		[Row("This <P>is bad </P> XHTML.", "This <p>is bad </p> XHTML.")]
+      [Row("<style type=\"text/css\">\r\n<![CDATA[\r\n.blah\r\n{\r\n  font-size: small;\r\n}\r\n]]></style>", "<style type=\"text/css\"><![CDATA[\r\n.blah\r\n{\r\n  font-size: small;\r\n}\r\n]]></style>")]
+      [Row("<style type=\"text/css\">\r\n\r\n<![CDATA[\r\n.blah\r\n{\r\n  font-size: small;\r\n}\r\n]]></style>", "<style type=\"text/css\"><![CDATA[\r\n.blah\r\n{\r\n  font-size: small;\r\n}\r\n]]></style>")]
 		public void ConvertHtmlToXHtmlCorrectsInvalidMarkup(string badMarkup, string corrected)
 		{
 			Entry entry = new Entry(PostType.BlogPost);
