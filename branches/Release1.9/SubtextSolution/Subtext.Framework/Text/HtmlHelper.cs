@@ -208,6 +208,8 @@ namespace Subtext.Framework.Text
 		{
 			reader.DocType = "html";
 			reader.WhitespaceHandling = WhitespaceHandling.All;
+         // Hack to fix SF bug #1678030
+         html = RemoveNewLineBeforeCDATA(html);
 			reader.InputStream = new StringReader("<html>" + html + "</html>");
 			reader.CaseFolding = CaseFolding.ToLower;
 			StringWriter writer = new StringWriter();
@@ -232,6 +234,22 @@ namespace Subtext.Framework.Text
 			string xml = writer.ToString();
 			return xml.Substring("<html>".Length, xml.Length - "<html></html>".Length);
 		}
+
+
+      // Ugly hack to remove any new line that sits between a tag end
+      // and the beginning of a CDATA section.
+      // This to make sure the Xhtml is well formatted before processing it
+      private static string RemoveNewLineBeforeCDATA(string text)
+      {
+         if (!String.IsNullOrEmpty(text))
+         {
+            string regex = @">(\r\n)+<!\[CDATA\[";
+            Regex newLineStripper = new System.Text.RegularExpressions.Regex(regex);
+
+            return newLineStripper.Replace(text, "><![CDATA[");
+         }
+         return text;
+      }
 
 		/// <summary>
 		/// Tests the specified string looking for illegal characters 
