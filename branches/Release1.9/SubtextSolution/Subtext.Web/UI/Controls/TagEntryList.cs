@@ -1,0 +1,64 @@
+#region Disclaimer/Info
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Subtext WebLog
+// 
+// Subtext is an open source weblog system that is a fork of the .TEXT
+// weblog system.
+//
+// For updated news and information please visit http://subtextproject.com/
+// Subtext is hosted at SourceForge at http://sourceforge.net/projects/subtext
+// The development mailing list is at subtext-devs@lists.sourceforge.net 
+//
+// This project is licensed under the BSD license.  See the License.txt file for more information.
+///////////////////////////////////////////////////////////////////////////////////////////////////
+#endregion
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Web;
+using Subtext.Framework.Data;
+using Subtext.Framework;
+using Subtext.Framework.Components;
+using Subtext.Framework.Configuration;
+using Subtext.Framework.Web;
+
+namespace Subtext.Web.UI.Controls
+{
+    public class TagEntryList : BaseControl
+    {
+        public bool DescriptionOnly
+		{
+			get { return EntryStoryList.DescriptionOnly; }
+			set { EntryStoryList.DescriptionOnly = value; }
+		}
+
+		protected EntryList EntryStoryList;
+
+        private int count;
+        public int Count
+        {
+            get { return count; }
+            set { count = value; }
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            if (Context != null)
+            {
+                BlogInfo info = Config.CurrentBlog;
+
+                string tagName = Path.GetFileNameWithoutExtension(HttpContext.Current.Request.Path);
+
+                IList<Entry> et = Cacher.GetEntriesByTag(Count, CacheDuration.Short, tagName);
+                EntryStoryList.EntryListItems = et;
+
+                EntryStoryList.EntryListTitle = tagName;
+                EntryStoryList.EntryListDescription = string.Format("There are {0} entries for tag {1}", et.Count, tagName);
+
+                Globals.SetTitle(string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0} - {1}", CurrentBlog.Title, tagName), Context);
+            }
+        }
+    }
+}
