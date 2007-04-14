@@ -183,6 +183,7 @@ namespace Subtext.Framework.Providers
 		public abstract IList<Entry> GetPostCollectionByMonth(int month, int year);
 		public abstract IList<Entry> GetPostsByDayRange(DateTime start, DateTime stop, PostType postType, bool activeOnly);
 		public abstract IList<Entry> GetEntriesByCategory(int ItemCount,int catID,bool ActiveOnly);
+        public abstract IList<Entry> GetEntriesByTag(int itemCount, string tagName);
 
 		#endregion
 
@@ -276,7 +277,9 @@ namespace Subtext.Framework.Providers
 		#endregion
 
         #region Entry Tag List
+
         public abstract bool SetEntryTagList(int entryId, string[] tags);
+
         #endregion
 
         #endregion
@@ -339,7 +342,7 @@ namespace Subtext.Framework.Providers
 
 		#endregion
 
-		#region Stats
+        #region Stats
 
         public abstract IPagedCollection<ViewStat> GetPagedViewStats(int pageIndex, int pageSize, DateTime beginDate, DateTime endDate);
         public abstract IPagedCollection<Referrer> GetPagedReferrers(int pageIndex, int pageSize, int entryId);
@@ -404,9 +407,23 @@ namespace Subtext.Framework.Providers
 		public abstract BlogInfo GetBlogInfo(string hostname, string subfolder, bool strict);
 		#endregion
 
-		#region KeyWords
+        #region Tags
 
-		public abstract KeyWord GetKeyWord(int KeyWordID);
+        /// <summary>
+        /// Gets the top tags from the database sorted by tag name.
+        /// </summary>
+        /// <param name="ItemCount">The number of tags to return.</param>
+        /// <returns>
+        /// A sorted dictionary with the tag name as key and entry count
+        /// as value.
+        /// </returns>
+        public abstract IDictionary<string, int> GetTopTags(int ItemCount);
+
+        #endregion
+
+        #region KeyWords
+
+        public abstract KeyWord GetKeyWord(int KeyWordID);
         public abstract ICollection<KeyWord> GetKeyWords();
         public abstract IPagedCollection<KeyWord> GetPagedKeyWords(int pageIndex, int pageSize);
 		public abstract bool UpdateKeyWord(KeyWord keyWord);

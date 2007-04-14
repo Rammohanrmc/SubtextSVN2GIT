@@ -147,7 +147,11 @@ namespace Subtext.Framework
 		{
 			return ObjectProvider.Instance().GetEntriesByCategory(itemCount,catID, activeOnly);
 		}
-		#endregion
+        public static IList<Entry> GetEntriesByTag(int itemCount, string tagName)
+        {
+            return ObjectProvider.Instance().GetEntriesByTag(itemCount, tagName);
+        }
+        #endregion
 
 		#region Single Entry
 

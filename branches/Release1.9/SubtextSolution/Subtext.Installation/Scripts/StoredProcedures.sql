@@ -423,6 +423,18 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,
 drop procedure [<dbUser,varchar,dbo>].subtext_GetPostsByCategoriesArchive
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPostsByTag]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetPostsByTag]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_InsertEntryTagList]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_InsertEntryTagList]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetTopTags]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetTopTags]
+GO
+
 if exists (select ROUTINE_NAME from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' and OBJECTPROPERTY(OBJECT_ID(ROUTINE_NAME), 'IsMsShipped') = 0 and ROUTINE_SCHEMA = '<dbUser,varchar,dbo>' AND ROUTINE_NAME = 'subtext_ClearBlogContent')
 drop procedure [<dbUser,varchar,dbo>].[subtext_ClearBlogContent]
 GO
@@ -2619,7 +2631,7 @@ GO
 CREATE PROC [<dbUser,varchar,dbo>].[subtext_InsertKeyWord]
 (
 	@Word nvarchar(100),
-	@Rel nvarchar(100) = NULL,
+	@Rel nvarchar(100),
 	@Text nvarchar(100),
 	@ReplaceFirstTimeOnly bit,
 	@OpenInNewWindow bit,
@@ -4481,17 +4493,50 @@ GO
 GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_ClearBlogContent]  TO [public]
 GO
 
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetPostsByTag]
+(
+	@ItemCount int
+	, @Tag nvarchar(256)
+	, @BlogId int
+)
+AS
+DECLARE @TagId int
+SELECT @TagId = Id FROM subtext_Tag WHERE BlogId = @BlogId AND [Name] = @Tag
+
+SET ROWCOUNT @ItemCount
+SELECT	content.BlogId
+	, content.[ID]
+	, content.Title
+	, content.DateAdded
+	, content.[Text]
+	, content.[Description]
+	, content.PostType
+	, content.Author
+	, content.Email
+	, content.DateUpdated
+	, FeedbackCount = ISNULL(content.FeedbackCount, 0)
+	, content.PostConfig
+	, content.EntryName 
+	, content.DateSyndicated
+FROM [<dbUser,varchar,dbo>].[subtext_Content] content WITH (NOLOCK)
+WHERE  content.BlogId = @BlogId 
+	AND content.ID IN (SELECT EntryId FROM [<dbUser,varchar,dbo>].[subtext_EntryTag] WHERE BlogId = @BlogId AND TagId = @TagId)
+ORDER BY content.DateAdded DESC
 GO
 
+GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetPostsByTag]  TO [public]
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_InsertEntryTagList] 
-(
+	(
 	@EntryId int,
 	@BlogId int,
 	@TagList ntext
-)
+	)
 AS
 
 -- When taglist is empty, delete any potentially existing tags.
@@ -4534,4 +4579,24 @@ END
 GO
 
 GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_InsertEntryTagList] TO [public]
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetTopTags] 
+	(
+	@ItemCount int
+	, @BlogId int
+	)
+AS
+SET ROWCOUNT @ItemCount
+SELECT t.[Name], COUNT(*) AS TagCount FROM [<dbUser,varchar,dbo>].subtext_Tag t, [<dbUser,varchar,dbo>].subtext_EntryTag e
+WHERE t.BlogId = @BlogId AND t.Id = e.TagId
+GROUP BY t.[Name]
+ORDER BY Count(*) DESC
+GO 
+
+GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetTopTags] TO [public]
 GO

@@ -519,6 +519,17 @@ namespace Subtext.Framework.Data
 	
 		}
 
+        public override IDataReader GetEntriesByTag(int itemCount, string tagName)
+        {
+            SqlParameter[] p = 
+                {
+                    DataHelper.MakeInParam("@ItemCount", SqlDbType.Int, 4, itemCount),
+                    DataHelper.MakeInParam("@Tag", SqlDbType.NVarChar, 256, tagName),
+                    BlogIdParam
+                };
+            return GetReader("subtext_GetPostsByTag", p);
+        }
+
 		//Should power both EntryCollection and EntryDayCollection
 		public override IDataReader GetPostCollectionByMonth(int month, int year)
 		{
@@ -1193,9 +1204,23 @@ namespace Subtext.Framework.Data
 
 		#endregion
 
-		#region KeyWords
+        #region Tags
 
-		public override IDataReader GetKeyWord(int keyWordID)
+        public override IDataReader GetTopTags(int ItemCount)
+        {
+            SqlParameter[] p = 
+                {
+                    DataHelper.MakeInParam("@ItemCount", SqlDbType.Int, 4, ItemCount),
+                    BlogIdParam
+                };
+            return GetReader("subtext_GetTopTags", p);
+        }
+
+        #endregion
+
+        #region KeyWords
+
+        public override IDataReader GetKeyWord(int keyWordID)
 		{
 			SqlParameter[] p =
 			{

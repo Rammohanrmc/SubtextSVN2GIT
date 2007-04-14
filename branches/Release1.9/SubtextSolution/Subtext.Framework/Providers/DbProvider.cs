@@ -151,7 +151,8 @@ namespace Subtext.Framework.Providers
 		public abstract IDataReader GetPostCollectionByMonth(int month, int year);
 		
 		public abstract IDataReader GetEntriesByCategory(int itemCount, int catID, bool activeOnly);
-		
+        public abstract IDataReader GetEntriesByTag(int itemCount, string tagName);
+
 		/// <summary>
 		/// Searches the data store for the first comment with a 
 		/// matching checksum hash.
@@ -319,8 +320,14 @@ namespace Subtext.Framework.Providers
 
 		#endregion
 
-		#region KeyWord
-		public abstract IDataReader GetKeyWord(int keyWordID);
+        #region Tags
+
+        public abstract IDataReader GetTopTags(int ItemCount);
+
+        #endregion
+
+        #region KeyWord
+        public abstract IDataReader GetKeyWord(int keyWordID);
 		public abstract IDataReader GetPagedKeyWords(int pageIndex, int pageSize);
 
 		public abstract bool DeleteKeyWord(int keywordId);

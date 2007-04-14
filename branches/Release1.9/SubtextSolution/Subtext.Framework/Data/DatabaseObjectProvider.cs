@@ -356,6 +356,14 @@ namespace Subtext.Framework.Data
                 return DataHelper.LoadEntryCollectionFromDataReader(reader);
             }
 		}
+
+        public override IList<Entry> GetEntriesByTag(int itemCount, string tagName)
+        {
+            using (IDataReader reader = DbProvider.Instance().GetEntriesByTag(itemCount, tagName))
+            {
+                return DataHelper.LoadEntryCollectionFromDataReader(reader);
+            }
+        }
 		#endregion
 
 		#region Single Entry
@@ -914,9 +922,22 @@ namespace Subtext.Framework.Data
 		}
 		#endregion
 
-		#region KeyWords
+        #region Tags
 
-		public override KeyWord GetKeyWord(int KeyWordID)
+        public override IDictionary<string, int> GetTopTags(int ItemCount)
+        {
+            using (IDataReader reader = DbProvider.Instance().GetTopTags(ItemCount))
+            {
+                IDictionary<string, int> tags = DataHelper.LoadTags(reader);
+                return tags;
+            }
+        }
+
+        #endregion
+
+        #region KeyWords
+
+        public override KeyWord GetKeyWord(int KeyWordID)
 		{
 			IDataReader reader = DbProvider.Instance().GetKeyWord(KeyWordID);
 			try
