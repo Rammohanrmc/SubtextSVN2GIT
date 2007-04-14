@@ -542,8 +542,8 @@ namespace Subtext.Framework
             // from the href attribute and not the link text.
             string text = entry.Body;
 
-            Regex checkAnchor = new Regex("<a(?<element>.*?href=[\"'](?<url>.*?)[\"'].*?)>.*?</a>", RegexOptions.IgnoreCase);
-            Regex checkTag = new Regex("rel=[\"']tag[\"']", RegexOptions.IgnoreCase);
+            Regex checkAnchor = new Regex("<a(?<element>.*?href=[\"'](?<url>.*?)[\\?\"'].*?)>.*?</a>", RegexOptions.IgnoreCase);
+            Regex checkTag = new Regex("rel=.*?[\"' ]tag[\"' ]", RegexOptions.IgnoreCase);
             List<string> tags = new List<string>();
 
             foreach (Match m in checkAnchor.Matches(text))
@@ -551,6 +551,8 @@ namespace Subtext.Framework
                 if (checkTag.IsMatch(m.Groups["element"].Value))
                 {
                     string url = m.Groups["url"].Value;
+                    if (url.EndsWith("/"))
+                        url = url.Remove(url.Length - 1, 1);
                     string[] groups = url.Split('/');
                     string tag = groups[groups.Length - 1];
                     tags.Add(tag);
@@ -574,5 +576,6 @@ namespace Subtext.Framework
         #endregion
     }
 }
+
 
 

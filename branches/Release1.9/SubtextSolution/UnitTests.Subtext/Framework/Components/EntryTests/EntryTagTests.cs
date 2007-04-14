@@ -48,6 +48,8 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		[RowTest]
 		[Row("http://blah.com/blah/", "blah")]
 		[Row("http://blah.com/foo-bar", "foo-bar")]
+        [Row("http://blah.com/query?someparm=somevalue", "query")]
+		[Row("http://blah.com/query/?someparm=somevalue", "query")]
 		[RollBack]
 		public void CanParseEntryTags(string url, string expectedTag)
 		{
