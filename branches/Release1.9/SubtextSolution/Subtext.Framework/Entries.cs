@@ -240,6 +240,8 @@ namespace Subtext.Framework
 			}
 			
 			entry.Id = ObjectProvider.Instance().Create(entry, categoryIds);
+            ObjectProvider.Instance().SetEntryTagList(entry.Id, ParseEntryTags(entry));
+
 			log.Debug("Created entry, running notification services.");
 			NotificationServices.Run(entry);
 			return entry.Id;
@@ -509,7 +511,12 @@ namespace Subtext.Framework
             if (!string.IsNullOrEmpty(entry.EntryName))
 				entry.EntryName = AutoGenerateFriendlyUrl(entry.EntryName, entry.Id);
 
-			return ObjectProvider.Instance().Update(entry, categoryIDs);
+            bool updateSuccessful = ObjectProvider.Instance().Update(entry, categoryIDs);
+            if (updateSuccessful == false)
+                return false;
+
+            string[] tags = ParseEntryTags(entry);
+            return ObjectProvider.Instance().SetEntryTagList(entry.Id, tags);
 		}
 
 		#endregion
@@ -522,6 +529,46 @@ namespace Subtext.Framework
 		}
 
 		#endregion
-	}
+
+        #region Tag Utility Functions
+
+        static string[] ParseEntryTags(Entry entry)
+        {
+            // Tags are a link with a rel attribute of "tag". The tag name is derived
+            // from the href attribute and not the link text.
+            string text = entry.Body;
+
+            Regex checkAnchor = new Regex("<a(?<element>.*?href=[\"'](?<url>.*?)[\"'].*?)>.*?</a>", RegexOptions.IgnoreCase);
+            Regex checkTag = new Regex("rel=[\"']tag[\"']", RegexOptions.IgnoreCase);
+            List<string> tags = new List<string>();
+
+            foreach (Match m in checkAnchor.Matches(text))
+            {
+                if (checkTag.IsMatch(m.Groups["element"].Value))
+                {
+                    string url = m.Groups["url"].Value;
+                    string[] groups = url.Split('/');
+                    string tag = groups[groups.Length - 1];
+                    tags.Add(tag);
+                }
+            }
+            return tags.ToArray();
+        }
+
+        public static bool RebuildAllTags()
+        {
+            foreach (EntryDay day in GetBlogPosts(0, PostConfig.None))
+            {
+                foreach (Entry e in day)
+                {
+                    ObjectProvider.Instance().SetEntryTagList(e.Id, ParseEntryTags(e));
+                }
+            }
+            return true;
+        }
+
+        #endregion
+    }
 }
+
 

@@ -102,7 +102,11 @@ GO
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[iter_charlist_to_table]') and xtype in (N'FN', N'IF', N'TF'))
 drop function [<dbUser,varchar,dbo>].[iter_charlist_to_table]
 GO
-	
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_InsertEntryTagList]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_InsertEntryTagList]
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_VersionAdd]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [<dbUser,varchar,dbo>].[subtext_VersionAdd]
 GO
@@ -4475,4 +4479,59 @@ SET ANSI_NULLS ON
 GO
 
 GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_ClearBlogContent]  TO [public]
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_InsertEntryTagList] 
+(
+	@EntryId int,
+	@BlogId int,
+	@TagList ntext
+)
+AS
+
+-- When taglist is empty, delete any potentially existing tags.
+IF CONVERT(nvarchar(1),@TagList) = ''
+BEGIN
+	DELETE FROM subtext_EntryTag 
+		WHERE BlogId = @BlogId AND EntryId = @EntryId
+END
+ELSE
+BEGIN
+	DECLARE @Tags TABLE (tagId int,
+						 tag nvarchar(2000))
+	-- Populate the in-memory table with the @TagList string broken out into rows.
+	INSERT INTO @Tags 
+		SELECT t.Id, c.nstr
+		FROM iter_charlist_to_table(@TagList, ',') c
+		LEFT OUTER JOIN subtext_Tag t ON BlogId = @BlogId AND t.[Name] = c.nstr
+
+	-- If a tag doesn't exist, it needs to be created in subtext_Tag.
+	INSERT INTO subtext_Tag (BlogId, [Name])
+		SELECT @BlogId, tag  FROM @Tags 
+		WHERE tag NOT IN (SELECT [Name] FROM subtext_Tag WHERE BlogId = @BlogID)
+	
+	-- If tags were created above, we need to update @Tags with their Ids.
+	UPDATE @Tags SET tagId = s.Id FROM @Tags t, subtext_Tag s 
+		WHERE s.BlogId = @BlogId AND s.[Name] = t.tag AND t.TagId IS NULL
+
+	-- If tags exist for an entry that have been removed, remove the link.
+	DELETE FROM subtext_EntryTag 
+		WHERE BlogId = @BlogId AND EntryId = @EntryId 
+		AND TagId NOT IN (SELECT tagId FROM @Tags)
+
+	-- Now add any tags that aren't already linked.
+	INSERT INTO subtext_EntryTag (BlogId, EntryId, TagId)
+	SELECT @BlogId, @EntryId, tagId FROM @Tags
+		WHERE tagId NOT IN 
+			(SELECT TagId FROM subtext_EntryTag 
+				WHERE BlogId = @BlogId AND EntryId = @EntryId)
+END
+GO
+
+GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_InsertEntryTagList] TO [public]
 GO

@@ -606,6 +606,35 @@ namespace Subtext.Framework.Data
 		}
 
         /// <summary>
+        /// Saves the tags for the specified post
+        /// </summary>
+        /// <param name="postId">The EntryId for the post to update</param>
+        /// <param name="tags">
+        /// An array of tag strings for the associated post. If there are no tags
+        /// associated with the post, pass tags with length zero to remove post tags
+        /// if present.
+        /// </param>
+        /// <returns></returns>
+        public override bool SetEntryTagList(int postId, string[] tags)
+        {
+            if (tags == null)
+            {
+                return false;
+            }
+
+            SqlParameter tagParam = new SqlParameter("@TagList", SqlDbType.NText);
+            tagParam.Value = string.Join(",",tags);
+
+            SqlParameter[] p =
+                {
+                    DataHelper.MakeInParam("@EntryId", SqlDbType.Int, 4, DataHelper.CheckNull(postId)),
+                    BlogIdParam,
+                    tagParam
+                };
+            return NonQueryBool("subtext_InsertEntryTagList", p);
+        }
+
+        /// <summary>
 		/// Adds a new entry to the blog.  Whether the entry be a blog post, article,
 		/// </summary>
 		/// <remarks>
@@ -1327,5 +1356,6 @@ namespace Subtext.Framework.Data
 		}
 	}
 }
+
 
 

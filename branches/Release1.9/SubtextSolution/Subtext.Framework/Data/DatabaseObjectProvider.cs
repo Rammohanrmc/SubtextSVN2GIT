@@ -549,10 +549,19 @@ namespace Subtext.Framework.Data
 		}
 
 		#endregion
-        
-		#region Format Helper
-		
-		private static bool FormatEntry(Entry e, bool UseKeyWords)
+
+        #region SetTagList
+
+        public override bool SetEntryTagList(int entryId, string[] tags)
+        {
+            return DbProvider.Instance().SetEntryTagList(entryId, tags);
+        }
+
+        #endregion
+
+        #region Format Helper
+
+        private static bool FormatEntry(Entry e, bool UseKeyWords)
 		{
 			//Do this before we validate the text
 			if(UseKeyWords)

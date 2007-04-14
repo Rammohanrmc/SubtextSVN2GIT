@@ -275,11 +275,15 @@ namespace Subtext.Framework.Providers
 
 		#endregion
 
-		#endregion
+        #region Entry Tag List
+        public abstract bool SetEntryTagList(int entryId, string[] tags);
+        #endregion
 
-		#region Links/Categories
+        #endregion
 
-		#region Paged Links
+        #region Links/Categories
+
+        #region Paged Links
 
         public abstract IPagedCollection<Link> GetPagedLinks(int categoryTypeID, int pageIndex, int pageSize, bool sortDescending);
 
