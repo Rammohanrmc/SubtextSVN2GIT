@@ -617,7 +617,7 @@ namespace Subtext.Framework.Text
                     if (Uri.TryCreate(urlMatch.Groups["url"].Value, UriKind.RelativeOrAbsolute, out url))
                     {
                         string[] seg = url.Segments;
-                        string tag = seg[seg.Length - 1].Replace("/", ""); // I'm not entirely certain the replace is needed.
+                        string tag = seg[seg.Length - 1].Replace("/", "");
                         tags.Add(tag);
                     }
                 }

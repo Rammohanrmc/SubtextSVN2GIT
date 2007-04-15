@@ -82,5 +82,22 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 			Assert.AreEqual(1, entries.Count);
 			Assert.AreEqual(entry.Id, entries[0].Id);
 		}
+
+		[Test]
+		[RollBack]
+		public void CanParseAnchorWithWhiteSpace()
+		{
+			string hostname = UnitTestHelper.GenerateRandomString();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", hostname, string.Empty));
+			UnitTestHelper.SetHttpContextWithBlogRequest(hostname, string.Empty);
+			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("me", "title-zero", "body-zero");
+			Entries.Create(entry);
+			entry.Body = "<a href	  =  \"http://blah/sometag\" rel	=  \"tag friend\">nothing</a>";
+			Entries.Update(entry);
+
+			IList<Entry> entries = Entries.GetEntriesByTag(1, "sometag");
+			Assert.AreEqual(1, entries.Count);
+			Assert.AreEqual(entry.Id, entries[0].Id);
+		}
 	}
 }
