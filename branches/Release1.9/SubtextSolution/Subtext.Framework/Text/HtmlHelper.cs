@@ -602,13 +602,19 @@ namespace Subtext.Framework.Text
 			}
 		}
 
-        public static string[] GetTags(string text)
+		/// <summary>
+		/// Parses some html and returns a string collection of the tag names contained 
+		/// within the HTML.
+		/// </summary>
+		/// <param name="html"></param>
+		/// <returns></returns>
+		public static List<string> ParseTags(string html)
         {
             Regex checkAnchor = new Regex("<a(?<element>.*?rel=.*?[\"' ]tag[\"' ].*?)>.*?</a>", RegexOptions.IgnoreCase);
             Regex checkUrl = new Regex("href=[\"'](?<url>.+?)[\"']", RegexOptions.IgnoreCase);
-            List<string> tags = new List<string>();
+			List<string> tags = new List<string>();
 
-            foreach (Match m in checkAnchor.Matches(text))
+            foreach (Match m in checkAnchor.Matches(html))
             {
                 Match urlMatch = checkUrl.Match(m.Groups["element"].Value);
                 if (urlMatch.Success)
@@ -618,11 +624,12 @@ namespace Subtext.Framework.Text
                     {
                         string[] seg = url.Segments;
                         string tag = seg[seg.Length - 1].Replace("/", "");
-                        tags.Add(tag);
+                        if(!tags.Contains(tag))
+							tags.Add(tag);
                     }
                 }
             }
-            return tags.ToArray();
+            return tags;
         }
 	}
 }

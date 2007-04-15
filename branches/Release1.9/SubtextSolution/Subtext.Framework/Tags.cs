@@ -36,7 +36,7 @@ namespace Subtext.Framework
     {
         public static ICollection<Tag> GetTopTags(int ItemCount)
         {
-            IDictionary<string,int> topTags = ObjectProvider.Instance().GetTopTags(ItemCount);
+            IDictionary<string, int> topTags = ObjectProvider.Instance().GetTopTags(ItemCount);
 
             double mean;
             double stdDev = Statistics.StdDev(topTags.Values, out mean);

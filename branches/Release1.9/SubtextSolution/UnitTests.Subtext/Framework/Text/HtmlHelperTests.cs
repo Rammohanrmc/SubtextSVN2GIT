@@ -14,6 +14,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Web;
 using System.Web.UI.WebControls;
 using MbUnit.Framework;
@@ -194,6 +195,22 @@ namespace UnitTests.Subtext.Framework.Text
 			}
 
 			HtmlHelper.HasIllegalContent("blah %60script ");
+		}
+
+		[Test]
+		public void CanParseTag()
+		{
+			List<string> tags = HtmlHelper.ParseTags("blah blah <a href=\"http://blah.com/subdir/mytag/\" rel=\"tag\">test1</a> goo goo");
+			Assert.AreEqual(1, tags.Count, "Should have found one tag.");
+			Assert.AreEqual("mytag", tags[0], "Should have found one tag.");
+
+		}
+
+		[Test]
+		public void ParseTagsDoesNotParseDuplicates()
+		{
+			List<string> tags = HtmlHelper.ParseTags("<a href=\"http://blah.com/subdir/mytag/\" rel=\"tag\">test1</a><a href=\"http://blah.com/another-dir/mytag/\" rel=\"tag\">test2</a>");
+			Assert.AreEqual(1, tags.Count, "The same tag exists twice, should only count as one.");
 		}
 
 		[TestFixtureSetUp]

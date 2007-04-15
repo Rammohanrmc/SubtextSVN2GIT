@@ -16,6 +16,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using Subtext.Extensibility;
 using Subtext.Extensibility.Interfaces;
 using Subtext.Extensibility.Providers;
@@ -278,7 +279,13 @@ namespace Subtext.Framework.Providers
 
         #region Entry Tag List
 
-        public abstract bool SetEntryTagList(int entryId, string[] tags);
+		/// <summary>
+		/// Sets the tags for the entry.
+		/// </summary>
+		/// <param name="entryId"></param>
+		/// <param name="tags"></param>
+		/// <returns></returns>
+		public abstract bool SetEntryTagList(int entryId, List<string> tags);
 
         #endregion
 

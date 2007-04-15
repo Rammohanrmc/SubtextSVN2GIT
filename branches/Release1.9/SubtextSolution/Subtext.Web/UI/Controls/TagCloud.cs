@@ -15,7 +15,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel;
 using System.Web.UI.WebControls;
 using Subtext.Framework.Data;
@@ -35,7 +34,8 @@ namespace Subtext.Web.UI.Controls
         }
 
         private int itemCount;
-        [DefaultValue(20)]
+        
+		[DefaultValue(20)]
         public int ItemCount
         {
             get { return itemCount; }
@@ -48,7 +48,8 @@ namespace Subtext.Web.UI.Controls
             {
                 Tag tag = (Tag)e.Item.DataItem;
                 HyperLink tagLink = e.Item.FindControl("TagUrl") as HyperLink;
-                tagLink.NavigateUrl = string.Format("{0}Tag/{1}.aspx", Config.CurrentBlog.RootUrl, tag.TagName);
+				if(tagLink != null)
+					tagLink.NavigateUrl = string.Format("{0}Tags/{1}.aspx", Config.CurrentBlog.RootUrl, tag.TagName);
             }
         }
 

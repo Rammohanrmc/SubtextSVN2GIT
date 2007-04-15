@@ -20,8 +20,6 @@ using System.Web;
 using Subtext.Framework.Data;
 using Subtext.Framework;
 using Subtext.Framework.Components;
-using Subtext.Framework.Configuration;
-using Subtext.Framework.Web;
 
 namespace Subtext.Web.UI.Controls
 {
@@ -47,15 +45,12 @@ namespace Subtext.Web.UI.Controls
             base.OnLoad(e);
             if (Context != null)
             {
-                BlogInfo info = Config.CurrentBlog;
-
                 string tagName = Path.GetFileNameWithoutExtension(HttpContext.Current.Request.Path);
 
                 IList<Entry> et = Cacher.GetEntriesByTag(Count, CacheDuration.Short, tagName);
                 EntryStoryList.EntryListItems = et;
-
                 EntryStoryList.EntryListTitle = tagName;
-                EntryStoryList.EntryListDescription = string.Format("There are {0} entries for tag {1}", et.Count, tagName);
+                EntryStoryList.EntryListDescription = string.Format("There are {0} entries for the tag <em>{1}</em>", et.Count, tagName);
 
                 Globals.SetTitle(string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0} - {1}", CurrentBlog.Title, tagName), Context);
             }

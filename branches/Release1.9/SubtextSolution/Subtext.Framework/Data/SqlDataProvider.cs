@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
@@ -626,15 +627,13 @@ namespace Subtext.Framework.Data
         /// if present.
         /// </param>
         /// <returns></returns>
-        public override bool SetEntryTagList(int postId, string[] tags)
+        public override bool SetEntryTagList(int postId, List<string> tags)
         {
-            if (tags == null)
-            {
-                return false;
-            }
+			if (tags == null)
+				throw new ArgumentNullException("tags", "Tags cannot be null.");
 
             SqlParameter tagParam = new SqlParameter("@TagList", SqlDbType.NText);
-            tagParam.Value = string.Join(",",tags);
+            tagParam.Value = string.Join(",", tags.ToArray());
 
             SqlParameter[] p =
                 {

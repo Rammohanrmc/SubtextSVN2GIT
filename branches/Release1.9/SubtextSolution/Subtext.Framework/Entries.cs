@@ -244,7 +244,7 @@ namespace Subtext.Framework
 			}
 			
 			entry.Id = ObjectProvider.Instance().Create(entry, categoryIds);
-            ObjectProvider.Instance().SetEntryTagList(entry.Id, HtmlHelper.GetTags(entry.Body));
+            ObjectProvider.Instance().SetEntryTagList(entry.Id, HtmlHelper.ParseTags(entry.Body));
 
 			log.Debug("Created entry, running notification services.");
 			NotificationServices.Run(entry);
@@ -519,7 +519,7 @@ namespace Subtext.Framework
             if (updateSuccessful == false)
                 return false;
 
-            string[] tags = HtmlHelper.GetTags(entry.Body);
+            List<string> tags = HtmlHelper.ParseTags(entry.Body);
             return ObjectProvider.Instance().SetEntryTagList(entry.Id, tags);
 		}
 
@@ -542,7 +542,7 @@ namespace Subtext.Framework
             {
                 foreach (Entry e in day)
                 {
-                    ObjectProvider.Instance().SetEntryTagList(e.Id, HtmlHelper.GetTags(e.Body));
+                    ObjectProvider.Instance().SetEntryTagList(e.Id, HtmlHelper.ParseTags(e.Body));
                 }
             }
             return true;

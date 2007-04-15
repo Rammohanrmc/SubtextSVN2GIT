@@ -560,7 +560,7 @@ namespace Subtext.Framework.Data
 
         #region SetTagList
 
-        public override bool SetEntryTagList(int entryId, string[] tags)
+        public override bool SetEntryTagList(int entryId, List<string> tags)
         {
             return DbProvider.Instance().SetEntryTagList(entryId, tags);
         }
