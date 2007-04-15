@@ -3,7 +3,7 @@
 <div>
 	<asp:Repeater Runat="server" ID="Tags" OnItemDataBound="Tags_ItemDataBound">
 		<HeaderTemplate>
-			<h2>Tag Cloud</h2>
+			<h3>Tag Cloud</h3>
 				<ul id="tag-cloud">
 		</HeaderTemplate>
 		<ItemTemplate>
