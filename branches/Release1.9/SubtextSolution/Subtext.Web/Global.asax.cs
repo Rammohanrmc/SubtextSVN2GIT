@@ -14,15 +14,20 @@
 #endregion
 
 using System;
+using System.Configuration;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.Security;
 using System.Web;
 using log4net;
+using log4net.Appender;
+using log4net.Repository.Hierarchy;
 using Subtext.Framework;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Data;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Logging;
+using Subtext.Framework.Security;
 
 namespace Subtext 
 {

@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -600,5 +601,28 @@ namespace Subtext.Framework.Text
 				return null;
 			}
 		}
+
+        public static string[] GetTags(string text)
+        {
+            Regex checkAnchor = new Regex("<a(?<element>.*?rel=.*?[\"' ]tag[\"' ].*?)>.*?</a>", RegexOptions.IgnoreCase);
+            Regex checkUrl = new Regex("href=[\"'](?<url>.+?)[\"']", RegexOptions.IgnoreCase);
+            List<string> tags = new List<string>();
+
+            foreach (Match m in checkAnchor.Matches(text))
+            {
+                Match urlMatch = checkUrl.Match(m.Groups["element"].Value);
+                if (urlMatch.Success)
+                {
+                    Uri url;
+                    if (Uri.TryCreate(urlMatch.Groups["url"].Value, UriKind.RelativeOrAbsolute, out url))
+                    {
+                        string[] seg = url.Segments;
+                        string tag = seg[seg.Length - 1].Replace("/", ""); // I'm not entirely certain the replace is needed.
+                        tags.Add(tag);
+                    }
+                }
+            }
+            return tags.ToArray();
+        }
 	}
 }
