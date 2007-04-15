@@ -616,6 +616,12 @@
     <Compile Include="UI\Controls\SubtextSearch.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="UI\Controls\TagCloud.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\TagEntryList.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="UI\Controls\Top10Module.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
