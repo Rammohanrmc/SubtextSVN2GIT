@@ -55,11 +55,11 @@ namespace Subtext.Framework
 
         private static int computeWeight(double factor, double stdDev)
         {
-            if (factor <= -2 * stdDev)
+            if (factor <= -0.25 * stdDev)
                 return 1;
-            if (factor <= -1 * stdDev)
+            if (factor <= 0 * stdDev)
                 return 2;
-            if (factor <= -0.5 * stdDev)
+            if (factor <= 0.25 * stdDev)
                 return 3;
             if (factor < 0.5 * stdDev)
                 return 4;

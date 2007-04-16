@@ -45,7 +45,8 @@ namespace Subtext.Web.UI.Controls
             base.OnLoad(e);
             if (Context != null)
             {
-                string tagName = Path.GetFileNameWithoutExtension(HttpContext.Current.Request.Path);
+                Uri url = HttpContext.Current.Request.Url;
+                string tagName = url.Segments[url.Segments.Length - 2].Replace("/", "");
 
                 IList<Entry> et = Cacher.GetEntriesByTag(Count, CacheDuration.Short, tagName);
                 EntryStoryList.EntryListItems = et;
