@@ -22,7 +22,7 @@
 				<div id="sidebar">
 					<uc1:News id="News" runat="server" />
 					<uc1:RecentComments id="RecentComments" runat="server" />
-					<uc1:TagCloud runat="server" />
+					<uc1:TagCloud runat="server" ItemCount="20" />
 					<uc1:SingleColumn id="SingleColumn" runat="server" />
 					<div>
 						<h2>Hosted by</h2>
