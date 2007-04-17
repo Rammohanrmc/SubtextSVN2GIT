@@ -16,5 +16,4 @@
 			</ul>
 		</FooterTemplate>
 	</asp:Repeater>
-	<asp:HyperLink runat="server" id="DefaultTagLink">more tags...</asp:HyperLink>
 </div>

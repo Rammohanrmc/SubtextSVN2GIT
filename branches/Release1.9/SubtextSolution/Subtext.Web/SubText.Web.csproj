@@ -1809,6 +1809,7 @@
     <Content Include="Skins\Piyo\Controls\DayCollection.ascx" />
     <Content Include="Skins\Piyo\Controls\EntryList.ascx" />
     <Content Include="Skins\Piyo\Controls\Footer.ascx" />
+    <Content Include="Skins\Piyo\Controls\FullTagCloud.ascx" />
     <Content Include="Skins\Piyo\Controls\GalleryThumbNailViewer.ascx" />
     <Content Include="Skins\Piyo\Controls\Header.ascx" />
     <Content Include="Skins\Piyo\Controls\HomePage.ascx" />
@@ -1876,6 +1877,7 @@
     <Content Include="SiteMap\SiteMapHttpHandler.ashx" />
     <None Include="Skins\RedBook\Controls\EntryList.ascx" />
     <Content Include="Skins\RedBook\Controls\Footer.ascx" />
+    <Content Include="Skins\RedBook\Controls\FullTagCloud.ascx" />
     <Content Include="Skins\RedBook\Controls\GalleryThumbNailViewer.ascx" />
     <Content Include="Skins\RedBook\Controls\Header.ascx" />
     <Content Include="Skins\RedBook\Controls\HomePage.ascx" />
