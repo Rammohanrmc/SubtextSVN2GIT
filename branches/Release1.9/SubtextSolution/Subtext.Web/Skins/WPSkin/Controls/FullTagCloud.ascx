@@ -1,6 +1,5 @@
 ﻿<%@ Control Language="c#" Inherits="Subtext.Web.UI.Controls.TagCloud" %>
 <%@ Import Namespace = "Subtext.Framework" %>
-
 <div>
 	<h2>Tag Cloud</h2>
 	<asp:Repeater Runat="server" ID="Tags" OnItemDataBound="Tags_ItemDataBound">
@@ -17,5 +16,4 @@
 			</ul>
 		</FooterTemplate>
 	</asp:Repeater>
-	<asp:HyperLink runat="server" id="DefaultTagLink">more tags...</asp:HyperLink>
 </div>
