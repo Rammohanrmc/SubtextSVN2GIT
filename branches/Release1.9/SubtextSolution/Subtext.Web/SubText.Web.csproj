@@ -1407,6 +1407,7 @@
     <Content Include="Skins\Colors\Controls\DayCollection.ascx" />
     <Content Include="Skins\Colors\Controls\EntryList.ascx" />
     <Content Include="Skins\Colors\Controls\Footer.ascx" />
+    <Content Include="Skins\Colors\Controls\FullTagCloud.ascx" />
     <Content Include="Skins\Colors\Controls\GalleryThumbNailViewer.ascx" />
     <Content Include="Skins\Colors\Controls\Header.ascx" />
     <Content Include="Skins\Colors\Controls\HomePage.ascx" />
@@ -1622,6 +1623,7 @@
     <Content Include="Skins\Nature\Controls\DayCollection.ascx" />
     <Content Include="Skins\Nature\Controls\EntryList.ascx" />
     <Content Include="Skins\Nature\Controls\Footer.ascx" />
+    <Content Include="Skins\Nature\Controls\FullTagCloud.ascx" />
     <Content Include="Skins\Nature\Controls\GalleryThumbNailViewer.ascx" />
     <Content Include="Skins\Nature\Controls\Header.ascx" />
     <Content Include="Skins\Nature\Controls\HomePage.ascx" />
@@ -1877,6 +1879,7 @@
     <Content Include="SiteMap\SiteMapHttpHandler.ashx" />
     <None Include="Skins\RedBook\Controls\EntryList.ascx" />
     <Content Include="Skins\RedBook\Controls\Footer.ascx" />
+    <Content Include="Skins\Naked\Controls\FullTagCloud.ascx" />
     <Content Include="Skins\RedBook\Controls\FullTagCloud.ascx" />
     <Content Include="Skins\RedBook\Controls\GalleryThumbNailViewer.ascx" />
     <Content Include="Skins\RedBook\Controls\Header.ascx" />
