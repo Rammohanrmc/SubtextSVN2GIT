@@ -13,11 +13,6 @@
 					<div id="searchResults">
 						<asp:LinkButton ID="closeButton" runat="server" CssClass="closeSearch" ToolTip="close search">[x]</asp:LinkButton>
 						<h5>Search Results</h5>
-						<asp:UpdateProgress ID="newSearchProgress" runat="server">
-							<ProgressTemplate>
-								<div id="search-progress"></div>
-							</ProgressTemplate>
-						</asp:UpdateProgress>
 						<ul>
 				</HeaderTemplate>
 				<ItemTemplate>

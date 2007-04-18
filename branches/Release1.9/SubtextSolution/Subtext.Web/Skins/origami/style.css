@@ -26,6 +26,11 @@ div.sidebar-node #tag-cloud li a
 }
 
 /* ------------- {search color scheme} -------------- */
+#searchResults
+{
+	background-color: #fff;
+}
+
 #searchResults ul li
 {
 	color: #ffba27;
@@ -76,6 +81,7 @@ div.sidebar-node #tag-cloud li a
 	width: 300px;
 	text-align: left;
 	border: solid 1px #000;
+	left: -125px;
 }
 
 #searchResults h5
@@ -91,4 +97,9 @@ div.sidebar-node #tag-cloud li a
 #searchResults ul, #searchResults ul li
 {
 	margin-left: 0;
+}
+
+#search #search-progress
+{
+	position: absolute;
 }
