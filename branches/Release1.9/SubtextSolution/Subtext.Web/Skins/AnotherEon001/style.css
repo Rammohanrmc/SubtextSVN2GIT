@@ -320,12 +320,6 @@ div.news
 }
 
 /* ------------- {search layout} -------------- */
-#searchWrapper
-{
-	position: relative;
-	width: 100%;
-}
-
 #search
 {
 	padding: 0;
@@ -352,7 +346,6 @@ div.news
 	position: absolute;
 	top: 18px;
 	left: 0px;
-	z-index: 10;
 	text-align: left;
 }
 
@@ -368,12 +361,4 @@ a.closeSearch
 	top:0;
 	right: 4px;
 	display: block;
-}
-
-#search-progress
-{
-	background: url(images/ajax-loader.gif) no-repeat;
-	width: 32px;
-	height: 32px;
-	margin: 4px auto;
 }

@@ -270,3 +270,31 @@ ul.horizontal li
 	font-size: 2em;
 	font-weight: bold;
 }
+
+/*---------{search}--------------*/
+#search-progress
+{
+	background: url(../../images/loaders/subtext-loader.gif) no-repeat;
+	width: 32px;
+	height: 32px;
+	margin: 4px auto;
+}
+
+#searchResults
+{
+	z-index: 20;
+}
+
+#searchWrapper
+{
+	position: relative;
+	width: 100%;
+}
+
+a.closeSearch
+{
+	position: absolute;
+	top:0;
+	right: 4px;
+	display: block;
+}
