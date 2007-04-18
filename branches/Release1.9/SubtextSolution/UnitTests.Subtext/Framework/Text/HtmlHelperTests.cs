@@ -221,6 +221,14 @@ namespace UnitTests.Subtext.Framework.Text
 			Assert.AreEqual("mytag1", tags[0]);
 		}
 
+        [Test]
+        public void ParseTagsWithWhitespaceAttributes()
+        {
+            List<string> tags = HtmlHelper.ParseTags("<a title=\"blah\" href = " + Environment.NewLine + " \"http://blah.com/subdir/mytag1/\" rel = " + Environment.NewLine + " \"tag\">mytag1</a>");
+            Assert.AreEqual(1, tags.Count, "The attributes contain whitespace but should be recognized as valid");
+            Assert.AreEqual("mytag1", tags[0]);
+        }
+
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
