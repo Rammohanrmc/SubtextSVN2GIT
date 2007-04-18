@@ -610,8 +610,8 @@ namespace Subtext.Framework.Text
 		/// <returns></returns>
 		public static List<string> ParseTags(string html)
         {
-            Regex checkAnchor = new Regex("<a(?<element>.*?rel=.*?[\"' ]tag[\"' ].*?)>.*?</a>", RegexOptions.IgnoreCase);
-            Regex checkUrl = new Regex("href=[\"'](?<url>.+?)[\"']", RegexOptions.IgnoreCase);
+            Regex checkAnchor = new Regex("<a(?<element>.*?rel=.*?[\"' ]tag[\"' ].*?)>.*?</a>", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            Regex checkUrl = new Regex("href=\\s*[\"'](?<url>.+?)[\"']", RegexOptions.IgnoreCase | RegexOptions.Singleline);
 			List<string> tags = new List<string>();
 
             foreach (Match m in checkAnchor.Matches(html))
