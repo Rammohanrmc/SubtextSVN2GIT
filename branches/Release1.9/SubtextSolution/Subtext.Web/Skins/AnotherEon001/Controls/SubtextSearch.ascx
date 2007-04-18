@@ -1,17 +1,32 @@
 <%@ Control Language="C#" EnableTheming="false"  AutoEventWireup="false" Inherits="Subtext.Web.UI.Controls.SubtextSearch" %>
-<div id="searchBox">
-<asp:TextBox id="txtSearch" runat="server" class="sText"></asp:TextBox>
-<asp:Button id="btnSearch" runat="server"  class="sButton" CausesValidation="False"></asp:Button>
-<br />
-
-<h5>Results</h5>
-<asp:Repeater id="SearchResults" runat="server">
-	<ItemTemplate>
-		<div id="item">
-			<a href="<%# DataBinder.Eval(Container.DataItem, "url") %>"> 
-			<%# DataBinder.Eval(Container.DataItem, "Title") %> 
-			</a>
-		</div>
-	</ItemTemplate>
-</asp:Repeater>
+<div id="searchWrapper">
+	<div id="search">
+		<asp:TextBox id="txtSearch" runat="server" class="searchterm" /> <asp:Button id="btnSearch" runat="server" class="searchButton" Text="Search" CausesValidation="False" />
+	</div>
+	<asp:UpdatePanel ID="searchUpdate" runat="server" UpdateMode="conditional">
+		<Triggers>
+			<asp:AsyncPostBackTrigger ControlID="btnSearch" />
+		</Triggers>
+		<ContentTemplate>
+			<asp:Repeater id="SearchResults" runat="server">
+				<HeaderTemplate>
+					<div id="searchResults">
+						<div class="dropshadow">
+							<div class="innerbox">
+								<asp:LinkButton ID="closeButton" runat="server" CssClass="closeSearch" ToolTip="close search">[x]</asp:LinkButton>
+						<h5>Search Results</h5>
+						<ul>
+				</HeaderTemplate>
+				<ItemTemplate>
+							<li><a href="<%# DataBinder.Eval(Container.DataItem, "url") %>"><%# DataBinder.Eval(Container.DataItem, "Title") %></a></li>
+				</ItemTemplate>
+				<FooterTemplate>
+						</ul>
+							</div>
+						</div>
+					</div>
+				</FooterTemplate>
+			</asp:Repeater>
+		</ContentTemplate>
+	</asp:UpdatePanel>
 </div>
