@@ -141,8 +141,8 @@ namespace UnitTests.Subtext.Framework.Text
 		[RowTest]
 		[Row("This <br /><br />is bad <p> XHTML.", "This <br /><br />is bad <p> XHTML.</p>")]
 		[Row("This <P>is bad </P> XHTML.", "This <p>is bad </p> XHTML.")]
-      [Row("<style type=\"text/css\">\r\n<![CDATA[\r\n.blah\r\n{\r\n  font-size: small;\r\n}\r\n]]></style>", "<style type=\"text/css\"><![CDATA[\r\n.blah\r\n{\r\n  font-size: small;\r\n}\r\n]]></style>")]
-      [Row("<style type=\"text/css\">\r\n\r\n<![CDATA[\r\n.blah\r\n{\r\n  font-size: small;\r\n}\r\n]]></style>", "<style type=\"text/css\"><![CDATA[\r\n.blah\r\n{\r\n  font-size: small;\r\n}\r\n]]></style>")]
+		[Row("<style type=\"text/css\">\r\n<![CDATA[\r\n.blah\r\n{\r\n  font-size: small;\r\n}\r\n]]></style>", "<style type=\"text/css\"><![CDATA[\r\n.blah\r\n{\r\n  font-size: small;\r\n}\r\n]]></style>")]
+		[Row("<style type=\"text/css\">\r\n\r\n<![CDATA[\r\n.blah\r\n{\r\n  font-size: small;\r\n}\r\n]]></style>", "<style type=\"text/css\"><![CDATA[\r\n.blah\r\n{\r\n  font-size: small;\r\n}\r\n]]></style>")]
 		public void ConvertHtmlToXHtmlCorrectsInvalidMarkup(string badMarkup, string corrected)
 		{
 			Entry entry = new Entry(PostType.BlogPost);
@@ -229,6 +229,14 @@ namespace UnitTests.Subtext.Framework.Text
             Assert.AreEqual("mytag1", tags[0]);
         }
 
+		[Test]
+		public void ParseTagsWithWeirdWhiteSpace()
+		{
+			List<string> tags = HtmlHelper.ParseTags("<a title=\"Programmer's Bill of Rights\" href=\"http://www.codinghorror.com/blog/archives/000666.html\">Programmer&rsquo;s Bill of Rights</a> that <a rel=\"friend met\" href=\"http://www.codinghorror.com/blog/\">Jeff Atwood</a>" + Environment.NewLine + "<div class=\"tags\">Technorati tags: <a rel=\"tag\" href=\"http://technorati.com/tag/Programming\">Programming</a>");
+			Assert.AreEqual(1, tags.Count, "The attributes contain whitespace but should be recognized as valid");
+			Assert.AreEqual("Programming", tags[0]);
+		}
+
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
@@ -254,3 +262,5 @@ namespace UnitTests.Subtext.Framework.Text
 		}
 	}
 }
+
+
