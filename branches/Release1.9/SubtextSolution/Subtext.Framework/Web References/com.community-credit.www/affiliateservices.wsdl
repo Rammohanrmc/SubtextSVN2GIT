@@ -2,6 +2,28 @@
 <wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.community-credit.com/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://www.community-credit.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.community-credit.com/">
+      <s:element name="AddNewsgroupItem">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="MessageId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ReferenceId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="NewsgroupID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="User" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Subject" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Message" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="NewsgroupDate" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="AffiliateCode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="AffiliateKey" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AddNewsgroupItemResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AddNewsgroupItemResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="GenerateFutureCredit">
         <s:complexType>
           <s:sequence>
@@ -39,6 +61,28 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="AutoSubmitBlogResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AddNewsgroupCredit">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="EarnerEmail" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="EarnerFirstName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="EarnerLastName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="TaskDescription" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ReferenceURL" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="PointCategory" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="EarnedDate" type="s:dateTime" />
+            <s:element minOccurs="0" maxOccurs="1" name="AffiliateCode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="AffiliateKey" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AddNewsgroupCreditResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AddNewsgroupCreditResult" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -150,6 +194,28 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="PointCategoriesAll">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="AffiliateCode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="AffiliateKey" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="PointCategoriesAllResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="PointCategoriesAllResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="GetEarnersByDateRangeAndEmail">
         <s:complexType>
           <s:sequence>
@@ -175,6 +241,32 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="SendConfirmationEmail">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="EmailAddress" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="FirstName" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendConfirmationEmailResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="SendWelcomeEmail">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Source" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="strTo" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="FirstName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="strPassword" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="strCommunities" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="strPasswordType" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendWelcomeEmailResponse">
+        <s:complexType />
+      </s:element>
       <s:element name="string" nillable="true" type="s:string" />
       <s:element name="DataSet" nillable="true">
         <s:complexType>
@@ -186,6 +278,12 @@
       </s:element>
     </s:schema>
   </wsdl:types>
+  <wsdl:message name="AddNewsgroupItemSoapIn">
+    <wsdl:part name="parameters" element="tns:AddNewsgroupItem" />
+  </wsdl:message>
+  <wsdl:message name="AddNewsgroupItemSoapOut">
+    <wsdl:part name="parameters" element="tns:AddNewsgroupItemResponse" />
+  </wsdl:message>
   <wsdl:message name="GenerateFutureCreditSoapIn">
     <wsdl:part name="parameters" element="tns:GenerateFutureCredit" />
   </wsdl:message>
@@ -197,6 +295,12 @@
   </wsdl:message>
   <wsdl:message name="AutoSubmitBlogSoapOut">
     <wsdl:part name="parameters" element="tns:AutoSubmitBlogResponse" />
+  </wsdl:message>
+  <wsdl:message name="AddNewsgroupCreditSoapIn">
+    <wsdl:part name="parameters" element="tns:AddNewsgroupCredit" />
+  </wsdl:message>
+  <wsdl:message name="AddNewsgroupCreditSoapOut">
+    <wsdl:part name="parameters" element="tns:AddNewsgroupCreditResponse" />
   </wsdl:message>
   <wsdl:message name="AddCommunityCreditSoapIn">
     <wsdl:part name="parameters" element="tns:AddCommunityCredit" />
@@ -228,11 +332,43 @@
   <wsdl:message name="GetTopEarnersByDateRangeSoapOut">
     <wsdl:part name="parameters" element="tns:GetTopEarnersByDateRangeResponse" />
   </wsdl:message>
+  <wsdl:message name="PointCategoriesAllSoapIn">
+    <wsdl:part name="parameters" element="tns:PointCategoriesAll" />
+  </wsdl:message>
+  <wsdl:message name="PointCategoriesAllSoapOut">
+    <wsdl:part name="parameters" element="tns:PointCategoriesAllResponse" />
+  </wsdl:message>
   <wsdl:message name="GetEarnersByDateRangeAndEmailSoapIn">
     <wsdl:part name="parameters" element="tns:GetEarnersByDateRangeAndEmail" />
   </wsdl:message>
   <wsdl:message name="GetEarnersByDateRangeAndEmailSoapOut">
     <wsdl:part name="parameters" element="tns:GetEarnersByDateRangeAndEmailResponse" />
+  </wsdl:message>
+  <wsdl:message name="SendConfirmationEmailSoapIn">
+    <wsdl:part name="parameters" element="tns:SendConfirmationEmail" />
+  </wsdl:message>
+  <wsdl:message name="SendConfirmationEmailSoapOut">
+    <wsdl:part name="parameters" element="tns:SendConfirmationEmailResponse" />
+  </wsdl:message>
+  <wsdl:message name="SendWelcomeEmailSoapIn">
+    <wsdl:part name="parameters" element="tns:SendWelcomeEmail" />
+  </wsdl:message>
+  <wsdl:message name="SendWelcomeEmailSoapOut">
+    <wsdl:part name="parameters" element="tns:SendWelcomeEmailResponse" />
+  </wsdl:message>
+  <wsdl:message name="AddNewsgroupItemHttpGetIn">
+    <wsdl:part name="MessageId" type="s:string" />
+    <wsdl:part name="ReferenceId" type="s:string" />
+    <wsdl:part name="NewsgroupID" type="s:string" />
+    <wsdl:part name="User" type="s:string" />
+    <wsdl:part name="Subject" type="s:string" />
+    <wsdl:part name="Message" type="s:string" />
+    <wsdl:part name="NewsgroupDate" type="s:string" />
+    <wsdl:part name="AffiliateCode" type="s:string" />
+    <wsdl:part name="AffiliateKey" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="AddNewsgroupItemHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
   </wsdl:message>
   <wsdl:message name="GenerateFutureCreditHttpGetIn">
     <wsdl:part name="EarnerEmail" type="s:string" />
@@ -256,6 +392,20 @@
     <wsdl:part name="BlogDate" type="s:string" />
   </wsdl:message>
   <wsdl:message name="AutoSubmitBlogHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="AddNewsgroupCreditHttpGetIn">
+    <wsdl:part name="EarnerEmail" type="s:string" />
+    <wsdl:part name="EarnerFirstName" type="s:string" />
+    <wsdl:part name="EarnerLastName" type="s:string" />
+    <wsdl:part name="TaskDescription" type="s:string" />
+    <wsdl:part name="ReferenceURL" type="s:string" />
+    <wsdl:part name="PointCategory" type="s:string" />
+    <wsdl:part name="EarnedDate" type="s:string" />
+    <wsdl:part name="AffiliateCode" type="s:string" />
+    <wsdl:part name="AffiliateKey" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="AddNewsgroupCreditHttpGetOut">
     <wsdl:part name="Body" element="tns:string" />
   </wsdl:message>
   <wsdl:message name="AddCommunityCreditHttpGetIn">
@@ -305,6 +455,13 @@
   <wsdl:message name="GetTopEarnersByDateRangeHttpGetOut">
     <wsdl:part name="Body" element="tns:DataSet" />
   </wsdl:message>
+  <wsdl:message name="PointCategoriesAllHttpGetIn">
+    <wsdl:part name="AffiliateCode" type="s:string" />
+    <wsdl:part name="AffiliateKey" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="PointCategoriesAllHttpGetOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
   <wsdl:message name="GetEarnersByDateRangeAndEmailHttpGetIn">
     <wsdl:part name="Email" type="s:string" />
     <wsdl:part name="StartDate" type="s:string" />
@@ -314,6 +471,34 @@
   </wsdl:message>
   <wsdl:message name="GetEarnersByDateRangeAndEmailHttpGetOut">
     <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
+  <wsdl:message name="SendConfirmationEmailHttpGetIn">
+    <wsdl:part name="EmailAddress" type="s:string" />
+    <wsdl:part name="FirstName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="SendConfirmationEmailHttpGetOut" />
+  <wsdl:message name="SendWelcomeEmailHttpGetIn">
+    <wsdl:part name="Source" type="s:string" />
+    <wsdl:part name="strTo" type="s:string" />
+    <wsdl:part name="FirstName" type="s:string" />
+    <wsdl:part name="strPassword" type="s:string" />
+    <wsdl:part name="strCommunities" type="s:string" />
+    <wsdl:part name="strPasswordType" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="SendWelcomeEmailHttpGetOut" />
+  <wsdl:message name="AddNewsgroupItemHttpPostIn">
+    <wsdl:part name="MessageId" type="s:string" />
+    <wsdl:part name="ReferenceId" type="s:string" />
+    <wsdl:part name="NewsgroupID" type="s:string" />
+    <wsdl:part name="User" type="s:string" />
+    <wsdl:part name="Subject" type="s:string" />
+    <wsdl:part name="Message" type="s:string" />
+    <wsdl:part name="NewsgroupDate" type="s:string" />
+    <wsdl:part name="AffiliateCode" type="s:string" />
+    <wsdl:part name="AffiliateKey" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="AddNewsgroupItemHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
   </wsdl:message>
   <wsdl:message name="GenerateFutureCreditHttpPostIn">
     <wsdl:part name="EarnerEmail" type="s:string" />
@@ -337,6 +522,20 @@
     <wsdl:part name="BlogDate" type="s:string" />
   </wsdl:message>
   <wsdl:message name="AutoSubmitBlogHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="AddNewsgroupCreditHttpPostIn">
+    <wsdl:part name="EarnerEmail" type="s:string" />
+    <wsdl:part name="EarnerFirstName" type="s:string" />
+    <wsdl:part name="EarnerLastName" type="s:string" />
+    <wsdl:part name="TaskDescription" type="s:string" />
+    <wsdl:part name="ReferenceURL" type="s:string" />
+    <wsdl:part name="PointCategory" type="s:string" />
+    <wsdl:part name="EarnedDate" type="s:string" />
+    <wsdl:part name="AffiliateCode" type="s:string" />
+    <wsdl:part name="AffiliateKey" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="AddNewsgroupCreditHttpPostOut">
     <wsdl:part name="Body" element="tns:string" />
   </wsdl:message>
   <wsdl:message name="AddCommunityCreditHttpPostIn">
@@ -386,6 +585,13 @@
   <wsdl:message name="GetTopEarnersByDateRangeHttpPostOut">
     <wsdl:part name="Body" element="tns:DataSet" />
   </wsdl:message>
+  <wsdl:message name="PointCategoriesAllHttpPostIn">
+    <wsdl:part name="AffiliateCode" type="s:string" />
+    <wsdl:part name="AffiliateKey" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="PointCategoriesAllHttpPostOut">
+    <wsdl:part name="Body" element="tns:DataSet" />
+  </wsdl:message>
   <wsdl:message name="GetEarnersByDateRangeAndEmailHttpPostIn">
     <wsdl:part name="Email" type="s:string" />
     <wsdl:part name="StartDate" type="s:string" />
@@ -396,7 +602,26 @@
   <wsdl:message name="GetEarnersByDateRangeAndEmailHttpPostOut">
     <wsdl:part name="Body" element="tns:DataSet" />
   </wsdl:message>
+  <wsdl:message name="SendConfirmationEmailHttpPostIn">
+    <wsdl:part name="EmailAddress" type="s:string" />
+    <wsdl:part name="FirstName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="SendConfirmationEmailHttpPostOut" />
+  <wsdl:message name="SendWelcomeEmailHttpPostIn">
+    <wsdl:part name="Source" type="s:string" />
+    <wsdl:part name="strTo" type="s:string" />
+    <wsdl:part name="FirstName" type="s:string" />
+    <wsdl:part name="strPassword" type="s:string" />
+    <wsdl:part name="strCommunities" type="s:string" />
+    <wsdl:part name="strPasswordType" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="SendWelcomeEmailHttpPostOut" />
   <wsdl:portType name="AffiliateServicesSoap">
+    <wsdl:operation name="AddNewsgroupItem">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Add Newsgroup Entry</wsdl:documentation>
+      <wsdl:input message="tns:AddNewsgroupItemSoapIn" />
+      <wsdl:output message="tns:AddNewsgroupItemSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="GenerateFutureCredit">
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Add Community Credit Points</wsdl:documentation>
       <wsdl:input message="tns:GenerateFutureCreditSoapIn" />
@@ -406,6 +631,11 @@
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Add Community Credit Points</wsdl:documentation>
       <wsdl:input message="tns:AutoSubmitBlogSoapIn" />
       <wsdl:output message="tns:AutoSubmitBlogSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AddNewsgroupCredit">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Add Community Credit Points</wsdl:documentation>
+      <wsdl:input message="tns:AddNewsgroupCreditSoapIn" />
+      <wsdl:output message="tns:AddNewsgroupCreditSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="AddCommunityCredit">
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Add Community Credit Points</wsdl:documentation>
@@ -432,13 +662,33 @@
       <wsdl:input message="tns:GetTopEarnersByDateRangeSoapIn" />
       <wsdl:output message="tns:GetTopEarnersByDateRangeSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="PointCategoriesAll">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns All Point Categories</wsdl:documentation>
+      <wsdl:input message="tns:PointCategoriesAllSoapIn" />
+      <wsdl:output message="tns:PointCategoriesAllSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="GetEarnersByDateRangeAndEmail">
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns Community Credit Point Earners by Date Range and Email</wsdl:documentation>
       <wsdl:input message="tns:GetEarnersByDateRangeAndEmailSoapIn" />
       <wsdl:output message="tns:GetEarnersByDateRangeAndEmailSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="SendConfirmationEmail">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Send a Confirmation message to the new member that just signed up</wsdl:documentation>
+      <wsdl:input message="tns:SendConfirmationEmailSoapIn" />
+      <wsdl:output message="tns:SendConfirmationEmailSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SendWelcomeEmail">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Send a Welcome message to the new member</wsdl:documentation>
+      <wsdl:input message="tns:SendWelcomeEmailSoapIn" />
+      <wsdl:output message="tns:SendWelcomeEmailSoapOut" />
+    </wsdl:operation>
   </wsdl:portType>
   <wsdl:portType name="AffiliateServicesHttpGet">
+    <wsdl:operation name="AddNewsgroupItem">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Add Newsgroup Entry</wsdl:documentation>
+      <wsdl:input message="tns:AddNewsgroupItemHttpGetIn" />
+      <wsdl:output message="tns:AddNewsgroupItemHttpGetOut" />
+    </wsdl:operation>
     <wsdl:operation name="GenerateFutureCredit">
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Add Community Credit Points</wsdl:documentation>
       <wsdl:input message="tns:GenerateFutureCreditHttpGetIn" />
@@ -448,6 +698,11 @@
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Add Community Credit Points</wsdl:documentation>
       <wsdl:input message="tns:AutoSubmitBlogHttpGetIn" />
       <wsdl:output message="tns:AutoSubmitBlogHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AddNewsgroupCredit">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Add Community Credit Points</wsdl:documentation>
+      <wsdl:input message="tns:AddNewsgroupCreditHttpGetIn" />
+      <wsdl:output message="tns:AddNewsgroupCreditHttpGetOut" />
     </wsdl:operation>
     <wsdl:operation name="AddCommunityCredit">
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Add Community Credit Points</wsdl:documentation>
@@ -474,13 +729,33 @@
       <wsdl:input message="tns:GetTopEarnersByDateRangeHttpGetIn" />
       <wsdl:output message="tns:GetTopEarnersByDateRangeHttpGetOut" />
     </wsdl:operation>
+    <wsdl:operation name="PointCategoriesAll">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns All Point Categories</wsdl:documentation>
+      <wsdl:input message="tns:PointCategoriesAllHttpGetIn" />
+      <wsdl:output message="tns:PointCategoriesAllHttpGetOut" />
+    </wsdl:operation>
     <wsdl:operation name="GetEarnersByDateRangeAndEmail">
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns Community Credit Point Earners by Date Range and Email</wsdl:documentation>
       <wsdl:input message="tns:GetEarnersByDateRangeAndEmailHttpGetIn" />
       <wsdl:output message="tns:GetEarnersByDateRangeAndEmailHttpGetOut" />
     </wsdl:operation>
+    <wsdl:operation name="SendConfirmationEmail">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Send a Confirmation message to the new member that just signed up</wsdl:documentation>
+      <wsdl:input message="tns:SendConfirmationEmailHttpGetIn" />
+      <wsdl:output message="tns:SendConfirmationEmailHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SendWelcomeEmail">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Send a Welcome message to the new member</wsdl:documentation>
+      <wsdl:input message="tns:SendWelcomeEmailHttpGetIn" />
+      <wsdl:output message="tns:SendWelcomeEmailHttpGetOut" />
+    </wsdl:operation>
   </wsdl:portType>
   <wsdl:portType name="AffiliateServicesHttpPost">
+    <wsdl:operation name="AddNewsgroupItem">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Add Newsgroup Entry</wsdl:documentation>
+      <wsdl:input message="tns:AddNewsgroupItemHttpPostIn" />
+      <wsdl:output message="tns:AddNewsgroupItemHttpPostOut" />
+    </wsdl:operation>
     <wsdl:operation name="GenerateFutureCredit">
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Add Community Credit Points</wsdl:documentation>
       <wsdl:input message="tns:GenerateFutureCreditHttpPostIn" />
@@ -490,6 +765,11 @@
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Add Community Credit Points</wsdl:documentation>
       <wsdl:input message="tns:AutoSubmitBlogHttpPostIn" />
       <wsdl:output message="tns:AutoSubmitBlogHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AddNewsgroupCredit">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Add Community Credit Points</wsdl:documentation>
+      <wsdl:input message="tns:AddNewsgroupCreditHttpPostIn" />
+      <wsdl:output message="tns:AddNewsgroupCreditHttpPostOut" />
     </wsdl:operation>
     <wsdl:operation name="AddCommunityCredit">
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Add Community Credit Points</wsdl:documentation>
@@ -516,14 +796,38 @@
       <wsdl:input message="tns:GetTopEarnersByDateRangeHttpPostIn" />
       <wsdl:output message="tns:GetTopEarnersByDateRangeHttpPostOut" />
     </wsdl:operation>
+    <wsdl:operation name="PointCategoriesAll">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns All Point Categories</wsdl:documentation>
+      <wsdl:input message="tns:PointCategoriesAllHttpPostIn" />
+      <wsdl:output message="tns:PointCategoriesAllHttpPostOut" />
+    </wsdl:operation>
     <wsdl:operation name="GetEarnersByDateRangeAndEmail">
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns Community Credit Point Earners by Date Range and Email</wsdl:documentation>
       <wsdl:input message="tns:GetEarnersByDateRangeAndEmailHttpPostIn" />
       <wsdl:output message="tns:GetEarnersByDateRangeAndEmailHttpPostOut" />
     </wsdl:operation>
+    <wsdl:operation name="SendConfirmationEmail">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Send a Confirmation message to the new member that just signed up</wsdl:documentation>
+      <wsdl:input message="tns:SendConfirmationEmailHttpPostIn" />
+      <wsdl:output message="tns:SendConfirmationEmailHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SendWelcomeEmail">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Send a Welcome message to the new member</wsdl:documentation>
+      <wsdl:input message="tns:SendWelcomeEmailHttpPostIn" />
+      <wsdl:output message="tns:SendWelcomeEmailHttpPostOut" />
+    </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="AffiliateServicesSoap" type="tns:AffiliateServicesSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="AddNewsgroupItem">
+      <soap:operation soapAction="http://www.community-credit.com/AddNewsgroupItem" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GenerateFutureCredit">
       <soap:operation soapAction="http://www.community-credit.com/GenerateFutureCredit" style="document" />
       <wsdl:input>
@@ -535,6 +839,15 @@
     </wsdl:operation>
     <wsdl:operation name="AutoSubmitBlog">
       <soap:operation soapAction="http://www.community-credit.com/AutoSubmitBlog" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddNewsgroupCredit">
+      <soap:operation soapAction="http://www.community-credit.com/AddNewsgroupCredit" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -587,8 +900,35 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="PointCategoriesAll">
+      <soap:operation soapAction="http://www.community-credit.com/PointCategoriesAll" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GetEarnersByDateRangeAndEmail">
       <soap:operation soapAction="http://www.community-credit.com/GetEarnersByDateRangeAndEmail" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendConfirmationEmail">
+      <soap:operation soapAction="http://www.community-credit.com/SendConfirmationEmail" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendWelcomeEmail">
+      <soap:operation soapAction="http://www.community-credit.com/SendWelcomeEmail" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -599,6 +939,15 @@
   </wsdl:binding>
   <wsdl:binding name="AffiliateServicesSoap12" type="tns:AffiliateServicesSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="AddNewsgroupItem">
+      <soap12:operation soapAction="http://www.community-credit.com/AddNewsgroupItem" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GenerateFutureCredit">
       <soap12:operation soapAction="http://www.community-credit.com/GenerateFutureCredit" style="document" />
       <wsdl:input>
@@ -610,6 +959,15 @@
     </wsdl:operation>
     <wsdl:operation name="AutoSubmitBlog">
       <soap12:operation soapAction="http://www.community-credit.com/AutoSubmitBlog" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddNewsgroupCredit">
+      <soap12:operation soapAction="http://www.community-credit.com/AddNewsgroupCredit" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -662,8 +1020,35 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="PointCategoriesAll">
+      <soap12:operation soapAction="http://www.community-credit.com/PointCategoriesAll" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GetEarnersByDateRangeAndEmail">
       <soap12:operation soapAction="http://www.community-credit.com/GetEarnersByDateRangeAndEmail" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendConfirmationEmail">
+      <soap12:operation soapAction="http://www.community-credit.com/SendConfirmationEmail" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendWelcomeEmail">
+      <soap12:operation soapAction="http://www.community-credit.com/SendWelcomeEmail" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -674,6 +1059,15 @@
   </wsdl:binding>
   <wsdl:binding name="AffiliateServicesHttpGet" type="tns:AffiliateServicesHttpGet">
     <http:binding verb="GET" />
+    <wsdl:operation name="AddNewsgroupItem">
+      <http:operation location="/AddNewsgroupItem" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GenerateFutureCredit">
       <http:operation location="/GenerateFutureCredit" />
       <wsdl:input>
@@ -685,6 +1079,15 @@
     </wsdl:operation>
     <wsdl:operation name="AutoSubmitBlog">
       <http:operation location="/AutoSubmitBlog" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddNewsgroupCredit">
+      <http:operation location="/AddNewsgroupCredit" />
       <wsdl:input>
         <http:urlEncoded />
       </wsdl:input>
@@ -737,6 +1140,15 @@
         <mime:mimeXml part="Body" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="PointCategoriesAll">
+      <http:operation location="/PointCategoriesAll" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GetEarnersByDateRangeAndEmail">
       <http:operation location="/GetEarnersByDateRangeAndEmail" />
       <wsdl:input>
@@ -745,10 +1157,33 @@
       <wsdl:output>
         <mime:mimeXml part="Body" />
       </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendConfirmationEmail">
+      <http:operation location="/SendConfirmationEmail" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output />
+    </wsdl:operation>
+    <wsdl:operation name="SendWelcomeEmail">
+      <http:operation location="/SendWelcomeEmail" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output />
     </wsdl:operation>
   </wsdl:binding>
   <wsdl:binding name="AffiliateServicesHttpPost" type="tns:AffiliateServicesHttpPost">
     <http:binding verb="POST" />
+    <wsdl:operation name="AddNewsgroupItem">
+      <http:operation location="/AddNewsgroupItem" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GenerateFutureCredit">
       <http:operation location="/GenerateFutureCredit" />
       <wsdl:input>
@@ -760,6 +1195,15 @@
     </wsdl:operation>
     <wsdl:operation name="AutoSubmitBlog">
       <http:operation location="/AutoSubmitBlog" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddNewsgroupCredit">
+      <http:operation location="/AddNewsgroupCredit" />
       <wsdl:input>
         <mime:content type="application/x-www-form-urlencoded" />
       </wsdl:input>
@@ -812,6 +1256,15 @@
         <mime:mimeXml part="Body" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="PointCategoriesAll">
+      <http:operation location="/PointCategoriesAll" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GetEarnersByDateRangeAndEmail">
       <http:operation location="/GetEarnersByDateRangeAndEmail" />
       <wsdl:input>
@@ -820,6 +1273,20 @@
       <wsdl:output>
         <mime:mimeXml part="Body" />
       </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendConfirmationEmail">
+      <http:operation location="/SendConfirmationEmail" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output />
+    </wsdl:operation>
+    <wsdl:operation name="SendWelcomeEmail">
+      <http:operation location="/SendWelcomeEmail" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output />
     </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="AffiliateServices">

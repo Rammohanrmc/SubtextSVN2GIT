@@ -29,6 +29,7 @@ using Subtext.Web.Admin.Pages;
 using Subtext.Web.Admin.WebUI;
 using Subtext.Web.Controls;
 using StringHelper = Subtext.Framework.Text.StringHelper;
+using Subtext.Framework.Tracking;
 
 namespace Subtext.Web.Admin.UserControls
 {
@@ -602,47 +603,22 @@ namespace Subtext.Web.Admin.UserControls
 			this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, "TODO...", e.Exception.Message));
 		}
 
-		private string AddCommunityCredits(Entry entry) 
+		private void AddCommunityCredits(Entry entry) 
 		{
 			string result=string.Empty;
 
-			bool commCreditsEnabled;
-			try
+			try 
 			{
-                commCreditsEnabled = Convert.ToBoolean(System.Configuration.ConfigurationManager.AppSettings["CommCreditEnabled"]);
+            result = CommunityCreditNotification.AddCommunityCredits(entry);
+            if (!result.Equals("Success"))
+            {
+               this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, "Error during Community Credits submission (your post has been saved)", result));
+            }
 			}
-			catch(Exception) 
+			catch(Exception ex) 
 			{
-				commCreditsEnabled = false;
+				this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, "Error during Community Credits submission (your post has been saved)", ex.Message));
 			}
-
-			if(commCreditsEnabled.Equals("true")) 
-			{
-				com.community_credit.www.AffiliateServices wsCommunityCredit = new com.community_credit.www.AffiliateServices();
-				string url=entry.FullyQualifiedUrl.ToString();
-				string category=String.Empty;
-				if(entry.PostType==PostType.BlogPost)
-					category="Blog";
-				else if (entry.PostType==PostType.Story)
-					category="Article";
-				string description = "Blogged about: " + entry.Title;
-				BlogInfo info = Config.CurrentBlog;
-				string firstName=string.Empty;
-				string lastName=info.Author;
-				string email=info.Email;
-                string affiliateCode = System.Configuration.ConfigurationManager.AppSettings["CommCreditAffiliateCode"];
-                string affiliateKey = System.Configuration.ConfigurationManager.AppSettings["CommCreditAffiliateKey"];
-				
-				try 
-				{
-					result=wsCommunityCredit.AddCommunityCredit(email,firstName,lastName,description,url,category,affiliateCode,affiliateKey);
-				}
-				catch(Exception ex) 
-				{
-					this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, "Error during Community Credits submission (your post has been saved)", ex.Message));
-				}	
-			}
-			return result;
 		}
 	}
 }

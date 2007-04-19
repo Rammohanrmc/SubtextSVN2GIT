@@ -25,6 +25,7 @@ using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Logging;
 using Subtext.Framework.Security;
+using Subtext.Framework.Tracking;
 
 //Need to find a method that has access to context, so we can terminate the request if AllowServiceAccess == false.
 //Users will be able to access the metablogapi page, but will not be able to make a request, but the page should not be visible
@@ -36,6 +37,8 @@ namespace Subtext.Framework.XmlRpc
 	/// </summary>
 	public class MetaWeblog : XmlRpcService, IMetaWeblog
 	{
+      static Log Log = new Log();
+
 		private static void ValidateUser(string username, string password, bool allowServiceAccess)
 		{
 			if(!Config.Settings.AllowServiceAccess || !allowServiceAccess)
@@ -233,6 +236,7 @@ namespace Subtext.Framework.XmlRpc
 			try
 			{
 				postID = Entries.Create(entry);
+            AddCommunityCredits(entry);
 			}
 			catch(Exception e)
 			{
@@ -244,6 +248,25 @@ namespace Subtext.Framework.XmlRpc
 			}
 			return postID.ToString(CultureInfo.InvariantCulture);
 		}
+
+      private void AddCommunityCredits(Entry entry)
+      {
+         string result = string.Empty;
+
+         try
+         {
+            result = CommunityCreditNotification.AddCommunityCredits(entry);
+            if (!result.Equals("Success"))
+            {
+               Log.WarnFormat("Community Credit ws returned the following response while notifying for the url {0}: {1}", entry.FullyQualifiedUrl.ToString(), result);
+            }
+         }
+         catch (Exception ex)
+         {
+            Log.Error("Error while connecting to the Community Credit webservice", ex);
+         }
+      }
+
 	    public mediaObjectInfo newMediaObject(string blogid, string username, string password, mediaObject mediaobject)
 	    {
             Framework.BlogInfo info = Config.CurrentBlog;

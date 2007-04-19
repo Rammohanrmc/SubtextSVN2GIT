@@ -13,7 +13,7 @@
 // 
 #pragma warning disable 1591
 
-namespace Subtext.Web.com.community_credit.www {
+namespace Subtext.Framework.com.community_credit.www {
     using System.Diagnostics;
     using System.Web.Services;
     using System.ComponentModel;
@@ -30,9 +30,13 @@ namespace Subtext.Web.com.community_credit.www {
     [System.Web.Services.WebServiceBindingAttribute(Name="AffiliateServicesSoap", Namespace="http://www.community-credit.com/")]
     public partial class AffiliateServices : System.Web.Services.Protocols.SoapHttpClientProtocol {
         
+        private System.Threading.SendOrPostCallback AddNewsgroupItemOperationCompleted;
+        
         private System.Threading.SendOrPostCallback GenerateFutureCreditOperationCompleted;
         
         private System.Threading.SendOrPostCallback AutoSubmitBlogOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback AddNewsgroupCreditOperationCompleted;
         
         private System.Threading.SendOrPostCallback AddCommunityCreditOperationCompleted;
         
@@ -44,13 +48,19 @@ namespace Subtext.Web.com.community_credit.www {
         
         private System.Threading.SendOrPostCallback GetTopEarnersByDateRangeOperationCompleted;
         
+        private System.Threading.SendOrPostCallback PointCategoriesAllOperationCompleted;
+        
         private System.Threading.SendOrPostCallback GetEarnersByDateRangeAndEmailOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback SendConfirmationEmailOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback SendWelcomeEmailOperationCompleted;
         
         private bool useDefaultCredentialsSetExplicitly;
         
         /// <remarks/>
         public AffiliateServices() {
-            this.Url = global::Subtext.Web.Properties.Settings.Default.Subtext_Web_com_community_credit_www_AffiliateServices;
+            this.Url = global::Subtext.Framework.Properties.Settings.Default.Subtext_Framework_com_community_credit_www_AffiliateServices;
             if ((this.IsLocalFileSystemWebService(this.Url) == true)) {
                 this.UseDefaultCredentials = true;
                 this.useDefaultCredentialsSetExplicitly = false;
@@ -85,10 +95,16 @@ namespace Subtext.Web.com.community_credit.www {
         }
         
         /// <remarks/>
+        public event AddNewsgroupItemCompletedEventHandler AddNewsgroupItemCompleted;
+        
+        /// <remarks/>
         public event GenerateFutureCreditCompletedEventHandler GenerateFutureCreditCompleted;
         
         /// <remarks/>
         public event AutoSubmitBlogCompletedEventHandler AutoSubmitBlogCompleted;
+        
+        /// <remarks/>
+        public event AddNewsgroupCreditCompletedEventHandler AddNewsgroupCreditCompleted;
         
         /// <remarks/>
         public event AddCommunityCreditCompletedEventHandler AddCommunityCreditCompleted;
@@ -106,7 +122,61 @@ namespace Subtext.Web.com.community_credit.www {
         public event GetTopEarnersByDateRangeCompletedEventHandler GetTopEarnersByDateRangeCompleted;
         
         /// <remarks/>
+        public event PointCategoriesAllCompletedEventHandler PointCategoriesAllCompleted;
+        
+        /// <remarks/>
         public event GetEarnersByDateRangeAndEmailCompletedEventHandler GetEarnersByDateRangeAndEmailCompleted;
+        
+        /// <remarks/>
+        public event SendConfirmationEmailCompletedEventHandler SendConfirmationEmailCompleted;
+        
+        /// <remarks/>
+        public event SendWelcomeEmailCompletedEventHandler SendWelcomeEmailCompleted;
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.community-credit.com/AddNewsgroupItem", RequestNamespace="http://www.community-credit.com/", ResponseNamespace="http://www.community-credit.com/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string AddNewsgroupItem(string MessageId, string ReferenceId, string NewsgroupID, string User, string Subject, string Message, string NewsgroupDate, string AffiliateCode, string AffiliateKey) {
+            object[] results = this.Invoke("AddNewsgroupItem", new object[] {
+                        MessageId,
+                        ReferenceId,
+                        NewsgroupID,
+                        User,
+                        Subject,
+                        Message,
+                        NewsgroupDate,
+                        AffiliateCode,
+                        AffiliateKey});
+            return ((string)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void AddNewsgroupItemAsync(string MessageId, string ReferenceId, string NewsgroupID, string User, string Subject, string Message, string NewsgroupDate, string AffiliateCode, string AffiliateKey) {
+            this.AddNewsgroupItemAsync(MessageId, ReferenceId, NewsgroupID, User, Subject, Message, NewsgroupDate, AffiliateCode, AffiliateKey, null);
+        }
+        
+        /// <remarks/>
+        public void AddNewsgroupItemAsync(string MessageId, string ReferenceId, string NewsgroupID, string User, string Subject, string Message, string NewsgroupDate, string AffiliateCode, string AffiliateKey, object userState) {
+            if ((this.AddNewsgroupItemOperationCompleted == null)) {
+                this.AddNewsgroupItemOperationCompleted = new System.Threading.SendOrPostCallback(this.OnAddNewsgroupItemOperationCompleted);
+            }
+            this.InvokeAsync("AddNewsgroupItem", new object[] {
+                        MessageId,
+                        ReferenceId,
+                        NewsgroupID,
+                        User,
+                        Subject,
+                        Message,
+                        NewsgroupDate,
+                        AffiliateCode,
+                        AffiliateKey}, this.AddNewsgroupItemOperationCompleted, userState);
+        }
+        
+        private void OnAddNewsgroupItemOperationCompleted(object arg) {
+            if ((this.AddNewsgroupItemCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.AddNewsgroupItemCompleted(this, new AddNewsgroupItemCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
         
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.community-credit.com/GenerateFutureCredit", RequestNamespace="http://www.community-credit.com/", ResponseNamespace="http://www.community-credit.com/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
@@ -187,6 +257,51 @@ namespace Subtext.Web.com.community_credit.www {
             if ((this.AutoSubmitBlogCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.AutoSubmitBlogCompleted(this, new AutoSubmitBlogCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.community-credit.com/AddNewsgroupCredit", RequestNamespace="http://www.community-credit.com/", ResponseNamespace="http://www.community-credit.com/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string AddNewsgroupCredit(string EarnerEmail, string EarnerFirstName, string EarnerLastName, string TaskDescription, string ReferenceURL, string PointCategory, System.DateTime EarnedDate, string AffiliateCode, string AffiliateKey) {
+            object[] results = this.Invoke("AddNewsgroupCredit", new object[] {
+                        EarnerEmail,
+                        EarnerFirstName,
+                        EarnerLastName,
+                        TaskDescription,
+                        ReferenceURL,
+                        PointCategory,
+                        EarnedDate,
+                        AffiliateCode,
+                        AffiliateKey});
+            return ((string)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void AddNewsgroupCreditAsync(string EarnerEmail, string EarnerFirstName, string EarnerLastName, string TaskDescription, string ReferenceURL, string PointCategory, System.DateTime EarnedDate, string AffiliateCode, string AffiliateKey) {
+            this.AddNewsgroupCreditAsync(EarnerEmail, EarnerFirstName, EarnerLastName, TaskDescription, ReferenceURL, PointCategory, EarnedDate, AffiliateCode, AffiliateKey, null);
+        }
+        
+        /// <remarks/>
+        public void AddNewsgroupCreditAsync(string EarnerEmail, string EarnerFirstName, string EarnerLastName, string TaskDescription, string ReferenceURL, string PointCategory, System.DateTime EarnedDate, string AffiliateCode, string AffiliateKey, object userState) {
+            if ((this.AddNewsgroupCreditOperationCompleted == null)) {
+                this.AddNewsgroupCreditOperationCompleted = new System.Threading.SendOrPostCallback(this.OnAddNewsgroupCreditOperationCompleted);
+            }
+            this.InvokeAsync("AddNewsgroupCredit", new object[] {
+                        EarnerEmail,
+                        EarnerFirstName,
+                        EarnerLastName,
+                        TaskDescription,
+                        ReferenceURL,
+                        PointCategory,
+                        EarnedDate,
+                        AffiliateCode,
+                        AffiliateKey}, this.AddNewsgroupCreditOperationCompleted, userState);
+        }
+        
+        private void OnAddNewsgroupCreditOperationCompleted(object arg) {
+            if ((this.AddNewsgroupCreditCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.AddNewsgroupCreditCompleted(this, new AddNewsgroupCreditCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -370,6 +485,37 @@ namespace Subtext.Web.com.community_credit.www {
         }
         
         /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.community-credit.com/PointCategoriesAll", RequestNamespace="http://www.community-credit.com/", ResponseNamespace="http://www.community-credit.com/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public System.Data.DataSet PointCategoriesAll(string AffiliateCode, string AffiliateKey) {
+            object[] results = this.Invoke("PointCategoriesAll", new object[] {
+                        AffiliateCode,
+                        AffiliateKey});
+            return ((System.Data.DataSet)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void PointCategoriesAllAsync(string AffiliateCode, string AffiliateKey) {
+            this.PointCategoriesAllAsync(AffiliateCode, AffiliateKey, null);
+        }
+        
+        /// <remarks/>
+        public void PointCategoriesAllAsync(string AffiliateCode, string AffiliateKey, object userState) {
+            if ((this.PointCategoriesAllOperationCompleted == null)) {
+                this.PointCategoriesAllOperationCompleted = new System.Threading.SendOrPostCallback(this.OnPointCategoriesAllOperationCompleted);
+            }
+            this.InvokeAsync("PointCategoriesAll", new object[] {
+                        AffiliateCode,
+                        AffiliateKey}, this.PointCategoriesAllOperationCompleted, userState);
+        }
+        
+        private void OnPointCategoriesAllOperationCompleted(object arg) {
+            if ((this.PointCategoriesAllCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.PointCategoriesAllCompleted(this, new PointCategoriesAllCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.community-credit.com/GetEarnersByDateRangeAndEmail", RequestNamespace="http://www.community-credit.com/", ResponseNamespace="http://www.community-credit.com/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public System.Data.DataSet GetEarnersByDateRangeAndEmail(string Email, string StartDate, string EndDate, string AffiliateCode, string AffiliateKey) {
             object[] results = this.Invoke("GetEarnersByDateRangeAndEmail", new object[] {
@@ -407,6 +553,74 @@ namespace Subtext.Web.com.community_credit.www {
         }
         
         /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.community-credit.com/SendConfirmationEmail", RequestNamespace="http://www.community-credit.com/", ResponseNamespace="http://www.community-credit.com/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public void SendConfirmationEmail(string EmailAddress, string FirstName) {
+            this.Invoke("SendConfirmationEmail", new object[] {
+                        EmailAddress,
+                        FirstName});
+        }
+        
+        /// <remarks/>
+        public void SendConfirmationEmailAsync(string EmailAddress, string FirstName) {
+            this.SendConfirmationEmailAsync(EmailAddress, FirstName, null);
+        }
+        
+        /// <remarks/>
+        public void SendConfirmationEmailAsync(string EmailAddress, string FirstName, object userState) {
+            if ((this.SendConfirmationEmailOperationCompleted == null)) {
+                this.SendConfirmationEmailOperationCompleted = new System.Threading.SendOrPostCallback(this.OnSendConfirmationEmailOperationCompleted);
+            }
+            this.InvokeAsync("SendConfirmationEmail", new object[] {
+                        EmailAddress,
+                        FirstName}, this.SendConfirmationEmailOperationCompleted, userState);
+        }
+        
+        private void OnSendConfirmationEmailOperationCompleted(object arg) {
+            if ((this.SendConfirmationEmailCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.SendConfirmationEmailCompleted(this, new System.ComponentModel.AsyncCompletedEventArgs(invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://www.community-credit.com/SendWelcomeEmail", RequestNamespace="http://www.community-credit.com/", ResponseNamespace="http://www.community-credit.com/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public void SendWelcomeEmail(string Source, string strTo, string FirstName, string strPassword, string strCommunities, string strPasswordType) {
+            this.Invoke("SendWelcomeEmail", new object[] {
+                        Source,
+                        strTo,
+                        FirstName,
+                        strPassword,
+                        strCommunities,
+                        strPasswordType});
+        }
+        
+        /// <remarks/>
+        public void SendWelcomeEmailAsync(string Source, string strTo, string FirstName, string strPassword, string strCommunities, string strPasswordType) {
+            this.SendWelcomeEmailAsync(Source, strTo, FirstName, strPassword, strCommunities, strPasswordType, null);
+        }
+        
+        /// <remarks/>
+        public void SendWelcomeEmailAsync(string Source, string strTo, string FirstName, string strPassword, string strCommunities, string strPasswordType, object userState) {
+            if ((this.SendWelcomeEmailOperationCompleted == null)) {
+                this.SendWelcomeEmailOperationCompleted = new System.Threading.SendOrPostCallback(this.OnSendWelcomeEmailOperationCompleted);
+            }
+            this.InvokeAsync("SendWelcomeEmail", new object[] {
+                        Source,
+                        strTo,
+                        FirstName,
+                        strPassword,
+                        strCommunities,
+                        strPasswordType}, this.SendWelcomeEmailOperationCompleted, userState);
+        }
+        
+        private void OnSendWelcomeEmailOperationCompleted(object arg) {
+            if ((this.SendWelcomeEmailCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.SendWelcomeEmailCompleted(this, new System.ComponentModel.AsyncCompletedEventArgs(invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
         public new void CancelAsync(object userState) {
             base.CancelAsync(userState);
         }
@@ -422,6 +636,32 @@ namespace Subtext.Web.com.community_credit.www {
                 return true;
             }
             return false;
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "2.0.50727.312")]
+    public delegate void AddNewsgroupItemCompletedEventHandler(object sender, AddNewsgroupItemCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "2.0.50727.312")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class AddNewsgroupItemCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal AddNewsgroupItemCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public string Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
         }
     }
     
@@ -464,6 +704,32 @@ namespace Subtext.Web.com.community_credit.www {
         private object[] results;
         
         internal AutoSubmitBlogCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public string Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "2.0.50727.312")]
+    public delegate void AddNewsgroupCreditCompletedEventHandler(object sender, AddNewsgroupCreditCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "2.0.50727.312")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class AddNewsgroupCreditCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal AddNewsgroupCreditCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
                 base(exception, cancelled, userState) {
             this.results = results;
         }
@@ -609,6 +875,32 @@ namespace Subtext.Web.com.community_credit.www {
     
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "2.0.50727.312")]
+    public delegate void PointCategoriesAllCompletedEventHandler(object sender, PointCategoriesAllCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "2.0.50727.312")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class PointCategoriesAllCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal PointCategoriesAllCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public System.Data.DataSet Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((System.Data.DataSet)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "2.0.50727.312")]
     public delegate void GetEarnersByDateRangeAndEmailCompletedEventHandler(object sender, GetEarnersByDateRangeAndEmailCompletedEventArgs e);
     
     /// <remarks/>
@@ -632,6 +924,14 @@ namespace Subtext.Web.com.community_credit.www {
             }
         }
     }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "2.0.50727.312")]
+    public delegate void SendConfirmationEmailCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "2.0.50727.312")]
+    public delegate void SendWelcomeEmailCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
 }
 
 #pragma warning restore 1591
