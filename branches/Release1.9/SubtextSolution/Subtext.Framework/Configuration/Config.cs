@@ -311,9 +311,6 @@ namespace Subtext.Framework.Configuration
 			if(subfolder == null)
 				throw new ArgumentNullException("Subfolder cannot be null.");
 
-			if(subfolder.StartsWith(".") || subfolder.EndsWith("."))
-				return false;
-
 			string invalidChars = @"{}[]/\ @!#$%:^&*()?+|""='<>;,";
 
 			foreach(char c in invalidChars)
