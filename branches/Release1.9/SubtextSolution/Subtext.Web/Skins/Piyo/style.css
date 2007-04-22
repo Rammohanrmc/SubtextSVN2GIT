@@ -665,10 +665,19 @@ div.previousNext
 	margin-bottom: 10px;
 }
 
-#tag-cloud
+#full-tag-cloud, #tag-cloud
 {
-    padding-top:5px;
-    padding-bottom:5px;
+    padding: 5px 0;
+}
+
+#full-tag-cloud
+{
+	width: 500px;
+}
+
+#full-tag-cloud li
+{
+	display: inline;
 }
 
 /*
@@ -678,7 +687,7 @@ This to fix a problem with coComment bar
 clear:both;
 }
 
-#column #tag-cloud li a
+#column #tag-cloud li a, #full-tag-cloud li a
 {
 	text-decoration: none;
 }

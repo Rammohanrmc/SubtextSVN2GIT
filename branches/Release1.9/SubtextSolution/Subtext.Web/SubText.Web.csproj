@@ -1444,6 +1444,7 @@
     <Content Include="Skins\Gradient\Controls\CategoryList.ascx" />
     <Content Include="Skins\Gradient\Controls\Comments.ascx" />
     <Content Include="Skins\Gradient\Controls\Contact.ascx" />
+    <Content Include="Skins\Gradient\Controls\FullTagCloud.ascx" />
     <Content Include="Skins\Gradient\Controls\Day.ascx" />
     <Content Include="Skins\Gradient\Controls\DayCollection.ascx" />
     <Content Include="Skins\Gradient\Controls\EntryList.ascx" />
@@ -1481,6 +1482,7 @@
     <Content Include="Skins\KeyWest\Controls\CategoryList.ascx" />
     <Content Include="Skins\KeyWest\Controls\Comments.ascx" />
     <Content Include="Skins\KeyWest\Controls\Contact.ascx" />
+    <Content Include="Skins\KeyWest\Controls\FullTagCloud.ascx" />
     <Content Include="Skins\KeyWest\Controls\Day.ascx" />
     <Content Include="Skins\KeyWest\Controls\DayCollection.ascx" />
     <Content Include="Skins\KeyWest\Controls\EntryList.ascx" />
@@ -1544,6 +1546,7 @@
     <Content Include="Skins\Lightz\Controls\CategoryList.ascx" />
     <Content Include="Skins\Lightz\Controls\Comments.ascx" />
     <Content Include="Skins\Lightz\Controls\Contact.ascx" />
+    <Content Include="Skins\Lightz\Controls\FullTagCloud.ascx" />
     <Content Include="Skins\Lightz\Controls\Day.ascx" />
     <Content Include="Skins\Lightz\Controls\DayCollection.ascx" />
     <Content Include="Skins\Lightz\Controls\EntryList.ascx" />
@@ -2063,6 +2066,7 @@
     <Content Include="Skins\WPSkin\Controls\Top10Module.ascx" />
     <Content Include="Skins\WPSkin\Controls\ViewPicture.ascx" />
     <Content Include="Skins\WPSkin\Controls\ViewPost.ascx" />
+    <Content Include="Skins\WPSkin\IEPatches.css" />
     <Content Include="Skins\WPSkin\images\audio.jpg" />
     <Content Include="Skins\WPSkin\images\kubrickbg.jpg" />
     <Content Include="Skins\WPSkin\images\kubrickbgcolor.jpg" />

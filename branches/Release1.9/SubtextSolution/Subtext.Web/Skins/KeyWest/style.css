@@ -713,3 +713,14 @@ img.emoticons {
 	top: 18px;
 	left: 80px;
 }
+
+#full-tag-cloud
+{
+	margin-top: 10px;
+}
+
+h1
+{
+	margin-top: 4px 0 6px 4px;
+	padding: 8px 0 8px 0;
+}
