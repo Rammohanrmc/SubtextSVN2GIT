@@ -46,7 +46,7 @@ namespace Subtext.ImportExport
 			bmlPost.DateCreated = entry.DateCreated;
 			bmlPost.DateModified = entry.DateModified;
             bmlPost.PostType = (entry.PostType == PostType.Story) ? BlogPostTypes.Article : BlogPostTypes.Normal;
-            bmlPost.Views = (uint) 0; // I think we have this statistic in the db... right?
+            bmlPost.Views = 0; // I think we have this statistic in the db... right?
 		    
             if (entry.HasEntryName)
             {

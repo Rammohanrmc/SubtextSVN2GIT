@@ -346,6 +346,20 @@ namespace Subtext.Framework.Components
 			}
 		}
 		private int _entryId = NullValue.NullInt32;
+
+		/// <summary>
+		/// The Entry.
+		/// </summary>
+		public Entry Entry
+		{
+			get
+			{
+				return this.entry;
+			}
+			set { this.entry = value; }
+		}
+
+		private Entry entry;
 		
 		/// <summary>
 		/// Gets or sets the type of the post.
@@ -668,16 +682,6 @@ namespace Subtext.Framework.Components
 			return checksum;
 		}
 
-		void LoadParentEntryInfo()
-		{
-			if(EntryId > 0)
-			{
-				Entry entry = Entries.GetEntry(EntryId, PostConfig.None, false);
-				parentEntryName = entry.EntryName;
-				parentDateCreated = entry.DateCreated;
-			}
-		}
-		
 		/// <summary>
 		/// Gets or sets the name of the parent entry.
 		/// </summary>
@@ -686,8 +690,8 @@ namespace Subtext.Framework.Components
 		{
 			get
 			{
-				if(this.parentEntryName == null)
-					LoadParentEntryInfo();
+				if (this.parentEntryName == null)
+					this.parentEntryName = Entry != null ? Entry.EntryName : string.Empty;
 				return this.parentEntryName;
 			}
 			set { this.parentEntryName = value; }
@@ -704,7 +708,7 @@ namespace Subtext.Framework.Components
 			get
 			{
 				if (this.parentDateCreated == NullValue.NullDateTime)
-					LoadParentEntryInfo();
+					this.parentDateCreated = Entry != null ? Entry.DateCreated : DateTime.MinValue;
 				return this.parentDateCreated;
 			}
 			set { this.parentDateCreated = value; }

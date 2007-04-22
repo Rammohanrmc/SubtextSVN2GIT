@@ -42,7 +42,7 @@ namespace Subtext.Web.Admin.Pages
 		/// <summary>
 		/// Constructs an image of this page. Sets the tab section to "Feedback".
 		/// </summary>
-	    public Feedback() : base()
+	    public Feedback()
 	    {
             this.TabSectionId = "Feedback";
 	    }
@@ -62,7 +62,7 @@ namespace Subtext.Web.Admin.Pages
 			}
 		}
 
-		protected void Page_Load(object sender, System.EventArgs e)
+		protected void Page_Load(object sender, EventArgs e)
 		{
 			this.btnViewApprovedComments = AddFolderLink("Approved", "btnViewActiveComments", "Approved Comments", OnViewApprovedCommentsClick);
 			this.btnViewModerateComments = AddFolderLink("Moderate", "btnModerateComments", "Comments in need of moderation", OnViewCommentsForModerationClick);
