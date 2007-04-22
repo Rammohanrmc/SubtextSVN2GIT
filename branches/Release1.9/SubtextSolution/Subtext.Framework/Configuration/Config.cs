@@ -189,7 +189,7 @@ namespace Subtext.Framework.Configuration
 		/// <returns></returns>
 		public static bool CreateBlog(string title, string userName, string password, string host, string subfolder, bool passwordAlreadyHashed)
 		{
-			if(subfolder != null && subfolder.StartsWith("."))
+			if(subfolder != null && subfolder.EndsWith("."))
 				throw new InvalidSubfolderNameException(subfolder);
 
 			host = BlogInfo.NormalizeHostName(host);
@@ -310,6 +310,9 @@ namespace Subtext.Framework.Configuration
 		{
 			if(subfolder == null)
 				throw new ArgumentNullException("Subfolder cannot be null.");
+
+			if (subfolder.EndsWith("."))
+				return false;
 
 			string invalidChars = @"{}[]/\ @!#$%:^&*()?+|""='<>;,";
 

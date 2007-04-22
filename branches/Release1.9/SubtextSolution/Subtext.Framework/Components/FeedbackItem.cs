@@ -354,6 +354,8 @@ namespace Subtext.Framework.Components
 		{
 			get
 			{
+				if (this.entry == null && _entryId != NullValue.NullInt32)
+					this.entry = Entries.GetEntry(_entryId, PostConfig.None, false);
 				return this.entry;
 			}
 			set { this.entry = value; }
@@ -714,7 +716,7 @@ namespace Subtext.Framework.Components
 			set { this.parentDateCreated = value; }
 		}
 
-		DateTime parentDateCreated;
+		DateTime parentDateCreated = NullValue.NullDateTime;
 	}
 	
 	public struct FeedbackCounts
