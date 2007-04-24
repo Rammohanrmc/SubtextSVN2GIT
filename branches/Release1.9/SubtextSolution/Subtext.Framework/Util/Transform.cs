@@ -41,7 +41,20 @@ namespace Subtext.Framework.Util
 		/// <returns></returns>
 		public static string EmoticonTransforms(string formattedPost) 
 		{
-			return EmoticonsTransforms(formattedPost, GetTransformFilePath("emoticons.txt"));
+			try
+			{
+				return EmoticonsTransforms(formattedPost, GetTransformFilePath("emoticons.txt"));
+			}
+			catch(IOException ioe)
+			{
+				Log.Warn("Problem reading the emoticons.txt file", ioe);
+				return formattedPost;
+			}
+			catch(ArgumentNullException e)
+			{
+				Log.Warn("Problem reading the emoticons.txt file", e);
+				return formattedPost;
+			}
 		}
 
 		public static string EmoticonsTransforms(string formattedPost, string emoticonsFilePath)

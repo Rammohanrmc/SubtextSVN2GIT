@@ -41,7 +41,7 @@ using Subtext.ImportExport.Conversion;
 namespace Subtext.ImportExport
 {
 	public class SubtextBlogMLProvider : BlogMLProvider
-	{	
+	{
 		bool duplicateCommentsEnabled;
 		SubtextConversionStrategy conversion = new SubtextConversionStrategy();
 		/// <summary>
@@ -57,11 +57,10 @@ namespace Subtext.ImportExport
 			IPagedCollection<BlogMLPost> bmlPosts = new PagedCollection<BlogMLPost>();
 			using (IDataReader reader = GetPostsAndArticlesReader(blogId, pageIndex, pageSize))
 			{
-                BlogMLPost bmlPost;
                 IBlogMLContext bmlContext = this.GetBlogMlContext();
 				while (reader.Read())
 				{
-                    bmlPost = ObjectHydrator.LoadPostFromDataReader(reader);
+					BlogMLPost bmlPost = ObjectHydrator.LoadPostFromDataReader(reader);
                     bmlPost.Attachments.AddRange(GetPostAttachments(bmlPost, bmlContext));
 					bmlPosts.Add(bmlPost);
 				}
@@ -447,6 +446,7 @@ namespace Subtext.ImportExport
 		/// Creates a comment in the system.
 		/// </summary>
 		/// <param name="bmlComment"></param>
+		/// <param name="newPostId"></param>
 		public override void CreatePostComment(BlogMLComment bmlComment, string newPostId)
 		{
 			FeedbackItem newComment = new FeedbackItem(FeedbackType.Comment);
@@ -472,6 +472,7 @@ namespace Subtext.ImportExport
 		/// Creates a trackback for the post.
 		/// </summary>
 		/// <param name="trackback"></param>
+		/// <param name="newPostId"></param>
 		public override void CreatePostTrackback(BlogMLTrackback trackback, string newPostId)
 		{
 			FeedbackItem newPingTrack = new FeedbackItem(FeedbackType.PingTrack);
