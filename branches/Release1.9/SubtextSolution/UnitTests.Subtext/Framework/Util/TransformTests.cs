@@ -20,7 +20,7 @@ namespace UnitTests.Subtext.Framework.Util
 			UnitTestHelper.UnpackEmbeddedResource("Web.emoticons.txt", emoticonsPath);
 			List<string> transforms = Transform.LoadTransformFile(emoticonsPath);
 			Assert.AreEqual(48, transforms.Count, "Expected 48 transformations");
-			Assert.AreEqual("[(H)]", transforms[0], "The first line does not match");
+			Assert.AreEqual(@"\[\(H\)]", transforms[0], "The first line does not match");
 			Assert.AreEqual(@"<img src=""{0}Images/emotions/smiley-cool.gif"" border=""0"" alt=""Cool"" />", transforms[1],
 			                "The second line does not match");
 		}
