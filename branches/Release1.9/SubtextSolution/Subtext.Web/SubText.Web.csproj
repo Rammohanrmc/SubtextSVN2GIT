@@ -1018,8 +1018,10 @@
     <Content Include="Images\icons\ico_info.gif" />
     <Content Include="Images\icons\ico_warning.gif" />
     <Content Include="Images\link.gif" />
+    <Content Include="Images\loaders\subtext-bar-green.gif" />
     <Content Include="Images\loaders\subtext-bar-loader.gif" />
     <Content Include="Images\loaders\subtext-loader.gif" />
+    <Content Include="Images\loaders\subtext-round-tracer.gif" />
     <Content Include="Images\loading.gif" />
     <Content Include="Images\ms_help.gif" />
     <Content Include="Images\next.gif" />
