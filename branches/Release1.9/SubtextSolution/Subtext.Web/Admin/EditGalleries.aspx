@@ -14,8 +14,8 @@
 
 <asp:Content ID="galleriesContainer" ContentPlaceHolderID="pageContent" runat="server">
 	<st:ScrollPositionSaver id="scrollsaver" runat="server" />
-	<st:MessagePanel id="Messages" runat="server" ErrorIconUrl="~/images/icons/ico_critical.gif" ErrorCssClass="ErrorPanel" MessageIconUrl="~/admin/resources/ico_info.gif" MessageCssClass="MessagePanel"></st:MessagePanel>
-	<st:AdvancedPanel id="Results" runat="server" LinkStyle="Image" LinkBeforeHeader="True" DisplayHeader="True" HeaderCssClass="CollapsibleHeader" HeaderText="Galleries" Collapsible="True">
+	<st:MessagePanel id="Messages" runat="server" ErrorIconUrl="~/images/icons/ico_critical.gif" ErrorCssClass="ErrorPanel" MessageIconUrl="~/images/icons/ico_info.gif" MessageCssClass="MessagePanel"></st:MessagePanel>
+	<st:AdvancedPanel id="Results" runat="server" LinkStyle="Image" LinkBeforeHeader="True" DisplayHeader="True" HeaderCssClass="CollapsibleHeader" HeaderText="Galleries" Collapsible="False" Collapsed="false">
 	
 		<asp:DataGrid id="dgrSelectionList" runat="server" CssClass="Listing highlightTable" GridLines="None" AutoGenerateColumns="False">
 			<AlternatingItemStyle CssClass="Alt"></AlternatingItemStyle>
@@ -54,10 +54,10 @@
 			</asp:DataGrid>
 		
 			<!-- add new item panel -->
-			<st:AdvancedPanel id="Add" runat="server" DisplayHeader="true" HeaderCssClass="CollapsibleTitle" HeaderText="Add New Gallery" Collapsible="False" BodyCssClass="Edit">
+			<st:AdvancedPanel id="Add" runat="server" DisplayHeader="true" HeaderCssClass="CollapsibleTitle" HeaderText="Add New Gallery" Collapsible="False" Collapsed="false" BodyCssClass="Edit">
 				<label class="Block">Title</label> 
-					<asp:TextBox id="txbNewTitle" runat="server" CssClass="textinput"></asp:TextBox>&nbsp; 
-					Visible <asp:CheckBox id="ckbNewIsActive" runat="server" Checked="true"></asp:CheckBox>
+					<asp:TextBox id="txbNewTitle" runat="server" CssClass="textinput" />&nbsp; 
+					Visible <asp:CheckBox id="ckbNewIsActive" runat="server" Checked="true" />
 					<br />
 				<label class="Block">Description (1000 characters including HTML)</label><br />
 				<asp:TextBox id="txbNewDescription" MaxLength="1000"  runat="server" CssClass="textarea" rows="5" textmode="MultiLine"></asp:TextBox>
@@ -70,7 +70,7 @@
 		
 		<!-- add/upload a new file -->
 		<ASP:Panel id="ImagesDiv" runat="server">
-			<st:AdvancedPanel id="AddImages" runat="server" LinkStyle="Image" LinkBeforeHeader="True" DisplayHeader="true" HeaderCssClass="CollapsibleTitle" HeaderText="Add New Image (Single file or ZIP archive)" Collapsible="True" BodyCssClass="Edit">		
+			<st:AdvancedPanel id="AddImages" runat="server" LinkStyle="Image" LinkBeforeHeader="True" DisplayHeader="true" HeaderCssClass="CollapsibleTitle" HeaderText="Add New Image (Single file or ZIP archive)" Collapsible="False" Collapsed="false" BodyCssClass="Edit">		
 				<label class="Block">Local File Location</label> 
 				<input class="FileUpload" id="ImageFile" type="file" size="82" name="ImageFile" runat="server" /> 
 				<br class="clear" />
