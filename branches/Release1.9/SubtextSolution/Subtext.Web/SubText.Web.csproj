@@ -1396,6 +1396,8 @@
     <Content Include="Skins\AnotherEon001\PageTemplate.ascx" />
     <Content Include="Skins\AnotherEon001\print.css" />
     <Content Include="Skins\AnotherEon001\style.css" />
+    <Content Include="Skins\Lightz\Scripts\cityNight.js" />
+    <Content Include="Skins\Lightz\Scripts\tableEffects.js" />
     <Content Include="Skins\Colors\Blue.css" />
     <Content Include="Skins\Colors\Controls\ArchiveCategory.ascx" />
     <Content Include="Skins\Colors\Controls\ArchiveDay.ascx" />

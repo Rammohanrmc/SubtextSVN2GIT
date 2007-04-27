@@ -113,14 +113,8 @@
       <HintPath>ExternalDependencies\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=227c66cf5503649a, processorArchitecture=MSIL" />
-    <Reference Include="MbUnit.Framework">
-      <Name>MbUnit.Framework</Name>
-      <HintPath>ExternalDependencies\MbUnit.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="MbUnit.Framework.1.1">
-      <Name>MbUnit.Framework.1.1</Name>
-      <HintPath>ExternalDependencies\MbUnit.Framework.1.1.dll</HintPath>
-    </Reference>
+    <Reference Include="MbUnit.Framework, Version=1.0.2642.28107, Culture=neutral, PublicKeyToken=5e72ecd30bc408d5" />
+    <Reference Include="MbUnit.Framework.2.0, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e72ecd30bc408d5, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.ApplicationBlocks.Data, Version=1.0.2379.25601, Culture=neutral" />
     <Reference Include="NGraphviz">
       <Name>NGraphviz</Name>
@@ -167,10 +161,7 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-    <Reference Include="TestFu">
-      <Name>TestFu</Name>
-      <HintPath>ExternalDependencies\TestFu.dll</HintPath>
-    </Reference>
+    <Reference Include="TestFu, Version=1.0.2531.41787, Culture=neutral, PublicKeyToken=5e72ecd30bc408d5" />
     <Reference Include="Velocit.RegularExpressions, Version=1.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ExternalDependencies\Velocit.RegularExpressions.dll</HintPath>
@@ -362,6 +353,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SubtextWeb\Controls\CaptchaTests.cs" />
+    <Compile Include="SubtextWeb\Controls\ControlHelperTests.cs" />
     <Compile Include="SubtextWeb\Controls\InvisibleCaptchaTests.cs" />
     <Compile Include="SubtextWeb\Providers\RichTextEditor\FCKeditorProviderTests.cs">
       <SubType>Code</SubType>
@@ -393,7 +385,7 @@
     <Content Include="ExternalDependencies\ICSharpCode.SharpZipLib.dll" />
     <Content Include="ExternalDependencies\log4net.dll" />
     <Content Include="ExternalDependencies\log4net.xml" />
-    <Content Include="ExternalDependencies\MbUnit.Framework.1.1.dll" />
+    <Content Include="ExternalDependencies\MbUnit.Framework.2.0.dll" />
     <Content Include="ExternalDependencies\MbUnit.Framework.dll" />
     <Content Include="ExternalDependencies\Microsoft.ApplicationBlocks.Data.dll" />
     <Content Include="ExternalDependencies\NGraphviz.dll" />
@@ -406,6 +398,7 @@
     <Content Include="ExternalDependencies\Rhino.Mocks.dll" />
     <Content Include="ExternalDependencies\Rhino.Mocks.xml" />
     <Content Include="ExternalDependencies\TestFu.dll" />
+    <Content Include="ExternalDependencies\Velocit.RegularExpressions.dll" />
     <EmbeddedResource Include="Resources\Web\emoticons.txt" />
     <EmbeddedResource Include="Resources\BlogMl\SinglePostWithBadCategoryRef.xml" />
     <EmbeddedResource Include="Resources\BlogMl\SinglePostWithCategory.xml" />
