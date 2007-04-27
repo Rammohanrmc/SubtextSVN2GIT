@@ -12,6 +12,7 @@ namespace UnitTests.Subtext.SubtextWeb.Controls
 	{
 		[RowTest]
 		[Row("a tooltip", "trying this title", "a tooltip")]
+		[Row((string)null, "this is my title", "this is my title")]
 		[Row("", "", "")]
 		public void OnlyAddTitleWhenNotAlreadyThere(string toolTip, string title, string expectedTitle)
 		{
