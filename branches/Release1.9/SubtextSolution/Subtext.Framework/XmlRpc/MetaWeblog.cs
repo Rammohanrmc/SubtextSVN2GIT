@@ -261,11 +261,11 @@ namespace Subtext.Framework.XmlRpc
 
          try
          {
-            result = CommunityCreditNotification.AddCommunityCredits(entry);
-            if (!result.Equals("Success"))
-            {
-               Log.WarnFormat("Community Credit ws returned the following response while notifying for the url {0}: {1}", entry.FullyQualifiedUrl.ToString(), result);
-            }
+            CommunityCreditNotification.AddCommunityCredits(entry);
+         }
+         catch (CommunityCreditNotificationException ex)
+         {
+            Log.WarnFormat("Community Credit ws returned the following response while notifying for the url {0}: {1}", entry.FullyQualifiedUrl.ToString(), ex.Message);
          }
          catch (Exception ex)
          {

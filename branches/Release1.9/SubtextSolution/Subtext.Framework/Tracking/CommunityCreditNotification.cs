@@ -12,7 +12,7 @@ namespace Subtext.Framework.Tracking
    {
       static Log Log = new Log();
 
-      public static string AddCommunityCredits(Entry entry)
+      public static void AddCommunityCredits(Entry entry)
       {
          string result = string.Empty;
 
@@ -48,8 +48,11 @@ namespace Subtext.Framework.Tracking
             result = wsCommunityCredit.AddCommunityCredit(email, firstName, lastName, description, url, category, affiliateCode, affiliateKey);
 
             Log.InfoFormat("Response Received was: {0}",result);
+            if (!result.Equals("Success"))
+            {
+               throw new CommunityCreditNotificationException(result);
+            }
          }
-         return result;
       }
    }
 }

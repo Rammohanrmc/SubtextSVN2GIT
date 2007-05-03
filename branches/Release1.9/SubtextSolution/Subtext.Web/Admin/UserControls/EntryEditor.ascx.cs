@@ -607,18 +607,18 @@ namespace Subtext.Web.Admin.UserControls
 		{
 			string result=string.Empty;
 
-			try 
-			{
-            result = CommunityCreditNotification.AddCommunityCredits(entry);
-            if (!result.Equals("Success"))
-            {
-               this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, "Error during Community Credits submission (your post has been saved)", result));
-            }
-			}
-			catch(Exception ex) 
-			{
-				this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, "Error during Community Credits submission (your post has been saved)", ex.Message));
-			}
+         try
+         {
+            CommunityCreditNotification.AddCommunityCredits(entry);
+         }
+         catch (CommunityCreditNotificationException ex)
+         {
+            this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, "Error during Community Credits submission (your post has been saved)", ex.Message));
+         }
+         catch (Exception ex)
+         {
+            this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, "Error during Community Credits submission (your post has been saved)", ex.Message));
+         }
 		}
 	}
 }

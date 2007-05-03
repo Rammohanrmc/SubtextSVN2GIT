@@ -440,6 +440,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tracking\CommunityCreditNotification.cs" />
+    <Compile Include="Tracking\CommunityCreditNotificationException.cs" />
     <Compile Include="Tracking\EntryTracker.cs">
       <SubType>Code</SubType>
     </Compile>
