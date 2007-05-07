@@ -881,6 +881,7 @@ AS
 DECLARE @blogId int
 SET @blogId = (select BlogId from [<dbUser,varchar,dbo>].[subtext_Content] where [ID] = @ID)
 
+DELETE FROM [<dbUser,varchar,dbo>].[subtext_EntryTag] WHERE EntryId = @ID
 DELETE FROM [<dbUser,varchar,dbo>].[subtext_Links] WHERE PostID = @ID
 DELETE FROM [<dbUser,varchar,dbo>].[subtext_EntryViewCount] WHERE EntryID = @ID
 DELETE FROM [<dbUser,varchar,dbo>].[subtext_Referrals] WHERE EntryID = @ID
