@@ -32,7 +32,7 @@ namespace Subtext.Installation
 	public class SqlInstallationProvider : Extensibility.Providers.Installation
 	{
 		string _connectionString = string.Empty;
-		SqlInstaller installer = null;
+		SqlInstaller installer;
 
 		public SqlInstallationProvider()
 		{

@@ -43,8 +43,10 @@ namespace Subtext.Akismet
 			System.Net.ServicePointManager.Expect100Continue = false;
 			HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
 
-			if (proxy != null)
-				request.Proxy = proxy;
+            if (proxy != null)
+            {
+                request.Proxy = proxy;
+            }
 			
 			if (null != request)
 			{			
@@ -62,8 +64,10 @@ namespace Subtext.Akismet
 			}
 
 			HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-			if (response.StatusCode < HttpStatusCode.OK && response.StatusCode >= HttpStatusCode.Ambiguous)
-				throw new InvalidResponseException(string.Format("The service was not able to handle our request. Http Status '{0}'.", response.StatusCode), response.StatusCode);
+            if (response.StatusCode < HttpStatusCode.OK && response.StatusCode >= HttpStatusCode.Ambiguous)
+            {
+                throw new InvalidResponseException(string.Format("The service was not able to handle our request. Http Status '{0}'.", response.StatusCode), response.StatusCode);
+            }
 
 			string responseText;
 			using(StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.ASCII)) //They only return "true" or "false"

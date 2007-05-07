@@ -33,6 +33,5 @@
 		<div style="MARGIN-TOP: 12px">
 			<asp:Button id="lkbUpdate" runat="server" Text="Save" CssClass="buttonSubmit" onclick="lkbUpdate_Click" />
 		</div>
-		
 	</st:AdvancedPanel>
 </asp:Content>

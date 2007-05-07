@@ -133,36 +133,38 @@ namespace Subtext.Installation.Import
 		/// <returns></returns>
 		public override string ValidateImportInformation(Control populatedControl)
 		{
-			if(populatedControl == null)
-				throw new ArgumentNullException("populatedControl", "Hello, sorry, but we really can't validate a null control.");
+            if (populatedControl == null)
+            {
+                throw new ArgumentNullException("populatedControl", "Hello, sorry, but we really can't validate a null control.");
+            }
 
 			string dotTextConnectionString;
 			GetConnectionStringsFromControl(populatedControl, out dotTextConnectionString);
 
-			if(dotTextConnectionString == null || dotTextConnectionString.Length == 0)
-				return "Please specify a valid connection string to the .TEXT 0.95 database.";
+            if ( !String.IsNullOrEmpty(dotTextConnectionString) )
+            {
+                return "Please specify a valid connection string to the .TEXT 0.95 database.";
+            }
 
 			try
 			{
 			    ConnectionString connStr = ConnectionString.Parse(dotTextConnectionString);
                 if (!DoesTableExist("blog_config", connStr))
 				{
-					string errorMessage = "I&#8217;m sorry, but it does not appear that " 
+					return "I&#8217;m sorry, but it does not appear that " 
 						+ "there is a .TEXT database corresponding to the connection string provided. " 
 						+ "Please double check that the &#8220;blog_config&#8221; table exists.  If it does, " 
 						+ "double check that it was created using the [dbo] account OR by the same user " 
 						+ "specified in the .TEXT connection string below.";
-					return errorMessage;
 				}
 
 				if(!DoesTableExist("subtext_config", Config.Settings.ConnectionString))
 				{
-					string errorMessage = "I&#8217;m sorry, but it does not appear that " 
+				    return "I&#8217;m sorry, but it does not appear that " 
 						+ "there is a Subtext database corresponding to the connection string within web.config. " 
 						+ "Please double check that the &#8220;subtext_config&#8221; table exists.  If it does, " 
 						+ "double check that it was created using the [dbo] account OR by the same user " 
-						+ "specified in the subText connection string.";
-					return errorMessage;
+						+ "specified in the Subtext connection string.";
 				}
 			}
 			catch(SqlException exception)
@@ -183,17 +185,17 @@ namespace Subtext.Installation.Import
 			dotTextConnectionString = control.ConnectionString;
 		}
 
-		bool DoesTableExist(string tableName, string ownerName, ConnectionString connectionString)
+		static bool DoesTableExist(string tableName, string ownerName, ConnectionString connectionString)
 		{	
 			return DoesTableExist(ownerName+"."+tableName, connectionString);
 		}
 
-		bool DoesTableExist(string tableName, ConnectionString connectionString)
+		static bool DoesTableExist(string tableName, ConnectionString connectionString)
 		{
             return 0 < GetTableCount(tableName, connectionString);
 		}
 
-		int GetTableCount(string tableName, ConnectionString connectionString)
+		static int GetTableCount(string tableName, ConnectionString connectionString)
 		{
             const string TableExistsSql = "SELECT COUNT(1) FROM [INFORMATION_SCHEMA].[TABLES] WHERE [TABLE_TYPE]='BASE TABLE' AND [TABLE_NAME]='{0}'";
 			string blogContentTableSql = String.Format(TableExistsSql, tableName);			
