@@ -25,16 +25,13 @@
 				<asp:ListItem Value="false">No</asp:ListItem>
 			</asp:DropDownList></p>
 		<p style="MARGIN-TOP: 8px">
-			<label class="Block" for="Edit_chkAutoGenerate">
-				<st:HelpToolTip id="Helptooltip4" runat="server" HelpText="If checked, blog posts and articles will have friendly Urls auto-generated based on the title. For example, the title 'My Blog Post' will become 'MyBlogPost.aspx'.">
-				Auto-Generate Friendly Url
-				</st:HelpToolTip> 
-				<asp:CheckBox id="chkAutoGenerate" runat="server"></asp:CheckBox>
-			</label>
-			
+		    <asp:CheckBox id="chkAutoGenerate" runat="server" Text="Auto-Generate Friendly Url" />
+			<st:HelpToolTip id="Helptooltip4" runat="server" HelpText="If checked, blog posts and articles will have friendly Urls auto-generated based on the title. For example, the title 'My Blog Post' will become 'MyBlogPost.aspx'.">
+				    <img id="Img2" src="~/Admin/Resources/Scripts/Images/ms_information_small.gif" runat="Server" alt="Information" />
+			</st:HelpToolTip>
 		</p>
 		<div style="MARGIN-TOP: 12px">
-			<ASP:Button id="lkbUpdate" runat="server" Text="Save" CssClass="buttonSubmit" onclick="lkbUpdate_Click" />
+			<asp:Button id="lkbUpdate" runat="server" Text="Save" CssClass="buttonSubmit" onclick="lkbUpdate_Click" />
 		</div>
 		
 	</st:AdvancedPanel>
