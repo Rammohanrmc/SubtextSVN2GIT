@@ -64,8 +64,8 @@ DELETE [<dbUser,varchar,dbo>].[subtext_Referrals] WHERE EntryID NOT IN (SELECT [
 IF NOT EXISTS(
     SELECT * 
     FROM [INFORMATION_SCHEMA].[REFERENTIAL_CONSTRAINTS] 
-    WHERE constraint_name = 'FK_subtext_Referrals_subtext_Content' 
-      AND constraint_schema = '<dbUser,varchar,dbo>'
+    WHERE CONSTRAINT_NAME = 'FK_subtext_Referrals_subtext_Content' 
+      AND CONSTRAINT_SCHEMA = '<dbUser,varchar,dbo>'
 )
 BEGIN
   ALTER TABLE [<dbUser,varchar,dbo>].[subtext_Referrals] WITH NOCHECK 

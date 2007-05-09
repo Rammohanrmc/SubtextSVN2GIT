@@ -114,8 +114,8 @@ GO
 IF NOT EXISTS 
 	(
 		SELECT	* FROM [INFORMATION_SCHEMA].[REFERENTIAL_CONSTRAINTS] 
-		WHERE	constraint_name = 'FK_subtext_EntryTag_subtext_Content' 
-		AND		unique_constraint_schema = '<dbUser,varchar,dbo>'
+		WHERE	CONSTRAINT_NAME = 'FK_subtext_EntryTag_subtext_Content' 
+		AND		UNIQUE_CONSTRAINT_SCHEMA = '<dbUser,varchar,dbo>'
 	)
 BEGIN
 	ALTER TABLE [<dbUser,varchar,dbo>].[subtext_EntryTag]  
@@ -128,8 +128,8 @@ GO
 IF NOT EXISTS 
 	(
 		SELECT	* FROM [INFORMATION_SCHEMA].[REFERENTIAL_CONSTRAINTS] 
-		WHERE	constraint_name = 'FK_subtext_EntryTag_subtext_Tag' 
-		AND		unique_constraint_schema = '<dbUser,varchar,dbo>'
+		WHERE	CONSTRAINT_NAME = 'FK_subtext_EntryTag_subtext_Tag' 
+		AND		UNIQUE_CONSTRAINT_SCHEMA = '<dbUser,varchar,dbo>'
 	)
 BEGIN
 	ALTER TABLE [<dbUser,varchar,dbo>].[subtext_EntryTag]  WITH CHECK ADD  CONSTRAINT [FK_subtext_EntryTag_subtext_Tag] FOREIGN KEY([TagId])
