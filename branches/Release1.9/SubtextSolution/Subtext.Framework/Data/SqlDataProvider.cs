@@ -62,7 +62,7 @@ namespace Subtext.Framework.Data
 						BlogIdParam
 					};
 
-            return SqlHelper.ExecuteReader(ConnectionString, CommandType.StoredProcedure, "Subtext_GetEntry_PreviousNext", p);
+            return SqlHelper.ExecuteReader(ConnectionString, CommandType.StoredProcedure, "subtext_GetEntry_PreviousNext", p);
         }
 	    	    
 	    public override DataSet GetAggregateHomePageData(int groupId)

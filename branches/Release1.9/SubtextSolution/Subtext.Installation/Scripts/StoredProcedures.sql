@@ -4115,8 +4115,8 @@ GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_SearchEntries]  TO [public]
 GO
 
 /*Previous Next*/
-if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[Subtext_GetEntry_PreviousNext]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [<dbUser,varchar,dbo>].[Subtext_GetEntry_PreviousNext]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetEntry_PreviousNext]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetEntry_PreviousNext]
 GO
 
 SET QUOTED_IDENTIFIER OFF 
@@ -4124,7 +4124,7 @@ GO
 SET ANSI_NULLS ON 
 GO
 
-CREATE PROC [<dbUser,varchar,dbo>].[Subtext_GetEntry_PreviousNext]
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetEntry_PreviousNext]
 (
 	@ID int
 	, @PostType int = 1
@@ -4150,8 +4150,8 @@ SELECT * FROM
 		, CardinalityDate = ISNULL(DateSyndicated, DateAdded) -- Must be here to order by
 	FROM [<dbUser,varchar,dbo>].[subtext_Content]
 	WHERE ISNULL([DateSyndicated], [DateAdded]) >= @DateSyndicated
-		AND Subtext_Content.BlogId = @BlogId 
-		AND Subtext_Content.PostConfig & 1 = 1 
+		AND subtext_Content.BlogId = @BlogId 
+		AND subtext_Content.PostConfig & 1 = 1 
 		AND PostType = @PostType
 		AND [ID] != @ID
 	ORDER BY ISNULL(DateSyndicated, DateAdded) ASC
@@ -4170,8 +4170,8 @@ SELECT * FROM
 		, CardinalityDate = ISNULL(DateSyndicated, DateAdded)
 	FROM [<dbUser,varchar,dbo>].[subtext_Content]
 	WHERE ISNULL([DateSyndicated], [DateAdded]) <= @DateSyndicated
-		AND Subtext_Content.BlogId = @BlogId 
-		AND Subtext_Content.PostConfig & 1 = 1 
+		AND subtext_Content.BlogId = @BlogId 
+		AND subtext_Content.PostConfig & 1 = 1 
 		AND PostType = @PostType
 		AND [ID] != @ID
 	ORDER BY ISNULL(DateSyndicated, DateAdded) DESC
@@ -4185,7 +4185,7 @@ GO
 SET ANSI_NULLS ON 
 GO
 
-GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[Subtext_GetEntry_PreviousNext]  TO [public]
+GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetEntry_PreviousNext]  TO [public]
 GO
 
 
