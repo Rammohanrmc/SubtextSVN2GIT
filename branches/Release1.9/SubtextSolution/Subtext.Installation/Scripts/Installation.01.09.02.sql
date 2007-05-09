@@ -149,7 +149,7 @@ IF EXISTS
 			, FeedbackChecksumHash = ISNULL(ContentChecksumHash, '')
 			, DateCreated = DateAdded
 			, DateModified = getdate()
-		FROM [dbo].[subtext_Content]
+		FROM [<dbUser,varchar,dbo>].[subtext_Content]
 		WHERE 
 			(PostType = 3 OR PostType = 4) -- Comment or PingBack
 
