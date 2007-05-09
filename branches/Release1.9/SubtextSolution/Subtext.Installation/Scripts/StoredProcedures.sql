@@ -506,7 +506,7 @@ AS
 	SET CommentCount = 
 		(
 			SELECT COUNT(1) 
-			FROM  [<dbUser,varchar,dbo>].[subtext_Feedback] f WITH (NOLOCK)
+			FROM  [<dbUser,varchar,dbo>].[subtext_FeedBack] f WITH (NOLOCK)
 			    INNER JOIN [<dbUser,varchar,dbo>].[subtext_Content] c WITH (NOLOCK) ON c.ID = f.EntryId
 			WHERE f.BlogId = @BlogId
 				AND f.StatusFlag & 1 = 1
@@ -520,7 +520,7 @@ AS
 	SET PingTrackCount = 
 		(
 			SELECT COUNT(1) 
-			FROM  [<dbUser,varchar,dbo>].[subtext_Feedback] f WITH (NOLOCK)
+			FROM  [<dbUser,varchar,dbo>].[subtext_FeedBack] f WITH (NOLOCK)
 			    INNER JOIN [<dbUser,varchar,dbo>].[subtext_Content] c WITH (NOLOCK) ON c.ID = f.EntryId
 			WHERE f.BlogId = @BlogId
 				AND f.StatusFlag & 1 = 1
@@ -585,7 +585,7 @@ AS
 	SET [<dbUser,varchar,dbo>].[subtext_Content].FeedbackCount = 
 		(
 			SELECT COUNT(1) 
-			FROM  [<dbUser,varchar,dbo>].[subtext_Feedback] f  WITH (NOLOCK)
+			FROM  [<dbUser,varchar,dbo>].[subtext_FeedBack] f  WITH (NOLOCK)
 			WHERE f.EntryId = @EntryId 
 				AND f.StatusFlag & 1 = 1
 		)
@@ -775,10 +775,10 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetFeedbackCountsByStatus]
 )
 AS
 
-SELECT @ApprovedCount = COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE BlogId = @BlogId AND StatusFlag & 1 = 1
-SELECT @NeedsModerationCount = COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE BlogId = @BlogId AND StatusFlag & 2 = 2 AND StatusFlag & 8 != 8 AND StatusFlag & 1 != 1
-SELECT @FlaggedSpam = COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE BlogId = @BlogId AND StatusFlag & 4 = 4 AND StatusFlag & 8 != 8 AND StatusFlag & 1 != 1
-SELECT @Deleted = COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE BlogId = @BlogId AND StatusFlag & 8 = 8 AND StatusFlag & 1 != 1
+SELECT @ApprovedCount = COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_FeedBack] WHERE BlogId = @BlogId AND StatusFlag & 1 = 1
+SELECT @NeedsModerationCount = COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_FeedBack] WHERE BlogId = @BlogId AND StatusFlag & 2 = 2 AND StatusFlag & 8 != 8 AND StatusFlag & 1 != 1
+SELECT @FlaggedSpam = COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_FeedBack] WHERE BlogId = @BlogId AND StatusFlag & 4 = 4 AND StatusFlag & 8 != 8 AND StatusFlag & 1 != 1
+SELECT @Deleted = COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_FeedBack] WHERE BlogId = @BlogId AND StatusFlag & 8 = 8 AND StatusFlag & 1 != 1
 
 GO
 SET QUOTED_IDENTIFIER OFF 
@@ -812,9 +812,9 @@ AS
 DECLARE @EntryId int
 DECLARE @BlogId int
 
-SELECT @EntryId = EntryId, @BlogId = BlogId FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE [Id] = @Id
+SELECT @EntryId = EntryId, @BlogId = BlogId FROM [<dbUser,varchar,dbo>].[subtext_FeedBack] WHERE [Id] = @Id
 
-DELETE [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE [Id] = @Id
+DELETE [<dbUser,varchar,dbo>].[subtext_FeedBack] WHERE [Id] = @Id
 
 exec [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount] @BlogId, @EntryId
 GO
@@ -844,7 +844,7 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_DeleteFeedbackByStatus]
 )
 AS
 
-DELETE [<dbUser,varchar,dbo>].[subtext_Feedback] 
+DELETE [<dbUser,varchar,dbo>].[subtext_FeedBack] 
 WHERE [BlogId] = @BlogId 
 	AND StatusFlag & @StatusFlag = @StatusFlag
 	AND StatusFlag & 1 != 1 -- Do not delete approved.
@@ -870,7 +870,7 @@ GO
 
 
 /*
-Deletes a record FROM [<dbUser,varchar,dbo>].[subtext_content], whether it be a post, a comment, etc..
+Deletes a record FROM [<dbUser,varchar,dbo>].[subtext_Content], whether it be a post, a comment, etc..
 */
 CREATE PROC [<dbUser,varchar,dbo>].[subtext_DeletePost]
 (
@@ -885,7 +885,7 @@ DELETE FROM [<dbUser,varchar,dbo>].[subtext_EntryTag] WHERE EntryId = @ID
 DELETE FROM [<dbUser,varchar,dbo>].[subtext_Links] WHERE PostID = @ID
 DELETE FROM [<dbUser,varchar,dbo>].[subtext_EntryViewCount] WHERE EntryID = @ID
 DELETE FROM [<dbUser,varchar,dbo>].[subtext_Referrals] WHERE EntryID = @ID
-DELETE FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE EntryId = @ID
+DELETE FROM [<dbUser,varchar,dbo>].[subtext_FeedBack] WHERE EntryId = @ID
 DELETE FROM [<dbUser,varchar,dbo>].[subtext_Content] WHERE [ID] = @ID
 
 EXEC [<dbUser,varchar,dbo>].[subtext_UpdateBlogStats] @blogId
@@ -1297,7 +1297,7 @@ AS
 		, f.DateModified
 		, ParentEntryCreateDate = c.DateAdded
 		, ParentEntryName = c.EntryName
-FROM [<dbUser,varchar,dbo>].[subtext_Feedback] f
+FROM [<dbUser,varchar,dbo>].[subtext_FeedBack] f
 	LEFT OUTER JOIN [<dbUser,varchar,dbo>].[subtext_Content] c 
 		ON c.Id = f.EntryId
 WHERE f.EntryId = @EntryId
@@ -1345,7 +1345,7 @@ AS
 		, f.DateModified
 		, ParentEntryCreateDate = c.DateAdded
 		, ParentEntryName = c.EntryName
-FROM [<dbUser,varchar,dbo>].[subtext_Feedback] f
+FROM [<dbUser,varchar,dbo>].[subtext_FeedBack] f
 	LEFT OUTER JOIN [<dbUser,varchar,dbo>].[subtext_Content] c 
 		ON c.Id = f.EntryId
 WHERE f.Id = @Id
@@ -1702,7 +1702,7 @@ SET @StartRowIndex = @PageIndex * @PageSize + 1
 SET ROWCOUNT @StartRowIndex
 -- Get the first entry id for the current page.
 SELECT @FirstId = f.[Id] 
-FROM [<dbUser,varchar,dbo>].[subtext_Feedback] f
+FROM [<dbUser,varchar,dbo>].[subtext_FeedBack] f
 WHERE 	f.BlogId = @BlogId 
 	AND (f.StatusFlag & @StatusFlag = @StatusFlag)
 	AND (f.StatusFlag & @ExcludeFeedbackStatusMask = 0) -- Make sure the status doesn't have any of the excluded statuses set
@@ -1733,7 +1733,7 @@ SELECT  f.Id
 		, f.DateModified
 		, ParentEntryCreateDate = c.DateAdded
 		, ParentEntryName = c.EntryName
-FROM [<dbUser,varchar,dbo>].[subtext_Feedback] f
+FROM [<dbUser,varchar,dbo>].[subtext_FeedBack] f
 	LEFT OUTER JOIN [<dbUser,varchar,dbo>].[subtext_Content] c 
 		ON c.Id = f.EntryId
 WHERE 	f.BlogId = @BlogId 
@@ -1744,7 +1744,7 @@ WHERE 	f.BlogId = @BlogId
 ORDER BY f.[Id] DESC
  
 SELECT COUNT(f.[Id]) AS TotalRecords
-FROM [<dbUser,varchar,dbo>].[subtext_Feedback] f
+FROM [<dbUser,varchar,dbo>].[subtext_FeedBack] f
 WHERE 	f.BlogId = @BlogId 
 	AND f.StatusFlag & @StatusFlag = @StatusFlag
 	AND (f.StatusFlag & @ExcludeFeedbackStatusMask = 0) -- Make sure the status doesn't have any of the excluded statuses set
@@ -3510,7 +3510,7 @@ AS
 IF @DateModified = NULL
     SET @DateModified = getdate()
     
-INSERT INTO [<dbUser,varchar,dbo>].[subtext_Feedback]
+INSERT INTO [<dbUser,varchar,dbo>].[subtext_FeedBack]
 ( 
 	Title
 	, Body
@@ -3586,9 +3586,9 @@ AS
 
 DECLARE @EntryId int
 DECLARE @BlogId int
-SELECT @EntryId = EntryId, @BlogId = BlogId FROM [<dbUser,varchar,dbo>].[subtext_Feedback] WHERE Id = @Id
+SELECT @EntryId = EntryId, @BlogId = BlogId FROM [<dbUser,varchar,dbo>].[subtext_FeedBack] WHERE Id = @Id
 
-UPDATE [<dbUser,varchar,dbo>].[subtext_Feedback]
+UPDATE [<dbUser,varchar,dbo>].[subtext_FeedBack]
 SET	Title = @Title
 	, Body = @Body
 	, Author = @Author
@@ -3728,7 +3728,7 @@ SELECT TOP 1 f.Title
 		, f.DateModified
 		, ParentEntryCreateDate = c.DateAdded
 		, ParentEntryName = c.EntryName
-FROM [<dbUser,varchar,dbo>].[subtext_Feedback] f
+FROM [<dbUser,varchar,dbo>].[subtext_FeedBack] f
 	INNER JOIN [<dbUser,varchar,dbo>].[subtext_Content] c ON f.EntryId = c.ID
 WHERE 
 	f.FeedbackChecksumHash = @FeedbackChecksumHash
@@ -4342,7 +4342,7 @@ SELECT	f.[Id]
 		, FeedbackChecksumHash
 		, DateCreated
 		, DateModified
-FROM [<dbUser,varchar,dbo>].[subtext_Feedback] f
+FROM [<dbUser,varchar,dbo>].[subtext_FeedBack] f
 	INNER JOIN #IDs idTable ON idTable.Id = f.[EntryId]
 	WHERE f.FeedbackType = 1 -- Comment
 ORDER BY idTable.[ID] ASC
@@ -4366,7 +4366,7 @@ SELECT	f.[Id]
 		, FeedbackChecksumHash
 		, DateCreated
 		, DateModified
-FROM [<dbUser,varchar,dbo>].[subtext_Feedback] f
+FROM [<dbUser,varchar,dbo>].[subtext_FeedBack] f
 	INNER JOIN #IDs idTable ON idTable.Id = f.[EntryId]
 	WHERE f.FeedbackType = 2 -- Trackback/Pingback
 ORDER BY idTable.[ID] ASC
