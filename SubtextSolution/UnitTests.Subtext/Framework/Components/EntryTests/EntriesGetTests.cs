@@ -12,10 +12,11 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 	public class EntriesGetTests
 	{
 		[Test]
-		[RollBack]
 		public void CanGetRecentPosts()
 		{
-			UnitTestHelper.SetupBlog();
+			string hostname = UnitTestHelper.GenerateRandomString();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", hostname, ""));
+			UnitTestHelper.SetHttpContextWithBlogRequest(hostname, "", "");
 
 			int blogId = Config.CurrentBlog.Id;
 			for (int i = 0; i < 10; i++)

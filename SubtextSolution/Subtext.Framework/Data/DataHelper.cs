@@ -35,7 +35,7 @@ namespace Subtext.Framework.Data
 {
 	/// <summary>
 	/// Contains helper methods for getting blog entries from the database 
-	/// into objects such as List of EntryDay.
+	/// into objects such as <see cref="List<EntryDay>"/>
 	/// </summary>
 	public static class DataHelper
 	{
@@ -105,26 +105,12 @@ namespace Subtext.Framework.Data
 
 		#region EntryDayCollection
 
-		/// <summary>
-		/// Determines whether the new date is a new day as compared to the current date.
-		/// </summary>
-		/// <param name="currentDate">The current date.</param>
-		/// <param name="newDate">The new date.</param>
-		/// <returns>
-		/// 	<c>true</c> if [is new day] [the specified dt current]; otherwise, <c>false</c>.
-		/// </returns>
-		private static bool IsNewDay(DateTime currentDate, DateTime newDate)
+		private static bool IsNewDay(DateTime dtCurrent, DateTime dtDay)
 		{
-			return !(currentDate.DayOfYear == newDate.DayOfYear && currentDate.Year == newDate.Year);
+			return !(dtCurrent.DayOfYear == dtDay.DayOfYear && dtCurrent.Year == dtDay.Year);
 		}
 
-		/// <summary>
-		/// Loads the entry day collection from the data reader.
-		/// </summary>
-		/// <param name="reader">The reader.</param>
-		/// <returns></returns>
-        /// <param name="buildLinks"></param>
-        public static ICollection<EntryDay> LoadEntryDayCollection(IDataReader reader, bool buildLinks)
+        public static ICollection<EntryDay> LoadEntryDayCollection(IDataReader reader)
 		{
 			DateTime dt = new DateTime(1900, 1, 1);
 			List<EntryDay> edc = new List<EntryDay>();
@@ -138,11 +124,13 @@ namespace Subtext.Framework.Data
 					day = new EntryDay(dt);
 					edc.Add(day);
 				}
-				if(day != null)
-					day.Add(LoadEntry(reader, buildLinks));
+				day.Add(DataHelper.LoadEntry(reader));
 			}
 			return edc;
+
 		}
+
+
 		#endregion
 
 		#region EntryCollection
@@ -213,11 +201,14 @@ namespace Subtext.Framework.Data
 				entry.AggLastUpdated = (DateTime)reader["AggLastUpdated"];	
 			}
 
-			if(reader["AuthorId"] != DBNull.Value)
+			if(reader["Author"] != DBNull.Value)
 			{
-				entry.authorId = ReadGuid(reader, "AuthorId");
+				entry.Author = ReadString(reader, "Author");
 			}
-			
+			if(reader["Email"] != DBNull.Value)
+			{
+				entry.Email = ReadString(reader, "Email");
+			}
 			entry.DateCreated = (DateTime)reader["DateAdded"];
 			
 			if(reader["DateUpdated"] != DBNull.Value)
@@ -320,7 +311,7 @@ namespace Subtext.Framework.Data
 			feedbackItem.Email = ReadString(reader, "Email");
 			feedbackItem.SourceUrl = ReadUri(reader, "Url");
 			feedbackItem.FeedbackType = (FeedbackType)ReadInt32(reader, "FeedbackType");
-			feedbackItem.Status = (FeedbackStatusFlags)ReadInt32(reader, "StatusFlag");
+			feedbackItem.Status = (FeedbackStatusFlag)ReadInt32(reader, "StatusFlag");
 			feedbackItem.CreatedViaCommentAPI = ReadBoolean(reader, "CommentAPI");
 			feedbackItem.Referrer = ReadString(reader, "Referrer");
 			feedbackItem.IpAddress = ReadIpAddress(reader, "IpAddress");
@@ -342,12 +333,12 @@ namespace Subtext.Framework.Data
 
 		private static void LoadEntry(IDataReader reader, Entry entry, bool buildLinks)
 		{
-			entry.authorId = ReadGuid(reader, "AuthorId");
+			entry.Author = ReadString(reader, "Author");
+			entry.Email = ReadString(reader, "Email");
 			entry.DateCreated = ReadDate(reader, "DateAdded");
 			entry.DateModified = ReadDate(reader, "DateUpdated");
 			
 			entry.Id = ReadInt32(reader, "ID");
-			entry.BlogId = ReadInt32(reader, "BlogId");
 			entry.Description = ReadString(reader, "Description");
 			entry.EntryName = ReadString(reader, "EntryName");
 	
@@ -355,7 +346,7 @@ namespace Subtext.Framework.Data
 			entry.Body = ReadString(reader, "Text");
 			entry.Title = ReadString(reader, "Title");
 			entry.PostConfig = (PostConfig)(ReadInt32(reader, "PostConfig", (int)PostConfig.None));			
-			entry.DateSyndicated = ReadDate(reader, "DateSyndicated");
+			entry.DateSyndicated = DataHelper.ReadDate(reader, "DateSyndicated");
 	
 			if(buildLinks)
 			{
@@ -510,15 +501,17 @@ namespace Subtext.Framework.Data
 
 		#region Config
 
-		public static BlogInfo LoadBlog(IDataReader reader)
+		public static BlogInfo LoadConfigData(IDataReader reader)
 		{
 			BlogInfo info = new BlogInfo();
-			info.Id = ReadInt32(reader, "BlogId");
+			info.Author = ReadString(reader, "Author");
+			info.Id = DataHelper.ReadInt32(reader, "BlogId");
+			info.Email = ReadString(reader, "Email");
+			info.Password = ReadString(reader, "Password");
 
-			info.ownerId = ReadGuid(reader, "OwnerId");
-			info.ApplicationName = ReadString(reader, "ApplicationName");
 			info.SubTitle = ReadString(reader, "SubTitle");
 			info.Title = ReadString(reader, "Title");
+			info.UserName = ReadString(reader, "UserName");
 			info.TimeZoneId = ReadInt32(reader, "TimeZone");
 			info.ItemCount = ReadInt32(reader, "ItemCount");
 			info.CategoryListPostCount = ReadInt32(reader, "CategoryListPostCount");
@@ -535,9 +528,9 @@ namespace Subtext.Framework.Data
 			info.Host = ReadString(reader, "Host");
 			// The Subfolder property is stored in the Application column. 
 			// This is a result of the legacy schema.
-			info.Subfolder = ReadString(reader, "Subfolder");
+			info.Subfolder = ReadString(reader, "Application");
 
-			info.Flag = (ConfigurationFlags)(ReadInt32(reader, "Flag"));
+			info.Flag = (ConfigurationFlag)(ReadInt32(reader, "Flag"));
 
 			info.Skin = new SkinConfig();
 			info.Skin.TemplateFolder = ReadString(reader, "Skin");
@@ -551,21 +544,6 @@ namespace Subtext.Framework.Data
 			info.RecentCommentsLength = ReadInt32(reader, "RecentCommentsLength");
 			info.FeedbackSpamServiceKey = ReadString(reader, "AkismetAPIKey");
 			info.FeedBurnerName = ReadString(reader, "FeedBurnerName");
-            //CHANGE: MailToWeblog addition
-            //Gurkan Yeniceri
-            #region MailToWeblog settings
-            info.pop3DeleteOnlyProcessed = ReadBoolean(reader, "pop3DeleteOnlyProcessed");
-            info.pop3EndTag = ReadString(reader, "pop3EndTag");
-            info.pop3HeightForThumbs = ReadInt32(reader, "pop3HeightForThumbs");
-            info.pop3InlineAttachedPictures = ReadBoolean(reader, "pop3InlineAttachedPictures");
-            info.pop3MTBEnable = ReadBoolean(reader, "pop3MTBEnable");
-            info.pop3Pass = ReadString(reader, "pop3Pass");
-            info.pop3Server = ReadString(reader, "pop3Server");
-            info.pop3StartTag = ReadString(reader, "pop3StartTag");
-            info.pop3SubjectPrefix = ReadString(reader, "pop3SubjectPrefix");
-            info.pop3User = ReadString(reader,"pop3User");
-            #endregion MailToWeblog setting
-
 			return info;
 		}
 
@@ -576,12 +554,13 @@ namespace Subtext.Framework.Data
         public static ICollection<ArchiveCount> LoadArchiveCount(IDataReader reader)
 		{
 			const string dateformat = "{0:00}/{1:00}/{2:0000}";
-			
+			string dt; //
+			ArchiveCount ac;// new ArchiveCount();
             ICollection<ArchiveCount> acc = new Collection<ArchiveCount>();
 			while(reader.Read())
 			{
-				ArchiveCount ac = new ArchiveCount();
-				string dt = string.Format(CultureInfo.InvariantCulture, dateformat, ReadInt32(reader, "Month"),ReadInt32(reader, "Day"),ReadInt32(reader, "Year"));
+				ac = new ArchiveCount();
+				dt = string.Format(CultureInfo.InvariantCulture, dateformat, ReadInt32(reader, "Month"),ReadInt32(reader, "Day"),ReadInt32(reader, "Year"));
 				// FIX: BUG SF1423271 Archives Links
 				ac.Date = DateTime.ParseExact(dt,"MM/dd/yyyy",CultureInfo.InvariantCulture);
                 
@@ -657,7 +636,7 @@ namespace Subtext.Framework.Data
 			kw.Rel = ReadString(reader, "Rel");
 			if(reader["Title"] != DBNull.Value)
 			{
-				kw.Title = CheckNullString(reader["Title"]);
+				kw.Title = DataHelper.CheckNullString(reader["Title"]);
 			}
 			kw.Url = ReadString(reader, "Url");
 			kw.Word = ReadString(reader, "Word");
@@ -665,6 +644,24 @@ namespace Subtext.Framework.Data
 		}
 
 	    /// <summary>
+	    /// If the string is empty or null, returns a 
+	    /// System.DBNull.Value.
+	    /// </summary>
+	    /// <param name="text"></param>
+	    /// <returns></returns>
+        public static object CheckForNullString(string text)
+        {
+            if (String.IsNullOrEmpty(text))
+            {
+                return System.DBNull.Value;
+            }
+            else
+            {
+                return text;
+            }
+        }
+
+        /// <summary>
         /// If the string is DBNull, returns null. Otherwise returns the string.
         /// </summary>
         /// <param name="obj">The obj.</param>
@@ -686,12 +683,12 @@ namespace Subtext.Framework.Data
 		/// </summary>
 		/// <param name="reader">Reader.</param>
 		/// <returns></returns>
-		/// <param name="info"></param>
 		public static void LoadHost(IDataReader reader, HostInfo info)
 		{
-			info.ownerId = ReadGuid(reader, "OwnerId");
-			info.ApplicationId = ReadGuid(reader, "ApplicationId");
-			info.DateCreated = ReadDate(reader, "DateCreated");
+			info.HostUserName = ReadString(reader, "HostUserName");
+			info.Password = ReadString(reader, "Password");
+			info.Salt = ReadString(reader, "Salt");
+			info.DateCreated = (DateTime)reader["DateCreated"];
 		}
 		#endregion
 
@@ -718,19 +715,6 @@ namespace Subtext.Framework.Data
 		}
 		#endregion
 
-		#region Plugins
-
-		public static NameValueCollection LoadPluginSettings(IDataReader reader)
-		{
-			NameValueCollection nvc = new NameValueCollection(1);
-			string key = ReadString(reader, "Key");
-			string value = ReadString(reader, "Value");
-			nvc.Add(key, value);
-			return nvc;
-		}
-
-		#endregion
-
 		/// <summary>
 		/// Reads the int from the data reader.
 		/// </summary>
@@ -749,7 +733,6 @@ namespace Subtext.Framework.Data
 		/// <param name="reader">The reader.</param>
 		/// <param name="columnName">Name of the column.</param>
 		/// <returns></returns>
-		/// <param name="defaultValue"></param>
 		public static int ReadInt32(IDataReader reader, string columnName, int defaultValue)
 		{
 			try
@@ -784,28 +767,6 @@ namespace Subtext.Framework.Data
 			catch (IndexOutOfRangeException)
 			{
 				return false;
-			}
-		}
-
-		/// <summary>
-		/// Reads a guid from the data reader. If the value is null, 
-		/// returns false.
-		/// </summary>
-		/// <param name="reader">The reader.</param>
-		/// <param name="columnName">Name of the column.</param>
-		/// <returns></returns>
-		public static Guid ReadGuid(IDataReader reader, string columnName)
-		{
-			try
-			{
-				if (reader[columnName] != DBNull.Value)
-					return (Guid)reader[columnName];
-				else
-					return Guid.Empty;
-			}
-			catch (IndexOutOfRangeException)
-			{
-				return Guid.Empty;
 			}
 		}
 
@@ -866,7 +827,7 @@ namespace Subtext.Framework.Data
 				else
 					return IPAddress.None;
 			}
-			catch(FormatException)
+			catch(System.FormatException)
 			{
 				return IPAddress.None;
 			}
@@ -891,11 +852,11 @@ namespace Subtext.Framework.Data
 				else
 					return null;
 			}
-			catch(IndexOutOfRangeException)
+			catch(System.IndexOutOfRangeException)
 			{
 				return null;
 			}
-			catch(FormatException)
+			catch(System.FormatException)
 			{
 				return null;
 			}
@@ -918,7 +879,6 @@ namespace Subtext.Framework.Data
 		/// <param name="reader">The reader.</param>
 		/// <param name="columnName">Name of the column.</param>
 		/// <returns></returns>
-		/// <param name="defaultValue"></param>
 		public static DateTime ReadDate(IDataReader reader, string columnName, DateTime defaultValue)
 		{
 			try
@@ -963,18 +923,6 @@ namespace Subtext.Framework.Data
         {
             return MakeParam(ParamName, DbType, Size, ParameterDirection.Output, null);
         }
-
-
-		/// <summary>
-		/// Creates a SqlParameter to store the return value of a stored proc.
-		/// </summary>
-		/// <returns></returns>
-		public static SqlParameter MakeReturnValueParam()
-		{
-			SqlParameter returnValue = new SqlParameter("@RETURN_VALUE", SqlDbType.Int);
-			returnValue.Direction = ParameterDirection.ReturnValue;
-			return returnValue;
-		}
 
         /// <summary>
         /// Make stored procedure param.
@@ -1041,6 +989,16 @@ namespace Subtext.Framework.Data
 		}
 
 	    /// <summary>
+	    /// Returns a true null if the object is DBNull.
+	    /// </summary>
+	    /// <param name="obj">The obj.</param>
+	    /// <returns></returns>
+	    public static string CheckNull(DBNull obj)
+	    {
+	        return null;
+	    }
+
+	    /// <summary>
 	    /// Checks the value of the specified value type for a null value.  
 	    /// Returns null if the value represents a null value
 	    /// </summary>
@@ -1053,20 +1011,17 @@ namespace Subtext.Framework.Data
 	        return dateTime;
 	    }
 
-		/// <summary>
-		/// Checks the value of the specified value type for a null value.  
-		/// Returns null if the value represents a null value
-		/// </summary>
-		/// <param name="guid">Date time.</param>
-		/// <returns></returns>
-		public static object CheckNull(Guid guid)
-		{
-			if (NullValue.IsNull(guid))
-				return null;
-			return guid;
-		}
+	    internal static void DebugPrintCommand(SqlCommand command)
+	    {
+	        Console.Write(command.CommandText);
+	        foreach(SqlParameter parameter in command.Parameters)
+	        {
+	            Console.Write(" " + parameter.ParameterName + "=" + parameter.Value + ", ");
+	        }
+	        Console.Write(Environment.NewLine);
+	    }
 
-	    #region ExecuteDataTable
+        #region ExecuteDataTable
 
         /// <summary>
         /// Execute a SqlCommand (that returns a resultset and takes no parameters) against the database specified in 
@@ -1152,7 +1107,6 @@ namespace Subtext.Framework.Data
             //create the DataAdapter & DataTable
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             DataTable dt = new DataTable();
-            dt.Locale = CultureInfo.InvariantCulture;
 
             //fill the DataTable using default values for DataTable names, etc.
             da.Fill(dt);
@@ -1204,7 +1158,6 @@ namespace Subtext.Framework.Data
             //create the DataAdapter & DataTable
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             DataTable dt = new DataTable();
-            dt.Locale = CultureInfo.InvariantCulture;
 
             //fill the DataTable using default values for DataTable names, etc.
             da.Fill(dt);
@@ -1286,5 +1239,15 @@ namespace Subtext.Framework.Data
         #endregion ExecuteDataTable
 	}
 
-
+	/// <summary>
+	/// Sort direction.
+	/// </summary>
+	public enum SortDirection
+	{
+		None = 0,
+		/// <summary>Sort ascending</summary>
+		Ascending,
+		/// <summary>Sort descending</summary>
+		Descending
+	}
 }

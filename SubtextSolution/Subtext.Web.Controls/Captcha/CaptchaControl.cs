@@ -110,7 +110,7 @@ namespace Subtext.Web.Controls.Captcha
 
 			string src = ControlHelper.ExpandTildePath("~/CaptchaImage.ashx");
         	
-            writer.Write("<img src=\"" + src);
+            writer.Write("<img src=\"{0}", src);
             if (!IsDesignMode)
             {
 				writer.Write("?spec={0}", HttpUtility.UrlEncodeUnicode(captcha.ToEncryptedString()));
@@ -135,7 +135,7 @@ namespace Subtext.Web.Controls.Captcha
 			
 			writer.Write("<input name=\"{0}\" type=\"text\" size=\"", this.AnswerFormFieldName);
             writer.Write(this.captcha.TextLength.ToString());
-            writer.Write("\" maxlength=\"" + this.captcha.TextLength + "\"");
+            writer.Write("\" maxlength=\"{0}\"", this.captcha.TextLength);
             if (this.AccessKey.Length > 0)
             {
                 writer.Write(" accesskey=\"{0}\"", this.AccessKey);
@@ -146,7 +146,7 @@ namespace Subtext.Web.Controls.Captcha
             }
             if (this.TabIndex > 0)
             {
-                writer.Write(" tabindex=\"" + this.TabIndex + "\"");
+                writer.Write(" tabindex=\"{0}\"", this.TabIndex);
             }
 			if (Page.IsPostBack && this.IsValid)
 				writer.Write(" value=\"{0}\" />", HttpUtility.HtmlEncode(Page.Request.Form[AnswerFormFieldName]));
@@ -281,12 +281,12 @@ namespace Subtext.Web.Controls.Captcha
 		/// <returns></returns>
 		private static string RandomFontFamily()
 		{
-			InstalledFontCollection fontCollection = new InstalledFontCollection();
-            FontFamily[] families = fontCollection.Families;
+			InstalledFontCollection collection1 = new InstalledFontCollection();
+			FontFamily[] familyArray1 = collection1.Families;
 			string fontFamily = "bogus";
 			while (goodFontList.IndexOf(fontFamily) == -1)
 			{
-                fontFamily = families[random.Next(0, fontCollection.Families.Length)].Name.ToLower();
+				fontFamily = familyArray1[random.Next(0, collection1.Families.Length)].Name.ToLower();
 			}
 			return fontFamily;
 		}
@@ -339,7 +339,6 @@ namespace Subtext.Web.Controls.Captcha
 			set
 			{
 				this.validRandomTextChars = value;
-				this.text = this.GenerateRandomText();
 			}
 		}
 

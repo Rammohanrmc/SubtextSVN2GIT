@@ -15,11 +15,10 @@
 
 using System;
 using System.Data.SqlClient;
-using System.Web.Security;
+using Subtext.Framework.Configuration;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Providers;
 using Subtext.Framework.Security;
-using Subtext.Framework.Properties;
 
 namespace Subtext.Framework
 {
@@ -49,40 +48,6 @@ namespace Subtext.Framework
 		}
 
 		/// <summary>
-		/// Changes the password for the Host Owner.
-		/// </summary>
-		/// <param name="oldPassword">The old password.</param>
-		/// <param name="newPassword">The new password.</param>
-		public void SetPassword(string oldPassword, string newPassword)
-		{
-			Membership.Provider.ChangePassword(Owner.UserName, oldPassword, newPassword);
-		}
-
-		/// <summary>
-		/// Gets the owner of the subtext installation. 
-		/// This person is known as THE HostAdmin.
-		/// </summary>
-		/// <value>The owner.</value>
-		public MembershipUser Owner
-		{
-			get
-			{
-				if(this.owner == null && ownerId != Guid.Empty)
-				{
-					using(MembershipApplicationScope.SetApplicationName("/"))
-					{
-						this.owner = Membership.GetUser(ownerId);
-					}
-				}
-				return this.owner;
-			}
-		}
-
-		MembershipUser owner;
-
-		internal Guid ownerId = Guid.Empty;
-
-		/// <summary>
 		/// Gets a value indicating whether the HostInfo table exists.
 		/// </summary>
 		/// <value>
@@ -105,17 +70,6 @@ namespace Subtext.Framework
 		}
 
 		/// <summary>
-		/// The Membership Application ID for the Host.
-		/// </summary>
-		public Guid ApplicationId
-		{
-			get { return this.applicationId; }
-			set { this.applicationId = value; }
-		}
-
-		Guid applicationId;
-
-		/// <summary>
 		/// Loads the host from the Object Provider.  This is provided 
 		/// for those cases when we really need to hit the db.
 		/// </summary>
@@ -129,94 +83,65 @@ namespace Subtext.Framework
 			}
 			catch(SqlException e)
 			{
-                if (e.Message.IndexOf("Invalid object name 'subtext_Host'") >= 0)
-                {
-                    if (suppressException)
-                    {
-                        return null;
-                    }
-                    else
-                    {
-                        throw new HostDataDoesNotExistException();
-                    }
-                }
-                else
-                {
-                    throw;
-                }
+				if(e.Message.IndexOf("Invalid object name 'subtext_Host'") >= 0)
+				{
+					if(suppressException)
+						return null;
+					else
+						throw new HostDataDoesNotExistException();
+				}
+				else
+					throw;
 			}
+		}
+
+		/// <summary>
+		/// Updates the host in the persistent store.
+		/// </summary>
+		/// <param name="host">Host.</param>
+		/// <returns></returns>
+		public static bool UpdateHost(HostInfo host)
+		{
+			if(ObjectProvider.Instance().UpdateHost(host))
+			{
+				_instance = host;
+				return true;
+			}
+			return false;
 		}
 
 		/// <summary>
 		/// Creates the host in the persistent store.
 		/// </summary>
 		/// <returns></returns>
-		public static bool CreateHost(string hostUserName, string hostPassword, string email)
+		public static bool CreateHost(string hostUserName, string hostPassword)
 		{
-            if (!InstallationManager.HostInfoRecordNeeded)
-            {
-                throw new InvalidOperationException(Resources.InvalidOperation_HostRecordExists);
-            }
+			if(!InstallationManager.HostInfoRecordNeeded)
+				throw new InvalidOperationException("Cannot create a Host record.  One already exists.");
+
 			HostInfo host = new HostInfo();
-			
-			string passwordSalt = SecurityHelper.CreateRandomSalt();
+			host.HostUserName = hostUserName;
 
-            if (Membership.Provider.PasswordFormat == MembershipPasswordFormat.Hashed)
-            {
-                hostPassword = SecurityHelper.HashPassword(hostPassword, passwordSalt);
-            }
-			host = ObjectProvider.Instance().CreateHost(host, hostUserName, hostPassword, passwordSalt, email);
-
-            using (MembershipApplicationScope.SetApplicationName("/"))
-            {
-				if (!Roles.RoleExists(RoleNames.HostAdmins))
-                {
-					Roles.CreateRole(RoleNames.HostAdmins);
-                }
-				Roles.AddUserToRole(host.Owner.UserName, RoleNames.HostAdmins);
-            }
+			SetHostPassword(host, hostPassword);
 			
-			return true;
+			if(UpdateHost(host))
+			{
+				_instance = host;
+				return true;
+			}
+			return false;
 		}
 
-		/// <summary>
-		/// Changes the Host Owner password.
-		/// </summary>
-		/// <param name="host">The host.</param>
-		/// <param name="oldPassword">The old password.</param>
-		/// <param name="newPassword">The new password.</param>
-		public static void ChangePassword(HostInfo host, string oldPassword, string newPassword)
+		public static void SetHostPassword(HostInfo host, string newPassword)
 		{
-            if (host == null)
-            {
-                throw new ArgumentNullException("host", Resources.ArgumentNull_Generic);
-            }
-
-            if (oldPassword == null)
-            {
-                throw new ArgumentNullException("oldPassword", Resources.ArgumentNull_String);
-            }
-
-            if (newPassword == null)
-            {
-                throw new ArgumentNullException("newPassword", Resources.ArgumentNull_String);
-            }
-
-            if (oldPassword.Length == 0)
-            {
-                throw new ArgumentException(Resources.Argument_StringZeroLength, "oldPassword");
-            }
-
-            if (newPassword.Length == 0)
-            {
-                throw new ArgumentException(Resources.Argument_StringZeroLength, "newPassword");
-            }
-
-            //Make sure we can grab the host admin.
-			using (MembershipApplicationScope.SetApplicationName("/"))
+			host.Salt = SecurityHelper.CreateRandomSalt();
+			if(Config.Settings.UseHashedPasswords)
 			{
-				Membership.Provider.ChangePassword(host.Owner.UserName, oldPassword, newPassword);
+				string hashedPassword = SecurityHelper.HashPassword(newPassword, host.Salt);
+				host.Password = hashedPassword;
 			}
+			else
+				host.Password = newPassword;
 		}
 
 		/// <summary>
@@ -225,8 +150,35 @@ namespace Subtext.Framework
 		/// <value></value>
 		public string HostUserName
 		{
-			get { return this.Owner.UserName; }
+			get { return _hostUserName; }
+			set { _hostUserName = value; }
 		}
+
+		string _hostUserName;
+
+		/// <summary>
+		/// Gets or sets the host password.
+		/// </summary>
+		/// <value></value>
+		public string Password
+		{
+			get { return _hostPassword; }
+			set { _hostPassword = value; }
+		}
+
+		string _hostPassword;
+
+		/// <summary>
+		/// Gets or sets the salt.
+		/// </summary>
+		/// <value></value>
+		public string Salt
+		{
+			get { return _salt; }
+			set { _salt = value; }
+		}
+
+		string _salt;
 
 		/// <summary>
 		/// Gets or sets the date this record was created. 

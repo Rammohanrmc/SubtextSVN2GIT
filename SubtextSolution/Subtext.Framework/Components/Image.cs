@@ -31,19 +31,19 @@ namespace Subtext.Framework.Components
 			set {this._blogID = value;}
 		}
 
-		private int _imageId;
+		private int _imageID;
 		[XmlAttribute]
 		public  virtual int ImageID
 		{
-			get{return _imageId;}
-			set{_imageId = value;}
+			get{return _imageID;}
+			set{_imageID = value;}
 		}
 
-		private int _catId;
+		private int _catID;
 		public  virtual int CategoryID
 		{
-			get{return _catId;}
-			set{_catId = value;}
+			get{return _catID;}
+			set{_catID = value;}
 		}
 
 		private bool _isActive;
@@ -68,28 +68,24 @@ namespace Subtext.Framework.Components
 		}
 
 		private string _localfile;
-        public virtual string LocalFilePath
-        {
-            get
-            {
-                if (_localfile == null)
-                {
-                    throw new Exception("Image.LocalFilePath has not been set yet.");
-                }
-                return _localfile;
-            }
-            set
-            {
-                if (value == null)
-                {
-                    _localfile = null;
-                }
-                else
-                {
-                    _localfile = value.Replace("/", "\\");
-                }
-            }
-        }
+		public  virtual string LocalFilePath
+		{
+			get
+			{
+				if(_localfile == null)
+				{
+					throw new Exception("Image.LocalFilePath has not been set yet.");
+				}
+				return _localfile;
+			}
+			set
+			{
+				if(value == null)
+				{
+					_localfile = null;
+				}
+					_localfile= value.Replace("/","\\");}
+		}
 
 		private string _title;
 		public  virtual string Title
@@ -162,3 +158,4 @@ namespace Subtext.Framework.Components
 
 	}
 }
+

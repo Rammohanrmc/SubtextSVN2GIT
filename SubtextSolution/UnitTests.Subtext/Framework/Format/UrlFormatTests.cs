@@ -33,6 +33,8 @@ namespace UnitTests.Subtext.Framework.Format
 	[TestFixture]
 	public class UrlFormatTests
 	{
+		string _hostName;
+
 	    /// <summary>
 		/// Makes sure that UrlFormats.GetBlogAppFromRequest does the right thing.
 		/// </summary>
@@ -113,7 +115,7 @@ namespace UnitTests.Subtext.Framework.Format
 		{
 			Entry entry = new Entry(PostType.BlogPost);
 			entry.Id = 123;
-            entry.DateCreated = DateTime.ParseExact("2006/01/23", "yyyy/MM/dd", CultureInfo.InvariantCulture);
+			entry.DateCreated = DateTime.Parse("2006/01/23");
 			entry.EntryName = "test";
 
 			UrlFormats formats = new UrlFormats(new Uri("http://localhost/"));
@@ -133,8 +135,9 @@ namespace UnitTests.Subtext.Framework.Format
 		[RollBack]
 		public void GetEditLinkDistringuishesBetweenPostAndArticle()
 		{
-			UnitTestHelper.SetupBlog();
-			
+			UnitTestHelper.SetHttpContextWithBlogRequest(_hostName, "");
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
+
 			Entry postEntry = new Entry(PostType.BlogPost);
 			postEntry.Id = 123;
 
@@ -151,8 +154,7 @@ namespace UnitTests.Subtext.Framework.Format
 		[RollBack]
 		public void GetBlogNameReturnsBlogNameForEmptyVirtualDir()
 		{
-			UnitTestHelper.SetupBlog("MyBlog");
-			
+			UnitTestHelper.SetHttpContextWithBlogRequest(_hostName, "MyBlog", "");
 			Console.WriteLine("HttpContext.Current.Request.ApplicationPath: " + HttpContext.Current.Request.ApplicationPath);
 			string blogName = UrlFormats.GetBlogSubfolderFromRequest(HttpContext.Current.Request.RawUrl, HttpContext.Current.Request.ApplicationPath);
 			Assert.AreEqual("MyBlog", blogName, "Wasn't able to parse request properly.");
@@ -162,11 +164,22 @@ namespace UnitTests.Subtext.Framework.Format
 		[RollBack]
 		public void GetBlogNameReturnsBlogNameForNonEmptyVirtualDir()
 		{
-			UnitTestHelper.SetupBlog("MyBlog2", "Subtext.Web");
-
+			UnitTestHelper.SetHttpContextWithBlogRequest(_hostName, "MyBlog2", "Subtext.Web");
 			Console.WriteLine("HttpContext.Current.Request.ApplicationPath: " + HttpContext.Current.Request.ApplicationPath);
 			string blogName = UrlFormats.GetBlogSubfolderFromRequest(HttpContext.Current.Request.RawUrl, HttpContext.Current.Request.ApplicationPath);
 			Assert.AreEqual("MyBlog2", blogName, "Wasn't able to parse request properly.");
+		}
+
+		[SetUp]
+		public void SetUp()
+		{
+			_hostName = UnitTestHelper.GenerateRandomString();
+			
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
 		}
 	}
 }

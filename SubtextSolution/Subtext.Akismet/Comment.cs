@@ -11,7 +11,7 @@ namespace Subtext.Akismet
 		private string commentType;
 		private string userAgent;
 		private Uri permalink;
-		private string referrer;
+		private string referer;
 		private string content;
 		private Uri authorUrl;
 		private string authorEmail;
@@ -68,10 +68,10 @@ namespace Subtext.Akismet
 		/// The HTTP_REFERER header value of the 
 		/// originating comment.
 		/// </summary>
-		public string Referrer
+		public string Referer
 		{
-			get { return this.referrer; }
-			set { this.referrer = value; }
+			get { return this.referer; }
+			set { this.referer = value; }
 		}
 
 		/// <summary>
@@ -105,7 +105,7 @@ namespace Subtext.Akismet
 		/// <summary>
 		/// IPAddress of the submitter
 		/// </summary>
-		public IPAddress IPAddress
+		public IPAddress IpAddress
 		{
 			get { return this.ipAddress; }
 		}

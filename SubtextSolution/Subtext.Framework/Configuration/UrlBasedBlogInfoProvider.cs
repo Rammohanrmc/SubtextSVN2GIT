@@ -19,12 +19,10 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Caching;
-using System.Web.Security;
 using log4net;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Logging;
 using Subtext.Framework.Web.HttpModules;
-using Subtext.Framework.Properties;
 
 namespace Subtext.Framework.Configuration
 {
@@ -179,7 +177,6 @@ namespace Subtext.Framework.Configuration
 					}
 					else
 					{
-						Membership.ApplicationName = Roles.ApplicationName = "/";
 						Log.ResetBlogIdContext();
 					}
 				}
@@ -201,7 +198,7 @@ namespace Subtext.Framework.Configuration
 			aggregateBlog.Skin = SkinConfig.GetDefaultSkin();
             aggregateBlog.Host = ConfigurationManager.AppSettings["AggregateHost"];
 			aggregateBlog.Subfolder = "";
-			//TODO: aggregateBlog.UserName = HostInfo.Instance.HostUserName;
+			aggregateBlog.UserName = HostInfo.Instance.HostUserName;
 			
 			return aggregateBlog;
 		}
@@ -214,11 +211,6 @@ namespace Subtext.Framework.Configuration
 		/// <returns></returns>
 		protected static string GetCurrentHost(HttpRequest Request)
 		{
-            if (Request == null)
-            {
-                throw new ArgumentNullException("Request", Resources.ArgumentNull_Generic);
-            }
-
 			string host = Request.Url.Host;
 			if(!Request.Url.IsDefaultPort)
 			{
@@ -244,26 +236,6 @@ namespace Subtext.Framework.Configuration
 		/// <param name="cacheKEY">Cache KEY.</param>
 		protected void CacheConfig(Cache cache, BlogInfo info, string cacheKEY)
 		{
-            if (cache == null)
-            {
-                throw new ArgumentNullException("cache", Resources.ArgumentNull_Generic);
-            }
-
-            if (info == null)
-            {
-                throw new ArgumentNullException("info", Resources.ArgumentNull_Generic);
-            }
-
-            if (cacheKEY == null)
-            {
-                throw new ArgumentNullException("cacheKEY", Resources.ArgumentNull_Generic);
-            }
-
-            if (cacheKEY.Length == 0)
-            {
-                throw new ArgumentException(Resources.Argument_StringZeroLength, "cacheKEY");
-            }
-
 			cache.Insert(cacheKEY, info, null, DateTime.Now.AddSeconds(CacheTime), TimeSpan.Zero, CacheItemPriority.High, null);
 		}
 	}

@@ -34,11 +34,11 @@ namespace Subtext.Framework.Components
 			set {this._blogID = value;}
 		}
 
-		private int _entryId;
-		public int EntryId
+		private int _entryID;
+		public int EntryID
 		{
-			get {return this._entryId;}
-			set {this._entryId = value;}
+			get {return this._entryID;}
+			set {this._entryID = value;}
 		}
 
 		private string _referralUrl;
@@ -54,5 +54,11 @@ namespace Subtext.Framework.Components
 			get {return this._pageViewType;}
 			set {this._pageViewType = value;}
 		}
+	}
+
+	public enum PageViewType : byte
+	{
+		AggView = 0,
+		WebView = 1
 	}
 }

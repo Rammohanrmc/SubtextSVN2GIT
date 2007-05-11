@@ -85,6 +85,7 @@ namespace Subtext.Framework.Threading
 			// needed for any core functionality.
 			_waitingCallbacks = new Queue();
 			_workerThreads = new ArrayList();
+			_inUseThreads = 0;
 
 			// Create our "thread needed" event
 			_workerThreadNeeded = new Semaphore(0);

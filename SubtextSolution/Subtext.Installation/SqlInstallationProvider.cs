@@ -15,17 +15,21 @@
 
 using System;
 using System.Collections.Specialized;
+using System.Data;
 using System.Data.SqlClient;
 using System.Text.RegularExpressions;
-using Subtext.Data;
+using System.Web.UI;
+using Microsoft.ApplicationBlocks.Data;
 using Subtext.Extensibility.Providers;
+using Subtext.Framework.Data;
+using Subtext.Web.Controls;
 
 namespace Subtext.Installation
 {
 	/// <summary>
 	/// Summary description for SqlInstallationProvider.
 	/// </summary>
-	public class SqlInstallationProvider : InstallerProvider
+	public class SqlInstallationProvider : Extensibility.Providers.Installation
 	{
 		string _connectionString = string.Empty;
 		SqlInstaller installer;
@@ -41,50 +45,80 @@ namespace Subtext.Installation
 		}
 
 		/// <summary>
-		/// Gets the installation status based on the current assembly Version.
-		/// </summary>
-		/// <returns></returns>
-		public override InstallationState InstallationStatus
-		{
-			get
-			{
-				Version installationVersion = CurrentInstallationVersion;
-				if (installationVersion == null)
-					return InstallationState.NeedsInstallation;
-
-				if (NeedsUpgrade(installationVersion))
-				{
-					return InstallationState.NeedsUpgrade;
-				}
-
-				return InstallationState.Complete;
-			}
-		}
-
-		/// <summary>
-		/// Gets the <see cref="Version"/> of the current Subtext data store (ie. SQL Server). 
-		/// This is the value stored in the database. If it does not match the actual 
-		/// assembly version, we may need to run an upgrade.
-		/// </summary>
-		/// <returns></returns>
-		public override Version CurrentInstallationVersion
-		{
-			get
-			{
-				return this.installer.CurrentInstallationVersion;
-			}
-		}
-
-		/// <summary>
 		/// Initializes the specified provider.
 		/// </summary>
 		/// <param name="name">Friendly Name of the provider.</param>
 		/// <param name="configValue">Config value.</param>
 		public override void Initialize(string name, NameValueCollection configValue)
 		{
-			_connectionString = ProviderConfigurationHelper.GetConnectionStringSettingValue("connectionStringName", configValue);
+            _connectionString = ProviderConfigurationHelper.GetConnectionStringSettingValue("connectionStringName", configValue);
 			this.installer = new SqlInstaller(_connectionString);
-			base.Initialize(name, configValue);
+            base.Initialize(name, configValue);
+		}
+		
+		/// <summary>
+		/// <p>
+		/// This method is called by the installation engine in order to ask the 
+		/// provider what pieces of information it needs from the user in order 
+		/// to proceed with the installation.
+		/// </p>
+		/// <p>
+		/// This method returns the <see cref="Control"/> used to gather 
+		/// the required installation information.  This will be returned 
+		/// back to the provider after the user provides the information.
+		/// </p>
+		/// </summary>
+		/// <returns></returns>
+		public override Control GatherInstallationInformation()
+		{
+			ConnectionStringBuilder builder = new ConnectionStringBuilder();
+			builder.AllowWebConfigOverride = true;
+			builder.Description = "A SQL Connection String with the rights to create SQL Database objects such as Stored Procedures, Table, and Views.";
+			builder.Title = "Connection String";
+		
+			return builder;
+		}
+
+		/// <summary>
+		/// Provides the installation information as provided by the user. 
+		/// The control passed in should be the same as that provided in 
+		/// <see cref="GatherInstallationInformation"/>, but with user values 
+		/// supplied within it.
+		/// </summary>
+		/// <param name="populatedControl">Populated control.</param>
+		public override void ProvideInstallationInformation(Control populatedControl)
+		{
+		}
+
+		/// <summary>
+		/// Validates the installation information provided by the user.  
+		/// Returns a NameValueCollection of any fields that are incorrect 
+		/// with an explanation of why it is incorrect.
+		/// </summary>
+		/// <param name="control">Information.</param>
+		/// <returns></returns>
+		public override string ValidateInstallationInformation(Control control)
+		{
+			return string.Empty;
+		}
+
+		/// <summary>
+		/// Gets the installation status based on the current assembly Version.
+		/// </summary>
+		/// <param name="currentAssemblyVersion">The version of the assembly that represents this installation.</param>
+		/// <returns></returns>
+		public override InstallationState GetInstallationStatus(Version currentAssemblyVersion)
+		{
+			Version installationVersion = GetCurrentInstallationVersion();
+			if (installationVersion == null)
+				return InstallationState.NeedsInstallation;
+			
+			if (NeedsUpgrade(installationVersion))
+			{
+				return InstallationState.NeedsUpgrade;
+			}
+		
+			return InstallationState.Complete;
 		}
 
 		/// <summary>
@@ -97,17 +131,14 @@ namespace Subtext.Installation
 		/// </returns>
 		public override bool IsInstallationException(Exception exception)
 		{
-			if (exception == null)
-				throw new ArgumentNullException("exception", "It's not an installation exception if it's null.");
-
 			Regex tableRegex = new Regex("Invalid object name '.*?'", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-			bool isSqlException = exception is SqlException;
+            bool isSqlException = exception is SqlException;
 
-			if (isSqlException && tableRegex.IsMatch(exception.Message))
+			if(isSqlException && tableRegex.IsMatch(exception.Message))
 				return true;
 
 			Regex spRegex = new Regex("'Could not find stored procedure '.*?'", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-			if (isSqlException && spRegex.IsMatch(exception.Message))
+			if(isSqlException && spRegex.IsMatch(exception.Message))
 				return true;
 
 			return false;
@@ -133,6 +164,37 @@ namespace Subtext.Installation
 		}
 
 		/// <summary>
+		/// Gets the <see cref="Version"/> of the current Subtext data store (ie. SQL Server). 
+		/// This is the value stored in the database. If it does not match the actual 
+		/// assembly version, we may need to run an upgrade.
+		/// </summary>
+		/// <returns></returns>
+		public override Version GetCurrentInstallationVersion()
+		{
+			string sql = "subtext_VersionGetCurrent";
+		
+			try 
+			{
+				using(IDataReader reader = SqlHelper.ExecuteReader(_connectionString, CommandType.StoredProcedure, sql))
+				{
+					if(reader.Read())
+					{
+						Version version = new Version((int)reader["Major"], (int)reader["Minor"], (int)reader["Build"]);
+						reader.Close();
+						return version;
+					}
+					reader.Close();
+				}
+			}
+			catch(SqlException exception) 
+			{
+				if (exception.Number != (int)SqlErrorMessage.CouldNotFindStoredProcedure)
+					throw;
+			}
+			return null;
+		}
+
+		/// <summary>
 		/// Gets a value indicating whether the subtext installation needs an upgrade 
 		/// to occur.
 		/// </summary>
@@ -142,6 +204,15 @@ namespace Subtext.Installation
 		public bool NeedsUpgrade(Version installationVersion)
 		{
 			return installer.NeedsUpgrade(installationVersion);
+		}		
+
+		/// <summary>
+		/// Attempts to repair this instance. Returns true if it was successful.
+		/// </summary>
+		/// <returns></returns>
+		public override bool Repair()
+		{
+			throw new NotImplementedException();
 		}
 
 		internal class InstallationScriptInfo
@@ -156,7 +227,7 @@ namespace Subtext.Installation
 			{
 				Regex regex = new Regex(@"(?<ScriptName>Installation\.(?<version>\d+\.\d+\.\d+)\.sql)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 				Match match = regex.Match(resourceName);
-				if (!match.Success)
+				if(!match.Success)
 				{
 					return null;
 				}

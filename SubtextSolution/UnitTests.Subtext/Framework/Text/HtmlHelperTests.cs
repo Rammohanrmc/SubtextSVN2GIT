@@ -132,7 +132,7 @@ namespace UnitTests.Subtext.Framework.Text
 		{
 			Entry entry = new Entry(PostType.BlogPost);
 			entry.Body = goodMarkup;
-			HtmlHelper.ConvertHtmlToXHtml(entry);
+			Assert.IsTrue(HtmlHelper.ConvertHtmlToXHtml(entry));
 			Assert.AreEqual(expected, entry.Body);
 		}
 
@@ -148,7 +148,7 @@ namespace UnitTests.Subtext.Framework.Text
 		{
 			Entry entry = new Entry(PostType.BlogPost);
 			entry.Body = badMarkup;
-			HtmlHelper.ConvertHtmlToXHtml(entry);
+			Assert.IsTrue(HtmlHelper.ConvertHtmlToXHtml(entry));
 			Assert.AreEqual(corrected, entry.Body);
 		}
 
@@ -158,7 +158,7 @@ namespace UnitTests.Subtext.Framework.Text
 		[Test, ExpectedException(typeof(IllegalPostCharactersException))]
 		public void HasIllegalContentThrowsExceptionWithScriptTag()
 		{
-			HtmlHelper.CheckForIllegalContent("blah <script ");
+			HtmlHelper.HasIllegalContent("blah <script ");
 		}
 
 		/// <summary>
@@ -169,7 +169,7 @@ namespace UnitTests.Subtext.Framework.Text
 		{
 			try
 			{
-				HtmlHelper.CheckForIllegalContent("blah &#60script ");
+				HtmlHelper.HasIllegalContent("blah &#60script ");
 				Assert.Fail("Method should have thrown an exception");
 			}
 			catch(IllegalPostCharactersException)
@@ -183,7 +183,7 @@ namespace UnitTests.Subtext.Framework.Text
 
 			try
 			{
-				HtmlHelper.CheckForIllegalContent("blah &60script ");
+				HtmlHelper.HasIllegalContent("blah &60script ");
 				Assert.Fail("Method should have thrown an exception");
 			}
 			catch(IllegalPostCharactersException)
@@ -195,7 +195,7 @@ namespace UnitTests.Subtext.Framework.Text
 				Assert.Fail("Method should have thrown an IllegalPostCharactersException exception");
 			}
 
-			HtmlHelper.CheckForIllegalContent("blah %60script ");
+			HtmlHelper.HasIllegalContent("blah %60script ");
 		}
 
 		[Test]

@@ -108,7 +108,10 @@
       <Name>freetextbox</Name>
       <HintPath>ExternalDependencies\freetextbox.dll</HintPath>
     </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.0.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL" />
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <Name>ICSharpCode.SharpZipLib</Name>
+      <HintPath>ExternalDependencies\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=227c66cf5503649a, processorArchitecture=MSIL" />
     <Reference Include="MbUnit.Framework, Version=1.0.2642.28107, Culture=neutral, PublicKeyToken=5e72ecd30bc408d5" />
     <Reference Include="MbUnit.Framework.2.0, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e72ecd30bc408d5, processorArchitecture=MSIL" />
@@ -186,14 +189,6 @@
       <Project>{745B39B7-DE46-4070-8733-C53308721C58}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>
-    <ProjectReference Include="..\Subtext.Plugins.Core\Subtext.Plugins.Core.csproj">
-      <Project>{840C33F0-FBD2-49B7-9AC4-504E7EE917AA}</Project>
-      <Name>Subtext.Plugins.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Subtext.Plugins.Examples\Subtext.Plugins.Examples.csproj">
-      <Project>{E92C1C9B-FB2C-457B-B441-3CAEA3DCFC7A}</Project>
-      <Name>Subtext.Plugins.Examples</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Subtext.Providers.BlogEntryEditor.FCKeditor\Subtext.Providers.BlogEntryEditor.FCKeditor.csproj">
       <Project>{C219C5FF-D4EC-4838-BACF-E3C2C6E69514}</Project>
       <Name>Subtext.Providers.BlogEntryEditor.FCKeditor</Name>
@@ -225,28 +220,11 @@
       <Link>VersionInfo.Designer.cs</Link>
     </Compile>
     <Compile Include="Akismet\AkismetApiTests.cs" />
-    <Compile Include="Akismet\AkismetCommentTests.cs" />
-    <Compile Include="Akismet\AkismetSpamServiceTests.cs" />
-    <Compile Include="Akismet\HttpClientTests.cs" />
     <Compile Include="AssemblySetUpAndCleanUp.cs" />
     <Compile Include="BlogMl\BlogMlImportTests.cs" />
     <Compile Include="BlogMl\BlogMLReaderTests.cs" />
     <Compile Include="BlogMl\BlogMlWriterTests.cs" />
     <Compile Include="BlogMl\SubtextBlogMlWriterTests.cs" />
-    <Compile Include="Framework\NullValueTests.cs" />
-    <Compile Include="Framework\Providers\GenericProviderCollectionTests.cs" />
-    <Compile Include="Framework\Security\SecurityTests.cs" />
-    <Compile Include="Framework\Security\SubtextMembershipProviderTests.cs" />
-    <Compile Include="Framework\Security\SubtextRoleProviderTests.cs" />
-    <Compile Include="Framework\Web\BaseHttpHandlerTests.cs" />
-    <Compile Include="Installation\InstallerTests.cs" />
-    <Compile Include="Plugins\Core\FeedvertisingTests.cs" />
-    <Compile Include="PresenterTestContext.cs" />
-    <Compile Include="Scripting\ConnectionStringTests.cs" />
-    <Compile Include="Scripting\SqlScriptRunnerTests.cs" />
-    <Compile Include="Scripting\TemplateParameterCollectionTests.cs" />
-    <Compile Include="Scripting\TemplateParameterTests.cs" />
-    <Compile Include="SimulatedRequestContext.cs" />
     <Compile Include="Extensibility\DotNetOpenMailProviderSendTests.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -288,11 +266,11 @@
     <Compile Include="Framework\Data\ContentCacheTests.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Framework\Data\DatabaseObjectProviderTests.cs" />
     <Compile Include="Framework\Data\DataHelperTests.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Framework\Data\PagedCollectionRetrievalTests.cs" />
+    <Compile Include="Framework\Data\SqlDataProviderTests.cs" />
     <Compile Include="Framework\Format\UrlFormatTests.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -304,6 +282,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Framework\Providers\ProviderConfigurationHelperTests.cs" />
+    <Compile Include="Framework\SecurityHandling\SecurityTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Framework\Skinning\SkinTests.cs" />
     <Compile Include="Framework\Syndication\AtomHandlerTests.cs">
       <SubType>Code</SubType>
@@ -357,8 +338,14 @@
     <Compile Include="ReflectionHelper.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Scripting\ConnectionStringParseTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Scripting\ExceptionTests.cs" />
     <Compile Include="Scripting\ScriptHelperTests.cs" />
+    <Compile Include="Scripting\TemplateParameterParseTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SimulatedHttpRequest.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -367,10 +354,16 @@
     </Compile>
     <Compile Include="SubtextWeb\Controls\CaptchaTests.cs" />
     <Compile Include="SubtextWeb\Controls\ControlHelperTests.cs" />
-    <Compile Include="SubtextWeb\Controls\EntryListTests.cs" />
     <Compile Include="SubtextWeb\Controls\InvisibleCaptchaTests.cs" />
-    <Compile Include="SubtextWeb\HostAdmin\UserManagerTests.cs" />
-    <Compile Include="SubtextWeb\Providers\RichTextEditor\BlogEntryEditorProviderTests.cs" />
+    <Compile Include="SubtextWeb\Providers\RichTextEditor\FCKeditorProviderTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SubtextWeb\Providers\RichTextEditor\FtbProviderTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SubtextWeb\Providers\RichTextEditor\PlainTextProviderTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SubtextWeb\Sitemap.cs" />
     <Compile Include="SubtextWeb\SubtextMasterPageTests.cs">
       <SubType>Code</SubType>
@@ -406,9 +399,6 @@
     <Content Include="ExternalDependencies\Rhino.Mocks.xml" />
     <Content Include="ExternalDependencies\TestFu.dll" />
     <Content Include="ExternalDependencies\Velocit.RegularExpressions.dll" />
-    <EmbeddedResource Include="Resources\Scripting\SqlRunnerTestScript.txt" />
-    <EmbeddedResource Include="Resources\Web\HttpClientTest.aspx">
-    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Web\emoticons.txt" />
     <EmbeddedResource Include="Resources\BlogMl\SinglePostWithBadCategoryRef.xml" />
     <EmbeddedResource Include="Resources\BlogMl\SinglePostWithCategory.xml" />
@@ -420,9 +410,6 @@
     <EmbeddedResource Include="Resources\Scripting\TestTemplateSqlScript.txt" />
     <EmbeddedResource Include="Resources\Scripting\TestTemplateSqlScriptExpectedChanges.txt" />
     <EmbeddedResource Include="Resources\Scripting\TestTemplateSqlScriptExpectedDefault.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

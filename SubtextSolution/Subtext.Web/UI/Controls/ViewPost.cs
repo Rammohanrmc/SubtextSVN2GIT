@@ -14,18 +14,17 @@
 #endregion
 
 using System;
-using System.Web;
 using System.Globalization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Subtext.Framework;
 using Subtext.Framework.Components;
+using Subtext.Framework.Configuration;
 using Subtext.Framework.Data;
 using Subtext.Framework.Format;
 using Subtext.Framework.Security;
 using Subtext.Framework.Tracking;
 using Subtext.Web.Controls;
-using Subtext.Extensibility.Plugins;
 
 namespace Subtext.Web.UI.Controls
 {
@@ -58,30 +57,26 @@ namespace Subtext.Web.UI.Controls
 			base.OnLoad (e);
 			
 			//Get the entry
-			this.entry = Cacher.GetEntryFromRequest(CacheDuration.Short);			
+			Entry entry = Cacher.GetEntryFromRequest(CacheDuration.Short);			
 			
 			//if found
 			if(entry != null)
 			{
-				//Raise event before any processing takes place
-				SubtextEvents.OnSingleEntryRendering(this, new SubtextEventArgs(entry));
-
 				BindCurrentEntryControls(entry, this);
 				
-				DisplayEditLink();
+				DisplayEditLink(entry);
 
 				//Track this entry
 				EntryTracker.Track(Context, entry.Id, CurrentBlog.Id);
 
 				//Set the page title
-                Globals.SetTitle(HttpUtility.HtmlEncode(entry.Title), Context);
+				Globals.SetTitle(entry.Title, Context);
 
 				//Sent entry properties
-                TitleUrl.Text = HttpUtility.HtmlEncode(entry.Title);
+				TitleUrl.Text = entry.Title;
 				ControlHelper.SetTitleIfNone(TitleUrl, "Title of this entry.");
 				TitleUrl.NavigateUrl = entry.Url;
 				Body.Text = entry.Body;
-
 				if(PostDescription != null)
 				{
 					PostDescription.Text = string.Format(CultureInfo.InvariantCulture, "{0} {1}",entry.DateCreated.ToLongDateString(),entry.DateCreated.ToShortTimeString());
@@ -147,30 +142,22 @@ namespace Subtext.Web.UI.Controls
 				this.Controls.Clear();
 				this.Controls.Add(new LiteralControl("<p><strong>The entry could not be found or has been removed</strong></p>"));
 			}
-			this.DataBind();
 		}
-
-		public Entry Entry
-		{
-			get { return this.entry; }
-		}
-
-		private Entry entry;
 
 		// If the user is an admin AND the the skin 
 		// contains an edit Hyperlink control, this 
 		// will display the edit control.
-		private void DisplayEditLink()
+		private void DisplayEditLink(Entry entry)
 		{
 			if(editLink != null)
 			{
-				if (SecurityHelper.IsInRole(RoleNames.Authors) || SecurityHelper.IsInRole(RoleNames.Administrators))
+				if(SecurityHelper.IsAdmin)
 				{
 					editLink.Visible = true;
 					if(editLink.Text.Length == 0 && editLink.ImageUrl.Length == 0)
 					{
 						//We'll slap on our little pencil icon.
-						editLink.ImageUrl = BlogInfo.VirtualDirectoryRoot + "Images/edit.gif";
+						editLink.ImageUrl = Config.CurrentBlog.VirtualDirectoryRoot + "Images/edit.gif";
 						ControlHelper.SetTitleIfNone(editLink, "Edit this entry.");
 						editLink.NavigateUrl = UrlFormats.GetEditLink(entry);
 					}

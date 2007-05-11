@@ -3,14 +3,13 @@
 <asp:Literal ID="EntryCollectionDescription" Runat="server" />
 <asp:Repeater runat="Server" Runat="server" ID="Entries" OnItemCreated="PostCreated">
 	<ItemTemplate>
-		<div class="journal_eintrag">
-			<h2><asp:HyperLink Runat="server" ID="editLink" /><asp:HyperLink  Runat="server" ID="TitleUrl" /></h2>
-			<asp:Literal ID="PostText" Runat = "server" />
-			<p class="postfooter">
-				Author: <asp:Literal ID="authorLiteral" runat="server" Text="<%# Entry(Container.DataItem).Author.UserName  %>" /> 
-				<asp:Literal id="PostDesc" runat="server" /> 
-			</p>
-		</div>
+	<div class="journal_eintrag">
+				<h2><asp:HyperLink Runat="server" ID="editLink" /><asp:HyperLink  Runat="server" ID="TitleUrl" /></h2>
+				<asp:Literal ID = "PostText" Runat = "server" />
+				<p class="postfooter">
+					<asp:Literal id="PostDesc"  runat="server" />
+				</p>
+				</div>
 	</ItemTemplate>
 </asp:Repeater>
 <p>

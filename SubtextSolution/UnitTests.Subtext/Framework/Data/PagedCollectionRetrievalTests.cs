@@ -3,7 +3,6 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading;
-using System.Web.Security;
 using MbUnit.Framework;
 using Microsoft.ApplicationBlocks.Data;
 using Subtext.Extensibility;
@@ -21,6 +20,8 @@ namespace UnitTests.Subtext.Framework.Data
 	[TestFixture]
 	public class PagedCollectionRetrievalTests
 	{
+		string hostName;
+		
 		/// <summary>
 		/// Creates some entries and makes sure that the proper 
 		/// number of pages and entries per page are created 
@@ -35,7 +36,7 @@ namespace UnitTests.Subtext.Framework.Data
 		[RollBack]
 		public void GetPagedEntriesHandlesPagingProperly(int total, int pageSize, int expectedPageCount, int itemsCountOnLastPage)
 		{
-			UnitTestHelper.SetupBlog("blog");
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", this.hostName, "blog"));
 			AssertPagedCollection(new PagedEntryCollectionTester(), expectedPageCount, itemsCountOnLastPage, pageSize, total);
 		}
 
@@ -53,7 +54,7 @@ namespace UnitTests.Subtext.Framework.Data
 		[RollBack]
 		public void GetPagedEntriesByCategoryHandlesPagingProperly(int total, int pageSize, int expectedPageCount, int itemsCountOnLastPage)
 		{
-			UnitTestHelper.SetupBlog("blog");
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", this.hostName, "blog"));
 			AssertPagedCollection(new PagedEntryByCategoryCollectionTester(), expectedPageCount, itemsCountOnLastPage, pageSize, total);
 		}
 
@@ -71,7 +72,7 @@ namespace UnitTests.Subtext.Framework.Data
 		[RollBack]
 		public void GetPagedFeedbackHandlesPagingProperly(int total, int pageSize, int expectedPageCount, int itemsCountOnLastPage)
 		{
-			UnitTestHelper.SetupBlog("blog");
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", this.hostName, "blog"));
 			AssertPagedCollection(new FeedbackCollectionTester(), expectedPageCount, itemsCountOnLastPage, pageSize, total);
 		}
 
@@ -84,7 +85,7 @@ namespace UnitTests.Subtext.Framework.Data
 		[RollBack]
 		public void GetPagedLinksHandlesPagingProperly(int total, int pageSize, int expectedPageCount, int itemsCountOnLastPage)
 		{
-			UnitTestHelper.SetupBlog("blog");
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", this.hostName, "blog"));
 			IPagedCollectionTester tester = new LinkCollectionTester();
 			AssertPagedCollection(tester, expectedPageCount, itemsCountOnLastPage, pageSize, total);
 		}
@@ -98,7 +99,7 @@ namespace UnitTests.Subtext.Framework.Data
 		[RollBack]
 		public void GetPagedLogEntriesHandlesPagingProperly(int total, int pageSize, int expectedPageCount, int itemsCountOnLastPage)
 		{
-			UnitTestHelper.SetupBlog("blog");
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", this.hostName, "blog"));
 			IPagedCollectionTester tester = new LogEntryCollectionTester();
 			AssertPagedCollection(tester, expectedPageCount, itemsCountOnLastPage, pageSize, total);
 		}
@@ -112,7 +113,7 @@ namespace UnitTests.Subtext.Framework.Data
 		[RollBack]
 		public void GetPagedKeywordsHandlesPagingProperly(int total, int pageSize, int expectedPageCount, int itemsCountOnLastPage)
 		{
-			UnitTestHelper.SetupBlog("blog");
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", this.hostName, "blog"));
 			IPagedCollectionTester tester = new KeyWordCollectionTester();
 			AssertPagedCollection(tester, expectedPageCount, itemsCountOnLastPage, pageSize, total);
 		}
@@ -140,7 +141,7 @@ namespace UnitTests.Subtext.Framework.Data
 		[Ignore("This test fails when run within a Transaction via the RollBack attribute, but succeeds without it.")]
 		public void GetPagedReferralsHandlesPagingProperly(int total, int pageSize, int expectedPageCount, int itemsCountOnLastPage)
 		{
-			UnitTestHelper.SetupBlog("blog");
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", this.hostName, "blog"));
 			IPagedCollectionTester tester = new ReferralsCollectionTester();
 			AssertPagedCollection(tester, expectedPageCount, itemsCountOnLastPage, pageSize, total);
 		}
@@ -176,6 +177,13 @@ namespace UnitTests.Subtext.Framework.Data
 			
 			Assert.AreEqual(expectedPageCount, pageCount, "We did not see the expected number of pages.");
 			Assert.AreEqual(total, totalSeen, "We did not see the expected number of records.");
+		}
+
+		[SetUp]
+		public void SetUp()
+		{
+			this.hostName = UnitTestHelper.GenerateRandomString();
+			UnitTestHelper.SetHttpContextWithBlogRequest(this.hostName, "blog");
 		}
 
 		[TearDown]
@@ -258,7 +266,7 @@ namespace UnitTests.Subtext.Framework.Data
 
 		public IPagedCollection GetPagedItems(int pageIndex, int pageSize)
 		{
-			return FeedbackItem.GetPagedFeedback(pageIndex, pageSize, FeedbackStatusFlags.Approved, FeedbackType.None);
+			return FeedbackItem.GetPagedFeedback(pageIndex, pageSize, FeedbackStatusFlag.Approved, FeedbackType.None);
 		}
 
 		public int GetCount(IPagedCollection collection)
@@ -337,6 +345,10 @@ namespace UnitTests.Subtext.Framework.Data
 	
 	internal class KeyWordCollectionTester : IPagedCollectionTester
 	{
+		public KeyWordCollectionTester()
+		{
+		}
+
 		public void Create(int index)
 		{
 			KeyWord keyword = new KeyWord();
@@ -364,15 +376,18 @@ namespace UnitTests.Subtext.Framework.Data
 	{
 		string host = UnitTestHelper.GenerateRandomString();
 		
+		public BlogCollectionTester()
+		{
+		}
+
 		public void Create(int index)
 		{
-			MembershipUser owner = Membership.CreateUser(UnitTestHelper.MembershipTestUsername, "password", UnitTestHelper.MembershipTestEmail);
-			Config.CreateBlog("title " + index, host, "Subfolder" + index, owner);
+			Config.CreateBlog("title " + index, "phil", "password", host, "Subfolder" + index);
 		}
 
 		public IPagedCollection GetPagedItems(int pageIndex, int pageSize)
 		{
-			return BlogInfo.GetBlogsByHost(this.host, pageIndex, pageSize, ConfigurationFlags.IsActive);
+			return BlogInfo.GetBlogsByHost(this.host, pageIndex, pageSize, ConfigurationFlag.IsActive);
 		}
 
 		public int GetCount(IPagedCollection collection)
@@ -393,7 +408,7 @@ namespace UnitTests.Subtext.Framework.Data
 		public void Create(int index)
 		{
 			EntryView view = new EntryView();
-			view.EntryId = entryId;
+			view.EntryID = entryId;
 			view.BlogId = Config.CurrentBlog.Id;
 			view.PageViewType = PageViewType.WebView;
 			view.ReferralUrl = string.Format("http://localhost:{0}/{1}/", index, UnitTestHelper.GenerateRandomString());

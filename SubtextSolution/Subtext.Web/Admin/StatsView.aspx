@@ -15,7 +15,7 @@
 	<st:AdvancedPanel id="Results" runat="server" Collapsible="False" HeaderText="View Stats" HeaderCssClass="CollapsibleHeader" DisplayHeader="true" Visible = "False">
 		<ASP:Repeater id="rprSelectionList" runat="server" >
 			<HeaderTemplate>
-				<table id="Listing" class="Listing" cellSpacing="0" cellPadding="0" border="0">
+				<table id="Listing" class="Listing" cellSpacing="0" cellPadding="0" border="0" style="<%= CheckHiddenStyle() %>">
 					<tr>
 						<th>Page Title</th>
 						<th>View Count</th>
