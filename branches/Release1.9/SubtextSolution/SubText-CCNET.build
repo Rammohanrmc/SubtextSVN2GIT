@@ -51,6 +51,7 @@
 
 		<property name="publish.dir.latest" value="${CCNetArtifactDirectory}\builds\latest" />
 		<property name="publish.dir.archive" value="${CCNetArtifactDirectory}\builds\archive" />
+		<property name="publish.dir.latestsource" value="${CCNetArtifactDirectory}\builds\latestsource" />
 		
 		<property name="fileLabel" value="SubText-${CCNetLabel}" />
 		
@@ -253,6 +254,20 @@
 				<exclude name="**/*.pdb" />
 			</fileset>
 		</zip>
+	</target>
+
+	<target name="dist.source" depends="get-publishing-properties">
+		<delete dir="${publish.dir.latestsource}" failonerror="false" />
+		<mkdir dir="${publish.dir.latestsource}" />
+		
+		<zip zipfile="${publish.dir.latestsource}\${fileLabel}.src.zip">
+			<fileset basedir="${solution.dir}">
+				<include name="**/*" />
+				<exclude name="**/bin/**/*" />
+				<exclude name="**/obj/**/*" />
+			</fileset>
+		</zip>
+		
 	</target>
 
 	<target name="OnSuccess">
