@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Threading;
 using System.Web;
 using System.Web.Caching;
-using Subtext.Framework.Properties;
 
 namespace Subtext.Framework
 {
@@ -35,6 +34,8 @@ namespace Subtext.Framework
 			return cache;
 		}
 
+		private ContentCache() {}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ContentCache"/> class. 
 		/// The specified <see cref="Cache"/> instance is wrapped by this instance.
@@ -46,7 +47,7 @@ namespace Subtext.Framework
 		}
 
 		//Returns a language aware cache key.
-		private static string GetCacheKey(string key)
+		private string GetCacheKey(string key)
 		{
 			return key + ":" + Thread.CurrentThread.CurrentCulture.LCID.ToString(CultureInfo.InvariantCulture);
 		}
@@ -77,7 +78,7 @@ namespace Subtext.Framework
 		public void Insert(string key, object value)
 		{
 			if(value == null)
-				throw new ArgumentNullException("value", Resources.ArgumentNull_Generic);
+				throw new ArgumentNullException("value", "Cannot cache a null object.");
 			this.cache.Insert(GetCacheKey(key), value);
 		}
 
@@ -96,7 +97,7 @@ namespace Subtext.Framework
 		public void Insert(string key, object value, CacheDuration cacheDuration)
 		{
 			if(value == null)
-				throw new ArgumentNullException("value", Resources.ArgumentNull_Generic);
+				throw new ArgumentNullException("value", "Cannot cache a null object.");
 			
 			this.cache.Insert(GetCacheKey(key), value, null, DateTime.Now.AddSeconds((int)cacheDuration), TimeSpan.Zero, CacheItemPriority.Normal, null);
 		}
@@ -116,7 +117,7 @@ namespace Subtext.Framework
 		public void Insert(string key, object value, CacheDependency cacheDependency)
 		{
 			if(value == null)
-				throw new ArgumentNullException("value", Resources.ArgumentNull_Generic);
+				throw new ArgumentNullException("value", "Cannot cache a null object.");
 			
 			this.cache.Insert(GetCacheKey(key), value, cacheDependency);
 		}
@@ -154,5 +155,14 @@ namespace Subtext.Framework
 		}
 	}
 
-
+	/// <summary>
+	/// Low granularity Cache Duration.
+	/// </summary>
+	public enum CacheDuration
+	{
+		None = 0,
+		Short = 10,
+		Medium = 20,
+		Long = 30
+	};
 }

@@ -92,14 +92,14 @@ namespace Subtext.Web.UI.Controls
 			{
 				BlogInfo info = Config.CurrentBlog;
 
-				if(SendContactMessageToFeedback || String.IsNullOrEmpty(info.Owner.Email))
+				if(SendContactMessageToFeedback || String.IsNullOrEmpty(info.Email))
 				{
 					CreateCommentWithContactMessage();
 					return;
 				}
 
 				EmailProvider email = EmailProvider.Instance();
-				string toEmail = info.Owner.Email;
+				string toEmail = info.Email;
 				string fromEmail = tbEmail.Text;
 				
 				string subject = string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0} (via {1})", tbSubject.Text, 

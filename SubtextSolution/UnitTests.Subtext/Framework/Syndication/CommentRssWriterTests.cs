@@ -31,8 +31,7 @@ namespace UnitTests.Subtext.Framework.Syndication
 			BlogInfo blogInfo = new BlogInfo();
 			blogInfo.Host = "localhost";
 			blogInfo.Subfolder = "blog";
-			blogInfo.Owner = UnitTestHelper.CreateUserInstanceForTest();
-			blogInfo.Owner.Email = "Subtext@example.com";
+			blogInfo.Email = "Subtext@example.com";
 			blogInfo.RFC3229DeltaEncodingEnabled = true;
 			blogInfo.Title = "My Blog Rulz";
 			blogInfo.TimeZoneId = PacificTimeZoneId;
@@ -60,7 +59,6 @@ namespace UnitTests.Subtext.Framework.Syndication
 										+ indent(2) + @"<description>Body of the post.</description>" + Environment.NewLine
 										+ indent(2) + @"<language>en-US</language>" + Environment.NewLine
 										+ indent(2) + @"<copyright>Subtext Weblog</copyright>" + Environment.NewLine
-										+ indent(2) + @"<managingEditor>test@example.com</managingEditor>" + Environment.NewLine
 										+ indent(2) + @"<generator>{0}</generator>" + Environment.NewLine
 										+ indent(2) + @"<image>" + Environment.NewLine
 											+ indent(3) + @"<title>title of the post</title>" + Environment.NewLine
@@ -90,8 +88,7 @@ namespace UnitTests.Subtext.Framework.Syndication
 
 			BlogInfo blogInfo = new BlogInfo();
 			blogInfo.Host = "localhost";
-			blogInfo.Owner = UnitTestHelper.CreateUserInstanceForTest();
-			blogInfo.Owner.Email = "Subtext@example.com";
+			blogInfo.Email = "Subtext@example.com";
 			blogInfo.RFC3229DeltaEncodingEnabled = true;
 			blogInfo.Title = "My Blog Rulz";
 			blogInfo.TimeZoneId = PacificTimeZoneId;
@@ -135,7 +132,6 @@ namespace UnitTests.Subtext.Framework.Syndication
 										+ indent(2) + @"<description>Body of the post.</description>" + Environment.NewLine
 										+ indent(2) + @"<language>en-US</language>" + Environment.NewLine
 										+ indent(2) + @"<copyright>Subtext Weblog</copyright>" + Environment.NewLine
-										+ indent(2) + @"<managingEditor>test@example.com</managingEditor>" + Environment.NewLine
 										+ indent(2) + @"<generator>{0}</generator>" + Environment.NewLine
 										+ indent(2) + @"<image>" + Environment.NewLine
 											+ indent(3) + @"<title>title of the post</title>" + Environment.NewLine

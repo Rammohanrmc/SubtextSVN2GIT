@@ -16,7 +16,6 @@
 using System;
 using log4net;
 using Subtext.BlogML;
-using Subtext.Framework.Data;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Logging;
 using Subtext.Framework.Providers;
@@ -111,7 +110,7 @@ namespace Subtext.Web.Admin.Pages
                 chkClearContent.Visible = false;
                 btnClearContent.Visible = false;
                 
-                if (DatabaseObjectProvider.Instance().ClearBlogContent())
+                if (DbProvider.Instance().ClearBlogContent())
                 {
                     msgpnlClearContent.ShowMessage("Success! The content has been obliterated!");
                 }

@@ -29,7 +29,7 @@ namespace UnitTests.Subtext.Framework
 	[TestFixture]
 	public class LinksTests
 	{
-		public LinksTests() {}
+		string _hostName = Guid.NewGuid().ToString().Replace("-", string.Empty) + ".com";
 
 		/// <summary>
 		/// Ensures CreateLinkCategory assigns unique CatIDs
@@ -38,7 +38,7 @@ namespace UnitTests.Subtext.Framework
 		[RollBack]
 		public void CreateLinkCategoryAssignsUniqueCatIDs()
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, "MyBlog"));
 
 			// Create some categories
 			CreateSomeLinkCategories();
@@ -81,7 +81,7 @@ namespace UnitTests.Subtext.Framework
 		[RollBack]
 		public void UpdateLinkCategoryIsFine()
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, "MyBlog"));
 
 			// Create the categories
 			CreateSomeLinkCategories();
@@ -142,6 +142,15 @@ namespace UnitTests.Subtext.Framework
             UnitTestHelper.AssertAppSettings();
 		}
 		
+		/// <summary>
+		/// Called before each unit test.
+		/// </summary>
+		[SetUp]
+		public void SetUp()
+		{
+			UnitTestHelper.SetHttpContextWithBlogRequest(_hostName, "MyBlog", "Subtext.Web");
+		}
+
 		[TearDown]
 		public void TearDown()
 		{

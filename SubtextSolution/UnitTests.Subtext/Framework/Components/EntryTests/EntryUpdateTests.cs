@@ -14,11 +14,13 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 	[TestFixture]
 	public class EntryUpdateTests
 	{
+		string _hostName;
+		
 		[Test]
 		[RollBack]
 		public void CanDeleteEntry()
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
 
 			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("Haacked", "Title Test", "Body Rocking");
 			Entries.Create(entry);
@@ -39,7 +41,7 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		[RollBack]
 		public void SettingDateSyndicatedToNullRemovesItemFromSyndication()
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
 			
 			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("Haacked", "Title Test", "Body Rocking");
 			Entries.Create(entry);
@@ -62,21 +64,17 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 			DateTime date = DateTime.Now;
 			Thread.Sleep(1000);
 			savedEntry.IncludeInMainSyndication = true;
-
-			//Convert to UTC before comparing
-			DateTime utcSyndicatedDate = Config.CurrentBlog.TimeZone.ToUniversalTime(savedEntry.DateSyndicated);
-			Assert.IsTrue(utcSyndicatedDate >= date.ToUniversalTime(), "The DateSyndicated '{0}' should be updated to be later than '{1}.", savedEntry.DateSyndicated, date);
+			Assert.IsTrue(savedEntry.DateSyndicated >= date, "The DateSyndicated '{0}' should be updated to be later than '{1}.", savedEntry.DateSyndicated, date);
 			Entries.Update(savedEntry);
             savedEntry = Entries.GetEntry(entry.Id, PostConfig.None, false);
-			utcSyndicatedDate = Config.CurrentBlog.TimeZone.ToUniversalTime(savedEntry.DateSyndicated);
-			Assert.IsTrue(utcSyndicatedDate >= date.ToUniversalTime(), "The DateSyndicated '{0}' should be updated to be later than '{1}.", savedEntry.DateSyndicated, date);
+			Assert.IsTrue(savedEntry.DateSyndicated >= date, "The DateSyndicated '{0}' should be updated to be later than '{1}.", savedEntry.DateSyndicated, date);
 		}
 
         [Test]
         [RollBack]
         public void UpdateEntryCorrectsNumericEntryName()
         {
-        	UnitTestHelper.SetupBlog();
+            Config.CreateBlog("", "username", "password", _hostName, string.Empty);
             BlogInfo info = Config.CurrentBlog;
             Config.UpdateConfigData(info);
 
@@ -98,6 +96,8 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		[SetUp]
 		public void SetUp()
 		{
+			_hostName = UnitTestHelper.GenerateRandomString();
+			UnitTestHelper.SetHttpContextWithBlogRequest(_hostName, string.Empty);
 		}
 
 		[TearDown]

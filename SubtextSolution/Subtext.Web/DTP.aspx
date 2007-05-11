@@ -1,7 +1,6 @@
 ﻿<%@ Page Language="C#" EnableTheming="false"  AutoEventWireup="false" Inherits="Subtext.Web.UI.Pages.SubtextMasterPage" %>
-<%@ Import namespace="Subtext.Framework.Configuration"%>
-<%@ Import namespace="Subtext.Framework"%>
 <%@ Register TagPrefix="DT" Namespace="Subtext.Web.UI.WebControls" Assembly="Subtext.Web" %>
+<%@ Import Namespace="Subtext.Framework.Configuration" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
@@ -20,7 +19,7 @@
 		<st:ScriptTag id="commonJs" src="~/Scripts/common.js" runat="server" />
 		<script type="text/javascript">
 			<%= AllowedHtmlJavascriptDeclaration %>
-			var subtextBlogInfo = new blogInfo('<%= BlogInfo.VirtualDirectoryRoot %>', '<%= Config.CurrentBlog.VirtualUrl %>');
+			var subtextBlogInfo = new blogInfo('<%= Config.CurrentBlog.VirtualDirectoryRoot %>', '<%= Config.CurrentBlog.VirtualUrl %>');
 		</script>
 		<asp:Literal ID="scripts" Runat="server" />
 		<asp:PlaceHolder ID="coCommentPlaceholder" Runat="server" />

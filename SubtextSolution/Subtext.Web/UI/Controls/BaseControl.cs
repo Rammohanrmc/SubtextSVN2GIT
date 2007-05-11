@@ -147,7 +147,7 @@ namespace Subtext.Web.UI.Controls
 				RemoveCaptcha();
 			}
 
-            if (BlogConfigurationSettings.InvisibleCaptchaEnabled)
+			if (Config.Settings.InvisibleCaptchaEnabled)
 			{
 				invisibleCaptchaValidator = new InvisibleCaptcha();
 				invisibleCaptchaValidator.ErrorMessage = "Please enter the answer to the supplied question.";

@@ -20,10 +20,10 @@ using Subtext.Installation;
 namespace UnitTests.Subtext.Installation
 {
 	/// <summary>
-	/// Tests of the <see cref="InstallerProvider"/> class.
+	/// Tests of the <see cref="SqlInstallationProvider"/> class.
 	/// </summary>
 	[TestFixture]
-	public class SqlInstallerProviderTests
+	public class SqlInstallationProviderTests
 	{
 		/// <summary>
 		/// Make sure that the process in which we gather installation information 
@@ -33,7 +33,7 @@ namespace UnitTests.Subtext.Installation
 		[RollBack]
 		public void InstallationInformationGatheringProcessGathersCorrectInfo()
 		{
-			InstallerProvider provider = Installer.Provider;
+			global::Subtext.Extensibility.Providers.Installation provider = global::Subtext.Extensibility.Providers.Installation.Provider;
 			Assert.IsNotNull(provider, "The provider instance should not be null.");
 			SqlInstallationProvider sqlProvider = provider as SqlInstallationProvider;
 			Assert.IsNotNull(sqlProvider, "The sql provider instance should not be null.");

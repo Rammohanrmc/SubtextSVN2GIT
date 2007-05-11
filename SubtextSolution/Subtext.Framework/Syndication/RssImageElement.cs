@@ -16,8 +16,7 @@ namespace Subtext.Framework.Syndication
 		/// <param name="url">The URL.</param>
 		/// <param name="title">The title.</param>
 		/// <param name="link">The link.</param>
-		public RssImageElement(Uri url, string title, Uri link)
-			: this(url, title, link, null, null, null)
+		public RssImageElement(Uri url, string title, Uri link) : this(url, title, link, null, null, null)
 		{
 		}
 
@@ -106,7 +105,7 @@ namespace Subtext.Framework.Syndication
 		}
 
 		string description;
-
+		
 		/// <summary>
 		/// Writes this RssImage element to the specified XmlWriter.
 		/// </summary>
@@ -117,14 +116,14 @@ namespace Subtext.Framework.Syndication
 			writer.WriteElementString("title", title);
 			writer.WriteElementString("url", this.url.ToString());
 			writer.WriteElementString("link", this.link.ToString());
-
+			
 			if (this.width != null)
 				writer.WriteElementString("width", this.width.Value.ToString(CultureInfo.InvariantCulture));
-
-			if (this.height != null)
+			
+			if(this.height != null)
 				writer.WriteElementString("height", this.height.Value.ToString(CultureInfo.InvariantCulture));
-
-			if (description != null)
+			
+			if(description != null)
 				writer.WriteElementString("description", description); //Used in the alt tag.
 			writer.WriteEndElement();
 		}

@@ -5,7 +5,6 @@ using Subtext.Akismet;
 using log4net;
 using Subtext.Framework.Components;
 using Subtext.Framework.Web;
-using Subtext.Framework.Properties;
 
 namespace Subtext.Framework.Services
 {
@@ -13,36 +12,19 @@ namespace Subtext.Framework.Services
 	public class AkismetSpamService : IFeedbackSpamService
 	{
 		private readonly static ILog log = new Subtext.Framework.Logging.Log();
-		IAkismetClient akismet;
+		AkismetClient akismet;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AkismetSpamService"/> class.
 		/// </summary>
 		/// <param name="apiKey">The API key.</param>
 		/// <param name="blog">The blog.</param>
-		public AkismetSpamService(string apiKey, IBlogInfo blog)
-			: this(new AkismetClient(apiKey, blog.RootUrl))
+		public AkismetSpamService(string apiKey, BlogInfo blog)
 		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AkismetSpamService"/> class.
-		/// </summary>
-		/// <param name="akismetClient">The akismet client.</param>
-		public AkismetSpamService(IAkismetClient akismetClient)
-		{
-			if (akismetClient == null)
-			{
-				throw new ArgumentNullException("akismetClient", Resources.ArgumentNull_Generic);
-			}
-
-			this.akismet = akismetClient;
-
+			this.akismet = new AkismetClient(apiKey, blog.RootUrl);
 			IWebProxy proxy = HttpHelper.GetProxy();
-			if (proxy != null)
-			{
+			if(proxy != null)
 				this.akismet.Proxy = proxy;
-			}
 		}
 
 		/// <summary>
@@ -61,7 +43,7 @@ namespace Subtext.Framework.Services
 				return false;
 			}
 		}
-
+		
 		/// <summary>
 		/// Examines the item and determines whether or not it is spam.
 		/// </summary>
@@ -73,14 +55,14 @@ namespace Subtext.Framework.Services
 
 			try
 			{
-
+				
 				if (this.akismet.CheckCommentForSpam(comment))
 				{
 					this.akismet.SubmitSpam(comment);
 					return true;
 				}
 			}
-			catch (InvalidResponseException e)
+			catch(InvalidResponseException e)
 			{
 				log.Error(e.Message, e);
 			}
@@ -108,22 +90,18 @@ namespace Subtext.Framework.Services
 			Comment comment = ConvertToAkismetItem(feedback);
 			this.akismet.SubmitSpam(comment);
 		}
-
-		private static Comment ConvertToAkismetItem(FeedbackItem feedback)
+		
+		private Comment ConvertToAkismetItem(FeedbackItem feedback)
 		{
 			Comment comment = new Comment(feedback.IpAddress, feedback.UserAgent);
 			comment.Author = feedback.Author;
 			comment.AuthorEmail = feedback.Email;
 			if (feedback.SourceUrl != null)
-			{
 				comment.AuthorUrl = feedback.SourceUrl;
-			}
 			comment.Content = feedback.Body;
-			comment.Referrer = feedback.Referrer;
+			comment.Referer = feedback.Referrer;
 			if (feedback.DisplayUrl != null)
-			{
 				comment.Permalink = feedback.DisplayUrl;
-			}
 
 			comment.CommentType = feedback.FeedbackType.ToString().ToLower(CultureInfo.InvariantCulture);
 			return comment;

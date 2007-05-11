@@ -14,7 +14,6 @@ namespace UnitTests.Subtext.Framework.Util
 		string emoticonsPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "emoticons.txt");
 
 		[Test]
-		[RollBack]
 		public void CanLoadEmoticonsFile()
 		{
 			UnitTestHelper.SetHttpContextWithBlogRequest(UnitTestHelper.GenerateRandomString(), "");
@@ -27,16 +26,17 @@ namespace UnitTests.Subtext.Framework.Util
 		}
 
 		[Test]
-		[RollBack]
 		public void CanPerformEmoticonTransform()
 		{
-			UnitTestHelper.SetupBlog();
+			string host = UnitTestHelper.GenerateRandomString();
+			Config.CreateBlog("title", "somebody", "something", host, string.Empty);
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, string.Empty);
 			UnitTestHelper.UnpackEmbeddedResource("Web.emoticons.txt", emoticonsPath);
 			string result = Transform.EmoticonsTransforms("[:'(]", emoticonsPath);
-			Assert.AreEqual(string.Format(@"<img src=""http://{0}/Images/emotions/smiley-cry.gif"" border=""0"" alt=""Cry"" /> ", Config.CurrentBlog.Host), result);
+			Assert.AreEqual(string.Format(@"<img src=""http://{0}/Images/emotions/smiley-cry.gif"" border=""0"" alt=""Cry"" /> ", host), result);
 
 			result = Transform.EmoticonsTransforms("Wocka Wocka [:'(] The Whip Master", emoticonsPath);
-			Assert.AreEqual(string.Format(@"Wocka Wocka <img src=""http://{0}/Images/emotions/smiley-cry.gif"" border=""0"" alt=""Cry"" />  The Whip Master", Config.CurrentBlog.Host), result);
+			Assert.AreEqual(string.Format(@"Wocka Wocka <img src=""http://{0}/Images/emotions/smiley-cry.gif"" border=""0"" alt=""Cry"" />  The Whip Master", host), result);
 
 		}
 

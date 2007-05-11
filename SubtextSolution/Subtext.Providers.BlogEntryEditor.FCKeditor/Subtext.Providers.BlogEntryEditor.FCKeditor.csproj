@@ -34,7 +34,7 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
@@ -149,25 +149,14 @@
     <Compile Include="FileBrowserConnector.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Properties\GlobalSuppressions.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="XmlUtil.cs">
       <SubType>Code</SubType>
     </Compile>
     <Content Include="ExternalDependencies\FredCK.FCKeditorV2.dll" />
     <Content Include="license.txt" />
-    <EmbeddedResource Include="Properties\Resources.resx">
+    <EmbeddedResource Include="resources\ErrorMessages.resx">
       <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

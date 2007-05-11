@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Specialized;
 using MbUnit.Framework;
-using Subtext.Framework.Providers;
+using Subtext.Framework.Email;
 using Subtext.UnitTesting.Servers;
 
 namespace UnitTests.Subtext.Extensibility
@@ -18,13 +18,13 @@ namespace UnitTests.Subtext.Extensibility
 			DotNetOpenMailProvider provider = new DotNetOpenMailProvider();
 			NameValueCollection configValue = new NameValueCollection();
 			configValue["smtpServer"] = "127.0.0.1";
-			configValue["port"] = "8189";
+			configValue["port"] = "8081";
 			provider.Initialize("providerTest", configValue);
 
 			TestSmtpServer receivingServer = new TestSmtpServer();
 			try
 			{
-				receivingServer.Start("127.0.0.1", 8189);
+				receivingServer.Start("127.0.0.1", 8081);
 				provider.Send("phil@example.com", 
 							"nobody@example.com", 
 							"Subject to nothing", 

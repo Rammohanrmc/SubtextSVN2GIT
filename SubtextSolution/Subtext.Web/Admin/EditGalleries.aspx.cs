@@ -29,6 +29,7 @@ namespace Subtext.Web.Admin.Pages
 {
 	public partial class EditGalleries : AdminPage
 	{
+		protected bool _isListHidden;
 		// jsbright added to support prompting for new file name
 
 		#region Accessors
@@ -158,7 +159,7 @@ namespace Subtext.Web.Admin.Pages
 				return String.Empty;
 		}
 
-		protected static string EvalImageNavigateUrl(object potentialImage)
+		protected string EvalImageNavigateUrl(object potentialImage)
 		{
 			Image image = potentialImage as Image;
 			if (image != null)
@@ -166,12 +167,10 @@ namespace Subtext.Web.Admin.Pages
 				return Config.CurrentBlog.UrlFormats.ImageUrl(null, image.ImageID);
 			}
 			else
-			{
 				return String.Empty;
-			}
 		}
 
-		protected static string EvalImageTitle(object potentialImage)
+		protected string EvalImageTitle(object potentialImage)
 		{
 			const int TARGET_HEIGHT = 138;
 			const int MAX_IMAGE_HEIGHT = 120;
@@ -185,18 +184,14 @@ namespace Subtext.Web.Admin.Pages
 				// we have to back into an estimated thumbnail height right now with aspect * max
 				double aspectRatio = (double)image.Height / image.Width;
 				if (aspectRatio > 1 || aspectRatio <= 0)
-				{
 					aspectRatio = 1;
-				}
 				int allowedChars = (int)((TARGET_HEIGHT - MAX_IMAGE_HEIGHT * aspectRatio) 
 					/ LINE_HEIGHT_PIXELS * CHAR_PER_LINE);
 
 				return Utilities.Truncate(image.Title, allowedChars);
 			}
 			else
-			{
 				return String.Empty;
-			}
 		}
 
 		// REFACTOR: duplicate from category editor; generalize a la EntryEditor
@@ -420,6 +415,15 @@ namespace Subtext.Web.Admin.Pages
 
 			// re-bind the gallery; note we'll skip this step if a correctable error occurs.
 			BindGallery();
+		}
+
+		// REFACTOR: can the flag go in AdminPage along with this meth?
+		public string CheckHiddenStyle()
+		{
+			if (_isListHidden)
+				return Constants.CSSSTYLE_HIDDEN;
+			else
+				return String.Empty;
 		}
 
 		private void ConfirmDeleteGallery(int categoryID, string categoryTitle)

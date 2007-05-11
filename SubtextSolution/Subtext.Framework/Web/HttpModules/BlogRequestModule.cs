@@ -5,7 +5,6 @@ using Subtext.Framework.Configuration;
 using Subtext.Framework.Format;
 using Subtext.Framework.Text;
 using Subtext.Framework.Web.HttpModules;
-using Subtext.Framework.Properties;
 
 namespace Subtext.Web.HttpModules
 {
@@ -22,11 +21,6 @@ namespace Subtext.Web.HttpModules
 		/// <param name="context">An <see cref="T:System.Web.HttpApplication"/> that provides access to the methods, properties, and events common to all application objects within an ASP.NET application</param>
 		public void Init(HttpApplication context)
 		{
-            if (context == null)
-            {
-                throw new ArgumentNullException(Resources.ArgumentNull_Generic);
-            }
-
 			context.BeginRequest += MapUrlToBlogStatus;
 		}
 
@@ -59,7 +53,7 @@ namespace Subtext.Web.HttpModules
 		/// found.
 		/// </summary>
 		/// <returns></returns>
-		protected static string Host
+		protected string Host
 		{
 			get
 			{

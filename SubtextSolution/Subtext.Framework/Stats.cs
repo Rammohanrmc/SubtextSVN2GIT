@@ -26,7 +26,6 @@ using Subtext.Framework.Threading;
 using Subtext.Framework.Tracking;
 using Subtext.Framework.Logging;
 using Subtext.Framework.Web;
-using Subtext.Framework.Properties;
 
 namespace Subtext.Framework
 {
@@ -50,6 +49,7 @@ namespace Subtext.Framework
 			{
 				queuedStatsList = new List<EntryView>();
 				queuedAllowCount = Config.Settings.Tracking.QueueStatsCount;
+
 			}
 		}
 
@@ -69,6 +69,7 @@ namespace Subtext.Framework
 					queuedStatsList.CopyTo(eva, 0);
 
 					ClearTrackEntryQueue(new List<EntryView>(eva));
+					
 				}
 				queuedStatsList.Clear();	
 			}
@@ -179,11 +180,6 @@ namespace Subtext.Framework
 		/// <param name="entry">Entry.</param>
 		public static void Notify(Entry entry)
 		{
-            if (entry == null)
-            {
-                throw new ArgumentNullException("entry", Resources.ArgumentNull_Generic);
-            }
-
 			StringCollection links = HtmlHelper.GetLinks(entry.Body);
 
 			if(links != null && links.Count > 0)
@@ -202,24 +198,23 @@ namespace Subtext.Framework
 				}
 
 				PingBackNotificatinProxy pbnp = new PingBackNotificatinProxy();
-				
+				TrackBackNotificationProxy tbnp = new TrackBackNotificationProxy();
+
 				for(int i = 0; i < count; i++)
 				{
 					try
 					{
 						string link = links[i];
 						Uri url = HtmlHelper.ParseUri(link);
-                        if (url == null)
-                        {
-                            continue;
-                        }
+						if(url == null)
+							continue;
 						
 						string pageText = HttpHelper.GetPageText(url);
 						
 						if(pageText != null)
 						{
 							pbnp.Ping(pageText, entry.FullyQualifiedUrl, url);
-                            TrackBackNotificationProxy.TrackBackPing(pageText, url, entry.Title, entry.FullyQualifiedUrl, blogname, description);
+							tbnp.TrackBackPing(pageText, url, entry.Title, entry.FullyQualifiedUrl, blogname, description);
 						}
 					}
 					catch(Exception e)

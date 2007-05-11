@@ -24,8 +24,9 @@ namespace UnitTests.Subtext.Framework.Data
 		[RollBack]
 		public void GetEntryFromRequestDoesNotThrowNullReferenceException()
 		{
-			UnitTestHelper.SetupBlog();
-			UnitTestHelper.SetHttpContextWithBlogRequest(Config.CurrentBlog.Host, "", "", "/archive/999999.aspx");
+			string host = UnitTestHelper.GenerateRandomString();
+			Config.CreateBlog("test", UnitTestHelper.GenerateRandomString(), UnitTestHelper.GenerateRandomString(), host, "");
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, "", "", "/archive/999999.aspx");
 			Assert.IsNull(Cacher.GetEntryFromRequest(CacheDuration.Short));
 		}
 
@@ -41,8 +42,9 @@ namespace UnitTests.Subtext.Framework.Data
 		[RollBack]
 		public void SingleCategoryReturnsNullForNonExistentCategory()
 		{
-			UnitTestHelper.SetupBlog();
-			UnitTestHelper.SetHttpContextWithBlogRequest(Config.CurrentBlog.Host, "", "", "/category/99.aspx");
+			string host = UnitTestHelper.GenerateRandomString();
+			Config.CreateBlog("test", UnitTestHelper.GenerateRandomString(), UnitTestHelper.GenerateRandomString(), host, "");
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, "", "", "/category/99.aspx");
 			Assert.IsNull(Cacher.SingleCategory(CacheDuration.Short));
 		}
 
@@ -50,10 +52,11 @@ namespace UnitTests.Subtext.Framework.Data
 		[RollBack]
 		public void CanGetCategoryByIdRequest()
 		{
-			UnitTestHelper.SetupBlog();
-			UnitTestHelper.SetHttpContextWithBlogRequest(Config.CurrentBlog.Host, "", "", "/category/");
+			string host = UnitTestHelper.GenerateRandomString();
+			Config.CreateBlog("test", UnitTestHelper.GenerateRandomString(), UnitTestHelper.GenerateRandomString(), host, "");
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, "", "", "/category/");
 			int categoryId = UnitTestHelper.CreateCategory(Config.CurrentBlog.Id, "This Is a Test");
-			UnitTestHelper.SetHttpContextWithBlogRequest(Config.CurrentBlog.Host, "", "", "/category/" + categoryId + ".aspx");
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, "", "", "/category/" + categoryId + ".aspx");
 
 			LinkCategory category = Cacher.SingleCategory(CacheDuration.Short);
 			Assert.AreEqual("This Is a Test", category.Title);
@@ -63,8 +66,9 @@ namespace UnitTests.Subtext.Framework.Data
 		[RollBack]
 		public void CanGetCategoryByNameRequest()
 		{
-			UnitTestHelper.SetupBlog();
-			UnitTestHelper.SetHttpContextWithBlogRequest(Config.CurrentBlog.Host, "", "", "/category/This Is a Test.aspx");
+			string host = UnitTestHelper.GenerateRandomString();
+			Config.CreateBlog("test", UnitTestHelper.GenerateRandomString(), UnitTestHelper.GenerateRandomString(), host, "");
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, "", "", "/category/This Is a Test.aspx");
 			UnitTestHelper.CreateCategory(Config.CurrentBlog.Id, "This Is a Test");
 
 			LinkCategory category = Cacher.SingleCategory(CacheDuration.Short);
@@ -75,10 +79,11 @@ namespace UnitTests.Subtext.Framework.Data
 		[RollBack]
 		public void CanGetCategoryByNameWithWordDelimitersRequest()
 		{
-			UnitTestHelper.SetupBlog();
-			UnitTestHelper.SetHttpContextWithBlogRequest(Config.CurrentBlog.Host, "", "", "/category/This_Is_a_Test.aspx");
+			string host = UnitTestHelper.GenerateRandomString();
+			Config.CreateBlog("test", UnitTestHelper.GenerateRandomString(), UnitTestHelper.GenerateRandomString(), host, "");
+			UnitTestHelper.SetHttpContextWithBlogRequest(host, "", "", "/category/This_Is_a_Test.aspx");
 			UnitTestHelper.CreateCategory(Config.CurrentBlog.Id, "This Is a Test");
-			Config.CurrentBlog.AutoFriendlyUrlEnabled = true;
+
 			LinkCategory category = Cacher.SingleCategory(CacheDuration.Short);
 			Assert.AreEqual("This Is a Test", category.Title);
 		}
@@ -91,8 +96,10 @@ namespace UnitTests.Subtext.Framework.Data
 		[RollBack]
 		public void GetActiveCategoriesHandlesLocale()
 		{
-			UnitTestHelper.SetupBlog();
-			
+			string hostName = UnitTestHelper.GenerateRandomString();
+			UnitTestHelper.SetHttpContextWithBlogRequest(hostName, "");
+			Config.CreateBlog("", "username", "thePassword", hostName, "");
+
 			//Start with en-US
 			Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
 

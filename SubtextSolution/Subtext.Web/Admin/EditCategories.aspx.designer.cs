@@ -10,15 +10,103 @@
 
 namespace Subtext.Web.Admin.Pages {
     
+    
+    /// <summary>
+    /// EditCategories class.
+    /// </summary>
+    /// <remarks>
+    /// Auto-generated class.
+    /// </remarks>
     public partial class EditCategories {
-        protected Subtext.Web.Admin.WebUI.MessagePanel Messages;
-        protected Subtext.Web.Admin.WebUI.AdvancedPanel Edit;
-        protected System.Web.UI.WebControls.DataGrid dgrItems;
-        protected System.Web.UI.WebControls.PlaceHolder Add;
-        protected System.Web.UI.WebControls.RequiredFieldValidator valtxbNewTitleRequired;
-        protected System.Web.UI.WebControls.TextBox txbNewTitle;
-        protected System.Web.UI.WebControls.CheckBox ckbNewIsActive;
-        protected System.Web.UI.WebControls.TextBox txbNewDescription;
-        protected System.Web.UI.WebControls.Button lkbPost;
+        
+        /// <summary>
+        /// categoryLinks control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Subtext.Web.Admin.UserControls.CategoryLinkList categoryLinks;
+        
+        /// <summary>
+        /// Messages control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Subtext.Web.Admin.WebUI.MessagePanel Messages;
+        
+        /// <summary>
+        /// Edit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Subtext.Web.Admin.WebUI.AdvancedPanel Edit;
+        
+        /// <summary>
+        /// dgrItems control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DataGrid dgrItems;
+        
+        /// <summary>
+        /// Add control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Subtext.Web.Admin.WebUI.AdvancedPanel Add;
+        
+        /// <summary>
+        /// valtxbNewTitleRequired control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator valtxbNewTitleRequired;
+        
+        /// <summary>
+        /// txbNewTitle control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txbNewTitle;
+        
+        /// <summary>
+        /// ckbNewIsActive control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ckbNewIsActive;
+        
+        /// <summary>
+        /// txbNewDescription control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txbNewDescription;
+        
+        /// <summary>
+        /// lkbPost control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button lkbPost;
     }
 }

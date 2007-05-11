@@ -1,4 +1,3 @@
-
 /*
 The CategoryType column is defined in an enum and 
 not in the database. Unfortunately it defined "LinkCollection" 

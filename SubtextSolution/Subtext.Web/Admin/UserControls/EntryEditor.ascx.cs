@@ -27,20 +27,21 @@ using Subtext.Framework.Configuration;
 using Subtext.Framework.Text;
 using Subtext.Web.Admin.Pages;
 using Subtext.Web.Admin.WebUI;
-using Subtext.Web.UI.WebControls;
+using Subtext.Web.Controls;
 using StringHelper = Subtext.Framework.Text.StringHelper;
-using Subtext.Extensibility.Plugins;
+using Subtext.Framework.Tracking;
 
 namespace Subtext.Web.Admin.UserControls
 {
-	public partial class EntryEditor : UserControl, INotifiableControl
+	public partial class EntryEditor : UserControl
 	{
 		private const string VSKEY_POSTID = "PostID";
 		private const string VSKEY_CATEGORYTYPE = "CategoryType";
 
 		private int categoryId = NullValue.NullInt32;
-		private int pageIndex;
-				
+		private int pageIndex = 0;
+		private bool _isListHidden = false;
+		
 		#region Accessors
 		/// <summary>
 		/// Gets or sets the type of the entry.
@@ -86,8 +87,14 @@ namespace Subtext.Web.Admin.UserControls
 				ViewState[VSKEY_CATEGORYTYPE] = value; 
 			}
 		}
-        
-        public string ResultsTitle 
+
+		public bool IsListHidden
+		{
+			get { return _isListHidden; }
+			set { _isListHidden = value; }
+		}
+
+		public string ResultsTitle 
 		{
 			get
 			{
@@ -232,7 +239,7 @@ namespace Subtext.Web.Admin.UserControls
 				return;
 			}
 		
-			Results.Visible = false;
+			Results.Collapsed = true;
 			Edit.Visible = true;
 			this.lkUpdateCategories.Visible = true;
 			txbTitle.Text = currentPost.Title;
@@ -390,7 +397,8 @@ namespace Subtext.Web.Admin.UserControls
 					
 					entry.Title = txbTitle.Text;
 					entry.Body = HtmlHelper.StripRTB(richTextEditor.Xhtml, Request.Url.Host);
-                    entry.Author = System.Web.Security.Membership.GetUser();
+					entry.Author = Config.CurrentBlog.Author;
+					entry.Email = Config.CurrentBlog.Email;
 					entry.BlogId = Config.CurrentBlog.Id;
 
 					// Advanced options
@@ -410,13 +418,9 @@ namespace Subtext.Web.Admin.UserControls
 						entry.DateModified = Config.CurrentBlog.TimeZone.Now;
 						entry.Id = PostID;
 						
-						//Raise event before updating a post
-						SubtextEvents.OnEntryUpdating(this, new SubtextEventArgs(entry, ObjectState.Update));
-						
 						Entries.Update(entry);
 
-						//Raise event after updating a post
-						SubtextEvents.OnEntryUpdated(this, new SubtextEventArgs(entry, ObjectState.Update));
+						UpdateCategories();
 
 						if(ReturnToOriginalPost)
 						{
@@ -431,27 +435,22 @@ namespace Subtext.Web.Admin.UserControls
 					}
 					else
 					{
-						entry.DateCreated = Config.CurrentBlog.TimeZone.Now;
-
-						//Raise event before creating a post
-						SubtextEvents.OnEntryUpdating(this, new SubtextEventArgs(entry, ObjectState.Create));
-						
+						entry.DateCreated = Config.CurrentBlog.TimeZone.Now;						
 						PostID = Entries.Create(entry);
-
-						//Raise event after creating a post
-						SubtextEvents.OnEntryUpdated(this, new SubtextEventArgs(entry, ObjectState.Create));
+						UpdateCategories();
+						AddCommunityCredits(entry);
 					}
 				}
 				catch(Exception ex)
 				{
 					this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, 
-						Constants.RES_FAILUREEDIT, ex.Message), false);
+						Constants.RES_FAILUREEDIT, ex.Message));
 				}
 				finally
 				{
 					Results.Collapsible = false;
 				}
-				this.Messages.ShowMessage(successMessage, false);
+				this.Messages.ShowMessage(successMessage);
 			}
 		}
 
@@ -476,19 +475,19 @@ namespace Subtext.Web.Admin.UserControls
 					Entries.SetEntryCategoryList(PostID,Categories);
 
 					BindList();
-					this.Messages.ShowMessage(successMessage, false);
+					this.Messages.ShowMessage(successMessage);
 					this.ResetPostEdit(false);
 				}
 				else
 				{
 					this.Messages.ShowError(Constants.RES_FAILURECATEGORYUPDATE
-						+ " There was a baseline problem updating the post categories.", false);  
+						+ " There was a baseline problem updating the post categories.");  
 				}
 			}
 			catch(Exception ex)
 			{
 				this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION,
-					Constants.RES_FAILUREEDIT, ex.Message), false);
+					Constants.RES_FAILUREEDIT, ex.Message));
 			}
 			finally
 			{
@@ -514,14 +513,23 @@ namespace Subtext.Web.Admin.UserControls
 
 		private void ConfirmDelete(int postID)
 		{
-			AdminPage page = Page as AdminPage;
-			if (page == null)
-				throw new InvalidOperationException("Somehow the page is not an AdminPage.");
-			
-			page.Command = new DeletePostCommand(postID);
-			page.Command.RedirectUrl = Request.Url.ToString();
+			AdminPage page = (AdminPage)Page;
+			if (page != null)
+			{
+				page.Command = new DeletePostCommand(postID);
+				page.Command.RedirectUrl = Request.Url.ToString();
+			}
 			Server.Transfer(Constants.URL_CONFIRM);
 		}
+
+		public string CheckHiddenStyle()
+		{
+			if (_isListHidden)
+				return Constants.CSSSTYLE_HIDDEN;
+			else
+				return String.Empty;
+		}
+
 		#region Web Form Designer generated code
 		override protected void OnInit(EventArgs e)
 		{
@@ -582,34 +590,36 @@ namespace Subtext.Web.Admin.UserControls
 
 		private void lkbPost_Click(object sender, EventArgs e)
 		{
-			this.Messages.ResetMessages();
 			UpdatePost();
 		}
 
 		private void lkUpdateCategories_Click(object sender, EventArgs e)
 		{
-			this.Messages.ResetMessages();
 			UpdateCategories();
 		}
 
 		protected void richTextEditor_Error(object sender, RichTextEditorErrorEventArgs e)
 		{
-			this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, "TODO...", e.Exception.Message), false);
+			this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, "TODO...", e.Exception.Message));
 		}
 
-		#region INotifiableControl Members
-
-		public void ShowError(string message)
+		private void AddCommunityCredits(Entry entry) 
 		{
-			this.Messages.ShowError(message, false);
-		}
+			string result=string.Empty;
 
-		public void ShowMessage(string message)
-		{
-			this.Messages.ShowMessage(message, false);
+         try
+         {
+            CommunityCreditNotification.AddCommunityCredits(entry);
+         }
+         catch (CommunityCreditNotificationException ex)
+         {
+            this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, "Error during Community Credits submission (your post has been saved)", ex.Message));
+         }
+         catch (Exception ex)
+         {
+            this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, "Error during Community Credits submission (your post has been saved)", ex.Message));
+         }
 		}
-
-		#endregion
 	}
 }
 

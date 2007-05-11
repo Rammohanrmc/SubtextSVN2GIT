@@ -2,27 +2,12 @@
 /*
 WARNING: This SCRIPT USES SQL TEMPLATE PARAMETERS.
 Be sure to hit CTRL+SHIFT+M in Query Analyzer if running manually.
-
-When generating drop and create from SQL Query Analyzer, you can 
-use the following search and replace expressions to convert the 
-script to use information_schema.
-
-SEARCH:  IF:b* EXISTS \(SELECT \* FROM dbo\.sysobjects WHERE id = OBJECT_ID\(N'\[[^\]]+\]\.\[{[^\]]+}\]'\) AND OBJECTPROPERTY\(id,:b*N'IsProcedure'\) = 1\)
-REPLACE: IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = '\1' AND routine_schema = '<dbUser,varchar,dbo>')
-
 */
 
 /* DROPPED STORED PROCS.  
 	These are stored procs that used to be in the system but are no longer needed.
 	The statements will only drop the procs if they exist as a form of cleanup.
 */
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UTILITY_AddBlog' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UTILITY_AddBlog]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UpdateHost' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UpdateHost]
-
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetLinksByActiveCategoryID]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [<dbUser,varchar,dbo>].[subtext_GetLinksByActiveCategoryID]
 GO
@@ -39,103 +24,83 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,
 drop procedure [<dbUser,varchar,dbo>].[subtext_GetPageableReferrersByEntryID]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetConfig' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetConfig] -- RENAMED subtext_GetConfig to subtext_GetBlog. So we're making sure to drop the old one.
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetBlogsByHost]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetBlogsByHost]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetHost' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetHost]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetConditionalEntriesByDateUpdated]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetConditionalEntriesByDateUpdated]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Utility_GetUnHashedPasswords' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Utility_GetUnHashedPasswords]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetEntryCollectionByDateUpdated]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetEntryCollectionByDateUpdated]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Utility_UpdateToHashedPassword' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Utility_UpdateToHashedPassword]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPostsByCategoryNameByDateUpdated]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetPostsByCategoryNameByDateUpdated]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPageableReferrersByEntryID' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPageableReferrersByEntryID]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPostsByCategoryIDByDateUpdated]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetPostsByCategoryIDByDateUpdated]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetBlogsByHost' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetBlogsByHost]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetEntryWithCategoryTitlesByEntryName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetEntryWithCategoryTitlesByEntryName]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetConditionalEntriesByDateUpdated' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetConditionalEntriesByDateUpdated]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPostsByCategoryName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetPostsByCategoryName]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetEntryCollectionByDateUpdated' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetEntryCollectionByDateUpdated]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetRecentEntriesByDateUpdated]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetRecentEntriesByDateUpdated]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPostsByCategoryNameByDateUpdated' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPostsByCategoryNameByDateUpdated]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetRecentEntriesWithCategoryTitles]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetRecentEntriesWithCategoryTitles]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPostsByCategoryIDByDateUpdated' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPostsByCategoryIDByDateUpdated]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetRecentEntries]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetRecentEntries]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetEntryWithCategoryTitlesByEntryName' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetEntryWithCategoryTitlesByEntryName]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetSingleEntryByName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetSingleEntryByName]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPostsByCategoryName' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPostsByCategoryName]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetEntryWithCategoryTitles]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetEntryWithCategoryTitles]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetRecentEntriesByDateUpdated' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetRecentEntriesByDateUpdated]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_InsertPostCategoryByName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_InsertPostCategoryByName]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetRecentEntriesWithCategoryTitles' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetRecentEntriesWithCategoryTitles]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetRecentEntries' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetRecentEntries]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetSingleEntryByName' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetSingleEntryByName]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetEntryWithCategoryTitles' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetEntryWithCategoryTitles]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_InsertPostCategoryByName' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_InsertPostCategoryByName]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPageableLinksByCategoryID' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPageableLinksByCategoryID]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPageableLinksByCategoryID]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetPageableLinksByCategoryID]
 GO
 
 /* The Rest of the script */
 
--- Views
-IF EXISTS (SELECT * FROM [information_schema].[views] WHERE table_name = 'vw_subtext_Profiles' AND table_schema = '<dbUser,varchar,dbo>')
-DROP VIEW [<dbUser,varchar,dbo>].[vw_subtext_Profiles]
+/* Note: DNW_* are the aggregate blog procs */
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[DNW_GetRecentPosts]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[DNW_GetRecentPosts]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[views] WHERE table_name = 'vw_subtext_Roles' AND table_schema = '<dbUser,varchar,dbo>')
-DROP VIEW [<dbUser,varchar,dbo>].[vw_subtext_Roles]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[DNW_HomePageData]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[DNW_HomePageData]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[views] WHERE table_name = 'vw_subtext_UsersInRoles' AND table_schema = '<dbUser,varchar,dbo>')
-DROP VIEW [<dbUser,varchar,dbo>].[vw_subtext_UsersInRoles]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[DNW_Stats]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[DNW_Stats]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[views] WHERE table_name = 'vw_subtext_WebPartState_Paths' AND table_schema = '<dbUser,varchar,dbo>')
-DROP VIEW [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_Paths]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[DNW_Total_Stats]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[DNW_Total_Stats]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[views] WHERE table_name = 'vw_subtext_WebPartState_Shared' AND table_schema = '<dbUser,varchar,dbo>')
-DROP VIEW [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_Shared]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[iter_charlist_to_table]') and xtype in (N'FN', N'IF', N'TF'))
+drop function [<dbUser,varchar,dbo>].[iter_charlist_to_table]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_InsertEntryTagList]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
@@ -144,406 +109,230 @@ GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_VersionAdd]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [<dbUser,varchar,dbo>].[subtext_VersionAdd]
-
-IF EXISTS (SELECT * FROM [information_schema].[views] WHERE table_name = 'vw_subtext_WebPartState_User' AND table_schema = '<dbUser,varchar,dbo>')
-DROP VIEW [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_User]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[views] WHERE table_name = 'vw_subtext_Applications' AND table_schema = '<dbUser,varchar,dbo>')
-DROP VIEW [<dbUser,varchar,dbo>].[vw_subtext_Applications]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_VersionGetCurrent]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_VersionGetCurrent]
 GO
 
--- Membership Provider Stored Procs
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_RegisterSchemaVersion' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_RegisterSchemaVersion]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_CheckSchemaVersion' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_CheckSchemaVersion]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UnRegisterSchemaVersion' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UnRegisterSchemaVersion]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_AnyDataInTables' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_AnyDataInTables]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Membership_CreateUser' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_CreateUser]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Membership_GetUserByName' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_GetUserByName]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Membership_GetUserByUserId' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_GetUserByUserId]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Membership_GetUserByEmail' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_GetUserByEmail]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Membership_GetPasswordWithFormat' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_GetPasswordWithFormat]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Membership_UpdateUserInfo' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_UpdateUserInfo]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Membership_GetPassword' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_GetPassword]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Membership_SetPassword' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_SetPassword]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Membership_ResetPassword' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_ResetPassword]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Membership_UnlockUser' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_UnlockUser]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Membership_UpdateUser' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_UpdateUser]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Membership_ChangePasswordQuestionAndAnswer' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_ChangePasswordQuestionAndAnswer]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Membership_GetAllUsers' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_GetAllUsers]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Membership_GetNumberOfUsersOnline' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_GetNumberOfUsersOnline]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Membership_FindUsersByNameOrEmail' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_FindUsersByNameOrEmail]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Profile_GetProperties' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Profile_GetProperties]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Profile_SetProperties' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Profile_SetProperties]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Profile_DeleteProfiles' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Profile_DeleteProfiles]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Profile_DeleteInactiveProfiles' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Profile_DeleteInactiveProfiles]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Profile_GetNumberOfInactiveProfiles' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Profile_GetNumberOfInactiveProfiles]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Profile_GetProfiles' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Profile_GetProfiles]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UsersInRoles_IsUserInRole' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UsersInRoles_IsUserInRole]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UsersInRoles_GetRolesForUser' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UsersInRoles_GetRolesForUser]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Roles_CreateRole' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Roles_CreateRole]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Roles_DeleteRole' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Roles_DeleteRole]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Roles_RoleExists' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Roles_RoleExists]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UsersInRoles_AddUsersToRoles' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UsersInRoles_AddUsersToRoles]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UsersInRoles_RemoveUsersFromRoles' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UsersInRoles_RemoveUsersFromRoles]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UsersInRoles_GetUsersInRoles' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UsersInRoles_GetUsersInRoles]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UsersInRoles_FindUsersInRole' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UsersInRoles_FindUsersInRole]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Roles_GetAllRoles' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Roles_GetAllRoles]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_PersonalizationAllUsers_GetPageSettings' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationAllUsers_GetPageSettings]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_PersonalizationAllUsers_ResetPageSettings' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationAllUsers_ResetPageSettings]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_PersonalizationAllUsers_SetPageSettings' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationAllUsers_SetPageSettings]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_PersonalizationPerUser_GetPageSettings' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationPerUser_GetPageSettings]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_PersonalizationPerUser_ResetPageSettings' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationPerUser_ResetPageSettings]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_PersonalizationPerUser_SetPageSettings' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationPerUser_SetPageSettings]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_PersonalizationAdministration_DeleteAllState' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationAdministration_DeleteAllState]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_PersonalizationAdministration_ResetSharedState' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationAdministration_ResetSharedState]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_PersonalizationAdministration_ResetUserState' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationAdministration_ResetUserState]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_PersonalizationAdministration_FindState' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationAdministration_FindState]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_PersonalizationAdministration_GetCountOfState' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationAdministration_GetCountOfState]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_WebEvent_LogEvent' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_WebEvent_LogEvent]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Setup_RestorePermissions' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Setup_RestorePermissions]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Setup_RemoveAllRoleMembers' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Setup_RemoveAllRoleMembers]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Applications_CreateApplication' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Applications_CreateApplication]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Users_DeleteUser' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Users_DeleteUser]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Personalization_GetApplicationId' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Personalization_GetApplicationId]
-GO
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_Paths_CreatePath' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_Paths_CreatePath]
-
-/* Note: DNW_* are the aggregate blog procs */
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'DNW_GetRecentPosts' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[DNW_GetRecentPosts]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetHost]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetHost]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'DNW_HomePageData' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[DNW_HomePageData]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_UpdateHost]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateHost]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'DNW_Stats' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[DNW_Stats]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetCommentByChecksumHash]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetCommentByChecksumHash]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'DNW_Total_Stats' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[DNW_Total_Stats]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPageableBlogs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetPageableBlogs]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'iter_charlist_to_table' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP FUNCTION [<dbUser,varchar,dbo>].[iter_charlist_to_table]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetBlogById]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetBlogById]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_CreateHost' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_CreateHost]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_DeleteCategory]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_DeleteCategory]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_VersionAdd' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_VersionAdd]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_DeleteImage]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_DeleteImage]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_VersionGetCurrent' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_VersionGetCurrent]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_DeleteImageCategory]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_DeleteImageCategory]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetCommentByChecksumHash' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetCommentByChecksumHash]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_DeleteKeyWord]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_DeleteKeyWord]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPageableBlogs' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPageableBlogs]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_DeleteLink]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_DeleteLink]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetBlogById' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetBlogById]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_DeleteLinksByPostID]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_DeleteLinksByPostID]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_DeleteCategory' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_DeleteCategory]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_DeletePost]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_DeletePost]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_DeleteImage' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_DeleteImage]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_DeleteFeedbackByStatus]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_DeleteFeedbackByStatus]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_DeleteImageCategory' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_DeleteImageCategory]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_DeleteFeedback]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_DeleteFeedback]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_DeleteKeyWord' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_DeleteKeyWord]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetActiveCategoriesWithLinkCollection]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetActiveCategoriesWithLinkCollection]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_DeleteLink' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_DeleteLink]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetBlogKeyWords]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetBlogKeyWords]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_DeleteLinksByPostID' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_DeleteLinksByPostID]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetCategory]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetCategory]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_DeletePost' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_DeletePost]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetConditionalEntries]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetConditionalEntries]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_DeleteFeedbackByStatus' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_DeleteFeedbackByStatus]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetConfig]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetConfig]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_DeleteFeedback' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_DeleteFeedback]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetEntriesByDayRange]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetEntriesByDayRange]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetActiveCategoriesWithLinkCollection' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetActiveCategoriesWithLinkCollection]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetFeedbackCollection]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetFeedbackCollection]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetAllCategories' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetAllCategories]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetFeedbackCountsByStatus]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetFeedbackCountsByStatus]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetBlogKeyWords' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetBlogKeyWords]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetFeedback]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetFeedback]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetCategory' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetCategory]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetImageCategory]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetImageCategory]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetCategoryByName' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetCategoryByName]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetKeyWord]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetKeyWord]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetConditionalEntries' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetConditionalEntries]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetLinkCollectionByPostID]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetLinkCollectionByPostID]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetBlog' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetBlog]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetLinksByCategoryID]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetLinksByCategoryID]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetEntriesByDayRange' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetEntriesByDayRange]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPageableEntries]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetPageableEntries]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetFeedbackCollection' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetFeedbackCollection]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetEntriesForBlogMl]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetEntriesForBlogMl]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetFeedbackCountsByStatus' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetFeedbackCountsByStatus]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPageableEntriesByCategoryID]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetPageableEntriesByCategoryID]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetFeedback' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetFeedback]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPageableFeedback]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetPageableFeedback]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetImageCategory' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetImageCategory]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPageableLogEntries]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetPageableLogEntries]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetKeyWord' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetKeyWord]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPageableKeyWords]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetPageableKeyWords]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetLinkCollectionByPostID' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetLinkCollectionByPostID]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPageableLinks]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetPageableLinks]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetLinksByActiveCategoryID' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetLinksByActiveCategoryID]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPageableReferrers]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetPageableReferrers]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetLinksByCategoryID' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetLinksByCategoryID]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPostsByCategoryID]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetPostsByCategoryID]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPageableEntries' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPageableEntries]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPostsByDayRange]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetPostsByDayRange]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetEntriesForBlogMl' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetEntriesForBlogMl]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPostsByMonth]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetPostsByMonth]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPageableEntriesByCategoryID' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPageableEntriesByCategoryID]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPostsByMonthArchive]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetPostsByMonthArchive]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPageableFeedback' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPageableFeedback]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPostsByYearArchive]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetPostsByYearArchive]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPageableLogEntries' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPageableLogEntries]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetSingleDay]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetSingleDay]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPageableKeyWords' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPageableKeyWords]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetSingleEntry]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetSingleEntry]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPageableLinks' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPageableLinks]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetSingleImage]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetSingleImage]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPageableReferrers' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPageableReferrers]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetSingleLink]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetSingleLink]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPostsByCategoryID' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPostsByCategoryID]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetUrlID]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetUrlID]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPostsByDayRange' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPostsByDayRange]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_InsertCategory]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_InsertCategory]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPostsByMonth' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPostsByMonth]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_InsertEntry]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_InsertEntry]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPostsByMonthArchive' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPostsByMonthArchive]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_InsertEntryViewCount]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_InsertEntryViewCount]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPostsByYearArchive' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPostsByYearArchive]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_InsertImage]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_InsertImage]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetSingleDay' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetSingleDay]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_InsertKeyWord]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_InsertKeyWord]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetSingleEntry' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetSingleEntry]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_InsertLink]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_InsertLink]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetSingleImage' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetSingleImage]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_InsertLinkCategoryList]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_InsertLinkCategoryList]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetSingleLink' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetSingleLink]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetUrlID' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetUrlID]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_InsertCategory' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_InsertCategory]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_InsertFeedback]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_InsertFeedback]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_UpdateFeedbackStats]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackStats]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_InsertEntry' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_InsertEntry]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_InsertEntryViewCount' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_InsertEntryViewCount]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount]
 GO
 
 if exists (select ROUTINE_NAME from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' and OBJECTPROPERTY(OBJECT_ID(ROUTINE_NAME), 'IsMsShipped') = 0 and ROUTINE_SCHEMA = '<dbUser,varchar,dbo>' AND ROUTINE_NAME = 'subtext_UpdateBlogStats')
@@ -554,84 +343,84 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,
 drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateFeedback]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_InsertImage' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_InsertImage]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_InsertReferral]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_InsertReferral]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_InsertKeyWord' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_InsertKeyWord]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_InsertViewStats]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_InsertViewStats]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_InsertLink' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_InsertLink]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_StatsSummary]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_StatsSummary]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_InsertLinkCategoryList' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_InsertLinkCategoryList]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_TrackEntry]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_TrackEntry]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_InsertFeedback' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_InsertFeedback]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_UTILITY_AddBlog]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_UTILITY_AddBlog]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UpdateFeedbackCount' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_UpdateCategory]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateCategory]
 GO
 
-if exists (select ROUTINE_NAME from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' and OBJECTPROPERTY(OBJECT_ID(ROUTINE_NAME), 'IsMsShipped') = 0 and ROUTINE_SCHEMA = '<dbUser,varchar,dbo>' AND ROUTINE_NAME = 'subtext_UpdateBlogStats')
-drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateBlogStats]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_UpdateConfig]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateConfig]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UpdateFeedback' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UpdateFeedback]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_UpdateConfigUpdateTime]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateConfigUpdateTime]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_InsertReferral' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_InsertReferral]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_UpdateEntry]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateEntry]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_InsertViewStats' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_InsertViewStats]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_UpdateImage]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateImage]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_StatsSummary' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_StatsSummary]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_UpdateKeyWord]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateKeyWord]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_TrackEntry' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_TrackEntry]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_UpdateLink]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateLink]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UpdateCategory' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UpdateCategory]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_Utility_GetUnHashedPasswords]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_Utility_GetUnHashedPasswords]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UpdateConfig' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UpdateConfig]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_Utility_UpdateToHashedPassword]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_Utility_UpdateToHashedPassword]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UpdateConfigUpdateTime' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UpdateConfigUpdateTime]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_AddLogEntry]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_AddLogEntry]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UpdateEntry' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UpdateEntry]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_LogClear]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_LogClear]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UpdateImage' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UpdateImage]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_SearchEntries]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_SearchEntries]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UpdateKeyWord' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UpdateKeyWord]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetRelatedLinks]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetRelatedLinks]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UpdateLink' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UpdateLink]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetTop10byBlogId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetTop10byBlogId]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_AddLogEntry' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_AddLogEntry]
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPostsByCategoriesArchive]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].subtext_GetPostsByCategoriesArchive
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetPostsByTag]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
@@ -646,52 +435,8 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,
 drop procedure [<dbUser,varchar,dbo>].[subtext_GetTopTags]
 GO
 
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_LogClear' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_LogClear]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_SearchEntries' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_SearchEntries]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetRelatedLinks' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetRelatedLinks]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetTop10byBlogId' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetTop10byBlogId]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPostsByCategoriesArchive' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].subtext_GetPostsByCategoriesArchive
-GO
-
 if exists (select ROUTINE_NAME from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' and OBJECTPROPERTY(OBJECT_ID(ROUTINE_NAME), 'IsMsShipped') = 0 and ROUTINE_SCHEMA = '<dbUser,varchar,dbo>' AND ROUTINE_NAME = 'subtext_ClearBlogContent')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_ClearBlogContent]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_InsertPluginData' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_InsertPluginData]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_UpdatePluginData' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_UpdatePluginData]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_DeletePluginBlog' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_DeletePluginBlog]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPluginBlog' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPluginBlog]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_InsertPluginBlog' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_InsertPluginBlog]
-GO
-
-IF EXISTS (SELECT * FROM [information_schema].[routines] WHERE routine_name = 'subtext_GetPluginData' AND routine_schema = '<dbUser,varchar,dbo>')
-DROP PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPluginData]
+drop procedure [<dbUser,varchar,dbo>].[subtext_ClearBlogContent]
 GO
 
 SET QUOTED_IDENTIFIER OFF 
@@ -746,66 +491,6 @@ GO
 SET ANSI_NULLS ON 
 GO
 
-/*
-Returns a single blog within the subtext_config table by id.
-*/
-CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetBlogById]
-(
-	@BlogId int
-)
-AS
-
-SELECT	BlogId 
-		, ApplicationId
-		, OwnerId
-		, Title
-		, SubTitle
-		, Skin
-		, Subfolder
-		, Host
-		, TimeZone
-		, ItemCount
-		, [Language]
-		, News
-		, SecondaryCss
-		, LastUpdated
-		, PostCount
-		, StoryCount
-		, PingTrackCount
-		, CommentCount
-		, IsAggregated
-		, Flag
-		, SkinCssFile 
-		, BlogGroup
-		, LicenseUrl
-		, DaysTillCommentsClose
-		, CommentDelayInMinutes
-		, NumberOfRecentComments
-		, RecentCommentsLength
-		, AkismetAPIKey
-		, FeedBurnerName
-		, pop3User
-		, pop3Pass
-		, pop3Server
-		, pop3StartTag
-		, pop3EndTag
-		, pop3SubjectPrefix
-		, pop3MTBEnable
-		, pop3DeleteOnlyProcessed
-		, pop3InlineAttachedPictures
-		, pop3HeightForThumbs
-		
-FROM [<dbUser,varchar,dbo>].[subtext_config]
-WHERE	BlogId = @BlogId
-GO
-
-GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetBlogById]  TO [public]
-GO
-
-SET QUOTED_IDENTIFIER ON 
-GO
-SET ANSI_NULLS ON 
-GO
 
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1152,22 +837,6 @@ GO
 /*
 Fully deletes a Feedback item from the db.
 */
-CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetHost]
-AS
-SELECT TOP 1 ApplicationId, OwnerId, DateCreated FROM [<dbUser,varchar,dbo>].[subtext_Host]
-GO
-GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetHost] TO [public]
-GO
-
-SET QUOTED_IDENTIFIER ON 
-GO
-SET ANSI_NULLS ON 
-GO
-
-
-/*
-Fully deletes a Feedback item from the db.
-*/
 CREATE PROC [<dbUser,varchar,dbo>].[subtext_DeleteFeedbackByStatus]
 (
 	@BlogId int
@@ -1374,13 +1043,14 @@ SET ROWCOUNT 0
 -- Now select the content etc... for the posts 
 -- in the temp table.
 SELECT BlogId
-	, AuthorId
 	, [<dbUser,varchar,dbo>].[subtext_Content].[Id]
 	, Title
 	, DateAdded
 	, [Text]
 	, [Description]
 	, PostType
+	, Author
+	, Email
 	, DateUpdated
 	, FeedbackCount = ISNULL(FeedbackCount, 0)
 	, PostConfig
@@ -1420,42 +1090,123 @@ Returns the blog that matches the given host/application combination.
 
 @Strict -- If 0, then we return the one and only blog if there's one and only blog.
 */
-CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetBlog]
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetConfig]
 (
 	@Host nvarchar(100)
-	, @Subfolder nvarchar(50)
+	, @Application nvarchar(50)
 	, @Strict bit = 1 
 )
 AS
 
-DECLARE @BlogId INT
-
-SELECT
-	@BlogID = BlogId
-FROM [<dbUser,varchar,dbo>].[subtext_Config]
-WHERE
-	(
-		-- try to find an exact match.
-			Host = @Host
-		AND Subfolder = @Subfolder
-	)
-	OR
-	(
-		-- we couldn't find an exact match, so next see if there is only one blog in the system 
-		-- with the given Host name, and return it.
-			(@Strict = 0) 
-		AND (1 = (SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_config] WHERE Host = @Host))
-		AND Host = @Host
-	)
-	OR
-	(
-		-- we couldn't find an exact match, nor a match for the HostName, so next see is 
-		-- only ONE blog in the system, and we haven't found a more exact match, return the blog.
-			(@Strict = 0) 
-		AND (1 = (SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_config]))
-	)
-
-EXEC [<dbUser,varchar,dbo>].[subtext_GetBlogById] @BlogId
+IF (@Strict = 0) AND (1 = (SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_config]))
+BEGIN
+	-- Return the one and only record
+	SELECT
+		subtext_Config.BlogId
+		, UserName
+		, [Password]
+		, Email
+		, Title
+		, SubTitle
+		, Skin
+		, [Application]
+		, Host
+		, Author
+		, TimeZone
+		, ItemCount
+		, CategoryListPostCount
+		, [Language]
+		, News
+		, SecondaryCss
+		, LastUpdated
+		, PostCount
+		, StoryCount
+		, PingTrackCount
+		, CommentCount
+		, Flag
+		, SkinCssFile 
+		, LicenseUrl
+		, DaysTillCommentsClose
+		, CommentDelayInMinutes
+		, NumberOfRecentComments
+		, RecentCommentsLength
+		, AkismetAPIKey
+		, FeedBurnerName
+	FROM [<dbUser,varchar,dbo>].[subtext_Config]
+END
+ELSE IF (@Strict = 0) AND (1 = (SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_config] WHERE Host = @Host))
+BEGIN
+	 SELECT
+		BlogId
+		, UserName
+		, [Password]
+		, Email
+		, Title
+		, SubTitle
+		, Skin
+		, [Application]
+		, Host
+		, Author
+		, TimeZone
+		, ItemCount
+		, CategoryListPostCount
+		, [Language]
+		, News
+		, SecondaryCss
+		, LastUpdated
+		, PostCount
+		, StoryCount
+		, PingTrackCount
+		, CommentCount
+		, Flag
+		, SkinCssFile 
+		, LicenseUrl
+		, DaysTillCommentsClose
+		, CommentDelayInMinutes
+		, NumberOfRecentComments
+		, RecentCommentsLength
+		, AkismetAPIKey
+		, FeedBurnerName
+	FROM [<dbUser,varchar,dbo>].[subtext_Config]
+	WHERE	Host = @Host
+END 
+ELSE
+BEGIN
+	SELECT
+		BlogId
+		, UserName
+		, [Password]
+		, Email
+		, Title
+		, SubTitle
+		, Skin
+		, [Application]
+		, Host
+		, Author
+		, TimeZone
+		, ItemCount
+		, CategoryListPostCount
+		, [Language]
+		, News
+		, SecondaryCss
+		, LastUpdated
+		, PostCount
+		, StoryCount
+		, PingTrackCount
+		, CommentCount
+		, Flag
+		, SkinCssFile 
+		, LicenseUrl
+		, DaysTillCommentsClose
+		, CommentDelayInMinutes
+		, NumberOfRecentComments
+		, RecentCommentsLength
+		, AkismetAPIKey
+		, FeedBurnerName
+	FROM [<dbUser,varchar,dbo>].[subtext_Config]
+	WHERE	Host = @Host
+		AND [Application] = @Application
+END
 
 GO
 SET QUOTED_IDENTIFIER OFF 
@@ -1463,7 +1214,7 @@ GO
 SET ANSI_NULLS ON 
 GO
 
-GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetBlog]  TO [public]
+GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetConfig]  TO [public]
 GO
 
 SET QUOTED_IDENTIFIER ON 
@@ -1482,12 +1233,13 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetEntriesByDayRange]
 AS
 SELECT	BlogId
 	, [ID]
-	, AuthorId
 	, Title
 	, DateAdded
 	, [Text]
 	, [Description]
 	, PostType
+	, Author
+	, Email
 	, DateUpdated
 	, FeedbackCount = ISNULL(FeedbackCount, 0)
 	, PostConfig
@@ -1793,12 +1545,13 @@ SET ROWCOUNT @PageSize
 
 SELECT	content.BlogId 
 		, content.[ID] 
-		, content.AuthorId 
 		, content.Title 
 		, content.DateAdded 
 		, content.[Text] 
 		, content.[Description]
 		, content.PostType 
+		, content.Author 
+		, content.Email 
 		, content.DateUpdated 
 		, FeedbackCount = ISNULL(content.FeedbackCount, 0)
 		, content.PostConfig
@@ -1874,12 +1627,13 @@ SET ROWCOUNT @PageSize
 
 SELECT	content.BlogId 
 		, content.[ID] 
-		, content.AuthorId
 		, content.Title 
 		, content.DateAdded 
 		, content.[Text] 
 		, content.[Description]
 		, content.PostType 
+		, content.Author 
+		, content.Email 
 		, content.DateUpdated 
 		, FeedbackCount = ISNULL(content.FeedbackCount, 0)
 		, content.PostConfig
@@ -2365,12 +2119,13 @@ AS
 SET ROWCOUNT @ItemCount
 SELECT	content.BlogId
 	, content.[ID]
-	, content.AuthorId
 	, content.Title
 	, content.DateAdded
 	, content.[Text]
 	, content.[Description]
 	, content.PostType
+	, content.Author
+	, content.Email
 	, content.DateUpdated
 	, FeedbackCount = ISNULL(content.FeedbackCount, 0)
 	, content.PostConfig
@@ -2407,12 +2162,13 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetPostsByDayRange]
 AS
 SELECT	BlogId
 		, [ID]
-		, AuthorId
 		, Title
 		, DateAdded
 		, [Text]
 		, [Description]
 		, PostType
+		, Author
+		, Email
 		, DateUpdated
 		, FeedbackCount = ISNULL(FeedbackCount, 0)
 		, PostConfig
@@ -2452,12 +2208,13 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetPostsByMonth]
 AS
 SELECT	BlogId
 	, [ID]
-	, AuthorId
 	, Title
 	, DateAdded
 	, [Text]
 	, [Description]
 	, PostType
+	, Author
+	, Email
 	, DateUpdated
 	, FeedbackCount = ISNULL(FeedbackCount, 0)
 	, PostConfig
@@ -2546,12 +2303,13 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetSingleDay]
 AS
 SELECT	BlogId
 	, [ID]
-	, AuthorId
 	, Title
 	, DateAdded
 	, [Text]
 	, [Description]
 	, PostType
+	, Author
+	, Email
 	, DateUpdated
 	, FeedbackCount = ISNULL(FeedbackCount, 0)
 	, PostConfig
@@ -2592,12 +2350,13 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetSingleEntry]
 AS
 SELECT	BlogId
 	, [ID]
-	, AuthorId
 	, Title
 	, DateAdded
 	, [Text]
 	, [Description]
 	, PostType
+	, Author
+	, Email
 	, DateUpdated
 	, FeedbackCount = ISNULL(FeedbackCount, 0)
 	, PostConfig
@@ -3145,6 +2904,76 @@ GO
 SET ANSI_NULLS ON 
 GO
 
+
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_UTILITY_AddBlog]
+(
+	@Title nvarchar(100), 
+	@UserName nvarchar(50),
+	@Password nvarchar(50),
+	@Email nvarchar(50),
+	@Host nvarchar(50),
+	@Application nvarchar(50),
+	@Flag int
+)
+
+AS
+
+IF NOT EXISTS(SELECT * FROM [<dbUser,varchar,dbo>].[subtext_config] WHERE Host = @Host AND Application = @Application)
+BEGIN
+
+INSERT subtext_Config  
+(
+	LastUpdated
+	, UserName
+	, Password
+	, Email
+	, Title
+	, SubTitle
+	, Skin
+	, SkinCssFile
+	, Application
+	, Host
+	, Author
+	, TimeZone
+	, [Language]
+	, ItemCount
+	, Flag
+)
+Values             
+(
+	getdate()
+	, @UserName
+	, @Password
+	, @Email
+	, @Title
+	, 'Another Subtext Powered Blog'
+	, 'RedBook'
+	, 'blue.css'
+	, @Application
+	, @Host
+	, 'Blog Author'
+	, -5
+	,'en-US'
+	, 10
+	, @Flag
+)
+END
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_UTILITY_AddBlog]  TO [public]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
 CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateCategory]
 (
 	@CategoryID int,
@@ -3181,12 +3010,15 @@ GO
 
 CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateConfig]
 (
-	@OwnerId uniqueidentifier
+	@UserName nvarchar(50)
+	, @Password nvarchar(50)
+	, @Email nvarchar(50)
 	, @Title nvarchar(100)
 	, @SubTitle nvarchar(250)
 	, @Skin nvarchar(50)
-	, @Subfolder nvarchar(50)
+	, @Application nvarchar(50)
 	, @Host nvarchar(100)
+	, @Author nvarchar(100)
 	, @Language nvarchar(10)
 	, @TimeZone int = NULL
 	, @ItemCount int
@@ -3204,26 +3036,19 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateConfig]
 	, @RecentCommentsLength int = NULL
 	, @AkismetAPIKey varchar(16) = NULL
 	, @FeedBurnerName nvarchar(64) = NULL
-	, @pop3User varchar(32) = NULL
-	, @pop3Pass varchar(32) = NULL
-	, @pop3Server varchar(56) = NULL
-	, @pop3StartTag varchar(10) = NULL
-	, @pop3EndTag varchar(10) = NULL
-	, @pop3SubjectPrefix nvarchar(10) = NULL
-	, @pop3MTBEnable bit = NULL
-	, @pop3DeleteOnlyProcessed bit = NULL
-	, @pop3InlineAttachedPictures bit = NULL
-	, @pop3HeightForThumbs int = NULL
 )
 AS
 UPDATE [<dbUser,varchar,dbo>].[subtext_Config]
 Set
-	OwnerId = @OwnerId      
+	UserName = @UserName     
+	, [Password] = @Password     
+	, Email = @Email        
 	, Title	   =   @Title        
 	, SubTitle   =   @SubTitle     
 	, Skin	  =    @Skin         
-	, Subfolder =  @Subfolder
+	, Application =  @Application  
 	, Host	  =    @Host         
+	, Author	   =   @Author
 	, [Language] = @Language
 	, TimeZone   = @TimeZone
 	, ItemCount = @ItemCount
@@ -3240,17 +3065,6 @@ Set
 	, RecentCommentsLength = @RecentCommentsLength
 	, AkismetAPIKey = @AkismetAPIKey
 	, FeedBurnerName = @FeedBurnerName
-	, pop3User = @pop3User
-	, pop3Pass = @pop3Pass
-	, pop3Server = @pop3Server
-	, pop3StartTag = @pop3StartTag
-	, pop3EndTag = @pop3EndTag
-	, pop3SubjectPrefix = @pop3SubjectPrefix
-	, pop3MTBEnable = @pop3MTBEnable
-	, pop3DeleteOnlyProcessed = @pop3DeleteOnlyProcessed
-	, pop3InlineAttachedPictures = @pop3InlineAttachedPictures
-	, pop3HeightForThumbs = @pop3HeightForThumbs
-	
 WHERE BlogId = @BlogId
 
 GO
@@ -3299,7 +3113,8 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateEntry]
 	, @Title nvarchar(255)
 	, @Text ntext = NULL
 	, @PostType int
-	, @AuthorId uniqueidentifier
+	, @Author nvarchar(50) = NULL
+	, @Email nvarchar(50) = NULL
 	, @Description nvarchar(500) = NULL
 	, @DateUpdated datetime = NULL
 	, @PostConfig int
@@ -3328,7 +3143,8 @@ SET
 	Title = @Title 
 	, [Text] = @Text 
 	, PostType = @PostType
-	, AuthorId = @AuthorId
+	, Author = @Author 
+	, Email = @Email 
 	, [Description] = @Description
 	, DateUpdated = @DateUpdated
 	, PostConfig = @PostConfig
@@ -3478,6 +3294,55 @@ GO
 SET ANSI_NULLS ON 
 GO
 
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_Utility_GetUnHashedPasswords]
+AS
+
+SELECT BlogId, Password FROM [<dbUser,varchar,dbo>].[subtext_COnfig] WHERE Flag & 8 = 0
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_Utility_GetUnHashedPasswords]  TO [public]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_Utility_UpdateToHashedPassword]
+(
+	@Password nvarchar(100),
+	@BlogId int
+)
+
+AS
+
+UPDATE [<dbUser,varchar,dbo>].[subtext_Config]
+Set 
+	Password = @Password,
+	Flag = Flag | 8 
+WHERE BlogId = @BlogId
+
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_Utility_UpdateToHashedPassword]  TO [public]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
 /*
 Returns a page of blogs within subtext_config table
 */
@@ -3497,59 +3362,53 @@ DECLARE @StartRowIndex int
 SET @StartRowIndex = @PageIndex * @PageSize + 1
 
 SET ROWCOUNT @StartRowIndex
+-- Get the first entry id for the current page.
 SELECT	@FirstId = [BlogId] FROM [<dbUser,varchar,dbo>].[subtext_Config]
 WHERE @ConfigurationFlags & Flag = @ConfigurationFlags
 	AND (Host = @Host OR @Host IS NULL)
 ORDER BY [BlogId] ASC
 
+-- Now, set the row count to MaximumRows and get
+-- all records >= @first_id
 SET ROWCOUNT @PageSize
 
-SELECT
-		BlogId
-		, OwnerId
-		, ApplicationId
-		, Title
-		, SubTitle
-		, Skin
-		, Subfolder
-		, Host
-		, TimeZone
-		, ItemCount
-		, CategoryListPostCount
-		, [Language]
-		, News
-		, SecondaryCss
-		, LastUpdated
-		, PostCount
-		, StoryCount
-		, PingTrackCount
-		, CommentCount
-		, Flag
-		, SkinCssFile 
-		, LicenseUrl
-		, DaysTillCommentsClose
-		, CommentDelayInMinutes
-		, NumberOfRecentComments
-		, RecentCommentsLength
-		, AkismetAPIKey
-		, FeedBurnerName
-		, pop3User
-		, pop3Pass
-		, pop3Server
-		, pop3StartTag
-		, pop3EndTag
-		, pop3SubjectPrefix
-		, pop3MTBEnable
-		, pop3DeleteOnlyProcessed
-		, pop3InlineAttachedPictures
-		, pop3HeightForThumbs
+SELECT	blog.BlogId 
+		, blog.UserName
+		, blog.[Password]
+		, blog.Email
+		, blog.Title
+		, blog.SubTitle
+		, blog.Skin
+		, blog.Application
+		, blog.Host
+		, blog.Author
+		, blog.TimeZone
+		, blog.ItemCount
+		, blog.[Language]
+		, blog.News
+		, blog.SecondaryCss
+		, blog.LastUpdated
+		, blog.PostCount
+		, blog.StoryCount
+		, blog.PingTrackCount
+		, blog.CommentCount
+		, blog.IsAggregated
+		, blog.Flag
+		, blog.SkinCssFile 
+		, blog.BlogGroup
+		, blog.LicenseUrl
+		, blog.DaysTillCommentsClose
+		, blog.CommentDelayInMinutes
+		, blog.NumberOfRecentComments
+		, blog.RecentCommentsLength
+		, blog.AkismetAPIKey
+		, blog.FeedBurnerName
 		
-	FROM [<dbUser,varchar,dbo>].[subtext_Config]
-	WHERE 
-		BlogId >= @FirstId
+FROM [<dbUser,varchar,dbo>].[subtext_config] blog
+WHERE blog.BlogId >= @FirstId
 	AND @ConfigurationFlags & Flag = @ConfigurationFlags
 	AND (Host = @Host OR @Host IS NULL)
-ORDER BY BlogId ASC
+ORDER BY blog.BlogId ASC
 
 SELECT COUNT([BlogId]) AS TotalRecords
 FROM [<dbUser,varchar,dbo>].[subtext_config]
@@ -3560,6 +3419,59 @@ GO
 GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetPageableBlogs]  TO [public]
 GO
 
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+/*
+Returns a single blog within the subtext_config table by id.
+*/
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetBlogById]
+(
+	@BlogId int
+)
+AS
+
+SELECT	blog.BlogId 
+		, blog.UserName
+		, blog.[Password]
+		, blog.Email
+		, blog.Title
+		, blog.SubTitle
+		, blog.Skin
+		, blog.Application
+		, blog.Host
+		, blog.Author
+		, blog.TimeZone
+		, blog.ItemCount
+		, blog.[Language]
+		, blog.News
+		, blog.SecondaryCss
+		, blog.LastUpdated
+		, blog.PostCount
+		, blog.StoryCount
+		, blog.PingTrackCount
+		, blog.CommentCount
+		, blog.IsAggregated
+		, blog.Flag
+		, blog.SkinCssFile 
+		, blog.BlogGroup
+		, blog.LicenseUrl
+		, blog.DaysTillCommentsClose
+		, blog.CommentDelayInMinutes
+		, blog.NumberOfRecentComments
+		, blog.RecentCommentsLength
+		, blog.AkismetAPIKey
+		, blog.FeedBurnerName
+FROM [<dbUser,varchar,dbo>].[subtext_config] blog
+WHERE	blog.BlogId = @BlogId
+GO
+
+
+GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetBlogById]  TO [public]
+GO
 
 SET QUOTED_IDENTIFIER ON 
 GO
@@ -3595,7 +3507,7 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_InsertFeedback]
 )
 AS
 
-IF @DateModified IS NULL
+IF @DateModified = NULL
     SET @DateModified = getdate()
     
 INSERT INTO [<dbUser,varchar,dbo>].[subtext_FeedBack]
@@ -3706,9 +3618,10 @@ GO
 CREATE PROC [<dbUser,varchar,dbo>].[subtext_InsertEntry]
 (
 	@Title nvarchar(255)
-	, @AuthorId uniqueidentifier
 	, @Text ntext = NULL
 	, @PostType int
+	, @Author nvarchar(50) = NULL
+	, @Email nvarchar(50) = NULL
 	, @Description nvarchar(500) = NULL
 	, @BlogId int
 	, @DateAdded datetime
@@ -3736,9 +3649,10 @@ SET @Description = NULL
 INSERT INTO subtext_Content 
 (
 	Title
-	, AuthorId
 	, [Text]
 	, PostType
+	, Author
+	, Email
 	, DateAdded
 	, DateUpdated
 	, [Description]
@@ -3751,9 +3665,10 @@ INSERT INTO subtext_Content
 VALUES 
 (
 	@Title
-	, @AuthorId
 	, @Text
 	, @PostType
+	, @Author
+	, @Email
 	, @DateAdded
 	, @DateAdded
 	, @Description
@@ -3832,9 +3747,73 @@ GO
 SET ANSI_NULLS ON 
 GO
 
+/*
+Retrieves the Host Information. There should only be 
+one record.
+*/
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetHost]
+AS
+SELECT 
+	[HostUserName]
+	, [Password]
+	, [Salt]
+	, [DateCreated]
+FROM [<dbUser,varchar,dbo>].[subtext_Host]
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetHost]  TO [public]
+GO
+
+
 SET QUOTED_IDENTIFIER ON 
 GO
 SET ANSI_NULLS ON 
+GO
+
+/*
+Updates the Host information.
+*/
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateHost]
+	@HostUserName NVARCHAR(64)
+	, @Password NVARCHAR(32)
+	, @Salt NVARCHAR(32)
+AS
+IF EXISTS(SELECT * FROM [<dbUser,varchar,dbo>].[subtext_Host])
+BEGIN
+	UPDATE [<dbUser,varchar,dbo>].[subtext_Host] 
+		SET [HostUserName] = @HostUserName
+			, [Password] = @Password
+			, [Salt] = @Salt
+END
+ELSE
+BEGIN
+	INSERT subtext_Host
+	(
+		[HostUserName]
+		,[Password]
+		,[Salt]
+		,[DateCreated]
+	)
+	VALUES
+	(
+		@HostUserName
+		,@Password
+		,@Salt
+		,getdate()
+	)
+END
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_UpdateHost]  TO [public]
 GO
 
 SET QUOTED_IDENTIFIER OFF 
@@ -3848,13 +3827,14 @@ CREATE PROC [<dbUser,varchar,dbo>].[DNW_GetRecentPosts]
 
 AS
 SELECT Top 35 Host
-	, Subfolder
+	, Application
 	, [EntryName] = IsNull(content.EntryName, content.[ID])
 	, content.[ID]
-	, content.AuthorId
 	, content.Title
 	, content.DateAdded
 	, content.PostType
+	, content.Author
+	, content.Email
 	, content.FeedbackCount
 	, content.EntryName
 	, [IsXHTML] = Convert(bit,CASE WHEN content.PostConfig & 2 = 2 THEN 1 else 0 END) 
@@ -3896,8 +3876,8 @@ CREATE PROC [<dbUser,varchar,dbo>].[DNW_Stats]
 )
 AS
 SELECT BlogId
-	, OwnerId
-	, Subfolder
+	, Author
+	, Application
 	, Host
 	, Title
 	, PostCount
@@ -4313,12 +4293,13 @@ SET ROWCOUNT 0
 
 SELECT	content.BlogId 
 		, idTable.[ID] 
-		, content.AuthorId
 		, content.Title 
 		, content.DateAdded 
 		, content.[Text] 
 		, content.[Description]
 		, content.PostType 
+		, content.Author 
+		, content.Email 
 		, content.DateUpdated 
 		, FeedbackCount = ISNULL(content.FeedbackCount, 0)
 		, content.PostConfig
@@ -4528,23 +4509,24 @@ DECLARE @TagId int
 SELECT @TagId = Id FROM subtext_Tag WHERE BlogId = @BlogId AND [Name] = @Tag
 
 SET ROWCOUNT @ItemCount
-SELECT BlogId
-	, AuthorId
-	, [Id]
-	, Title
-	, DateAdded
-	, [Text]
-	, [Description]
-	, PostType
-	, DateUpdated
-	, FeedbackCount = ISNULL(FeedbackCount, 0)
-	, PostConfig
-	, EntryName 
-	, DateSyndicated
-FROM [<dbUser,varchar,dbo>].[subtext_Content] WITH (NOLOCK)
-WHERE  BlogId = @BlogId 
-	AND ID IN (SELECT EntryId FROM [<dbUser,varchar,dbo>].[subtext_EntryTag] WHERE BlogId = @BlogId AND TagId = @TagId)
-ORDER BY DateAdded DESC
+SELECT	content.BlogId
+	, content.[ID]
+	, content.Title
+	, content.DateAdded
+	, content.[Text]
+	, content.[Description]
+	, content.PostType
+	, content.Author
+	, content.Email
+	, content.DateUpdated
+	, FeedbackCount = ISNULL(content.FeedbackCount, 0)
+	, content.PostConfig
+	, content.EntryName 
+	, content.DateSyndicated
+FROM [<dbUser,varchar,dbo>].[subtext_Content] content WITH (NOLOCK)
+WHERE  content.BlogId = @BlogId 
+	AND content.ID IN (SELECT EntryId FROM [<dbUser,varchar,dbo>].[subtext_EntryTag] WHERE BlogId = @BlogId AND TagId = @TagId)
+ORDER BY content.DateAdded DESC
 GO
 
 GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetPostsByTag]  TO [public]
@@ -4622,3778 +4604,4 @@ ORDER BY Count(*) DESC
 GO 
 
 GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetTopTags] TO [public]
-GO
-
-
-
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdatePluginData]
-(
-	@PluginID uniqueidentifier,
-	@BlogID int,
-	@EntryID int,
-	@Key nvarchar(256),
-	@Value ntext
-)
-AS
-
-UPDATE [<dbUser,varchar,dbo>].[subtext_PluginData]
-SET
-	[Value]=@Value
-FROM [<dbUser,varchar,dbo>].[subtext_PluginBlog]
-WHERE [<dbUser,varchar,dbo>].[subtext_PluginBlog].PluginID=@PluginID AND [<dbUser,varchar,dbo>].[subtext_PluginBlog].BlogID=@BlogID AND [<dbUser,varchar,dbo>].[subtext_PluginBlog].[Id]=[<dbUser,varchar,dbo>].[subtext_PluginData].BlogPluginID AND [<dbUser,varchar,dbo>].[subtext_PluginBlog].Enabled=1 AND [Key]=@Key AND EntryID=@EntryID
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-
-CREATE PROC [<dbUser,varchar,dbo>].[subtext_InsertPluginData]
-(
-	@PluginID uniqueidentifier,
-	@BlogID int,
-	@EntryID int,
-	@Key nvarchar(256),
-	@Value ntext
-)
-AS
-
-DECLARE @BlogPluginID int
-
-SELECT @BlogPluginID=[Id] FROM [<dbUser,varchar,dbo>].[subtext_PluginBlog]
-WHERE PluginID=@PluginID AND BlogID=@BlogID
-
-INSERT INTO [<dbUser,varchar,dbo>].[subtext_PluginData]
-(
-	BlogPluginID,
-	EntryID,
-	[Key],
-	[Value]
-)
-VALUES
-(
-	@BlogPluginID,
-	@EntryID,
-	@Key,
-	@Value
-)
-
-
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-
-SET QUOTED_IDENTIFIER ON 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_DeletePluginBlog]
-(
-	@PluginID uniqueidentifier,
-	@BlogId int
-)
-as
-
-UPDATE  [<dbUser,varchar,dbo>].[subtext_PluginBlog]
-SET Enabled=0
-WHERE PluginID=@PluginID AND BlogId=@BlogId 
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER ON 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPluginBlog]
-(
-	@BlogId int
-)
-
-AS
-
-SELECT PluginID FROM [<dbUser,varchar,dbo>].[subtext_PluginBlog]
-WHERE
-BlogID=@BlogId AND Enabled=1
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER ON 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_InsertPluginBlog]
-(
-	@PluginID uniqueidentifier,
-	@BlogId int
-)
-as
-
-IF NOT EXISTS 
-	(
-		SELECT * FROM [<dbUser,varchar,dbo>].[subtext_PluginBlog]
-		WHERE PluginID=@PluginID AND BlogId=@BlogId
-	)
-
-	BEGIN
-	
-		INSERT INTO [<dbUser,varchar,dbo>].[subtext_PluginBlog]
-		(
-			PluginID,
-			BlogID,
-			Enabled
-		)
-		VALUES
-		(
-			@PluginID,
-			@BlogId,
-			1
-		)
-	END
-ELSE
-
-	BEGIN
-		UPDATE  [<dbUser,varchar,dbo>].[subtext_PluginBlog]
-		SET Enabled=1
-		WHERE PluginID=@PluginID AND BlogId=@BlogId 
-	END
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-
-SET ANSI_NULLS OFF
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetPluginData]
-(
-	@PluginID uniqueidentifier,
-	@BlogId int,
-	@EntryId int
-)
-as
-
-SELECT [Key], [Value]
-FROM [<dbUser,varchar,dbo>].[subtext_PluginData] INNER JOIN [<dbUser,varchar,dbo>].[subtext_PluginBlog] ON [<dbUser,varchar,dbo>].[subtext_PluginBlog].[Id]=[<dbUser,varchar,dbo>].[subtext_PluginData].BlogPluginID
-WHERE [<dbUser,varchar,dbo>].[subtext_PluginBlog].PluginID=@PluginID and [<dbUser,varchar,dbo>].[subtext_PluginBlog].BlogId=@BlogId and EntryId=@EntryId AND [<dbUser,varchar,dbo>].[subtext_PluginBlog].Enabled=1
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-/* Membership SPs */
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Setup_RestorePermissions]
-    @name   sysname
-AS
-BEGIN
-    DECLARE @object sysname
-    DECLARE @protectType char(10)
-    DECLARE @action varchar(20)
-    DECLARE @grantee sysname
-    DECLARE @cmd nvarchar(500)
-    DECLARE c1 cursor FORWARD_ONLY FOR
-        SELECT Object, ProtectType, [Action], Grantee FROM #subtext_Permissions where Object = @name
-
-    OPEN c1
-
-    FETCH c1 INTO @object, @protectType, @action, @grantee
-    WHILE (@@fetch_status = 0)
-    BEGIN
-        SET @cmd = @protectType + ' ' + @action + ' on ' + @object + ' TO [' + @grantee + ']'
-        EXEC (@cmd)
-        FETCH c1 INTO @object, @protectType, @action, @grantee
-    END
-
-    CLOSE c1
-    DEALLOCATE c1
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Setup_RemoveAllRoleMembers]
-    @name   sysname
-AS
-BEGIN
-    CREATE TABLE #subtext_RoleMembers
-    (
-        Group_name      sysname,
-        Group_id        smallint,
-        Users_in_group  sysname,
-        User_id         smallint
-    )
-
-    INSERT INTO #subtext_RoleMembers
-    EXEC sp_helpuser @name
-
-    DECLARE @user_id smallint
-    DECLARE @cmd nvarchar(500)
-    DECLARE c1 cursor FORWARD_ONLY FOR
-        SELECT User_id FROM #subtext_RoleMembers
-
-    OPEN c1
-
-    FETCH c1 INTO @user_id
-    WHILE (@@fetch_status = 0)
-    BEGIN
-        SET @cmd = 'EXEC sp_droprolemember ' + '''' + @name + ''', ''' + USER_NAME(@user_id) + ''''
-        EXEC (@cmd)
-        FETCH c1 INTO @user_id
-    END
-
-    CLOSE c1
-    DEALLOCATE c1
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_RegisterSchemaVersion]
-    @Feature                   nvarchar(128),
-    @CompatibleSchemaVersion   nvarchar(128),
-    @IsCurrentVersion          bit,
-    @RemoveIncompatibleSchema  bit
-AS
-BEGIN
-    IF( @RemoveIncompatibleSchema = 1 )
-    BEGIN
-        DELETE FROM [<dbUser,varchar,dbo>].[subtext_SchemaVersions] WHERE Feature = LOWER( @Feature )
-    END
-    ELSE
-    BEGIN
-        IF( @IsCurrentVersion = 1 )
-        BEGIN
-            UPDATE [<dbUser,varchar,dbo>].subtext_SchemaVersions
-            SET IsCurrentVersion = 0
-            WHERE Feature = LOWER( @Feature )
-        END
-    END
-
-    INSERT  [<dbUser,varchar,dbo>].subtext_SchemaVersions( Feature, CompatibleSchemaVersion, IsCurrentVersion )
-    VALUES( LOWER( @Feature ), @CompatibleSchemaVersion, @IsCurrentVersion )
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_CheckSchemaVersion]
-    @Feature                   nvarchar(128),
-    @CompatibleSchemaVersion   nvarchar(128)
-AS
-BEGIN
-    IF (EXISTS( SELECT  *
-                FROM    [<dbUser,varchar,dbo>].subtext_SchemaVersions
-                WHERE   Feature = LOWER( @Feature ) AND
-                        CompatibleSchemaVersion = @CompatibleSchemaVersion ))
-        RETURN 0
-
-    RETURN 1
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_UnRegisterSchemaVersion]
-    @Feature                   nvarchar(128),
-    @CompatibleSchemaVersion   nvarchar(128)
-AS
-BEGIN
-    DELETE FROM [<dbUser,varchar,dbo>].subtext_SchemaVersions
-        WHERE   Feature = LOWER(@Feature) AND @CompatibleSchemaVersion = CompatibleSchemaVersion
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_GetUserByName]
-    @UserName             nvarchar(256),
-    @CurrentTimeUtc       datetime,
-    @UpdateLastActivity   bit = 0
-AS
-BEGIN
-    DECLARE @UserId uniqueidentifier
-   
-    SELECT TOP 1 UserName
-		, Email
-		, PasswordQuestion
-		, Comment
-		, IsApproved
-		, CreateDate
-        , LastLoginDate
-        , LastActivityDate = @CurrentTimeUtc
-        , LastPasswordChangedDate
-        , UserId
-        , IsLockedOut
-        , LastLockoutDate
-    FROM	[<dbUser,varchar,dbo>].[subtext_Users]
-    WHERE    
-            LOWER(@UserName) = LoweredUserName 
-
-    IF (@@ROWCOUNT = 0) -- Username not found
-        RETURN -1
-
-	IF (@UpdateLastActivity = 1)
-    BEGIN
-    
-        UPDATE   [<dbUser,varchar,dbo>].[subtext_Users]
-        SET      LastActivityDate = @CurrentTimeUtc
-        WHERE    @UserId = UserId
-    END
-
-    RETURN 0
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_GetUserByUserId]
-    @UserId               uniqueidentifier,
-    @CurrentTimeUtc       datetime,
-    @UpdateLastActivity   bit = 0
-AS
-BEGIN
-    SELECT  UserId
-			, Email
-			, PasswordQuestion
-			, Comment
-			, IsApproved
-			, CreateDate
-			, LastLoginDate
-			, LastActivityDate
-			, LastPasswordChangedDate
-			, UserName
-			, IsLockedOut
-			, LastLockoutDate
-    FROM    [<dbUser,varchar,dbo>].[subtext_Users]
-    WHERE   @UserId = UserId
-
-    IF ( @@ROWCOUNT = 0 ) -- User ID not found
-       RETURN -1
-
-    IF ( @UpdateLastActivity = 1 )
-    BEGIN
-        UPDATE   [<dbUser,varchar,dbo>].subtext_Users
-        SET      LastActivityDate = @CurrentTimeUtc
-        FROM     [<dbUser,varchar,dbo>].[subtext_Users]
-        WHERE    @UserId = UserId
-
-        IF ( @@ROWCOUNT = 0 ) -- User ID not found
-            RETURN -1
-    END
-
-    RETURN 0
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_GetUserByEmail]
-    @Email            nvarchar(256)
-AS
-BEGIN
-    
-    SELECT  UserName
-    FROM    [<dbUser,varchar,dbo>].[subtext_Users]
-    WHERE   (@Email IS NULL AND LoweredEmail IS NULL)
-		OR  (NOT @Email IS NULL AND LOWER(@Email) = LoweredEmail)
-
-    IF (@@rowcount = 0)
-        RETURN(1)
-    RETURN(0)
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_GetPasswordWithFormat]
-    @UserName                       nvarchar(256),
-    @UpdateLastLoginActivityDate    bit,
-    @CurrentTimeUtc                 datetime
-AS
-BEGIN
-    DECLARE @IsLockedOut                        bit
-    DECLARE @UserId                             uniqueidentifier
-    DECLARE @Password                           nvarchar(128)
-    DECLARE @PasswordSalt                       nvarchar(128)
-    DECLARE @PasswordFormat                     int
-    DECLARE @FailedPasswordAttemptCount         int
-    DECLARE @FailedPasswordAnswerAttemptCount   int
-    DECLARE @IsApproved                         bit
-    DECLARE @LastActivityDate                   datetime
-    DECLARE @LastLoginDate                      datetime
-
-    SELECT  @UserId          = NULL
-
-    SELECT  @UserId = UserId
-			, @IsLockedOut = IsLockedOut
-			, @Password=Password
-			, @PasswordFormat=PasswordFormat
-			, @PasswordSalt=PasswordSalt
-			, @FailedPasswordAttemptCount=FailedPasswordAttemptCount
-			, @FailedPasswordAnswerAttemptCount=FailedPasswordAnswerAttemptCount
-			, @IsApproved=IsApproved
-			, @LastActivityDate = LastActivityDate
-			, @LastLoginDate = LastLoginDate
-    FROM    [<dbUser,varchar,dbo>].subtext_Users u
-    WHERE   
-            LOWER(@UserName) = LoweredUserName
-
-    IF (@UserId IS NULL)
-        RETURN 1
-
-    IF (@IsLockedOut = 1)
-        RETURN 99
-
-    SELECT   Password = @Password
-		, PasswordFormat = @PasswordFormat
-		, PasswordSalt = @PasswordSalt
-		, FailedPasswordAttemptCount = @FailedPasswordAttemptCount
-		, FailedPasswordAnswerAttemptCount = @FailedPasswordAnswerAttemptCount
-		, IsApproved = @IsApproved
-		, LastLoginDate = @LastLoginDate
-		, LastActivityDate = @LastActivityDate
-
-    IF (@UpdateLastLoginActivityDate = 1 AND @IsApproved = 1)
-    BEGIN
-        UPDATE  [<dbUser,varchar,dbo>].subtext_Users
-        SET     LastLoginDate = @CurrentTimeUtc
-			, LastActivityDate = @CurrentTimeUtc
-        WHERE   UserId = @UserId
-    END
-
-    RETURN 0
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_UpdateUserInfo]
-    @UserName                       nvarchar(256),
-    @IsPasswordCorrect              bit,
-    @UpdateLastLoginActivityDate    bit,
-    @MaxInvalidPasswordAttempts     int,
-    @PasswordAttemptWindow          int,
-    @CurrentTimeUtc                 datetime,
-    @LastLoginDate                  datetime,
-    @LastActivityDate               datetime
-AS
-BEGIN
-    DECLARE @UserId                                 uniqueidentifier
-    DECLARE @IsApproved                             bit
-    DECLARE @IsLockedOut                            bit
-    DECLARE @LastLockoutDate                        datetime
-    DECLARE @FailedPasswordAttemptCount             int
-    DECLARE @FailedPasswordAttemptWindowStart       datetime
-    DECLARE @FailedPasswordAnswerAttemptCount       int
-    DECLARE @FailedPasswordAnswerAttemptWindowStart datetime
-
-    DECLARE @ErrorCode     int
-    SET @ErrorCode = 0
-
-    DECLARE @TranStarted   bit
-    SET @TranStarted = 0
-
-    IF( @@TRANCOUNT = 0 )
-    BEGIN
-	    BEGIN TRANSACTION
-	    SET @TranStarted = 1
-    END
-    ELSE
-    	SET @TranStarted = 0
-
-    SELECT  @UserId = UserId
-            , @IsApproved = IsApproved
-            , @IsLockedOut = IsLockedOut
-            , @LastLockoutDate = LastLockoutDate
-            , @FailedPasswordAttemptCount = FailedPasswordAttemptCount
-            , @FailedPasswordAttemptWindowStart = FailedPasswordAttemptWindowStart
-            , @FailedPasswordAnswerAttemptCount = FailedPasswordAnswerAttemptCount
-            , @FailedPasswordAnswerAttemptWindowStart = FailedPasswordAnswerAttemptWindowStart
-    FROM    [<dbUser,varchar,dbo>].[subtext_Users] WITH ( UPDLOCK )
-    WHERE   
-			LOWER(@UserName) = LoweredUserName
-
-    IF ( @@rowcount = 0 )
-    BEGIN
-        SET @ErrorCode = 1
-        GOTO Cleanup
-    END
-
-    IF( @IsLockedOut = 1 )
-    BEGIN
-        GOTO Cleanup
-    END
-
-    IF( @IsPasswordCorrect = 0 )
-    BEGIN
-        IF( @CurrentTimeUtc > DATEADD( minute, @PasswordAttemptWindow, @FailedPasswordAttemptWindowStart ) )
-        BEGIN
-            SET @FailedPasswordAttemptWindowStart = @CurrentTimeUtc
-            SET @FailedPasswordAttemptCount = 1
-        END
-        ELSE
-        BEGIN
-            SET @FailedPasswordAttemptWindowStart = @CurrentTimeUtc
-            SET @FailedPasswordAttemptCount = @FailedPasswordAttemptCount + 1
-        END
-
-        BEGIN
-            IF( @FailedPasswordAttemptCount >= @MaxInvalidPasswordAttempts )
-            BEGIN
-                SET @IsLockedOut = 1
-                SET @LastLockoutDate = @CurrentTimeUtc
-            END
-        END
-    END
-    ELSE
-    BEGIN
-        IF( @FailedPasswordAttemptCount > 0 OR @FailedPasswordAnswerAttemptCount > 0 )
-        BEGIN
-            SET @FailedPasswordAttemptCount = 0
-            SET @FailedPasswordAttemptWindowStart = CONVERT( datetime, '17540101', 112 )
-            SET @FailedPasswordAnswerAttemptCount = 0
-            SET @FailedPasswordAnswerAttemptWindowStart = CONVERT( datetime, '17540101', 112 )
-            SET @LastLockoutDate = CONVERT( datetime, '17540101', 112 )
-        END
-    END
-
-    IF( @UpdateLastLoginActivityDate = 1 )
-    BEGIN
-        UPDATE  [<dbUser,varchar,dbo>].[subtext_Users]
-        SET     LastActivityDate = @LastActivityDate
-			, LastLoginDate = @LastLoginDate
-        WHERE   @UserId = UserId
-
-        IF( @@ERROR <> 0 )
-        BEGIN
-            SET @ErrorCode = -1
-            GOTO Cleanup
-        END
-    END
-
-
-    UPDATE [<dbUser,varchar,dbo>].[subtext_Users]
-		SET IsLockedOut = @IsLockedOut
-			, LastLockoutDate = @LastLockoutDate
-			, FailedPasswordAttemptCount = @FailedPasswordAttemptCount
-			, FailedPasswordAttemptWindowStart = @FailedPasswordAttemptWindowStart
-			, FailedPasswordAnswerAttemptCount = @FailedPasswordAnswerAttemptCount
-			, FailedPasswordAnswerAttemptWindowStart = @FailedPasswordAnswerAttemptWindowStart
-		WHERE @UserId = UserId
-
-    IF( @@ERROR <> 0 )
-    BEGIN
-        SET @ErrorCode = -1
-        GOTO Cleanup
-    END
-
-    IF( @TranStarted = 1 )
-    BEGIN
-	SET @TranStarted = 0
-	COMMIT TRANSACTION
-    END
-
-    RETURN @ErrorCode
-
-Cleanup:
-
-    IF( @TranStarted = 1 )
-    BEGIN
-        SET @TranStarted = 0
-    	ROLLBACK TRANSACTION
-    END
-
-    RETURN @ErrorCode
-
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_GetPassword]
-    @UserName                       nvarchar(256),
-    @MaxInvalidPasswordAttempts     int,
-    @PasswordAttemptWindow          int,
-    @CurrentTimeUtc                 datetime,
-    @PasswordAnswer                 nvarchar(128) = NULL
-AS
-BEGIN
-    DECLARE @UserId                                 uniqueidentifier
-    DECLARE @PasswordFormat                         int
-    DECLARE @Password                               nvarchar(128)
-    DECLARE @passAns                                nvarchar(128)
-    DECLARE @IsLockedOut                            bit
-    DECLARE @LastLockoutDate                        datetime
-    DECLARE @FailedPasswordAttemptCount             int
-    DECLARE @FailedPasswordAttemptWindowStart       datetime
-    DECLARE @FailedPasswordAnswerAttemptCount       int
-    DECLARE @FailedPasswordAnswerAttemptWindowStart datetime
-
-    DECLARE @ErrorCode     int
-    SET @ErrorCode = 0
-
-    DECLARE @TranStarted   bit
-    SET @TranStarted = 0
-
-    IF( @@TRANCOUNT = 0 )
-    BEGIN
-	    BEGIN TRANSACTION
-	    SET @TranStarted = 1
-    END
-    ELSE
-    	SET @TranStarted = 0
-
-    SELECT  @UserId = UserId,
-            @Password = Password,
-            @passAns = PasswordAnswer,
-            @PasswordFormat = PasswordFormat,
-            @IsLockedOut = IsLockedOut,
-            @LastLockoutDate = LastLockoutDate,
-            @FailedPasswordAttemptCount = FailedPasswordAttemptCount,
-            @FailedPasswordAttemptWindowStart = FailedPasswordAttemptWindowStart,
-            @FailedPasswordAnswerAttemptCount = FailedPasswordAnswerAttemptCount,
-            @FailedPasswordAnswerAttemptWindowStart = FailedPasswordAnswerAttemptWindowStart
-    FROM    [<dbUser,varchar,dbo>].[subtext_Users] WITH ( UPDLOCK )
-    WHERE   
-            LOWER(@UserName) = LoweredUserName
-
-    IF ( @@rowcount = 0 )
-    BEGIN
-        SET @ErrorCode = 1
-        GOTO Cleanup
-    END
-
-    IF( @IsLockedOut = 1 )
-    BEGIN
-        SET @ErrorCode = 99
-        GOTO Cleanup
-    END
-
-    IF ( NOT( @PasswordAnswer IS NULL ) )
-    BEGIN
-        IF( ( @passAns IS NULL ) OR ( LOWER( @passAns ) <> LOWER( @PasswordAnswer ) ) )
-        BEGIN
-            IF( @CurrentTimeUtc > DATEADD( minute, @PasswordAttemptWindow, @FailedPasswordAnswerAttemptWindowStart ) )
-            BEGIN
-                SET @FailedPasswordAnswerAttemptWindowStart = @CurrentTimeUtc
-                SET @FailedPasswordAnswerAttemptCount = 1
-            END
-            ELSE
-            BEGIN
-                SET @FailedPasswordAnswerAttemptCount = @FailedPasswordAnswerAttemptCount + 1
-                SET @FailedPasswordAnswerAttemptWindowStart = @CurrentTimeUtc
-            END
-
-            BEGIN
-                IF( @FailedPasswordAnswerAttemptCount >= @MaxInvalidPasswordAttempts )
-                BEGIN
-                    SET @IsLockedOut = 1
-                    SET @LastLockoutDate = @CurrentTimeUtc
-                END
-            END
-
-            SET @ErrorCode = 3
-        END
-        ELSE
-        BEGIN
-            IF( @FailedPasswordAnswerAttemptCount > 0 )
-            BEGIN
-                SET @FailedPasswordAnswerAttemptCount = 0
-                SET @FailedPasswordAnswerAttemptWindowStart = CONVERT( datetime, '17540101', 112 )
-            END
-        END
-
-        UPDATE [<dbUser,varchar,dbo>].[subtext_Users]
-        SET IsLockedOut = @IsLockedOut, LastLockoutDate = @LastLockoutDate,
-            FailedPasswordAttemptCount = @FailedPasswordAttemptCount,
-            FailedPasswordAttemptWindowStart = @FailedPasswordAttemptWindowStart,
-            FailedPasswordAnswerAttemptCount = @FailedPasswordAnswerAttemptCount,
-            FailedPasswordAnswerAttemptWindowStart = @FailedPasswordAnswerAttemptWindowStart
-        WHERE @UserId = UserId
-
-        IF( @@ERROR <> 0 )
-        BEGIN
-            SET @ErrorCode = -1
-            GOTO Cleanup
-        END
-    END
-
-    IF( @TranStarted = 1 )
-    BEGIN
-	SET @TranStarted = 0
-	COMMIT TRANSACTION
-    END
-
-    IF( @ErrorCode = 0 )
-        SELECT Password = @Password, PasswordFormat = @PasswordFormat
-
-    RETURN @ErrorCode
-
-Cleanup:
-
-    IF( @TranStarted = 1 )
-    BEGIN
-        SET @TranStarted = 0
-    	ROLLBACK TRANSACTION
-    END
-
-    RETURN @ErrorCode
-
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_GetNumberOfUsersOnline]
-    @MinutesSinceLastInActive   int,
-    @CurrentTimeUtc             datetime,
-    @OnlineUserCount			int output
-AS
-BEGIN
-    DECLARE @DateActive datetime
-    SELECT  @DateActive = DATEADD(minute, -(@MinutesSinceLastInActive), @CurrentTimeUtc)
-
-    SELECT  @OnlineUserCount = COUNT(1)
-    FROM    [<dbUser,varchar,dbo>].[subtext_Users] (NOLOCK)
-    WHERE   LastActivityDate > @DateActive
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_SetPassword]
-    @UserName         nvarchar(256),
-    @NewPassword      nvarchar(128),
-    @PasswordSalt     nvarchar(128),
-    @CurrentTimeUtc   datetime,
-    @PasswordFormat   int = 0
-AS
-BEGIN
-    DECLARE @UserId uniqueidentifier
-    SELECT  @UserId = UserId
-    FROM    [<dbUser,varchar,dbo>].[subtext_Users]
-    WHERE   LoweredUserName = LOWER(@UserName)
-
-    IF (@UserId IS NULL)
-        RETURN(1)
-
-    UPDATE [<dbUser,varchar,dbo>].[subtext_Users]
-    SET Password = @NewPassword
-		, PasswordFormat = @PasswordFormat
-		, PasswordSalt = @PasswordSalt
-		, LastPasswordChangedDate = @CurrentTimeUtc
-    WHERE @UserId = UserId
-    
-    RETURN(0)
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_ResetPassword]
-    @UserName                    nvarchar(256),
-    @NewPassword                 nvarchar(128),
-    @MaxInvalidPasswordAttempts  int,
-    @PasswordAttemptWindow       int,
-    @PasswordSalt                nvarchar(128),
-    @CurrentTimeUtc              datetime,
-    @PasswordFormat              int = 0,
-    @PasswordAnswer              nvarchar(128) = NULL
-AS
-BEGIN
-    DECLARE @IsLockedOut                            bit
-    DECLARE @LastLockoutDate                        datetime
-    DECLARE @FailedPasswordAttemptCount             int
-    DECLARE @FailedPasswordAttemptWindowStart       datetime
-    DECLARE @FailedPasswordAnswerAttemptCount       int
-    DECLARE @FailedPasswordAnswerAttemptWindowStart datetime
-
-    DECLARE @UserId                                 uniqueidentifier
-    SET     @UserId = NULL
-
-    DECLARE @ErrorCode     int
-    SET @ErrorCode = 0
-
-    DECLARE @TranStarted   bit
-    SET @TranStarted = 0
-
-    IF( @@TRANCOUNT = 0 )
-    BEGIN
-	    BEGIN TRANSACTION
-	    SET @TranStarted = 1
-    END
-    ELSE
-    	SET @TranStarted = 0
-
-    SELECT  @UserId = UserId
-    FROM    [<dbUser,varchar,dbo>].[subtext_Users]
-    WHERE   LoweredUserName = LOWER(@UserName)       
-
-    IF ( @UserId IS NULL )
-    BEGIN
-        SET @ErrorCode = 1
-        GOTO Cleanup
-    END
-
-    SELECT @IsLockedOut = IsLockedOut,
-           @LastLockoutDate = LastLockoutDate,
-           @FailedPasswordAttemptCount = FailedPasswordAttemptCount,
-           @FailedPasswordAttemptWindowStart = FailedPasswordAttemptWindowStart,
-           @FailedPasswordAnswerAttemptCount = FailedPasswordAnswerAttemptCount,
-           @FailedPasswordAnswerAttemptWindowStart = FailedPasswordAnswerAttemptWindowStart
-    FROM [<dbUser,varchar,dbo>].subtext_Users WITH ( UPDLOCK )
-    WHERE @UserId = UserId
-
-    IF( @IsLockedOut = 1 )
-    BEGIN
-        SET @ErrorCode = 99
-        GOTO Cleanup
-    END
-
-    UPDATE [<dbUser,varchar,dbo>].[subtext_Users]
-    SET    Password = @NewPassword
-		, LastPasswordChangedDate = @CurrentTimeUtc
-		, PasswordFormat = @PasswordFormat
-		, PasswordSalt = @PasswordSalt
-    WHERE  UserId = @UserId
-		AND
-		( 
-			( @PasswordAnswer IS NULL ) 
-			OR 
-			( LOWER(PasswordAnswer) = LOWER(@PasswordAnswer) ) 
-		)
-
-    IF ( @@ROWCOUNT = 0 )
-        BEGIN
-            IF( @CurrentTimeUtc > DATEADD( minute, @PasswordAttemptWindow, @FailedPasswordAnswerAttemptWindowStart ) )
-            BEGIN
-                SET @FailedPasswordAnswerAttemptWindowStart = @CurrentTimeUtc
-                SET @FailedPasswordAnswerAttemptCount = 1
-            END
-            ELSE
-            BEGIN
-                SET @FailedPasswordAnswerAttemptWindowStart = @CurrentTimeUtc
-                SET @FailedPasswordAnswerAttemptCount = @FailedPasswordAnswerAttemptCount + 1
-            END
-
-            BEGIN
-                IF( @FailedPasswordAnswerAttemptCount >= @MaxInvalidPasswordAttempts )
-                BEGIN
-                    SET @IsLockedOut = 1
-                    SET @LastLockoutDate = @CurrentTimeUtc
-                END
-            END
-
-            SET @ErrorCode = 3
-        END
-    ELSE
-        BEGIN
-            IF( @FailedPasswordAnswerAttemptCount > 0 )
-            BEGIN
-                SET @FailedPasswordAnswerAttemptCount = 0
-                SET @FailedPasswordAnswerAttemptWindowStart = CONVERT( datetime, '17540101', 112 )
-            END
-        END
-
-    IF( NOT ( @PasswordAnswer IS NULL ) )
-    BEGIN
-        UPDATE [<dbUser,varchar,dbo>].[subtext_Users]
-        SET IsLockedOut = @IsLockedOut, LastLockoutDate = @LastLockoutDate,
-            FailedPasswordAttemptCount = @FailedPasswordAttemptCount,
-            FailedPasswordAttemptWindowStart = @FailedPasswordAttemptWindowStart,
-            FailedPasswordAnswerAttemptCount = @FailedPasswordAnswerAttemptCount,
-            FailedPasswordAnswerAttemptWindowStart = @FailedPasswordAnswerAttemptWindowStart
-        WHERE @UserId = UserId
-
-        IF( @@ERROR <> 0 )
-        BEGIN
-            SET @ErrorCode = -1
-            GOTO Cleanup
-        END
-    END
-
-    IF( @TranStarted = 1 )
-    BEGIN
-	SET @TranStarted = 0
-	COMMIT TRANSACTION
-    END
-
-    RETURN @ErrorCode
-
-Cleanup:
-
-    IF( @TranStarted = 1 )
-    BEGIN
-        SET @TranStarted = 0
-    	ROLLBACK TRANSACTION
-    END
-
-    RETURN @ErrorCode
-
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_UnlockUser]
-    @UserName                                nvarchar(256)
-AS
-BEGIN
-    DECLARE @UserId uniqueidentifier
-    SELECT  @UserId = NULL
-    SELECT  @UserId = UserId
-    FROM    [<dbUser,varchar,dbo>].subtext_Users
-    WHERE   LoweredUserName = LOWER(@UserName)
-
-    IF ( @UserId IS NULL )
-        RETURN 1
-
-    UPDATE [<dbUser,varchar,dbo>].[subtext_Users]
-    SET IsLockedOut = 0,
-        FailedPasswordAttemptCount = 0,
-        FailedPasswordAttemptWindowStart = CONVERT( datetime, '17540101', 112 ),
-        FailedPasswordAnswerAttemptCount = 0,
-        FailedPasswordAnswerAttemptWindowStart = CONVERT( datetime, '17540101', 112 ),
-        LastLockoutDate = CONVERT( datetime, '17540101', 112 )
-    WHERE @UserId = UserId
-
-    RETURN 0
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_UpdateUser]
-    @UserName             nvarchar(256),
-    @Email                nvarchar(256),
-    @Comment              ntext = NULL,
-    @IsApproved           bit,
-    @LastLoginDate        datetime,
-    @LastActivityDate     datetime,
-    @UniqueEmail          int,
-    @CurrentTimeUtc       datetime
-AS
-BEGIN
-    DECLARE @UserId uniqueidentifier
-    DECLARE @ApplicationId uniqueidentifier
-    SELECT  @UserId = NULL
-    SELECT  @UserId = UserId
-    FROM    [<dbUser,varchar,dbo>].[subtext_Users]
-    WHERE   LoweredUserName = LOWER(@UserName)
-
-    IF (@UserId IS NULL)
-        RETURN(1)
-
-    IF (@UniqueEmail = 1)
-    BEGIN
-        IF (EXISTS (SELECT *
-                    FROM  [<dbUser,varchar,dbo>].[subtext_Users] WITH (UPDLOCK, HOLDLOCK)
-                    WHERE @UserId <> UserId AND LoweredEmail = LOWER(@Email)))
-        BEGIN
-            RETURN(7)
-        END
-    END
-
-    DECLARE @TranStarted   bit
-    SET @TranStarted = 0
-
-    IF( @@TRANCOUNT = 0 )
-    BEGIN
-	    BEGIN TRANSACTION
-	    SET @TranStarted = 1
-    END
-    ELSE
-	SET @TranStarted = 0
-
-    UPDATE [<dbUser,varchar,dbo>].[subtext_Users] WITH (ROWLOCK)
-    SET
-         Email            = @Email
-         , LoweredEmail     = LOWER(@Email)
-         , Comment          = @Comment
-         , IsApproved       = @IsApproved
-         , LastLoginDate    = @LastLoginDate
-         , LastActivityDate = @LastActivityDate
-    WHERE
-       @UserId = UserId
-
-    IF( @@ERROR <> 0 )
-        GOTO Cleanup
-
-    IF( @TranStarted = 1 )
-    BEGIN
-	SET @TranStarted = 0
-	COMMIT TRANSACTION
-    END
-
-    RETURN 0
-
-Cleanup:
-
-    IF( @TranStarted = 1 )
-    BEGIN
-        SET @TranStarted = 0
-    	ROLLBACK TRANSACTION
-    END
-
-    RETURN -1
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_ChangePasswordQuestionAndAnswer]
-    @UserName              nvarchar(256),
-    @NewPasswordQuestion   nvarchar(256) = NULL,
-    @NewPasswordAnswer     nvarchar(128) = NULL
-AS
-BEGIN
-    DECLARE @UserId uniqueidentifier
-    SELECT  @UserId = UserId
-    FROM    [<dbUser,varchar,dbo>].[subtext_Users]
-    WHERE   LoweredUserName = LOWER(@UserName) 
-    
-    IF (@UserId IS NULL)
-    BEGIN
-        RETURN(1)
-    END
-
-    UPDATE [<dbUser,varchar,dbo>].[subtext_Users]
-    SET    PasswordQuestion = @NewPasswordQuestion
-		, PasswordAnswer = @NewPasswordAnswer
-    WHERE  UserId = @UserId
-    RETURN(0)
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Profile_GetProperties]
-    @UserName             nvarchar(256),
-    @CurrentTimeUtc       datetime
-AS
-BEGIN
-    DECLARE @UserId uniqueidentifier
-    SELECT  @UserId = NULL
-
-    SELECT @UserId = UserId
-    FROM   [<dbUser,varchar,dbo>].[subtext_Users]
-    WHERE  LoweredUserName = LOWER(@UserName)
-
-    IF (@UserId IS NULL)
-        RETURN
-    SELECT TOP 1 PropertyNames, PropertyValuesString, PropertyValuesBinary
-    FROM         [<dbUser,varchar,dbo>].[subtext_Profile]
-    WHERE        UserId = @UserId
-
-    IF (@@ROWCOUNT > 0)
-    BEGIN
-        UPDATE [<dbUser,varchar,dbo>].[subtext_Users]
-        SET    LastActivityDate=@CurrentTimeUtc
-        WHERE  UserId = @UserId
-    END
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Profile_DeleteInactiveProfiles]
-    @ProfileAuthOptions     int,
-    @InactiveSinceDate      datetime
-AS
-BEGIN
-    DELETE
-    FROM    [<dbUser,varchar,dbo>].[subtext_Profile]
-    WHERE   UserId IN
-            (   SELECT  UserId
-                FROM    [<dbUser,varchar,dbo>].subtext_Users
-                WHERE   
-					(LastActivityDate <= @InactiveSinceDate)
-                        AND (
-                                (@ProfileAuthOptions = 2)
-                             OR (@ProfileAuthOptions = 0 AND IsAnonymous = 1)
-                             OR (@ProfileAuthOptions = 1 AND IsAnonymous = 0)
-                            )
-            )
-
-    SELECT  @@ROWCOUNT
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Profile_GetNumberOfInactiveProfiles]
-    @ProfileAuthOptions     int,
-    @InactiveSinceDate      datetime
-AS
-BEGIN
-    SELECT  COUNT(*)
-    FROM    [<dbUser,varchar,dbo>].[subtext_Users] u
-		INNER JOIN [<dbUser,varchar,dbo>].subtext_Profile p ON u.UserId = p.UserId
-    WHERE   
-        (LastActivityDate <= @InactiveSinceDate)
-        AND (
-                (@ProfileAuthOptions = 2)
-                OR (@ProfileAuthOptions = 0 AND IsAnonymous = 1)
-                OR (@ProfileAuthOptions = 1 AND IsAnonymous = 0)
-            )
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_UsersInRoles_IsUserInRole]
-    @ApplicationName  nvarchar(256),
-    @UserName         nvarchar(256),
-    @RoleName         nvarchar(256)
-AS
-BEGIN
-    DECLARE @ApplicationId uniqueidentifier
-    SELECT  @ApplicationId = NULL
-    SELECT  @ApplicationId = ApplicationId FROM subtext_Applications WHERE LOWER(@ApplicationName) = LoweredApplicationName
-    IF (@ApplicationId IS NULL)
-        RETURN(2)
-    DECLARE @UserId uniqueidentifier
-    SELECT  @UserId = NULL
-    DECLARE @RoleId uniqueidentifier
-    SELECT  @RoleId = NULL
-
-    SELECT  @UserId = UserId
-    FROM    [<dbUser,varchar,dbo>].[subtext_Users]
-    WHERE   LoweredUserName = LOWER(@UserName)
-
-    IF (@UserId IS NULL)
-        RETURN(2)
-
-    SELECT  @RoleId = RoleId
-    FROM    [<dbUser,varchar,dbo>].[subtext_Roles]
-    WHERE   LoweredRoleName = LOWER(@RoleName) 
-		AND ApplicationId = @ApplicationId
-
-    IF (@RoleId IS NULL)
-        RETURN(3)
-
-    IF (EXISTS( SELECT * FROM [<dbUser,varchar,dbo>].[subtext_UsersInRoles] WHERE UserId = @UserId AND RoleId = @RoleId))
-        RETURN(1)
-    ELSE
-        RETURN(0)
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_UsersInRoles_GetRolesForUser]
-    @ApplicationName  nvarchar(256),
-    @UserName         nvarchar(256)
-AS
-BEGIN
-    DECLARE @ApplicationId uniqueidentifier
-    SELECT  @ApplicationId = NULL
-    SELECT  @ApplicationId = ApplicationId 
-	FROM subtext_Applications 
-	WHERE LOWER(@ApplicationName) = LoweredApplicationName
-    IF (@ApplicationId IS NULL)
-        RETURN(1)
-    DECLARE @UserId uniqueidentifier
-    SELECT  @UserId = NULL
-
-    SELECT  @UserId = UserId
-    FROM    [<dbUser,varchar,dbo>].[subtext_Users]
-    WHERE   LoweredUserName = LOWER(@UserName)
-
-    IF (@UserId IS NULL)
-        RETURN(1)
-
-    SELECT r.RoleName
-    FROM   [<dbUser,varchar,dbo>].subtext_Roles r
-		INNER JOIN [<dbUser,varchar,dbo>].subtext_UsersInRoles ur ON r.RoleId = ur.RoleId
-    WHERE  r.ApplicationId = @ApplicationId AND ur.UserId = @UserId
-    ORDER BY r.RoleName
-    RETURN (0)
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Roles_DeleteRole]
-    @ApplicationName            nvarchar(256),
-    @RoleName                   nvarchar(256),
-    @DeleteOnlyIfRoleIsEmpty    bit
-AS
-BEGIN
-    DECLARE @ApplicationId uniqueidentifier
-    SELECT  @ApplicationId = NULL
-    SELECT  @ApplicationId = ApplicationId FROM subtext_Applications WHERE LOWER(@ApplicationName) = LoweredApplicationName
-    IF (@ApplicationId IS NULL)
-        RETURN(1)
-
-    DECLARE @ErrorCode     int
-    SET @ErrorCode = 0
-
-    DECLARE @TranStarted   bit
-    SET @TranStarted = 0
-
-    IF( @@TRANCOUNT = 0 )
-    BEGIN
-        BEGIN TRANSACTION
-        SET @TranStarted = 1
-    END
-    ELSE
-        SET @TranStarted = 0
-
-    DECLARE @RoleId   uniqueidentifier
-    SELECT  @RoleId = NULL
-    SELECT  @RoleId = RoleId FROM [<dbUser,varchar,dbo>].subtext_Roles WHERE LoweredRoleName = LOWER(@RoleName) AND ApplicationId = @ApplicationId
-
-    IF (@RoleId IS NULL)
-    BEGIN
-        SELECT @ErrorCode = 1
-        GOTO Cleanup
-    END
-    IF (@DeleteOnlyIfRoleIsEmpty <> 0)
-    BEGIN
-        IF (EXISTS (SELECT RoleId FROM [<dbUser,varchar,dbo>].subtext_UsersInRoles  WHERE @RoleId = RoleId))
-        BEGIN
-            SELECT @ErrorCode = 2
-            GOTO Cleanup
-        END
-    END
-
-
-    DELETE FROM [<dbUser,varchar,dbo>].subtext_UsersInRoles  WHERE @RoleId = RoleId
-
-    IF( @@ERROR <> 0 )
-    BEGIN
-        SET @ErrorCode = -1
-        GOTO Cleanup
-    END
-
-    DELETE FROM [<dbUser,varchar,dbo>].subtext_Roles WHERE @RoleId = RoleId  AND ApplicationId = @ApplicationId
-
-    IF( @@ERROR <> 0 )
-    BEGIN
-        SET @ErrorCode = -1
-        GOTO Cleanup
-    END
-
-    IF( @TranStarted = 1 )
-    BEGIN
-        SET @TranStarted = 0
-        COMMIT TRANSACTION
-    END
-
-    RETURN(0)
-
-Cleanup:
-
-    IF( @TranStarted = 1 )
-    BEGIN
-        SET @TranStarted = 0
-        ROLLBACK TRANSACTION
-    END
-
-    RETURN @ErrorCode
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Roles_RoleExists]
-    @ApplicationName  nvarchar(256),
-    @RoleName         nvarchar(256)
-AS
-BEGIN
-    DECLARE @ApplicationId uniqueidentifier
-    SELECT  @ApplicationId = NULL
-    SELECT  @ApplicationId = ApplicationId FROM subtext_Applications WHERE LOWER(@ApplicationName) = LoweredApplicationName
-    IF (@ApplicationId IS NULL)
-        RETURN(0)
-    IF (EXISTS (SELECT RoleName FROM [<dbUser,varchar,dbo>].subtext_Roles WHERE LOWER(@RoleName) = LoweredRoleName AND ApplicationId = @ApplicationId ))
-        RETURN(1)
-    ELSE
-        RETURN(0)
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_UsersInRoles_AddUsersToRoles]
-	@ApplicationName  nvarchar(256),
-	@UserNames		  nvarchar(4000),
-	@RoleNames		  nvarchar(4000),
-	@CurrentTimeUtc   datetime
-AS
-BEGIN
-	DECLARE @AppId uniqueidentifier
-	SELECT  @AppId = NULL
-	SELECT  @AppId = ApplicationId FROM subtext_Applications WHERE LOWER(@ApplicationName) = LoweredApplicationName
-	IF (@AppId IS NULL)
-		RETURN(2)
-	DECLARE @TranStarted   bit
-	SET @TranStarted = 0
-
-	IF( @@TRANCOUNT = 0 )
-	BEGIN
-		BEGIN TRANSACTION
-		SET @TranStarted = 1
-	END
-
-	DECLARE @tbNames	table(Name nvarchar(256) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL PRIMARY KEY)
-	DECLARE @tbRoles	table(RoleId uniqueidentifier NOT NULL PRIMARY KEY)
-	DECLARE @tbUsers	table(UserId uniqueidentifier NOT NULL PRIMARY KEY)
-	DECLARE @Num		int
-	DECLARE @Pos		int
-	DECLARE @NextPos	int
-	DECLARE @Name		nvarchar(256)
-
-	SET @Num = 0
-	SET @Pos = 1
-	WHILE(@Pos <= LEN(@RoleNames))
-	BEGIN
-		SELECT @NextPos = CHARINDEX(N',', @RoleNames,  @Pos)
-		IF (@NextPos = 0 OR @NextPos IS NULL)
-			SELECT @NextPos = LEN(@RoleNames) + 1
-		SELECT @Name = RTRIM(LTRIM(SUBSTRING(@RoleNames, @Pos, @NextPos - @Pos)))
-		SELECT @Pos = @NextPos+1
-
-		INSERT INTO @tbNames VALUES (@Name)
-		SET @Num = @Num + 1
-	END
-
-	INSERT INTO @tbRoles
-	  SELECT RoleId
-	  FROM   [<dbUser,varchar,dbo>].[subtext_Roles] r
-		INNER JOIN @tbNames t ON LOWER(t.Name) = r.LoweredRoleName 
-	  WHERE  r.ApplicationId = @AppId
-
-	IF (@@ROWCOUNT <> @Num)
-	BEGIN
-		SELECT TOP 1 Name
-		FROM   @tbNames
-		WHERE  LOWER(Name) NOT IN 
-			(
-				SELECT sr.LoweredRoleName 
-				FROM [<dbUser,varchar,dbo>].[subtext_Roles] sr 
-					INNER JOIN @tbRoles r ON r.RoleId = sr.RoleId
-			)
-		IF( @TranStarted = 1 )
-			ROLLBACK TRANSACTION
-		RETURN(2)
-	END
-
-	DELETE FROM @tbNames WHERE 1=1
-	SET @Num = 0
-	SET @Pos = 1
-
-	WHILE(@Pos <= LEN(@UserNames))
-	BEGIN
-		SELECT @NextPos = CHARINDEX(N',', @UserNames,  @Pos)
-		IF (@NextPos = 0 OR @NextPos IS NULL)
-			SELECT @NextPos = LEN(@UserNames) + 1
-		SELECT @Name = RTRIM(LTRIM(SUBSTRING(@UserNames, @Pos, @NextPos - @Pos)))
-		SELECT @Pos = @NextPos+1
-
-		INSERT INTO @tbNames VALUES (@Name)
-		SET @Num = @Num + 1
-	END
-
-	INSERT INTO @tbUsers
-	  SELECT UserId
-	  FROM   [<dbUser,varchar,dbo>].[subtext_Users] u 
-		INNER JOIN @tbNames t 
-			ON LOWER(t.Name) = u.LoweredUserName
-
-	IF (@@ROWCOUNT <> @Num)
-	BEGIN
-		DELETE FROM @tbNames
-		WHERE LOWER(Name) IN 
-		(
-			SELECT LoweredUserName 
-				FROM [<dbUser,varchar,dbo>].[subtext_Users] su 
-					INNER JOIN @tbUsers u 
-						ON su.UserId = u.UserId
-		)
-
-		INSERT [<dbUser,varchar,dbo>].[subtext_Users]
-		(
-			UserId
-			, UserName
-			, LoweredUserName
-			, IsAnonymous
-			, LastActivityDate
-		)
-		SELECT 
-			NEWID()
-			, [Name]
-			, LOWER([Name])
-			, 0
-			, @CurrentTimeUtc
-		  FROM   @tbNames
-
-		INSERT INTO @tbUsers
-		  SELECT  UserId
-		  FROM	[<dbUser,varchar,dbo>].subtext_Users su
-			INNER JOIN @tbNames t ON LOWER(t.Name) = su.LoweredUserName 
-	END
-	
-	IF (EXISTS 
-			(
-				SELECT * 
-				FROM [<dbUser,varchar,dbo>].[subtext_UsersInRoles] ur
-					INNER JOIN @tbUsers tu ON tu.UserId = ur.UserId
-					INNER JOIN @tbRoles tr ON tr.RoleId = ur.RoleId
-			)
-	)
-	BEGIN
-		SELECT TOP 1 UserName, RoleName
-		FROM		 [<dbUser,varchar,dbo>].subtext_UsersInRoles ur, @tbUsers tu, @tbRoles tr, subtext_Users u, subtext_Roles r
-		WHERE		u.UserId = tu.UserId AND r.RoleId = tr.RoleId AND tu.UserId = ur.UserId AND tr.RoleId = ur.RoleId
-
-		IF( @TranStarted = 1 )
-			ROLLBACK TRANSACTION
-		RETURN(3)
-	END
-
-	INSERT INTO [<dbUser,varchar,dbo>].subtext_UsersInRoles (UserId, RoleId)
-	SELECT UserId, RoleId
-	FROM @tbUsers, @tbRoles
-
-	IF( @TranStarted = 1 )
-		COMMIT TRANSACTION
-	RETURN(0)
-END                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_UsersInRoles_RemoveUsersFromRoles]
-	@ApplicationName  nvarchar(256)
-	, @UserNames		  nvarchar(4000)
-	, @RoleNames		  nvarchar(4000)
-AS
-BEGIN
-	DECLARE @AppId uniqueidentifier
-	SELECT  @AppId = NULL
-	SELECT  @AppId = ApplicationId FROM subtext_Applications WHERE LOWER(@ApplicationName) = LoweredApplicationName
-	IF (@AppId IS NULL)
-		RETURN(2)
-
-
-	DECLARE @TranStarted   bit
-	SET @TranStarted = 0
-
-	IF( @@TRANCOUNT = 0 )
-	BEGIN
-		BEGIN TRANSACTION
-		SET @TranStarted = 1
-	END
-
-	DECLARE @tbNames  table(Name nvarchar(256) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL PRIMARY KEY)
-	DECLARE @tbRoles  table(RoleId uniqueidentifier NOT NULL PRIMARY KEY)
-	DECLARE @tbUsers  table(UserId uniqueidentifier NOT NULL PRIMARY KEY)
-	DECLARE @Num	  int
-	DECLARE @Pos	  int
-	DECLARE @NextPos  int
-	DECLARE @Name	  nvarchar(256)
-	DECLARE @CountAll int
-	DECLARE @CountU	  int
-	DECLARE @CountR	  int
-
-
-	SET @Num = 0
-	SET @Pos = 1
-	WHILE(@Pos <= LEN(@RoleNames))
-	BEGIN
-		SELECT @NextPos = CHARINDEX(N',', @RoleNames,  @Pos)
-		IF (@NextPos = 0 OR @NextPos IS NULL)
-			SELECT @NextPos = LEN(@RoleNames) + 1
-		SELECT @Name = RTRIM(LTRIM(SUBSTRING(@RoleNames, @Pos, @NextPos - @Pos)))
-		SELECT @Pos = @NextPos+1
-
-		INSERT INTO @tbNames VALUES (@Name)
-		SET @Num = @Num + 1
-	END
-
-	INSERT INTO @tbRoles
-	  SELECT RoleId
-	  FROM   [<dbUser,varchar,dbo>].subtext_Roles ar, @tbNames t
-	  WHERE  LOWER(t.Name) = ar.LoweredRoleName AND ar.ApplicationId = @AppId
-	SELECT @CountR = @@ROWCOUNT
-
-	IF (@CountR <> @Num)
-	BEGIN
-		SELECT TOP 1 N'', Name
-		FROM   @tbNames
-		WHERE  LOWER(Name) NOT IN (SELECT ar.LoweredRoleName FROM [<dbUser,varchar,dbo>].subtext_Roles ar,  @tbRoles r WHERE r.RoleId = ar.RoleId)
-		IF( @TranStarted = 1 )
-			ROLLBACK TRANSACTION
-		RETURN(2)
-	END
-
-
-	DELETE FROM @tbNames WHERE 1=1
-	SET @Num = 0
-	SET @Pos = 1
-
-
-	WHILE(@Pos <= LEN(@UserNames))
-	BEGIN
-		SELECT @NextPos = CHARINDEX(N',', @UserNames,  @Pos)
-		IF (@NextPos = 0 OR @NextPos IS NULL)
-			SELECT @NextPos = LEN(@UserNames) + 1
-		SELECT @Name = RTRIM(LTRIM(SUBSTRING(@UserNames, @Pos, @NextPos - @Pos)))
-		SELECT @Pos = @NextPos+1
-
-		INSERT INTO @tbNames VALUES (@Name)
-		SET @Num = @Num + 1
-	END
-
-	INSERT INTO @tbUsers
-	  SELECT UserId
-	  FROM   [<dbUser,varchar,dbo>].subtext_Users sr, @tbNames t
-	  WHERE  LOWER(t.Name) = sr.LoweredUserName
-
-	SELECT @CountU = @@ROWCOUNT
-	IF (@CountU <> @Num)
-	BEGIN
-		SELECT TOP 1 Name, N''
-		FROM   @tbNames
-		WHERE  LOWER(Name) NOT IN (SELECT au.LoweredUserName FROM [<dbUser,varchar,dbo>].subtext_Users au,  @tbUsers u WHERE u.UserId = au.UserId)
-
-		IF( @TranStarted = 1 )
-			ROLLBACK TRANSACTION
-		RETURN(1)
-	END
-
-	SELECT  @CountAll = COUNT(*)
-	FROM	[<dbUser,varchar,dbo>].subtext_UsersInRoles ur, @tbUsers u, @tbRoles r
-	WHERE   ur.UserId = u.UserId AND ur.RoleId = r.RoleId
-
-	IF (@CountAll <> @CountU * @CountR)
-	BEGIN
-		SELECT TOP 1 UserName, RoleName
-		FROM		 @tbUsers tu, @tbRoles tr, [<dbUser,varchar,dbo>].subtext_Users u, [<dbUser,varchar,dbo>].subtext_Roles r
-		WHERE		 u.UserId = tu.UserId AND r.RoleId = tr.RoleId AND
-					 tu.UserId NOT IN (SELECT ur.UserId FROM [<dbUser,varchar,dbo>].subtext_UsersInRoles ur WHERE ur.RoleId = tr.RoleId) AND
-					 tr.RoleId NOT IN (SELECT ur.RoleId FROM [<dbUser,varchar,dbo>].subtext_UsersInRoles ur WHERE ur.UserId = tu.UserId)
-		IF( @TranStarted = 1 )
-			ROLLBACK TRANSACTION
-		RETURN(3)
-	END
-
-	DELETE FROM [<dbUser,varchar,dbo>].subtext_UsersInRoles
-	WHERE UserId IN (SELECT UserId FROM @tbUsers)
-	  AND RoleId IN (SELECT RoleId FROM @tbRoles)
-	IF( @TranStarted = 1 )
-		COMMIT TRANSACTION
-	RETURN(0)
-END
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Roles_GetAllRoles] (
-    @ApplicationName           nvarchar(256))
-AS
-BEGIN
-    DECLARE @ApplicationId uniqueidentifier
-    SELECT  @ApplicationId = NULL
-    SELECT  @ApplicationId = ApplicationId FROM subtext_Applications WHERE LOWER(@ApplicationName) = LoweredApplicationName
-    IF (@ApplicationId IS NULL)
-        RETURN
-    SELECT RoleName
-    FROM   [<dbUser,varchar,dbo>].subtext_Roles WHERE ApplicationId = @ApplicationId
-    ORDER BY RoleName
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_UsersInRoles_GetUsersInRoles]
-    @ApplicationName  nvarchar(256),
-    @RoleName         nvarchar(256)
-AS
-BEGIN
-    DECLARE @ApplicationId uniqueidentifier
-    SELECT  @ApplicationId = NULL
-    SELECT  @ApplicationId = ApplicationId FROM subtext_Applications WHERE LOWER(@ApplicationName) = LoweredApplicationName
-    IF (@ApplicationId IS NULL)
-        RETURN(1)
-     DECLARE @RoleId uniqueidentifier
-     SELECT  @RoleId = NULL
-
-     SELECT  @RoleId = RoleId
-     FROM    [<dbUser,varchar,dbo>].subtext_Roles
-     WHERE   LOWER(@RoleName) = LoweredRoleName 
-		AND ApplicationId = @ApplicationId
-
-     IF (@RoleId IS NULL)
-         RETURN(1)
-
-    SELECT u.UserName
-    FROM   [<dbUser,varchar,dbo>].subtext_Users u
-		INNER JOIN [<dbUser,varchar,dbo>].subtext_UsersInRoles ur ON u.UserId = ur.UserId
-    WHERE  @RoleId = ur.RoleId
-    ORDER BY u.UserName
-    RETURN(0)
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_UsersInRoles_FindUsersInRole]
-    @ApplicationName  nvarchar(256),
-    @RoleName         nvarchar(256),
-    @UserNameToMatch  nvarchar(256)
-AS
-BEGIN
-    DECLARE @ApplicationId uniqueidentifier
-    SELECT  @ApplicationId = NULL
-    SELECT  @ApplicationId = ApplicationId FROM subtext_Applications WHERE LOWER(@ApplicationName) = LoweredApplicationName
-    IF (@ApplicationId IS NULL)
-        RETURN(1)
-     DECLARE @RoleId uniqueidentifier
-     SELECT  @RoleId = NULL
-
-     SELECT  @RoleId = RoleId
-     FROM    [<dbUser,varchar,dbo>].subtext_Roles
-     WHERE   LOWER(@RoleName) = LoweredRoleName AND ApplicationId = @ApplicationId
-
-     IF (@RoleId IS NULL)
-         RETURN(1)
-
-    SELECT u.UserName
-    FROM   [<dbUser,varchar,dbo>].subtext_Users u
-		INNER JOIN [<dbUser,varchar,dbo>].subtext_UsersInRoles ur ON u.UserId = ur.UserId
-    WHERE  @RoleId = ur.RoleId AND LoweredUserName LIKE LOWER(@UserNameToMatch)
-    ORDER BY u.UserName
-    RETURN(0)
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Paths_CreatePath]
-    @ApplicationId UNIQUEIDENTIFIER,
-    @Path           NVARCHAR(256),
-    @PathId         UNIQUEIDENTIFIER OUTPUT
-AS
-BEGIN
-    BEGIN TRANSACTION
-    IF (NOT EXISTS(SELECT * FROM [<dbUser,varchar,dbo>].subtext_Paths WHERE LoweredPath = LOWER(@Path) AND ApplicationId = @ApplicationId))
-    BEGIN
-        INSERT [<dbUser,varchar,dbo>].subtext_Paths (ApplicationId, Path, LoweredPath) VALUES (@ApplicationId, @Path, LOWER(@Path))
-    END
-    COMMIT TRANSACTION
-    SELECT @PathId = PathId FROM [<dbUser,varchar,dbo>].subtext_Paths WHERE LOWER(@Path) = LoweredPath AND ApplicationId = @ApplicationId
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_WebEvent_LogEvent]
-        @EventId         char(32),
-        @EventTimeUtc    datetime,
-        @EventTime       datetime,
-        @EventType       nvarchar(256),
-        @EventSequence   decimal(19,0),
-        @EventOccurrence decimal(19,0),
-        @EventCode       int,
-        @EventDetailCode int,
-        @Message         nvarchar(1024),
-        @ApplicationPath nvarchar(256),
-        @ApplicationVirtualPath nvarchar(256),
-        @MachineName    nvarchar(256),
-        @RequestUrl      nvarchar(1024),
-        @ExceptionType   nvarchar(256),
-        @Details         ntext
-AS
-BEGIN
-    INSERT
-        [<dbUser,varchar,dbo>].subtext_WebEvent_Events
-        (
-            EventId,
-            EventTimeUtc,
-            EventTime,
-            EventType,
-            EventSequence,
-            EventOccurrence,
-            EventCode,
-            EventDetailCode,
-            Message,
-            ApplicationPath,
-            ApplicationVirtualPath,
-            MachineName,
-            RequestUrl,
-            ExceptionType,
-            Details
-        )
-    VALUES
-    (
-        @EventId,
-        @EventTimeUtc,
-        @EventTime,
-        @EventType,
-        @EventSequence,
-        @EventOccurrence,
-        @EventCode,
-        @EventDetailCode,
-        @Message,
-        @ApplicationPath,
-        @ApplicationVirtualPath,
-        @MachineName,
-        @RequestUrl,
-        @ExceptionType,
-        @Details
-    )
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Personalization_GetApplicationId] (
-    @ApplicationName NVARCHAR(256),
-    @ApplicationId UNIQUEIDENTIFIER OUT)
-AS
-BEGIN
-    SELECT @ApplicationId = ApplicationId FROM [<dbUser,varchar,dbo>].subtext_Applications WHERE LOWER(@ApplicationName) = LoweredApplicationName
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Profile_GetProfiles]
-    @ApplicationName        nvarchar(256),
-    @ProfileAuthOptions     int,
-    @PageIndex              int,
-    @PageSize               int,
-    @UserNameToMatch        nvarchar(256) = NULL,
-    @InactiveSinceDate      datetime      = NULL
-AS
-BEGIN
-    DECLARE @ApplicationId uniqueidentifier
-    SELECT  @ApplicationId = NULL
-    SELECT  @ApplicationId = ApplicationId FROM subtext_Applications WHERE LOWER(@ApplicationName) = LoweredApplicationName
-    IF (@ApplicationId IS NULL)
-        RETURN
-
-    -- Set the page bounds
-    DECLARE @PageLowerBound int
-    DECLARE @PageUpperBound int
-    DECLARE @TotalRecords   int
-    SET @PageLowerBound = @PageSize * @PageIndex
-    SET @PageUpperBound = @PageSize - 1 + @PageLowerBound
-
-    -- Create a temp table TO store the select results
-    CREATE TABLE #PageIndexForUsers
-    (
-        IndexId int IDENTITY (0, 1) NOT NULL,
-        UserId uniqueidentifier
-    )
-
-    -- Insert into our temp table
-    INSERT INTO #PageIndexForUsers (UserId)
-        SELECT  u.UserId
-        FROM    [<dbUser,varchar,dbo>].subtext_Users u, [<dbUser,varchar,dbo>].subtext_Profile p
-        WHERE   u.UserId = p.UserId
-            AND (@InactiveSinceDate IS NULL OR LastActivityDate <= @InactiveSinceDate)
-            AND (     (@ProfileAuthOptions = 2)
-                   OR (@ProfileAuthOptions = 0 AND IsAnonymous = 1)
-                   OR (@ProfileAuthOptions = 1 AND IsAnonymous = 0)
-                 )
-            AND (@UserNameToMatch IS NULL OR LoweredUserName LIKE LOWER(@UserNameToMatch))
-        ORDER BY UserName
-
-    SELECT  u.UserName, u.IsAnonymous, u.LastActivityDate, p.LastUpdatedDate,
-            DATALENGTH(p.PropertyNames) + DATALENGTH(p.PropertyValuesString) + DATALENGTH(p.PropertyValuesBinary)
-    FROM    [<dbUser,varchar,dbo>].subtext_Users u, [<dbUser,varchar,dbo>].subtext_Profile p, #PageIndexForUsers i
-    WHERE   u.UserId = p.UserId AND p.UserId = i.UserId AND i.IndexId >= @PageLowerBound AND i.IndexId <= @PageUpperBound
-
-    SELECT COUNT(*)
-    FROM   #PageIndexForUsers
-
-    DROP TABLE #PageIndexForUsers
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_FindUsersByNameOrEmail]
-    @ApplicationName	nvarchar(256) = NULL
-    , @UserNameToMatch  nvarchar(256) = NULL
-    , @EmailToMatch	    nvarchar(256) = NULL
-    , @PageIndex		int
-    , @PageSize         int
-    , @TotalCount		int output
-AS
-BEGIN
-    DECLARE @FirstUserName nvarchar(256)
-	DECLARE @StartRow int
-	DECLARE @StartRowIndex int
-
-	SET @StartRowIndex = @PageIndex * @PageSize + 1
-
-	SET ROWCOUNT @StartRowIndex
-	
-
-	SELECT	@FirstUserName = UserName
-		FROM [<dbUser,varchar,dbo>].[subtext_Users]
-		WHERE
-		( 
-			(@UserNameToMatch IS NOT NULL AND UserName LIKE '%' + @UserNameToMatch + '%')
-			OR
-			(@EmailToMatch IS NOT NULL AND Email LIKE '%' + @EmailToMatch + '%')
-		)
-		AND
-		(
-			@ApplicationName IS NULL 
-			OR
-			UserId IN 
-			(
-				SELECT UserId 
-				FROM [<dbUser,varchar,dbo>].[subtext_UsersInRoles] ur
-					INNER JOIN [<dbUser,varchar,dbo>].[subtext_Roles] r
-						ON r.RoleId = ur.RoleId
-					INNER JOIN [<dbUser,varchar,dbo>].[subtext_Applications] a
-						ON r.ApplicationId = a.ApplicationId
-				WHERE a.ApplicationName = @ApplicationName
-			)
-		)
-	ORDER BY UserName ASC
-
-	SET ROWCOUNT @PageSize
-
-	SELECT  UserName
-		, Email
-		, PasswordQuestion
-		, Comment
-		, IsApproved
-		, CreateDate
-		, LastLoginDate
-		, LastActivityDate
-		, LastPasswordChangedDate
-		, UserId
-		, IsLockedOut
-		, LastLockoutDate
-	FROM   [<dbUser,varchar,dbo>].[subtext_Users]
-	WHERE  UserName >= @FirstUserName
-		AND
-		(
-			(@UserNameToMatch IS NOT NULL AND UserName LIKE '%' + @UserNameToMatch + '%')
-		OR
-			(@EmailToMatch IS NOT NULL AND Email LIKE '%' + @EmailToMatch + '%')
-		)	
-		AND 
-		(
-			@ApplicationName IS NULL 
-			OR
-			UserId IN 
-			(
-				SELECT UserId 
-				FROM [<dbUser,varchar,dbo>].[subtext_UsersInRoles] ur
-					INNER JOIN [<dbUser,varchar,dbo>].[subtext_Roles] r
-						ON r.RoleId = ur.RoleId
-					INNER JOIN [<dbUser,varchar,dbo>].[subtext_Applications] a
-						ON r.ApplicationId = a.ApplicationId
-				WHERE a.ApplicationName = @ApplicationName
-			)
-		)
-	ORDER BY UserName ASC
-
-
-	SELECT @TotalCount = COUNT(1)
-	FROM [<dbUser,varchar,dbo>].[subtext_Users]
-	WHERE 	(@UserNameToMatch IS NOT NULL AND UserName LIKE '%' + @UserNameToMatch + '%')
-		OR
-			(@EmailToMatch IS NOT NULL AND Email LIKE '%' + @EmailToMatch + '%')
-		AND
-		(
-			@ApplicationName IS NULL 
-			OR
-			UserId IN 
-			(
-				SELECT UserId 
-				FROM [<dbUser,varchar,dbo>].[subtext_UsersInRoles] ur
-					INNER JOIN [<dbUser,varchar,dbo>].[subtext_Roles] r
-						ON r.RoleId = ur.RoleId
-					INNER JOIN [<dbUser,varchar,dbo>].[subtext_Applications] a
-						ON r.ApplicationId = a.ApplicationId
-				WHERE a.ApplicationName = @ApplicationName
-			)
-		)
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_GetAllUsers]
-    @ApplicationName  nvarchar(256) = NULL
-    , @PageIndex		int
-    , @PageSize		int
-    , @TotalCount	int output
-AS
-BEGIN
-	DECLARE @FirstUserName nvarchar(256)
-	DECLARE @StartRow int
-	DECLARE @StartRowIndex int
-
-	SET @StartRowIndex = @PageIndex * @PageSize + 1
-
-	SET ROWCOUNT @StartRowIndex
-	
-	SELECT	@FirstUserName = UserName
-	FROM [<dbUser,varchar,dbo>].[subtext_Users]
-	WHERE
-		@ApplicationName IS NULL 
-		OR
-		UserId IN 
-		(
-			SELECT UserId 
-			FROM [<dbUser,varchar,dbo>].[subtext_UsersInRoles] ur
-				INNER JOIN [<dbUser,varchar,dbo>].[subtext_Roles] r
-					ON r.RoleId = ur.RoleId
-				INNER JOIN [<dbUser,varchar,dbo>].[subtext_Applications] a
-					ON r.ApplicationId = a.ApplicationId
-			WHERE a.ApplicationName = @ApplicationName
-		)
-	ORDER BY UserName ASC
-	
-	SET ROWCOUNT @PageSize
-
-	
-	SELECT  UserName
-		, Email
-		, PasswordQuestion
-		, Comment
-		, IsApproved
-		, CreateDate
-		, LastLoginDate
-		, LastActivityDate
-		, LastPasswordChangedDate
-		, UserId
-		, IsLockedOut
-		, LastLockoutDate
-	FROM   [<dbUser,varchar,dbo>].[subtext_Users]
-	WHERE   UserName >= @FirstUserName
-		AND 
-		(
-			@ApplicationName IS NULL 
-			OR
-			UserId IN 
-			(
-				SELECT UserId 
-				FROM [<dbUser,varchar,dbo>].[subtext_UsersInRoles] ur
-					INNER JOIN [<dbUser,varchar,dbo>].[subtext_Roles] r
-						ON r.RoleId = ur.RoleId
-					INNER JOIN [<dbUser,varchar,dbo>].[subtext_Applications] a
-						ON r.ApplicationId = a.ApplicationId
-				WHERE a.ApplicationName = @ApplicationName
-			)
-		)
-	ORDER BY UserName ASC
-
-	SELECT @TotalCount = COUNT(1)
-	FROM   [<dbUser,varchar,dbo>].[subtext_Users]
-	WHERE
-		@ApplicationName IS NULL 
-		OR
-		UserId IN 
-		(
-			SELECT UserId 
-			FROM [<dbUser,varchar,dbo>].[subtext_UsersInRoles] ur
-				INNER JOIN [<dbUser,varchar,dbo>].[subtext_Roles] r
-					ON r.RoleId = ur.RoleId
-				INNER JOIN [<dbUser,varchar,dbo>].[subtext_Applications] a
-					ON r.ApplicationId = a.ApplicationId
-			WHERE a.ApplicationName = @ApplicationName
-		)
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Users_DeleteUser]
-    @UserName         nvarchar(256),
-    @TablesToDeleteFrom int,
-    @NumTablesDeletedFrom int OUTPUT
-AS
-BEGIN
-    DECLARE @UserId uniqueidentifier
-    SELECT  @NumTablesDeletedFrom = 0
-
-    DECLARE @TranStarted   bit
-    SET @TranStarted = 0
-
-    IF( @@TRANCOUNT = 0 )
-    BEGIN
-	    BEGIN TRANSACTION
-	    SET @TranStarted = 1
-    END
-    ELSE
-		SET @TranStarted = 0
-
-    DECLARE @ErrorCode   int
-    DECLARE @RowCount    int
-
-    SET @ErrorCode = 0
-    SET @RowCount  = 0
-
-    SELECT  @UserId = UserId
-    FROM    [<dbUser,varchar,dbo>].subtext_Users
-    WHERE   LoweredUserName       = LOWER(@UserName)
-
-    IF (@UserId IS NULL)
-    BEGIN
-        GOTO Cleanup
-    END
-
-    -- Delete from subtext_UsersInRoles table if (@TablesToDeleteFrom & 2) is set
-    IF ((@TablesToDeleteFrom & 2) <> 0)
-    BEGIN
-        DELETE FROM [<dbUser,varchar,dbo>].subtext_UsersInRoles WHERE UserId = @UserId
-
-        SELECT @ErrorCode = @@ERROR,
-                @RowCount = @@ROWCOUNT
-
-        IF( @ErrorCode <> 0 )
-            GOTO Cleanup
-
-        IF (@RowCount <> 0)
-            SELECT  @NumTablesDeletedFrom = @NumTablesDeletedFrom + 1
-    END
-
-    -- Delete from subtext_Profile table if (@TablesToDeleteFrom & 4) is set
-    IF ((@TablesToDeleteFrom & 4) <> 0)
-    BEGIN
-        DELETE FROM [<dbUser,varchar,dbo>].subtext_Profile WHERE UserId = @UserId
-
-        SELECT @ErrorCode = @@ERROR,
-                @RowCount = @@ROWCOUNT
-
-        IF( @ErrorCode <> 0 )
-            GOTO Cleanup
-
-        IF (@RowCount <> 0)
-            SELECT  @NumTablesDeletedFrom = @NumTablesDeletedFrom + 1
-    END
-
-    -- Delete from subtext_PersonalizationPerUser table if (@TablesToDeleteFrom & 8) is set
-    IF ((@TablesToDeleteFrom & 8) <> 0)
-    BEGIN
-        DELETE FROM [<dbUser,varchar,dbo>].subtext_PersonalizationPerUser WHERE UserId = @UserId
-
-        SELECT @ErrorCode = @@ERROR,
-                @RowCount = @@ROWCOUNT
-
-        IF( @ErrorCode <> 0 )
-            GOTO Cleanup
-
-        IF (@RowCount <> 0)
-            SELECT  @NumTablesDeletedFrom = @NumTablesDeletedFrom + 1
-    END
-
-    -- Delete from subtext_Users table if (@TablesToDeleteFrom & 1,2,4 & 8) are all set
-    IF ((@TablesToDeleteFrom & 1) <> 0 AND
-        (@TablesToDeleteFrom & 2) <> 0 AND
-        (@TablesToDeleteFrom & 4) <> 0 AND
-        (@TablesToDeleteFrom & 8) <> 0 AND
-        (EXISTS (SELECT UserId FROM [<dbUser,varchar,dbo>].subtext_Users WHERE UserId = @UserId)))
-    BEGIN
-        DELETE FROM [<dbUser,varchar,dbo>].subtext_Users WHERE UserId = @UserId
-
-        SELECT @ErrorCode = @@ERROR,
-                @RowCount = @@ROWCOUNT
-
-        IF( @ErrorCode <> 0 )
-            GOTO Cleanup
-
-        IF (@RowCount <> 0)
-            SELECT  @NumTablesDeletedFrom = @NumTablesDeletedFrom + 1
-    END
-
-    IF( @TranStarted = 1 )
-    BEGIN
-	    SET @TranStarted = 0
-	    COMMIT TRANSACTION
-    END
-
-    RETURN 0
-
-Cleanup:
-    SET @NumTablesDeletedFrom = 0
-
-    IF( @TranStarted = 1 )
-    BEGIN
-        SET @TranStarted = 0
-	    ROLLBACK TRANSACTION
-    END
-
-    RETURN @ErrorCode
-
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Applications_CreateApplication]
-    @ApplicationName      nvarchar(256),
-    @ApplicationId        uniqueidentifier OUTPUT
-AS
-BEGIN
-    SELECT  @ApplicationId = ApplicationId FROM [<dbUser,varchar,dbo>].subtext_Applications WHERE LOWER(@ApplicationName) = LoweredApplicationName
-
-    IF(@ApplicationId IS NULL)
-    BEGIN
-        DECLARE @TranStarted   bit
-        SET @TranStarted = 0
-
-        IF( @@TRANCOUNT = 0 )
-        BEGIN
-	        BEGIN TRANSACTION
-	        SET @TranStarted = 1
-        END
-        ELSE
-    	    SET @TranStarted = 0
-
-        SELECT  @ApplicationId = ApplicationId
-        FROM [<dbUser,varchar,dbo>].subtext_Applications WITH (UPDLOCK, HOLDLOCK)
-        WHERE LOWER(@ApplicationName) = LoweredApplicationName
-
-        IF(@ApplicationId IS NULL)
-        BEGIN
-            SELECT  @ApplicationId = NEWID()
-            INSERT  [<dbUser,varchar,dbo>].subtext_Applications (ApplicationId, ApplicationName, LoweredApplicationName)
-            VALUES  (@ApplicationId, @ApplicationName, LOWER(@ApplicationName))
-        END
-
-
-        IF( @TranStarted = 1 )
-        BEGIN
-            IF(@@ERROR = 0)
-            BEGIN
-	        SET @TranStarted = 0
-	        COMMIT TRANSACTION
-            END
-            ELSE
-            BEGIN
-                SET @TranStarted = 0
-                ROLLBACK TRANSACTION
-            END
-        END
-    END
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_AnyDataInTables]
-    @TablesToCheck int
-AS
-BEGIN
-    -- Check subtext_Roles table if (@TablesToCheck & 2) is set
-    IF ((@TablesToCheck & 2) <> 0  AND
-        (EXISTS (SELECT name FROM sysobjects WHERE (name = N'vw_subtext_Roles') AND (type = 'V'))) )
-    BEGIN
-        IF (EXISTS(SELECT TOP 1 RoleId FROM [<dbUser,varchar,dbo>].subtext_Roles))
-        BEGIN
-            SELECT N'subtext_Roles'
-            RETURN
-        END
-    END
-
-    -- Check subtext_Profile table if (@TablesToCheck & 4) is set
-    IF ((@TablesToCheck & 4) <> 0  AND
-        (EXISTS (SELECT name FROM sysobjects WHERE (name = N'vw_subtext_Profiles') AND (type = 'V'))) )
-    BEGIN
-        IF (EXISTS(SELECT TOP 1 UserId FROM [<dbUser,varchar,dbo>].subtext_Profile))
-        BEGIN
-            SELECT N'subtext_Profile'
-            RETURN
-        END
-    END
-
-    -- Check subtext_PersonalizationPerUser table if (@TablesToCheck & 8) is set
-    IF ((@TablesToCheck & 8) <> 0  AND
-        (EXISTS (SELECT name FROM sysobjects WHERE (name = N'vw_subtext_WebPartState_User') AND (type = 'V'))) )
-    BEGIN
-        IF (EXISTS(SELECT TOP 1 UserId FROM [<dbUser,varchar,dbo>].subtext_PersonalizationPerUser))
-        BEGIN
-            SELECT N'subtext_PersonalizationPerUser'
-            RETURN
-        END
-    END
-
-    -- Check subtext_PersonalizationPerUser table if (@TablesToCheck & 16) is set
-    IF ((@TablesToCheck & 16) <> 0  AND
-        (EXISTS (SELECT name FROM sysobjects WHERE (name = N'subtext_WebEvent_LogEvent') AND (type = 'P'))) )
-    BEGIN
-        IF (EXISTS(SELECT TOP 1 * FROM [<dbUser,varchar,dbo>].subtext_WebEvent_Events))
-        BEGIN
-            SELECT N'subtext_WebEvent_Events'
-            RETURN
-        END
-    END
-
-    -- Check subtext_Users table if (@TablesToCheck & 1,2,4 & 8) are all set
-    IF ((@TablesToCheck & 1) <> 0 AND
-        (@TablesToCheck & 2) <> 0 AND
-        (@TablesToCheck & 4) <> 0 AND
-        (@TablesToCheck & 8) <> 0 AND
-        (@TablesToCheck & 32) <> 0 AND
-        (@TablesToCheck & 128) <> 0 AND
-        (@TablesToCheck & 256) <> 0 AND
-        (@TablesToCheck & 512) <> 0 AND
-        (@TablesToCheck & 1024) <> 0)
-    BEGIN
-        IF (EXISTS(SELECT TOP 1 UserId FROM [<dbUser,varchar,dbo>].subtext_Users))
-        BEGIN
-            SELECT N'subtext_Users'
-            RETURN
-        END
-        IF (EXISTS(SELECT TOP 1 ApplicationId FROM [<dbUser,varchar,dbo>].subtext_Applications))
-        BEGIN
-            SELECT N'subtext_Applications'
-            RETURN
-        END
-    END
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationAllUsers_SetPageSettings] (
-    @ApplicationName  NVARCHAR(256),
-    @Path             NVARCHAR(256),
-    @PageSettings     IMAGE,
-    @CurrentTimeUtc   DATETIME)
-AS
-BEGIN
-    DECLARE @ApplicationId UNIQUEIDENTIFIER
-    DECLARE @PathId UNIQUEIDENTIFIER
-
-    SELECT @ApplicationId = NULL
-    SELECT @PathId = NULL
-
-    EXEC [<dbUser,varchar,dbo>].subtext_Applications_CreateApplication @ApplicationName, @ApplicationId OUTPUT
-
-    SELECT @PathId = u.PathId FROM [<dbUser,varchar,dbo>].subtext_Paths u WHERE u.ApplicationId = @ApplicationId AND u.LoweredPath = LOWER(@Path)
-    IF (@PathId IS NULL)
-    BEGIN
-        EXEC [<dbUser,varchar,dbo>].subtext_Paths_CreatePath @ApplicationId, @Path, @PathId OUTPUT
-    END
-
-    IF (EXISTS(SELECT PathId FROM [<dbUser,varchar,dbo>].subtext_PersonalizationAllUsers WHERE PathId = @PathId))
-        UPDATE [<dbUser,varchar,dbo>].subtext_PersonalizationAllUsers SET PageSettings = @PageSettings, LastUpdatedDate = @CurrentTimeUtc WHERE PathId = @PathId
-    ELSE
-        INSERT INTO [<dbUser,varchar,dbo>].subtext_PersonalizationAllUsers(PathId, PageSettings, LastUpdatedDate) VALUES (@PathId, @PageSettings, @CurrentTimeUtc)
-    RETURN 0
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Roles_CreateRole]
-    @ApplicationName  nvarchar(256),
-    @RoleName         nvarchar(256)
-AS
-BEGIN
-    DECLARE @ApplicationId uniqueidentifier
-    SELECT  @ApplicationId = NULL
-
-    DECLARE @ErrorCode     int
-    SET @ErrorCode = 0
-
-    DECLARE @TranStarted   bit
-    SET @TranStarted = 0
-
-    IF( @@TRANCOUNT = 0 )
-    BEGIN
-        BEGIN TRANSACTION
-        SET @TranStarted = 1
-    END
-    ELSE
-        SET @TranStarted = 0
-
-    EXEC [<dbUser,varchar,dbo>].subtext_Applications_CreateApplication @ApplicationName, @ApplicationId OUTPUT
-
-    IF( @@ERROR <> 0 )
-    BEGIN
-        SET @ErrorCode = -1
-        GOTO Cleanup
-    END
-
-    IF (EXISTS(SELECT RoleId FROM [<dbUser,varchar,dbo>].subtext_Roles WHERE LoweredRoleName = LOWER(@RoleName) AND ApplicationId = @ApplicationId))
-    BEGIN
-        SET @ErrorCode = 1
-        GOTO Cleanup
-    END
-
-    INSERT INTO [<dbUser,varchar,dbo>].subtext_Roles
-                (ApplicationId, RoleName, LoweredRoleName)
-         VALUES (@ApplicationId, @RoleName, LOWER(@RoleName))
-
-    IF( @@ERROR <> 0 )
-    BEGIN
-        SET @ErrorCode = -1
-        GOTO Cleanup
-    END
-
-    IF( @TranStarted = 1 )
-    BEGIN
-        SET @TranStarted = 0
-        COMMIT TRANSACTION
-    END
-
-    RETURN(0)
-
-Cleanup:
-
-    IF( @TranStarted = 1 )
-    BEGIN
-        SET @TranStarted = 0
-        ROLLBACK TRANSACTION
-    END
-
-    RETURN @ErrorCode
-
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Profile_SetProperties]
-    @ApplicationName        nvarchar(256),
-    @PropertyNames          ntext,
-    @PropertyValuesString   ntext,
-    @PropertyValuesBinary   image,
-    @UserName               nvarchar(256),
-    @IsUserAnonymous        bit,
-    @CurrentTimeUtc         datetime
-AS
-BEGIN
-    DECLARE @ApplicationId uniqueidentifier
-    SELECT  @ApplicationId = NULL
-
-    DECLARE @ErrorCode     int
-    SET @ErrorCode = 0
-
-    DECLARE @TranStarted   bit
-    SET @TranStarted = 0
-
-    IF( @@TRANCOUNT = 0 )
-    BEGIN
-       BEGIN TRANSACTION
-       SET @TranStarted = 1
-    END
-    ELSE
-    	SET @TranStarted = 0
-
-    EXEC [<dbUser,varchar,dbo>].subtext_Applications_CreateApplication @ApplicationName, @ApplicationId OUTPUT
-
-    IF( @@ERROR <> 0 )
-    BEGIN
-        SET @ErrorCode = -1
-        GOTO Cleanup
-    END
-
-    DECLARE @UserId uniqueidentifier
-    DECLARE @LastActivityDate datetime
-    SELECT  @UserId = NULL
-    SELECT  @LastActivityDate = @CurrentTimeUtc
-
-    SELECT @UserId = UserId
-    FROM   [<dbUser,varchar,dbo>].subtext_Users
-    WHERE  LoweredUserName = LOWER(@UserName)
-    
-    IF( @@ERROR <> 0 )
-    BEGIN
-        SET @ErrorCode = -1
-        GOTO Cleanup
-    END
-
-    UPDATE [<dbUser,varchar,dbo>].subtext_Users
-    SET    LastActivityDate=@CurrentTimeUtc
-    WHERE  UserId = @UserId
-
-    IF( @@ERROR <> 0 )
-    BEGIN
-        SET @ErrorCode = -1
-        GOTO Cleanup
-    END
-
-    IF (EXISTS( SELECT *
-               FROM   [<dbUser,varchar,dbo>].[subtext_Profile]
-               WHERE  UserId = @UserId))
-        UPDATE [<dbUser,varchar,dbo>].[subtext_Profile]
-        SET    PropertyNames=@PropertyNames
-			, PropertyValuesString = @PropertyValuesString
-			, PropertyValuesBinary = @PropertyValuesBinary
-			, LastUpdatedDate=@CurrentTimeUtc
-        WHERE  UserId = @UserId
-    ELSE
-        INSERT INTO [<dbUser,varchar,dbo>].subtext_Profile
-        (
-			UserId
-			, PropertyNames
-			, PropertyValuesString
-			, PropertyValuesBinary
-			, LastUpdatedDate
-		)
-        VALUES 
-        (
-			@UserId
-			, @PropertyNames
-			, @PropertyValuesString
-			, @PropertyValuesBinary
-			, @CurrentTimeUtc
-		)
-
-    IF( @@ERROR <> 0 )
-    BEGIN
-        SET @ErrorCode = -1
-        GOTO Cleanup
-    END
-
-    IF( @TranStarted = 1 )
-    BEGIN
-    	SET @TranStarted = 0
-    	COMMIT TRANSACTION
-    END
-
-    RETURN 0
-
-Cleanup:
-
-    IF( @TranStarted = 1 )
-    BEGIN
-        SET @TranStarted = 0
-    	ROLLBACK TRANSACTION
-    END
-
-    RETURN @ErrorCode
-
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Membership_CreateUser]
-    @UserName                               nvarchar(256),
-    @Password                               nvarchar(128) = NULL,
-    @PasswordSalt                           nvarchar(128) = NULL,
-    @Email                                  nvarchar(256) = NULL,
-    @PasswordQuestion                       nvarchar(256) = NULL,
-    @PasswordAnswer                         nvarchar(128) = NULL,
-    @IsApproved                             bit,
-    @CurrentTimeUtc                         datetime,
-    @CreateDate                             datetime = NULL,
-    @UniqueEmail                            int      = 0,
-    @PasswordFormat                         int      = 0,
-    @UserId                                 uniqueidentifier OUTPUT
-AS
-BEGIN
-    DECLARE @NewUserId uniqueidentifier
-    SELECT @NewUserId = NULL
-
-    DECLARE @IsLockedOut bit
-    SET @IsLockedOut = 0
-
-    DECLARE @LastLockoutDate  datetime
-    SET @LastLockoutDate = CONVERT( datetime, '17540101', 112 )
-
-    DECLARE @FailedPasswordAttemptCount int
-    SET @FailedPasswordAttemptCount = 0
-
-    DECLARE @FailedPasswordAttemptWindowStart  datetime
-    SET @FailedPasswordAttemptWindowStart = CONVERT( datetime, '17540101', 112 )
-
-    DECLARE @FailedPasswordAnswerAttemptCount int
-    SET @FailedPasswordAnswerAttemptCount = 0
-
-    DECLARE @FailedPasswordAnswerAttemptWindowStart  datetime
-    SET @FailedPasswordAnswerAttemptWindowStart = CONVERT( datetime, '17540101', 112 )
-
-    DECLARE @NewUserCreated bit
-    DECLARE @ReturnValue   int
-    SET @ReturnValue = 0
-
-    DECLARE @ErrorCode     int
-    SET @ErrorCode = 0
-
-    DECLARE @TranStarted   bit
-    SET @TranStarted = 0
-
-    IF( @@TRANCOUNT = 0 )
-    BEGIN
-	    BEGIN TRANSACTION
-	    SET @TranStarted = 1
-    END
-    ELSE
-    	SET @TranStarted = 0
-
-    SET @CreateDate = @CurrentTimeUtc
-
-    SELECT  @NewUserId = UserId FROM [<dbUser,varchar,dbo>].[subtext_Users] WHERE LOWER(@UserName) = LoweredUserName
-    IF ( NOT @NewUserId IS NULL )
-    BEGIN
-        SET @NewUserCreated = 0
-        IF( @NewUserId <> @UserId AND @UserId IS NOT NULL )
-        BEGIN
-            SET @ErrorCode = 6
-            GOTO Cleanup
-        END
-    END
-
-    IF( @@ERROR <> 0 )
-    BEGIN
-        SET @ErrorCode = -1
-        GOTO Cleanup
-    END
-
-    IF( @ReturnValue = -1 )
-    BEGIN
-        SET @ErrorCode = 10
-        GOTO Cleanup
-    END
-	
-	SELECT @NewUserId = NEWID()
-	
-	IF ( EXISTS ( SELECT UserId
-                  FROM   [<dbUser,varchar,dbo>].[subtext_Users]
-                  WHERE  @NewUserId = UserId ) )
-    BEGIN
-		-- This should never happen.
-        SET @ErrorCode = 6
-        GOTO Cleanup
-    END
-
-    SET @UserId = @NewUserId
-
-    IF (@UniqueEmail = 1)
-    BEGIN
-        IF (EXISTS (SELECT *
-                    FROM  [<dbUser,varchar,dbo>].[subtext_Users] WITH ( UPDLOCK, HOLDLOCK )
-                    WHERE LoweredEmail = LOWER(@Email)))
-        BEGIN
-            SET @ErrorCode = 7
-            GOTO Cleanup
-        END
-    END
-
-
-    INSERT INTO [<dbUser,varchar,dbo>].[subtext_Users]
-	( 
-		UserId
-		, UserName
-		, LoweredUserName
-		, IsAnonymous
-		, Password
-		, PasswordSalt
-		, Email
-		, LoweredEmail
-		, PasswordQuestion
-		, PasswordAnswer
-		, PasswordFormat
-		, IsApproved
-		, IsLockedOut
-		, CreateDate
-		, LastLoginDate
-		, LastPasswordChangedDate
-		, LastActivityDate
-		, LastLockoutDate
-		, FailedPasswordAttemptCount
-		, FailedPasswordAttemptWindowStart
-		, FailedPasswordAnswerAttemptCount
-		, FailedPasswordAnswerAttemptWindowStart 
-	)
-	VALUES 
-	( 
-		@UserId
-		, @UserName
-		, LOWER(@UserName)
-		, 0 -- IsAnonymous
-		, @Password
-		, @PasswordSalt
-		, @Email
-		, LOWER(@Email)
-		, @PasswordQuestion
-		, @PasswordAnswer
-		, @PasswordFormat
-		, @IsApproved
-		, @IsLockedOut
-		, @CreateDate
-		, @CreateDate
-		, @CreateDate
-		, @CurrentTimeUtc -- LastActivityDate
-		, @LastLockoutDate
-		, @FailedPasswordAttemptCount
-		, @FailedPasswordAttemptWindowStart
-		, @FailedPasswordAnswerAttemptCount
-		, @FailedPasswordAnswerAttemptWindowStart 
-	)
-
-    IF( @@ERROR <> 0 )
-    BEGIN
-        SET @ErrorCode = -1
-        GOTO Cleanup
-    END
-
-    IF( @TranStarted = 1 )
-    BEGIN
-	    SET @TranStarted = 0
-	    COMMIT TRANSACTION
-    END
-
-    RETURN 0
-
-Cleanup:
-
-    IF( @TranStarted = 1 )
-    BEGIN
-        SET @TranStarted = 0
-    	ROLLBACK TRANSACTION
-    END
-
-    RETURN @ErrorCode
-
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationPerUser_SetPageSettings] (
-    @ApplicationName  NVARCHAR(256),
-    @UserName         NVARCHAR(256),
-    @Path             NVARCHAR(256),
-    @PageSettings     IMAGE,
-    @CurrentTimeUtc   DATETIME)
-AS
-BEGIN
-    DECLARE @ApplicationId UNIQUEIDENTIFIER
-    DECLARE @PathId UNIQUEIDENTIFIER
-    DECLARE @UserId UNIQUEIDENTIFIER
-
-    SELECT @ApplicationId = NULL
-    SELECT @PathId = NULL
-    SELECT @UserId = NULL
-
-    EXEC [<dbUser,varchar,dbo>].subtext_Applications_CreateApplication @ApplicationName, @ApplicationId OUTPUT
-
-    SELECT @PathId = u.PathId FROM [<dbUser,varchar,dbo>].subtext_Paths u WHERE u.ApplicationId = @ApplicationId AND u.LoweredPath = LOWER(@Path)
-    IF (@PathId IS NULL)
-    BEGIN
-        EXEC [<dbUser,varchar,dbo>].subtext_Paths_CreatePath @ApplicationId, @Path, @PathId OUTPUT
-    END
-
-    SELECT @UserId = UserId FROM [<dbUser,varchar,dbo>].[subtext_Users] WHERE LoweredUserName = LOWER(@UserName)
-    
-    UPDATE   [<dbUser,varchar,dbo>].subtext_Users WITH (ROWLOCK)
-    SET      LastActivityDate = @CurrentTimeUtc
-    WHERE    UserId = @UserId
-    IF (@@ROWCOUNT = 0) -- Username not found
-        RETURN
-
-    IF (EXISTS(SELECT PathId FROM [<dbUser,varchar,dbo>].subtext_PersonalizationPerUser WHERE UserId = @UserId AND PathId = @PathId))
-        UPDATE [<dbUser,varchar,dbo>].subtext_PersonalizationPerUser SET PageSettings = @PageSettings, LastUpdatedDate = @CurrentTimeUtc WHERE UserId = @UserId AND PathId = @PathId
-    ELSE
-        INSERT INTO [<dbUser,varchar,dbo>].subtext_PersonalizationPerUser(UserId, PathId, PageSettings, LastUpdatedDate) VALUES (@UserId, @PathId, @PageSettings, @CurrentTimeUtc)
-    RETURN 0
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_Profile_DeleteProfiles]
-    @UserNames              nvarchar(4000)
-AS
-BEGIN
-    DECLARE @UserName     nvarchar(256)
-    DECLARE @CurrentPos   int
-    DECLARE @NextPos      int
-    DECLARE @NumDeleted   int
-    DECLARE @DeletedUser  int
-    DECLARE @TranStarted  bit
-    DECLARE @ErrorCode    int
-
-    SET @ErrorCode = 0
-    SET @CurrentPos = 1
-    SET @NumDeleted = 0
-    SET @TranStarted = 0
-
-    IF( @@TRANCOUNT = 0 )
-    BEGIN
-        BEGIN TRANSACTION
-        SET @TranStarted = 1
-    END
-    ELSE
-    	SET @TranStarted = 0
-
-    WHILE (@CurrentPos <= LEN(@UserNames))
-    BEGIN
-        SELECT @NextPos = CHARINDEX(N',', @UserNames,  @CurrentPos)
-        IF (@NextPos = 0 OR @NextPos IS NULL)
-            SELECT @NextPos = LEN(@UserNames) + 1
-
-        SELECT @UserName = SUBSTRING(@UserNames, @CurrentPos, @NextPos - @CurrentPos)
-        SELECT @CurrentPos = @NextPos+1
-
-        IF (LEN(@UserName) > 0)
-        BEGIN
-            SELECT @DeletedUser = 0
-            EXEC [<dbUser,varchar,dbo>].[subtext_Users_DeleteUser] @UserName, 4, @DeletedUser OUTPUT
-            IF( @@ERROR <> 0 )
-            BEGIN
-                SET @ErrorCode = -1
-                GOTO Cleanup
-            END
-            IF (@DeletedUser <> 0)
-                SELECT @NumDeleted = @NumDeleted + 1
-        END
-    END
-    SELECT @NumDeleted
-    IF (@TranStarted = 1)
-    BEGIN
-    	SET @TranStarted = 0
-    	COMMIT TRANSACTION
-    END
-    SET @TranStarted = 0
-
-    RETURN 0
-
-Cleanup:
-    IF (@TranStarted = 1 )
-    BEGIN
-        SET @TranStarted = 0
-    	ROLLBACK TRANSACTION
-    END
-    RETURN @ErrorCode
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationAllUsers_GetPageSettings] (
-    @ApplicationName  NVARCHAR(256),
-    @Path              NVARCHAR(256))
-AS
-BEGIN
-    DECLARE @ApplicationId UNIQUEIDENTIFIER
-    DECLARE @PathId UNIQUEIDENTIFIER
-
-    SELECT @ApplicationId = NULL
-    SELECT @PathId = NULL
-
-    EXEC [<dbUser,varchar,dbo>].[subtext_Personalization_GetApplicationId] @ApplicationName, @ApplicationId OUTPUT
-    IF (@ApplicationId IS NULL)
-    BEGIN
-        RETURN
-    END
-
-    SELECT @PathId = u.PathId FROM [<dbUser,varchar,dbo>].[subtext_Paths] u WHERE u.ApplicationId = @ApplicationId AND u.LoweredPath = LOWER(@Path)
-    IF (@PathId IS NULL)
-    BEGIN
-        RETURN
-    END
-
-    SELECT p.PageSettings FROM [<dbUser,varchar,dbo>].subtext_PersonalizationAllUsers p WHERE p.PathId = @PathId
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationAllUsers_ResetPageSettings] (
-    @ApplicationName  NVARCHAR(256),
-    @Path              NVARCHAR(256))
-AS
-BEGIN
-    DECLARE @ApplicationId UNIQUEIDENTIFIER
-    DECLARE @PathId UNIQUEIDENTIFIER
-
-    SELECT @ApplicationId = NULL
-    SELECT @PathId = NULL
-
-    EXEC [<dbUser,varchar,dbo>].subtext_Personalization_GetApplicationId @ApplicationName, @ApplicationId OUTPUT
-    IF (@ApplicationId IS NULL)
-    BEGIN
-        RETURN
-    END
-
-    SELECT @PathId = u.PathId FROM [<dbUser,varchar,dbo>].subtext_Paths u WHERE u.ApplicationId = @ApplicationId AND u.LoweredPath = LOWER(@Path)
-    IF (@PathId IS NULL)
-    BEGIN
-        RETURN
-    END
-
-    DELETE FROM [<dbUser,varchar,dbo>].subtext_PersonalizationAllUsers WHERE PathId = @PathId
-    RETURN 0
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationPerUser_GetPageSettings] (
-    @ApplicationName  NVARCHAR(256),
-    @UserName         NVARCHAR(256),
-    @Path             NVARCHAR(256),
-    @CurrentTimeUtc   DATETIME)
-AS
-BEGIN
-    DECLARE @ApplicationId UNIQUEIDENTIFIER
-    DECLARE @PathId UNIQUEIDENTIFIER
-    DECLARE @UserId UNIQUEIDENTIFIER
-
-    SELECT @ApplicationId = NULL
-    SELECT @PathId = NULL
-    SELECT @UserId = NULL
-
-    EXEC [<dbUser,varchar,dbo>].subtext_Personalization_GetApplicationId @ApplicationName, @ApplicationId OUTPUT
-    IF (@ApplicationId IS NULL)
-    BEGIN
-        RETURN
-    END
-
-    SELECT @PathId = u.PathId FROM [<dbUser,varchar,dbo>].subtext_Paths u WHERE u.ApplicationId = @ApplicationId AND u.LoweredPath = LOWER(@Path)
-    IF (@PathId IS NULL)
-    BEGIN
-        RETURN
-    END
-
-    SELECT @UserId = UserId FROM [<dbUser,varchar,dbo>].subtext_Users WHERE LoweredUserName = LOWER(@UserName)
-    IF (@UserId IS NULL)
-    BEGIN
-        RETURN
-    END
-
-    UPDATE   [<dbUser,varchar,dbo>].subtext_Users WITH (ROWLOCK)
-    SET      LastActivityDate = @CurrentTimeUtc
-    WHERE    UserId = @UserId
-    IF (@@ROWCOUNT = 0) -- Username not found
-        RETURN
-
-    SELECT p.PageSettings FROM [<dbUser,varchar,dbo>].subtext_PersonalizationPerUser p WHERE p.PathId = @PathId AND p.UserId = @UserId
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationPerUser_ResetPageSettings] (
-    @ApplicationName  NVARCHAR(256),
-    @UserName         NVARCHAR(256),
-    @Path             NVARCHAR(256),
-    @CurrentTimeUtc   DATETIME)
-AS
-BEGIN
-    DECLARE @ApplicationId UNIQUEIDENTIFIER
-    DECLARE @PathId UNIQUEIDENTIFIER
-    DECLARE @UserId UNIQUEIDENTIFIER
-
-    SELECT @ApplicationId = NULL
-    SELECT @PathId = NULL
-    SELECT @UserId = NULL
-
-    EXEC [<dbUser,varchar,dbo>].subtext_Personalization_GetApplicationId @ApplicationName, @ApplicationId OUTPUT
-    IF (@ApplicationId IS NULL)
-    BEGIN
-        RETURN
-    END
-
-    SELECT @PathId = u.PathId FROM [<dbUser,varchar,dbo>].subtext_Paths u WHERE u.ApplicationId = @ApplicationId AND u.LoweredPath = LOWER(@Path)
-    IF (@PathId IS NULL)
-    BEGIN
-        RETURN
-    END
-
-    SELECT @UserId = UserId FROM [<dbUser,varchar,dbo>].subtext_Users WHERE LoweredUserName = LOWER(@UserName)
-    IF (@UserId IS NULL)
-    BEGIN
-        RETURN
-    END
-
-    UPDATE   [<dbUser,varchar,dbo>].subtext_Users WITH (ROWLOCK)
-    SET      LastActivityDate = @CurrentTimeUtc
-    WHERE    UserId = @UserId
-    IF (@@ROWCOUNT = 0) -- Username not found
-        RETURN
-
-    DELETE FROM [<dbUser,varchar,dbo>].subtext_PersonalizationPerUser WHERE PathId = @PathId AND UserId = @UserId
-    RETURN 0
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationAdministration_DeleteAllState] (
-    @AllUsersScope bit,
-    @ApplicationName NVARCHAR(256),
-    @Count int OUT)
-AS
-BEGIN
-    DECLARE @ApplicationId UNIQUEIDENTIFIER
-    EXEC [<dbUser,varchar,dbo>].subtext_Personalization_GetApplicationId @ApplicationName, @ApplicationId OUTPUT
-    IF (@ApplicationId IS NULL)
-        SELECT @Count = 0
-    ELSE
-    BEGIN
-        IF (@AllUsersScope = 1)
-            DELETE FROM subtext_PersonalizationAllUsers
-            WHERE PathId IN
-               (SELECT Paths.PathId
-                FROM [<dbUser,varchar,dbo>].subtext_Paths Paths
-                WHERE Paths.ApplicationId = @ApplicationId)
-        ELSE
-            DELETE FROM subtext_PersonalizationPerUser
-            WHERE PathId IN
-               (SELECT Paths.PathId
-                FROM [<dbUser,varchar,dbo>].subtext_Paths Paths
-                WHERE Paths.ApplicationId = @ApplicationId)
-
-        SELECT @Count = @@ROWCOUNT
-    END
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationAdministration_ResetSharedState] (
-    @Count int OUT,
-    @ApplicationName NVARCHAR(256),
-    @Path NVARCHAR(256))
-AS
-BEGIN
-    DECLARE @ApplicationId UNIQUEIDENTIFIER
-    EXEC [<dbUser,varchar,dbo>].subtext_Personalization_GetApplicationId @ApplicationName, @ApplicationId OUTPUT
-    IF (@ApplicationId IS NULL)
-        SELECT @Count = 0
-    ELSE
-    BEGIN
-        DELETE FROM [<dbUser,varchar,dbo>].subtext_PersonalizationAllUsers
-        WHERE PathId IN
-            (SELECT AllUsers.PathId
-             FROM [<dbUser,varchar,dbo>].subtext_PersonalizationAllUsers AllUsers, [<dbUser,varchar,dbo>].subtext_Paths Paths
-             WHERE Paths.ApplicationId = @ApplicationId
-                   AND AllUsers.PathId = Paths.PathId
-                   AND Paths.LoweredPath = LOWER(@Path))
-
-        SELECT @Count = @@ROWCOUNT
-    END
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationAdministration_ResetUserState] (
-    @Count                  int                 OUT,
-    @ApplicationName        NVARCHAR(256),
-    @InactiveSinceDate      DATETIME            = NULL,
-    @UserName               NVARCHAR(256)       = NULL,
-    @Path                   NVARCHAR(256)       = NULL)
-AS
-BEGIN
-    DECLARE @ApplicationId UNIQUEIDENTIFIER
-    EXEC [<dbUser,varchar,dbo>].subtext_Personalization_GetApplicationId @ApplicationName, @ApplicationId OUTPUT
-    IF (@ApplicationId IS NULL)
-        SELECT @Count = 0
-    ELSE
-    BEGIN
-        DELETE FROM [<dbUser,varchar,dbo>].subtext_PersonalizationPerUser
-        WHERE Id IN (SELECT PerUser.Id
-                     FROM [<dbUser,varchar,dbo>].subtext_PersonalizationPerUser PerUser, [<dbUser,varchar,dbo>].subtext_Users Users, [<dbUser,varchar,dbo>].subtext_Paths Paths
-                     WHERE Paths.ApplicationId = @ApplicationId
-                           AND PerUser.UserId = Users.UserId
-                           AND PerUser.PathId = Paths.PathId
-                           AND (@InactiveSinceDate IS NULL OR Users.LastActivityDate <= @InactiveSinceDate)
-                           AND (@UserName IS NULL OR Users.LoweredUserName = LOWER(@UserName))
-                           AND (@Path IS NULL OR Paths.LoweredPath = LOWER(@Path)))
-
-        SELECT @Count = @@ROWCOUNT
-    END
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationAdministration_GetCountOfState] (
-    @Count int OUT,
-    @AllUsersScope bit,
-    @ApplicationName NVARCHAR(256),
-    @Path NVARCHAR(256) = NULL,
-    @UserName NVARCHAR(256) = NULL,
-    @InactiveSinceDate DATETIME = NULL)
-AS
-BEGIN
-
-    DECLARE @ApplicationId UNIQUEIDENTIFIER
-    EXEC [<dbUser,varchar,dbo>].subtext_Personalization_GetApplicationId @ApplicationName, @ApplicationId OUTPUT
-    IF (@ApplicationId IS NULL)
-        SELECT @Count = 0
-    ELSE
-        IF (@AllUsersScope = 1)
-            SELECT @Count = COUNT(*)
-            FROM [<dbUser,varchar,dbo>].subtext_PersonalizationAllUsers AllUsers, [<dbUser,varchar,dbo>].subtext_Paths Paths
-            WHERE Paths.ApplicationId = @ApplicationId
-                  AND AllUsers.PathId = Paths.PathId
-                  AND (@Path IS NULL OR Paths.LoweredPath LIKE LOWER(@Path))
-        ELSE
-            SELECT @Count = COUNT(*)
-            FROM [<dbUser,varchar,dbo>].subtext_PersonalizationPerUser PerUser, [<dbUser,varchar,dbo>].subtext_Users Users, [<dbUser,varchar,dbo>].subtext_Paths Paths
-            WHERE Paths.ApplicationId = @ApplicationId
-                  AND PerUser.UserId = Users.UserId
-                  AND PerUser.PathId = Paths.PathId
-                  AND (@Path IS NULL OR Paths.LoweredPath LIKE LOWER(@Path))
-                  AND (@UserName IS NULL OR Users.LoweredUserName LIKE LOWER(@UserName))
-                  AND (@InactiveSinceDate IS NULL OR Users.LastActivityDate <= @InactiveSinceDate)
-END
-
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_PersonalizationAdministration_FindState] (
-    @AllUsersScope bit,
-    @ApplicationName NVARCHAR(256),
-    @PageIndex              INT,
-    @PageSize               INT,
-    @Path NVARCHAR(256) = NULL,
-    @UserName NVARCHAR(256) = NULL,
-    @InactiveSinceDate DATETIME = NULL)
-AS
-BEGIN
-    DECLARE @ApplicationId UNIQUEIDENTIFIER
-    EXEC [<dbUser,varchar,dbo>].subtext_Personalization_GetApplicationId @ApplicationName, @ApplicationId OUTPUT
-    IF (@ApplicationId IS NULL)
-        RETURN
-
-    -- Set the page bounds
-    DECLARE @PageLowerBound INT
-    DECLARE @PageUpperBound INT
-    DECLARE @TotalRecords   INT
-    SET @PageLowerBound = @PageSize * @PageIndex
-    SET @PageUpperBound = @PageSize - 1 + @PageLowerBound
-
-    -- Create a temp table to store the selected results
-    CREATE TABLE #PageIndex (
-        IndexId int IDENTITY (0, 1) NOT NULL,
-        ItemId UNIQUEIDENTIFIER
-    )
-
-    IF (@AllUsersScope = 1)
-    BEGIN
-        -- Insert into our temp table
-        INSERT INTO #PageIndex (ItemId)
-        SELECT Paths.PathId
-        FROM [<dbUser,varchar,dbo>].subtext_Paths Paths,
-             ((SELECT Paths.PathId
-               FROM [<dbUser,varchar,dbo>].subtext_PersonalizationAllUsers AllUsers, [<dbUser,varchar,dbo>].subtext_Paths Paths
-               WHERE Paths.ApplicationId = @ApplicationId
-                      AND AllUsers.PathId = Paths.PathId
-                      AND (@Path IS NULL OR Paths.LoweredPath LIKE LOWER(@Path))
-              ) AS SharedDataPerPath
-              FULL OUTER JOIN
-              (SELECT DISTINCT Paths.PathId
-               FROM [<dbUser,varchar,dbo>].subtext_PersonalizationPerUser PerUser, [<dbUser,varchar,dbo>].subtext_Paths Paths
-               WHERE Paths.ApplicationId = @ApplicationId
-                      AND PerUser.PathId = Paths.PathId
-                      AND (@Path IS NULL OR Paths.LoweredPath LIKE LOWER(@Path))
-              ) AS UserDataPerPath
-              ON SharedDataPerPath.PathId = UserDataPerPath.PathId
-             )
-        WHERE Paths.PathId = SharedDataPerPath.PathId OR Paths.PathId = UserDataPerPath.PathId
-        ORDER BY Paths.Path ASC
-
-        SELECT @TotalRecords = @@ROWCOUNT
-
-        SELECT Paths.Path,
-               SharedDataPerPath.LastUpdatedDate,
-               SharedDataPerPath.SharedDataLength,
-               UserDataPerPath.UserDataLength,
-               UserDataPerPath.UserCount
-        FROM [<dbUser,varchar,dbo>].subtext_Paths Paths,
-             ((SELECT PageIndex.ItemId AS PathId,
-                      AllUsers.LastUpdatedDate AS LastUpdatedDate,
-                      DATALENGTH(AllUsers.PageSettings) AS SharedDataLength
-               FROM [<dbUser,varchar,dbo>].subtext_PersonalizationAllUsers AllUsers, #PageIndex PageIndex
-               WHERE AllUsers.PathId = PageIndex.ItemId
-                     AND PageIndex.IndexId >= @PageLowerBound AND PageIndex.IndexId <= @PageUpperBound
-              ) AS SharedDataPerPath
-              FULL OUTER JOIN
-              (SELECT PageIndex.ItemId AS PathId,
-                      SUM(DATALENGTH(PerUser.PageSettings)) AS UserDataLength,
-                      COUNT(*) AS UserCount
-               FROM subtext_PersonalizationPerUser PerUser, #PageIndex PageIndex
-               WHERE PerUser.PathId = PageIndex.ItemId
-                     AND PageIndex.IndexId >= @PageLowerBound AND PageIndex.IndexId <= @PageUpperBound
-               GROUP BY PageIndex.ItemId
-              ) AS UserDataPerPath
-              ON SharedDataPerPath.PathId = UserDataPerPath.PathId
-             )
-        WHERE Paths.PathId = SharedDataPerPath.PathId OR Paths.PathId = UserDataPerPath.PathId
-        ORDER BY Paths.Path ASC
-    END
-    ELSE
-    BEGIN
-        -- Insert into our temp table
-        INSERT INTO #PageIndex (ItemId)
-        SELECT PerUser.Id
-        FROM [<dbUser,varchar,dbo>].subtext_PersonalizationPerUser PerUser, [<dbUser,varchar,dbo>].subtext_Users Users, [<dbUser,varchar,dbo>].subtext_Paths Paths
-        WHERE Paths.ApplicationId = @ApplicationId
-              AND PerUser.UserId = Users.UserId
-              AND PerUser.PathId = Paths.PathId
-              AND (@Path IS NULL OR Paths.LoweredPath LIKE LOWER(@Path))
-              AND (@UserName IS NULL OR Users.LoweredUserName LIKE LOWER(@UserName))
-              AND (@InactiveSinceDate IS NULL OR Users.LastActivityDate <= @InactiveSinceDate)
-        ORDER BY Paths.Path ASC, Users.UserName ASC
-
-        SELECT @TotalRecords = @@ROWCOUNT
-
-        SELECT Paths.Path, PerUser.LastUpdatedDate, DATALENGTH(PerUser.PageSettings), Users.UserName, Users.LastActivityDate
-        FROM [<dbUser,varchar,dbo>].subtext_PersonalizationPerUser PerUser, [<dbUser,varchar,dbo>].subtext_Users Users, [<dbUser,varchar,dbo>].subtext_Paths Paths, #PageIndex PageIndex
-        WHERE PerUser.Id = PageIndex.ItemId
-              AND PerUser.UserId = Users.UserId
-              AND PerUser.PathId = Paths.PathId
-              AND PageIndex.IndexId >= @PageLowerBound AND PageIndex.IndexId <= @PageUpperBound
-        ORDER BY Paths.Path ASC, Users.UserName ASC
-    END
-
-    RETURN @TotalRecords
-END
-
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_RegisterSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_RegisterSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_RegisterSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_RegisterSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_RegisterSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_RegisterSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_RegisterSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_RegisterSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_RegisterSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_CheckSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_CheckSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_CheckSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_CheckSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_CheckSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_CheckSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_CheckSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_CheckSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_CheckSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UnRegisterSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UnRegisterSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UnRegisterSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UnRegisterSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UnRegisterSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UnRegisterSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UnRegisterSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UnRegisterSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UnRegisterSchemaVersion] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_GetUserByName] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_GetUserByName] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_GetUserByUserId] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_GetUserByUserId] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_GetUserByEmail] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_GetUserByEmail] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_GetPasswordWithFormat] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_UpdateUserInfo] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_GetPassword] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_GetNumberOfUsersOnline] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_GetNumberOfUsersOnline] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_SetPassword] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_ResetPassword] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_UnlockUser] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_UpdateUser] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_ChangePasswordQuestionAndAnswer] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Profile_GetProperties] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Profile_DeleteInactiveProfiles] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Profile_GetNumberOfInactiveProfiles] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UsersInRoles_IsUserInRole] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UsersInRoles_IsUserInRole] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UsersInRoles_GetRolesForUser] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UsersInRoles_GetRolesForUser] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Roles_DeleteRole] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Roles_RoleExists] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UsersInRoles_AddUsersToRoles] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UsersInRoles_RemoveUsersFromRoles] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Roles_GetAllRoles] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UsersInRoles_GetUsersInRoles] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UsersInRoles_FindUsersInRole] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Paths_CreatePath] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_WebEvent_LogEvent] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Personalization_GetApplicationId] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Profile_GetProfiles] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_FindUsersByName] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_FindUsersByEmail] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Membership_GetAllUsers] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Users_DeleteUser] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_PersonalizationAllUsers_SetPageSettings] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Roles_CreateRole] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Profile_SetProperties] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_PersonalizationPerUser_SetPageSettings] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_Profile_DeleteProfiles] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_PersonalizationAllUsers_GetPageSettings] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_PersonalizationAllUsers_ResetPageSettings] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_PersonalizationPerUser_GetPageSettings] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_PersonalizationPerUser_ResetPageSettings] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_PersonalizationAdministration_DeleteAllState] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_PersonalizationAdministration_ResetSharedState] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_PersonalizationAdministration_ResetUserState] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_PersonalizationAdministration_GetCountOfState] TO [public]
-GO
-GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_PersonalizationAdministration_FindState] TO [public]
-
-/* Views */
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-
-  CREATE VIEW [<dbUser,varchar,dbo>].[vw_subtext_Profiles]
-  AS SELECT [<dbUser,varchar,dbo>].[subtext_Profile].[UserId], [<dbUser,varchar,dbo>].[subtext_Profile].[LastUpdatedDate],
-      [DataSize]=  DATALENGTH([<dbUser,varchar,dbo>].[subtext_Profile].[PropertyNames])
-                 + DATALENGTH([<dbUser,varchar,dbo>].[subtext_Profile].[PropertyValuesString])
-                 + DATALENGTH([<dbUser,varchar,dbo>].[subtext_Profile].[PropertyValuesBinary])
-  FROM [<dbUser,varchar,dbo>].[subtext_Profile]
-  
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-  CREATE VIEW [<dbUser,varchar,dbo>].[vw_subtext_Roles]
-  AS SELECT [<dbUser,varchar,dbo>].[subtext_Roles].[ApplicationId], [<dbUser,varchar,dbo>].[subtext_Roles].[RoleId], [<dbUser,varchar,dbo>].[subtext_Roles].[RoleName], [<dbUser,varchar,dbo>].[subtext_Roles].[LoweredRoleName], [<dbUser,varchar,dbo>].[subtext_Roles].[Description]
-  FROM [<dbUser,varchar,dbo>].[subtext_Roles]
-  
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-  CREATE VIEW [<dbUser,varchar,dbo>].[vw_subtext_UsersInRoles]
-  AS SELECT [<dbUser,varchar,dbo>].[subtext_UsersInRoles].[UserId], [<dbUser,varchar,dbo>].[subtext_UsersInRoles].[RoleId]
-  FROM [<dbUser,varchar,dbo>].[subtext_UsersInRoles]
-  
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-  CREATE VIEW [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_Paths]
-  AS SELECT [<dbUser,varchar,dbo>].[subtext_Paths].[ApplicationId], [<dbUser,varchar,dbo>].[subtext_Paths].[PathId], [<dbUser,varchar,dbo>].[subtext_Paths].[Path], [<dbUser,varchar,dbo>].[subtext_Paths].[LoweredPath]
-  FROM [<dbUser,varchar,dbo>].[subtext_Paths]
-  
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-  CREATE VIEW [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_Shared]
-  AS SELECT [<dbUser,varchar,dbo>].[subtext_PersonalizationAllUsers].[PathId], [DataSize]=DATALENGTH([<dbUser,varchar,dbo>].[subtext_PersonalizationAllUsers].[PageSettings]), [<dbUser,varchar,dbo>].[subtext_PersonalizationAllUsers].[LastUpdatedDate]
-  FROM [<dbUser,varchar,dbo>].[subtext_PersonalizationAllUsers]
-  
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-  CREATE VIEW [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_User]
-  AS SELECT [<dbUser,varchar,dbo>].[subtext_PersonalizationPerUser].[PathId], [<dbUser,varchar,dbo>].[subtext_PersonalizationPerUser].[UserId], [DataSize]=DATALENGTH([<dbUser,varchar,dbo>].[subtext_PersonalizationPerUser].[PageSettings]), [<dbUser,varchar,dbo>].[subtext_PersonalizationPerUser].[LastUpdatedDate]
-  FROM [<dbUser,varchar,dbo>].[subtext_PersonalizationPerUser]
-  
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-  CREATE VIEW [<dbUser,varchar,dbo>].[vw_subtext_Applications]
-  AS SELECT [<dbUser,varchar,dbo>].[subtext_Applications].[ApplicationName], [<dbUser,varchar,dbo>].[subtext_Applications].[LoweredApplicationName], [<dbUser,varchar,dbo>].[subtext_Applications].[ApplicationId], [<dbUser,varchar,dbo>].[subtext_Applications].[Description]
-  FROM [<dbUser,varchar,dbo>].[subtext_Applications]
-  
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-/* permission grants for views */
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Profiles] TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Profiles] ([UserId]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Profiles] ([LastUpdatedDate]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Profiles] ([DataSize]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Roles] TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Roles] ([ApplicationId]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Roles] ([RoleId]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Roles] ([RoleName]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Roles] ([LoweredRoleName]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Roles] ([Description]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_UsersInRoles] TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_UsersInRoles] ([UserId]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_UsersInRoles] ([RoleId]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_Paths] TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_Paths] ([ApplicationId]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_Paths] ([PathId]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_Paths] ([Path]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_Paths] ([LoweredPath]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_Shared] TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_Shared] ([PathId]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_Shared] ([DataSize]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_Shared] ([LastUpdatedDate]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_User] TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_User] ([PathId]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_User] ([UserId]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_User] ([DataSize]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_WebPartState_User] ([LastUpdatedDate]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] ([ApplicationName]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] ([ApplicationName]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] ([ApplicationName]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] ([ApplicationName]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] ([LoweredApplicationName]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] ([LoweredApplicationName]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] ([LoweredApplicationName]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] ([LoweredApplicationName]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] ([ApplicationId]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] ([ApplicationId]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] ([ApplicationId]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] ([ApplicationId]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] ([Description]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] ([Description]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] ([Description]) TO [public]
-GO
-GRANT SELECT ON [<dbUser,varchar,dbo>].[vw_subtext_Applications] ([Description]) TO [public]
-GO
-
-SET QUOTED_IDENTIFIER ON 
-GO
-SET ANSI_NULLS ON 
-GO
-
-CREATE PROC [<dbUser,varchar,dbo>].[subtext_UTILITY_AddBlog]
-(
-	@Title nvarchar(100)
-	, @Host nvarchar(50)
-	, @Subfolder nvarchar(50)
-	, @OwnerID uniqueidentifier
-	, @CurrentTimeUtc DateTime
-)
-
-AS
-
-IF NOT EXISTS(SELECT * FROM [<dbUser,varchar,dbo>].[subtext_config] WHERE Host = @Host AND Subfolder = @Subfolder)
-BEGIN
-	
-	DECLARE @ApplicationId UNIQUEIDENTIFIER
-	DECLARE @ApplicationName nvarchar(256)
-	SET @ApplicationName = @Host + '/' + @Subfolder
-	SET @ApplicationId = newid()
-
-	/* Create the Membership Application for this blog */
-	INSERT [<dbUser,varchar,dbo>].[subtext_Applications]
-		SELECT @ApplicationName, LOWER(@ApplicationName), @ApplicationId, 'New Blog'
-	
-	DECLARE @CreateDate DateTime
-	SELECT @CreateDate = getdate()
-	
-	/* Create this blog */
-	INSERT subtext_Config  
-	(
-		LastUpdated
-		, ApplicationId
-		, OwnerId
-		, Title
-		, SubTitle
-		, Skin
-		, SkinCssFile
-		, Subfolder
-		, Host
-		, TimeZone
-		, [Language]
-		, ItemCount
-		, Flag
-	)
-	Values             
-	(
-		getdate()
-		, @ApplicationId
-		, @OwnerID
-		, @Title
-		, 'Another Subtext Powered Blog'
-		, 'RedBook'
-		, 'blue.css'
-		, @Subfolder
-		, @Host
-		, -1188006249
-		,'en-US'
-		, 10
-		, 55 -- Flag
-	)
-
-	DECLARE @newBlogId int
-	SET @newBlogId = SCOPE_IDENTITY()
-
-	EXEC subtext_GetBlogById @newBlogId
-END
-
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_UTILITY_AddBlog]  TO [public]
-GO
-
-SET QUOTED_IDENTIFIER ON 
-GO
-SET ANSI_NULLS ON 
-GO
-
-CREATE PROC [<dbUser,varchar,dbo>].[subtext_CreateHost]
-(
-	@UserName nvarchar(256),
-	@Password nvarchar(128),
-	@PasswordSalt nvarchar(128),
-	@Email nvarchar(256) = NULL,
-	@CurrentTimeUtc DateTime
-)
-
-AS
-
-IF NOT EXISTS(SELECT * FROM [<dbUser,varchar,dbo>].[subtext_Host])
-BEGIN
-	/* Create the Membership Application for this blog */
-	DECLARE @ApplicationId UNIQUEIDENTIFIER
-	
-	SELECT @ApplicationId = ApplicationId FROM [<dbUser,varchar,dbo>].[subtext_Applications] WHERE ApplicationName = '/'
-	IF(@ApplicationID IS NULL)
-	BEGIN
-		EXEC subtext_Applications_CreateApplication '/', @ApplicationId OUTPUT
-	END
-	
-	DECLARE @UserId UNIQUEIDENTIFIER
-	DECLARE @CreateDate DateTime
-	SELECT @CreateDate = getdate()
-
-	/* Create the Host Admin Owner */
-	EXEC [<dbUser,varchar,dbo>].[subtext_Membership_CreateUser]
-		@UserName
-		, @Password
-		, @PasswordSalt
-		, @Email
-		, NULL	-- PasswordQuestion
-		, NULL	-- PasswordAnswer
-		, 1		-- IsApproved
-		, @CurrentTimeUtc
-		, @CreateDate
-		, 0		-- UniqueEmail
-		, 1		-- PasswordFormat
-		, @UserId OUTPUT
-
-	/* Create the host */
-	INSERT [<dbUser,varchar,dbo>].[subtext_Host]
-	(
-		ApplicationId
-		, OwnerId
-		, DateCreated
-	)
-	Values             
-	(
-		@ApplicationId
-		, @UserId
-		, @CreateDate
-	)
-	
-	EXEC [<dbUser,varchar,dbo>].[subtext_GetHost]
-END
-
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_CreateHost]  TO [public]
 GO

@@ -31,7 +31,8 @@ namespace Subtext.Web.Admin.Pages
 	public partial class Referrers : StatsPage
 	{
 		private readonly static ILog log = new Log();
-		private int pageIndex;
+		private int pageIndex = 0;
+		private bool _isListHidden = false;
 		private int _entryID = NullValue.NullInt32;
 	    
 	    public Referrers()
@@ -42,14 +43,14 @@ namespace Subtext.Web.Admin.Pages
 		protected void Page_Load(object sender, EventArgs e)
 		{
 
-			if (!IsPostBack)
+			if(!IsPostBack)
 			{
 				if (null != Request.QueryString[Keys.QRYSTR_PAGEINDEX])
 				{
 					this.pageIndex = Convert.ToInt32(Request.QueryString[Keys.QRYSTR_PAGEINDEX]);
 				}
 
-				if (null != Request.QueryString["EntryID"])
+				if(null != Request.QueryString["EntryID"])
 				{
 					_entryID = Convert.ToInt32(Request.QueryString["EntryID"]);
 				}
@@ -61,10 +62,10 @@ namespace Subtext.Web.Admin.Pages
 				BindList();
 			}
 		}
-
+		
 		protected override void BindLocalUI()
 		{
-			if (_entryID == NullValue.NullInt32)
+			if(_entryID == NullValue.NullInt32)
 			{
 
 				//SetReferalDesc("Referrals");
@@ -73,20 +74,20 @@ namespace Subtext.Web.Admin.Pages
 			{
 				SetReferalDesc("Entry", _entryID.ToString(CultureInfo.InvariantCulture));
 			}
-			base.BindLocalUI();
+            base.BindLocalUI();
 		}
 
 		private void BindList()
 		{
-			IPagedCollection<Referrer> referrers;
+            IPagedCollection<Referrer> referrers;
 
-			if (_entryID == NullValue.NullInt32)
+			if(_entryID == NullValue.NullInt32)
 			{
 				referrers = Stats.GetPagedReferrers(this.pageIndex, this.resultsPager.PageSize);
 			}
 			else
 			{
-				this.resultsPager.UrlFormat += string.Format(CultureInfo.InvariantCulture, "&{0}={1}", "EntryID",
+				this.resultsPager.UrlFormat += string.Format(CultureInfo.InvariantCulture, "&{0}={1}", "EntryID", 
 					_entryID);
 				referrers = Stats.GetPagedReferrers(this.pageIndex, this.resultsPager.PageSize, _entryID);
 			}
@@ -102,22 +103,30 @@ namespace Subtext.Web.Admin.Pages
 
 		private void SetReferalDesc(string selection, string title)
 		{
-			if (AdminMasterPage != null && AdminMasterPage.BreadCrumb != null)
+		    if(AdminMasterPage != null && AdminMasterPage.BreadCrumb != null)
 			{
-				string bctitle = string.Format(CultureInfo.InvariantCulture, "Viewing {0}:{1}", selection, title);
+				string bctitle= string.Format(CultureInfo.InvariantCulture, "Viewing {0}:{1}", selection,title);
 
 				AdminMasterPage.BreadCrumb.AddLastItem(bctitle);
-				AdminMasterPage.Title = bctitle;
+                AdminMasterPage.Title = bctitle;
 			}
 		}
 
-		public static string GetTitle(object dataContainer)
+		public string CheckHiddenStyle()
+		{
+			if (_isListHidden)
+				return Constants.CSSSTYLE_HIDDEN;
+			else
+				return String.Empty;
+		}
+
+		public string GetTitle(object dataContainer)
 		{
 			if (dataContainer is Referrer)
 			{
-				Referrer referrer = (Referrer)dataContainer;
+				Referrer referrer = (Referrer) dataContainer;
 
-				if (referrer.PostTitle != null)
+				if(referrer.PostTitle != null)
 				{
 
 					if (referrer.PostTitle.Trim().Length <= 50)
@@ -126,7 +135,7 @@ namespace Subtext.Web.Admin.Pages
 					}
 					else
 					{
-						return "<a href=\"../posts/" + referrer.EntryID + ".aspx\" target=\"_new\">" + referrer.PostTitle.Substring(0, 50) + "</a>";
+						return "<a href=\"../posts/" + referrer.EntryID + ".aspx\" target=\"_new\">" + referrer.PostTitle.Substring(0,50) + "</a>";
 					}
 				}
 				else
@@ -140,22 +149,22 @@ namespace Subtext.Web.Admin.Pages
 			}
 		}
 
-		public static string GetReferrer(object dataContainer)
+		public string GetReferrer(object dataContainer)
 		{
 			if (dataContainer is Referrer)
 			{
-				Referrer referrer = (Referrer)dataContainer;
-				string urlEncodedReferrerUrl = Uri.EscapeUriString(referrer.ReferrerURL);
-				string htmlEncodedReferrerUrl;
+				Referrer referrer = (Referrer) dataContainer;
+                string urlEncodedReferrerUrl = Uri.EscapeUriString(referrer.ReferrerURL);                
+                string htmlEncodedReferrerUrl;
+                
+                // Chop it here because otherwise we could end up with a badly HTML encoded string if the chop appears after the encoding
+                if (referrer.ReferrerURL.Length > 50)
+                    htmlEncodedReferrerUrl = referrer.ReferrerURL.Substring(0, 50);
+                else
+                    htmlEncodedReferrerUrl = referrer.ReferrerURL;
 
-				// Chop it here because otherwise we could end up with a badly HTML encoded string if the chop appears after the encoding
-				if (referrer.ReferrerURL.Length > 50)
-					htmlEncodedReferrerUrl = referrer.ReferrerURL.Substring(0, 50);
-				else
-					htmlEncodedReferrerUrl = referrer.ReferrerURL;
-
-				return "<a href=\"" + urlEncodedReferrerUrl + "\" target=\"_new\">" +
-					HttpUtility.HtmlEncode(htmlEncodedReferrerUrl) + "</a>";
+                return "<a href=\"" + urlEncodedReferrerUrl + "\" target=\"_new\">" +
+                    HttpUtility.HtmlEncode(htmlEncodedReferrerUrl) + "</a>";
 			}
 			else
 			{
@@ -165,15 +174,15 @@ namespace Subtext.Web.Admin.Pages
 
 		private int EntryID
 		{
-			get { return (int)ViewState["EntryID"]; }
-			set { ViewState["EntryID"] = value; }
+			get{return (int)ViewState["EntryID"];}
+			set{ViewState["EntryID"] = value;}
 		}
 
 		private void rprSelectionList_ItemCommand(object source, RepeaterCommandEventArgs e)
 		{
-			switch (e.CommandName.ToLower(CultureInfo.InvariantCulture))
+			switch (e.CommandName.ToLower(CultureInfo.InvariantCulture)) 
 			{
-				case "create":
+				case "create" :
 					object[] args = e.CommandArgument.ToString().Split('|');
 					EntryID = Int32.Parse(args[0].ToString(), CultureInfo.InvariantCulture);
 					txbUrl.Text = args[1].ToString();
@@ -186,7 +195,7 @@ namespace Subtext.Web.Admin.Pages
 
 				default:
 					break;
-			}
+			}			
 		}
 
 
@@ -199,13 +208,13 @@ namespace Subtext.Web.Admin.Pages
 			InitializeComponent();
 			base.OnInit(e);
 		}
-
+		
 		/// <summary>
 		/// Required method for Designer support - do not modify
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent()
-		{
+		{    
 			this.rprSelectionList.ItemCommand += new System.Web.UI.WebControls.RepeaterCommandEventHandler(this.rprSelectionList_ItemCommand);
 
 		}
@@ -217,22 +226,23 @@ namespace Subtext.Web.Admin.Pages
 			{
 				Trackback entry = new Trackback(EntryID, txbTitle.Text, HtmlHelper.CheckForUrl(txbUrl.Text), string.Empty, txbBody.Text.Trim().Length > 0 ? txbBody.Text.Trim() : txbTitle.Text, Config.CurrentBlog.TimeZone.Now);
 
-				if (FeedbackItem.Create(entry, null) > 0)
+				if(FeedbackItem.Create(entry, null) > 0)
 				{
-					CommentFilter.FilterAfterPersist(entry);
+					CommentFilter filter = new CommentFilter(HttpContext.Current.Cache);
+					filter.FilterAfterPersist(entry);
 					this.Messages.ShowMessage(Constants.RES_SUCCESSNEW);
 					this.Edit.Visible = false;
 				}
 				else
 				{
-					this.Messages.ShowError(Constants.RES_FAILUREEDIT
+					this.Messages.ShowError(Constants.RES_FAILUREEDIT 
 						+ " There was a baseline problem posting your Trackback.");
 				}
 			}
-			catch (Exception ex)
+			catch(Exception ex)
 			{
 				log.Error(ex.Message, ex);
-				this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION,
+				this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, 
 					Constants.RES_FAILUREEDIT, ex.Message));
 			}
 			finally

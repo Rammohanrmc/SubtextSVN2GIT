@@ -16,11 +16,11 @@
 using System;
 using System.Configuration;
 using System.Web.Configuration;
-using System.Web.Security;
+using log4net;
 using Subtext.Extensibility.Interfaces;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Format;
-using Subtext.Framework.Properties;
+using Subtext.Framework.Logging;
 using Subtext.Framework.Providers;
 using Subtext.Framework.Security;
 
@@ -32,16 +32,9 @@ namespace Subtext.Framework.Configuration
 	/// </summary>
 	public static class Config
 	{
-		private static
-			string[] InvalidSubfolders = { "Tags", "Admin", "aggbug", "Archive", "Archives", "Articles", "bin", 
-				"Category", "Comments", "ExternalDependencies", "Gallery", "HostAdmin", "Images", "Install", 
-				"Modules", "Posts", "Properties", "Providers", "Scripts", "Services", "Sitemap", "Skins", 
-				"Stories", "Story", "SystemMessages", "UI"
-		};
+		private readonly static ILog Log = new Log();
 
-		private const string InvalidChars = @"{}[]/\ @!#$%:^&*()?+|""='<>;,";
-
-		private static UrlBasedBlogInfoProvider _configProvider;
+	    static UrlBasedBlogInfoProvider _configProvider;
 
 		/// <summary>
 		/// Returns an instance of <see cref="BlogConfigurationSettings"/> which 
@@ -83,15 +76,10 @@ namespace Subtext.Framework.Configuration
 		{
 			get
 			{
-				BlogInfo currentBlog = ConfigurationProvider.GetBlogInfo();
-				if (currentBlog == null)
-					Roles.ApplicationName = Membership.ApplicationName = "/";
-				else
-					Roles.ApplicationName = Membership.ApplicationName = currentBlog.ApplicationName;
-				return currentBlog;
+				return ConfigurationProvider.GetBlogInfo();
 			}
 		}
-
+		
 		/// <summary>
 		/// Gets the count of active blogs.
 		/// </summary>
@@ -100,7 +88,7 @@ namespace Subtext.Framework.Configuration
 		{
 			get
 			{
-				IPagedCollection<BlogInfo> blogs = BlogInfo.GetBlogs(1, 1, ConfigurationFlags.IsActive);
+				IPagedCollection<BlogInfo> blogs = BlogInfo.GetBlogs(1, 1, ConfigurationFlag.IsActive);
 				return blogs.MaxItems;
 			}
 		}
@@ -113,7 +101,7 @@ namespace Subtext.Framework.Configuration
 		{
 			get
 			{
-				IPagedCollection blogs = BlogInfo.GetBlogs(1, 1, ConfigurationFlags.None);
+				IPagedCollection blogs = BlogInfo.GetBlogs(1, 1, ConfigurationFlag.None);
 				return blogs.MaxItems;
 			}
 		}
@@ -126,7 +114,7 @@ namespace Subtext.Framework.Configuration
 		{
 			get
 			{
-				if (_configProvider == null)
+				if(_configProvider == null)
 				{
 					_configProvider = UrlBasedBlogInfoProvider.Instance;
 				}
@@ -138,18 +126,18 @@ namespace Subtext.Framework.Configuration
 			}
 		}
 
-		/// <summary>
-		/// Returns a <see cref="BlogInfo"/> instance containing 
-		/// the configuration settings for the blog specified by the 
-		/// Hostname and Application.
-		/// </summary>
-		/// <param name="hostName">Hostname.</param>
-		/// <param name="subfolder">Subfolder Name.</param>
-		/// <returns></returns>
-		public static BlogInfo GetBlogInfo(string hostName, string subfolder)
-		{
-			return GetBlogInfo(hostName, subfolder, false);
-		}
+        /// <summary>
+        /// Returns a <see cref="BlogInfo"/> instance containing 
+        /// the configuration settings for the blog specified by the 
+        /// Hostname and Application.
+        /// </summary>
+        /// <param name="hostName">Hostname.</param>
+        /// <param name="subfolder">Subfolder Name.</param>
+        /// <returns></returns>
+	    public static BlogInfo GetBlogInfo(string hostName, string subfolder)
+	    {
+            return GetBlogInfo(hostName, subfolder, false);
+	    }
 
 		/// <summary>
 		/// Returns a <see cref="BlogInfo"/> instance containing 
@@ -172,98 +160,86 @@ namespace Subtext.Framework.Configuration
 		}
 
 		/// <summary>
-		/// Creates the blog with the specified user as the owner.
+		/// Creates an initial blog.  This is a convenience method for 
+		/// allowing a user with a freshly installed blog to immediately gain access 
+		/// to the admin section to edit the blog.
 		/// </summary>
-		/// <param name="title">The title of the blog.</param>
-		/// <param name="host">The host.</param>
-		/// <param name="subfolder">The subfolder.</param>
-		/// <param name="owner">The owner.</param>
+		/// <param name="title">Title of the blog</param>
+		/// <param name="userName">Name of the user.</param>
+		/// <param name="password">Password.</param>
+		/// <param name="subfolder"></param>
+		/// <param name="host"></param>
 		/// <returns></returns>
-		public static BlogInfo CreateBlog(string title, string host, string subfolder, MembershipUser owner)
+		public static bool CreateBlog(string title, string userName, string password, string host, string subfolder)
 		{
-			if (String.IsNullOrEmpty(title))
-				throw new ArgumentNullException("Cannot create a blog with a null or empty title");
+			return CreateBlog(title, userName, password, host, subfolder, false);
+		}
 
-			if (String.IsNullOrEmpty(host))
-				throw new ArgumentNullException("Cannot create a blog with a null or empty host");
-
-			if (owner == null)
-				throw new ArgumentNullException("Every blog must have an owner.");
-
-			if (subfolder != null && subfolder.EndsWith("."))
+		/// <summary>
+		/// Creates an initial blog.  This is a convenience method for 
+		/// allowing a user with a freshly installed blog to immediately gain access 
+		/// to the admin section to edit the blog.
+		/// </summary>
+		/// <param name="title">Title of the blog.</param>
+		/// <param name="userName">Name of the user.</param>
+		/// <param name="password">Password.</param>
+		/// <param name="subfolder"></param>
+		/// <param name="host"></param>
+		/// <param name="passwordAlreadyHashed">If true, the password has already been hashed.</param>
+		/// <returns></returns>
+		public static bool CreateBlog(string title, string userName, string password, string host, string subfolder, bool passwordAlreadyHashed)
+		{
+			if(subfolder != null && subfolder.EndsWith("."))
 				throw new InvalidSubfolderNameException(subfolder);
 
 			host = BlogInfo.NormalizeHostName(host);
-			subfolder = UrlFormats.StripSurroundingSlashes(subfolder ?? string.Empty);
 
-			CheckForDuplicateBlog(host, subfolder);
-			ValidateSubfolderName(host, subfolder);
-			
-			//Add blog user to Administrators.
-			BlogInfo blog = ObjectProvider.Instance().CreateBlog(title, host, subfolder, owner);
-			using (MembershipApplicationScope.SetApplicationName(blog.ApplicationName))
-			{
-				CreateBlogRoles();
-
-				Roles.AddUserToRole(owner.UserName, RoleNames.Administrators);
-			}
-			return blog;
-		}
-
-		private static void ValidateSubfolderRequired(string host)
-		{
-			//Check to see if this blog requires a Subfolder value
-			//This would occur if another blog has the same host already.
-			int activeBlogWithHostCount = BlogInfo.GetBlogsByHost(host, 0, 1, ConfigurationFlags.IsActive).Count;
-			if (activeBlogWithHostCount > 0)
-			{
-				throw new BlogRequiresSubfolderException(host, activeBlogWithHostCount);
-			}
-		}
-
-		private static void ValidateSubfolderName(string host, string subfolder)
-		{
-			if (!String.IsNullOrEmpty(subfolder))
-			{
-				//Check to see if we're going to end up hiding another blog.
-				BlogInfo potentialHidden = GetBlogInfo(host, string.Empty, true);
-				if (potentialHidden != null)
-				{
-					//We found a blog that would be hidden by this one.
-					throw new BlogHiddenException(potentialHidden);
-				}
-
-				if (!IsValidSubfolderName(subfolder))
-				{
-					throw new InvalidSubfolderNameException(subfolder);
-				}
-			}
-			else
-			{
-				ValidateSubfolderRequired(host);
-			}
-		}
-
-		private static void CheckForDuplicateBlog(string host, string subfolder)
-		{
+			//Check for duplicate
 			BlogInfo potentialDuplicate = GetBlogInfo(host, subfolder, true);
-			if (potentialDuplicate != null)
+			if(potentialDuplicate != null)
 			{
 				//we found a duplicate!
 				throw new BlogDuplicationException(potentialDuplicate);
 			}
-		}
 
-		private static void CreateBlogRoles()
-		{
-			string[] defaultRoles =
-				{ RoleNames.Administrators, RoleNames.PowerUsers, RoleNames.Authors, RoleNames.Commenters, RoleNames.Anonymous };
+		    //If the subfolder is null, this next check is redundant as it is 
+		    //equivalent to the check we just made.
+			if (subfolder != null && subfolder.Length > 0)
+            {
+                //Check to see if we're going to end up hiding another blog.
+                BlogInfo potentialHidden = GetBlogInfo(host, string.Empty, true);
+                if (potentialHidden != null)
+                {
+                    //We found a blog that would be hidden by this one.
+                    throw new BlogHiddenException(potentialHidden);
+                }
+            }
+			
+			subfolder = UrlFormats.StripSurroundingSlashes(subfolder);
+			Log.Debug(string.Format("Creating a blog with subfolder '{0}'", subfolder));
 
-			foreach (string role in defaultRoles)
+			if(subfolder == null || subfolder.Length == 0)
 			{
-				if (!Roles.RoleExists(role))
-					Roles.CreateRole(role);
+				//Check to see if this blog requires a Subfolder value
+				//This would occur if another blog has the same host already.
+				int activeBlogWithHostCount = BlogInfo.GetBlogsByHost(host, 0, 1, ConfigurationFlag.IsActive).Count;
+				if(activeBlogWithHostCount > 0)
+				{
+					throw new BlogRequiresSubfolderException(host, activeBlogWithHostCount);
+				}
 			}
+			else
+			{
+				if(!IsValidSubfolderName(subfolder))
+				{
+					throw new InvalidSubfolderNameException(subfolder);
+				}
+			}
+
+			if(!passwordAlreadyHashed && Settings.UseHashedPasswords)
+				password = SecurityHelper.HashPassword(password);
+
+            return (ObjectProvider.Instance().CreateBlog(title, userName, password, host, subfolder));
 		}
 
 		/// <summary>
@@ -276,7 +252,7 @@ namespace Subtext.Framework.Configuration
 		{
 			//Check for duplicate
 			BlogInfo potentialDuplicate = GetBlogInfo(info.Host, info.Subfolder, true);
-			if (potentialDuplicate != null && !potentialDuplicate.Equals(info))
+			if(potentialDuplicate != null && !potentialDuplicate.Equals(info))
 			{
 				//we found a duplicate!
 				throw new BlogDuplicationException(potentialDuplicate);
@@ -284,7 +260,7 @@ namespace Subtext.Framework.Configuration
 
 			//Check to see if we're going to end up hiding another blog.
 			BlogInfo potentialHidden = GetBlogInfo(info.Host, string.Empty, true);
-			if (potentialHidden != null && !potentialHidden.Equals(info) && potentialHidden.IsActive)
+			if(potentialHidden != null && !potentialHidden.Equals(info) && potentialHidden.IsActive)
 			{
 				//We found a blog that would be hidden by this one.
 				throw new BlogHiddenException(potentialHidden);
@@ -292,14 +268,14 @@ namespace Subtext.Framework.Configuration
 
 			string subfolderName = info.Subfolder == null ? string.Empty : UrlFormats.StripSurroundingSlashes(info.Subfolder);
 
-			if (subfolderName.Length == 0)
+			if(subfolderName.Length == 0)
 			{
 				//Check to see if this blog requires a Subfolder value
 				//This would occur if another blog has the same host already.
-				IPagedCollection<BlogInfo> blogsWithHost = BlogInfo.GetBlogsByHost(info.Host, 0, 1, ConfigurationFlags.IsActive);
-				if (blogsWithHost.Count > 0)
+                IPagedCollection<BlogInfo> blogsWithHost = BlogInfo.GetBlogsByHost(info.Host, 0, 1, ConfigurationFlag.IsActive);
+				if(blogsWithHost.Count > 0)
 				{
-					if (blogsWithHost.Count > 1 || !blogsWithHost[0].Equals(info))
+					if(blogsWithHost.Count > 1 || !blogsWithHost[0].Equals(info))
 					{
 						throw new BlogRequiresSubfolderException(info.Host, blogsWithHost.Count);
 					}
@@ -307,15 +283,20 @@ namespace Subtext.Framework.Configuration
 			}
 			else
 			{
-				if (!IsValidSubfolderName(subfolderName))
+				if(!IsValidSubfolderName(subfolderName))
 				{
 					throw new InvalidSubfolderNameException(subfolderName);
 				}
 			}
+			
+			info.IsPasswordHashed = Settings.UseHashedPasswords;
 			info.AllowServiceAccess = Settings.AllowServiceAccess;
 
 			return ObjectProvider.Instance().UpdateBlog(info);
 		}
+
+		//TODO: Is this the right place to put this list?
+        private static string[] _invalidSubfolders = {"Tags", "Admin", "bin", "ExternalDependencies", "HostAdmin", "Images", "Install", "Properties", "Providers", "Scripts", "Skins", "SystemMessages", "UI", "Modules", "Services", "Category", "Archive", "Archives", "Comments", "Articles", "Posts", "Story", "Stories", "Gallery", "aggbug", "Sitemap" };
 
 		/// <summary>
 		/// Returns true if the specified subfolder name has a 
@@ -327,21 +308,21 @@ namespace Subtext.Framework.Configuration
 		/// <returns></returns>
 		public static bool IsValidSubfolderName(string subfolder)
 		{
-			if (subfolder == null)
-			{
-				throw new ArgumentNullException("subfolder", Resources.ArgumentNull_String);
-			}
+			if(subfolder == null)
+				throw new ArgumentNullException("Subfolder cannot be null.");
 
 			if (subfolder.EndsWith("."))
 				return false;
 
-			foreach (char c in InvalidChars)
+			string invalidChars = @"{}[]/\ @!#$%:^&*()?+|""='<>;,";
+
+			foreach(char c in invalidChars)
 			{
-				if (subfolder.IndexOf(c) > -1)
+				if(subfolder.IndexOf(c) > -1)
 					return false;
 			}
 
-			foreach (string invalidSubFolder in InvalidSubfolders)
+			foreach(string invalidSubFolder in _invalidSubfolders)
 			{
 				if (String.Equals(invalidSubFolder, subfolder, StringComparison.InvariantCultureIgnoreCase))
 					return false;

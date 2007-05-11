@@ -61,7 +61,7 @@ namespace Subtext.Web.Admin.Pages
 
 		#endregion
 	    
-	    public EditImage()
+	    public EditImage() : base()
 	    {
             this.TabSectionId = "Galleries";
 	    }
@@ -143,7 +143,7 @@ namespace Subtext.Web.Admin.Pages
 				return String.Empty;
 		}
 
-		protected static string EvalImageNavigateUrl(object imageObject)
+		protected string EvalImageNavigateUrl(object imageObject)
 		{
 			if (imageObject is Image)
 			{
@@ -151,9 +151,7 @@ namespace Subtext.Web.Admin.Pages
 				return Config.CurrentBlog.UrlFormats.ImageUrl(null,image.ImageID);
 			}
 			else
-			{
 				return String.Empty;
-			}
 		}
 
 		protected string GetImageGalleryUrl()

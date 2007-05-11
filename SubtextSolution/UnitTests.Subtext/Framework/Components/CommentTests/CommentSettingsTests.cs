@@ -1,6 +1,4 @@
 using System;
-using System.Security.Principal;
-using System.Threading;
 using MbUnit.Framework;
 using Subtext.Framework;
 using Subtext.Framework.Components;
@@ -12,14 +10,13 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 	[TestFixture]
 	public class CommentSettingsTests
 	{
+		string hostName;
+
 		[Test]
 		[RollBack]
 		public void CommentModerationDisabledCausesNewCommentsToBeActive()
 		{
-			UnitTestHelper.SetupBlog("MyBlog1");
-
-			//Need to set our user to a non-admin
-			Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity("NotAnAdmin"), new string[] {"Anonymous"});
+			Config.CreateBlog("", "username", "thePassword", this.hostName, "MyBlog1");
 			
 			Config.CurrentBlog.CommentsEnabled = true;
 			Config.CurrentBlog.ModerationEnabled = false;
@@ -38,10 +35,7 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		[RollBack]
 		public void CommentModerationEnabledCausesNewCommentsToBeInactive()
 		{
-			UnitTestHelper.SetupBlog("MyBlog1");
-			//Need to set our user to a non-admin
-			Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity("NotAnAdmin"), new string[] { "Anonymous" });
-			
+			Config.CreateBlog("", "username", "thePassword", this.hostName, "MyBlog1");
 			Config.CurrentBlog.CommentsEnabled = true;
 			Config.CurrentBlog.ModerationEnabled = true;
 			
@@ -68,9 +62,20 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 		[ExpectedArgumentNullException]
 		public void ApproveThrowsArgumentNullException()
 		{
-			UnitTestHelper.SetupBlog("MyBlog1");
-			
+			Config.CreateBlog("", "username", "thePassword", this.hostName, "MyBlog1");
 			FeedbackItem.Approve(null);
+		}
+
+		[SetUp]
+		public void SetUp()
+		{
+			this.hostName = UnitTestHelper.GenerateRandomString();
+			UnitTestHelper.SetHttpContextWithBlogRequest(this.hostName, "MyBlog1");
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
 		}
 	}
 }

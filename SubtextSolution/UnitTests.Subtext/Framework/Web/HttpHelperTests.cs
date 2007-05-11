@@ -4,7 +4,6 @@ using MbUnit.Framework;
 using Subtext.Framework;
 using Subtext.Framework.Util;
 using Subtext.Framework.Web;
-using Subtext.Framework.Util.TimeZoneUtil;
 
 namespace UnitTests.Subtext.Framework.Web
 {
@@ -26,7 +25,7 @@ namespace UnitTests.Subtext.Framework.Web
 			HttpHelper.SetProxy(request);
 			Assert.IsNotNull(request.Proxy, "Proxy should not be null.");
 		}
-
+		
 		/// <summary>
 		/// Tests that we correctly parse if-modified-since from the request.
 		/// Unfortunately, this unit test is time-zone sensitive.
@@ -38,7 +37,7 @@ namespace UnitTests.Subtext.Framework.Web
 		public void TestIfModifiedSinceExtraction(string received, string expected)
 		{
 			SimulatedHttpRequest workerRequest = UnitTestHelper.SetHttpContextWithBlogRequest("localhost", "");
-			workerRequest.Headers.Add("If-Modified-Since", received);
+            workerRequest.Headers.Add("If-Modified-Since", received);
 
 			DateTime expectedDate = DateTimeHelper.ParseUnknownFormatUTC(expected);
 			Console.WriteLine("{0}\t{1}\t{2}", received, expected, expectedDate.ToUniversalTime());
@@ -51,7 +50,7 @@ namespace UnitTests.Subtext.Framework.Web
 
 			Assert.AreEqual(expectedDate, result);
 		}
-
+		
 		[RowTest]
 		[Row("test.css", true)]
 		[Row("test.js", true)]

@@ -4,7 +4,6 @@ using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using System.Web.Security;
 using System.Xml;
 using BlogML.Xml;
 using MbUnit.Framework;
@@ -66,8 +65,7 @@ namespace UnitTests.Subtext.BlogML
 				writer.Write(xmlWriter);
 
 				// Create a new blog.
-				MembershipUser owner = Membership.CreateUser(UnitTestHelper.MembershipTestUsername, UnitTestHelper.MembershipTestPassword, UnitTestHelper.MembershipTestEmail);
-				Config.CreateBlog("BlogML Import Unit Test Blog", Config.CurrentBlog.Host + "2", "", owner);
+				Assert.IsTrue(Config.CreateBlog("BlogML Import Unit Test Blog", "test", "test", Config.CurrentBlog.Host + "2", ""), "Could not create the blog for this test");
 				UnitTestHelper.SetHttpContextWithBlogRequest(Config.CurrentBlog.Host + "2", "");
 				Assert.IsTrue(Config.CurrentBlog.Host.EndsWith("2"), "Looks like we've cached our old blog.");
 
@@ -193,8 +191,11 @@ namespace UnitTests.Subtext.BlogML
 
 		private static void CreateBlogAndSetupContext()
 		{
-			UnitTestHelper.SetupBlog();
-			Config.CurrentBlog.Title = "BlogML Import Unit Test Blog";
+			string hostName = UnitTestHelper.GenerateRandomString();
+			Assert.IsTrue(Config.CreateBlog("BlogML Import Unit Test Blog", "test", "test", hostName, ""), "Could not create the blog for this test");
+			UnitTestHelper.SetHttpContextWithBlogRequest(hostName, "");
+			Assert.IsNotNull(Config.CurrentBlog, "Current Blog is null.");
+
 			Config.CurrentBlog.ImageDirectory = Path.Combine(Environment.CurrentDirectory, "images");
 			Config.CurrentBlog.ImagePath = "/image/";
 		}

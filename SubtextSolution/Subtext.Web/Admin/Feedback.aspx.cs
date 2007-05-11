@@ -32,7 +32,8 @@ namespace Subtext.Web.Admin.Pages
 	/// </summary>
 	public partial class Feedback : AdminPage
 	{
-		private int pageIndex;
+		private int pageIndex = 0;
+		private bool _isListHidden = false;
 		LinkButton btnViewApprovedComments;
 		LinkButton btnViewModerateComments;
 		LinkButton btnViewSpam;
@@ -49,11 +50,11 @@ namespace Subtext.Web.Admin.Pages
 		/// <summary>
 		/// Whether or not to moderate comments.
 		/// </summary>
-		protected FeedbackStatusFlags FeedbackStatusFilter
+		protected FeedbackStatusFlag FeedbackStatusFilter
 		{
 			get
 			{
-				return (FeedbackStatusFlags)(ViewState["FeedbackStatusFilter"] ?? FeedbackStatusFlags.Approved);
+				return (FeedbackStatusFlag)(ViewState["FeedbackStatusFilter"] ?? FeedbackStatusFlag.Approved);
 			}
 			set
 			{
@@ -78,15 +79,15 @@ namespace Subtext.Web.Admin.Pages
 			}
 		}
 		
-		FeedbackStatusFlags GetStatusFromQueryString()
+		FeedbackStatusFlag GetStatusFromQueryString()
 		{
 			string filter = Request.QueryString["status"] ?? "1";
 			int filterId;
 			if(!int.TryParse(filter, out filterId))
 			{
-				return FeedbackStatusFlags.Approved;
+				return FeedbackStatusFlag.Approved;
 			}
-			return (FeedbackStatusFlags)filterId;
+			return (FeedbackStatusFlag)filterId;
 		}
 
 		private LinkButton AddFolderLink(string label, string id, string title, EventHandler handler)
@@ -102,7 +103,7 @@ namespace Subtext.Web.Admin.Pages
 
 		void OnViewApprovedCommentsClick(object sender, EventArgs e)
 		{
-			this.FeedbackStatusFilter = FeedbackStatusFlags.Approved;
+			this.FeedbackStatusFilter = FeedbackStatusFlag.Approved;
 			this.rbFeedbackFilter.SelectedValue = Preferences.GetFeedbackItemFilter(FeedbackStatusFilter);
 			this.Results.HeaderText = "Comments";
 			HtmlHelper.AppendCssClass(this.btnViewApprovedComments, "active");
@@ -117,7 +118,7 @@ namespace Subtext.Web.Admin.Pages
 
 		void OnViewCommentsForModerationClick(object sender, EventArgs e)
 		{
-			this.FeedbackStatusFilter = FeedbackStatusFlags.NeedsModeration;
+			this.FeedbackStatusFilter = FeedbackStatusFlag.NeedsModeration;
 			this.rbFeedbackFilter.SelectedValue = Preferences.GetFeedbackItemFilter(FeedbackStatusFilter);
 			this.Results.HeaderText = "Comments Pending Moderator Approval";
 			HtmlHelper.AppendCssClass(this.btnViewModerateComments, "active");
@@ -133,7 +134,7 @@ namespace Subtext.Web.Admin.Pages
 		
 		void OnViewSpamClick(object sender, EventArgs e)
 		{
-			this.FeedbackStatusFilter = FeedbackStatusFlags.FlaggedAsSpam;
+			this.FeedbackStatusFilter = FeedbackStatusFlag.FlaggedAsSpam;
 			this.rbFeedbackFilter.SelectedValue = Preferences.GetFeedbackItemFilter(FeedbackStatusFilter);
 			HtmlHelper.AppendCssClass(this.btnViewSpam, "active");
 			this.Results.HeaderText = "Comments Flagged As SPAM";
@@ -151,7 +152,7 @@ namespace Subtext.Web.Admin.Pages
 		
 		void OnViewTrashClick(object sender, EventArgs e)
 		{
-			this.FeedbackStatusFilter = FeedbackStatusFlags.Deleted;
+			this.FeedbackStatusFilter = FeedbackStatusFlag.Deleted;
 			this.rbFeedbackFilter.SelectedValue = Preferences.GetFeedbackItemFilter(FeedbackStatusFilter);
 			HtmlHelper.AppendCssClass(this.btnViewTrash, "active");
 			this.Results.HeaderText = "Comments In The Trash Bin";
@@ -166,6 +167,16 @@ namespace Subtext.Web.Admin.Pages
 			BindList();
 		}
 
+		//I implemented version 2 before I let you guys see version 1.
+		//Therefore, I kept the version 1 code in case you wished to use it instead.
+		//Version 1 was "show only comments". Version 2 is a filter that can show all, show only comments, or show only pingtracks.
+		[Obsolete("Use rbFeedbackFilter", false)]
+		protected void cbShowOnlyComments_CheckedChanged(object sender, EventArgs e)
+		{
+			Preferences.FeedbackShowOnlyComments = this.cbShowOnlyComments.Checked;
+			BindList();
+		}
+		
 		protected void rbFeedbackFilter_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			Preferences.SetFeedbackItemFilter(this.rbFeedbackFilter.SelectedValue, FeedbackStatusFilter);
@@ -177,7 +188,7 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		/// <param name="dataItem"></param>
 		/// <returns></returns>
-		protected static string GetBody(object dataItem)
+		protected string GetBody(object dataItem)
 		{
 			FeedbackItem feedbackItem = (FeedbackItem)dataItem;
 			if(feedbackItem.FeedbackType != FeedbackType.PingTrack)
@@ -193,7 +204,7 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		/// <param name="dataItem"></param>
 		/// <returns></returns>
-		protected static string GetAuthor(object dataItem)
+		protected string GetAuthor(object dataItem)
 		{
 			FeedbackItem feedbackItem = (FeedbackItem)dataItem;
 			return string.Format(@"<span title=""{0}"">{1}</span>", feedbackItem.IpAddress, feedbackItem.Author);
@@ -204,7 +215,7 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		/// <param name="dataItem">The data item.</param>
 		/// <returns></returns>
-		protected static string GetTitle(object dataItem)
+		protected string GetTitle(object dataItem)
 		{
 			FeedbackItem feedbackItem = (FeedbackItem)dataItem;
 			if (feedbackItem.DisplayUrl != null)
@@ -221,7 +232,7 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		/// <param name="dataItem"></param>
 		/// <returns></returns>
-		protected static string GetAuthorInfo(object dataItem)
+		protected string GetAuthorInfo(object dataItem)
 		{
 			FeedbackItem feedback = (FeedbackItem)dataItem;
 			string authorInfo = string.Empty;
@@ -248,7 +259,7 @@ namespace Subtext.Web.Admin.Pages
 			SetCount(btnViewTrash, counts.DeletedCount);
 		}
 		
-		static void SetCount(LinkButton button, int count)
+		void SetCount(LinkButton button, int count)
 		{
 			button.Text = StringHelper.LeftBefore(button.Text, "(") + "(" + count + ")";
 		}
@@ -263,16 +274,16 @@ namespace Subtext.Web.Admin.Pages
 			this.resultsPager.PageIndex = this.pageIndex;
 			Results.Collapsible = false;
 			
-			FeedbackStatusFlags excludeFilter = ~this.FeedbackStatusFilter;
+			FeedbackStatusFlag excludeFilter = ~this.FeedbackStatusFilter;
 			//Approved is a special case.  If a feedback has the approved bit set, 
 			//it is approved no matter what other bits are set.
-			if (this.FeedbackStatusFilter == FeedbackStatusFlags.Approved)
-				excludeFilter = FeedbackStatusFlags.None;
+			if (this.FeedbackStatusFilter == FeedbackStatusFlag.Approved)
+				excludeFilter = FeedbackStatusFlag.None;
 
 			//Likewise, deleted is a special case.  If a feedback has the deleted 
 			//bit set, it is in the trash no matter what other bits are set.
-			if (this.FeedbackStatusFilter == FeedbackStatusFlags.Deleted)
-				excludeFilter = FeedbackStatusFlags.Approved;
+			if (this.FeedbackStatusFilter == FeedbackStatusFlag.Deleted)
+				excludeFilter = FeedbackStatusFlag.Approved;
 
 			//13-nov-06 mountain_sf
 			//For version 1: checkbox to show only comments (obsolete)
@@ -299,20 +310,20 @@ namespace Subtext.Web.Admin.Pages
 				//TODO: This is a prime example of where the state pattern comes in.
 				switch(this.FeedbackStatusFilter)
 				{
-					case FeedbackStatusFlags.NeedsModeration:
+					case FeedbackStatusFlag.NeedsModeration:
 						noComments.Text = "<em>No Entries Need Moderation.</em>";
 						break;
 						
-					case FeedbackStatusFlags.FlaggedAsSpam:
+					case FeedbackStatusFlag.FlaggedAsSpam:
 						noComments.Text = "<em>No Entries Flagged as SPAM.</em>";
 						break;
 						
-					case FeedbackStatusFlags.Deleted:
+					case FeedbackStatusFlag.Deleted:
 						noComments.Text = "<em>No Entries in the Trash.</em>";
 						break;
 					
 					default:
-						Debug.Assert(this.FeedbackStatusFilter == FeedbackStatusFlags.Approved, "This is an impossible value for FeedbackStatusFilter '" + FeedbackStatusFilter + "'");
+						Debug.Assert(this.FeedbackStatusFilter == FeedbackStatusFlag.Approved, "This is an impossible value for FeedbackStatusFilter '" + FeedbackStatusFilter + "'");
 						noComments.Text = "<em>There are no approved comments to display.</em>";
 						break;
 				}
@@ -337,24 +348,32 @@ namespace Subtext.Web.Admin.Pages
 			
 			switch(this.FeedbackStatusFilter)
 			{
-				case FeedbackStatusFlags.NeedsModeration:
+				case FeedbackStatusFlag.NeedsModeration:
 					HtmlHelper.AppendCssClass(this.btnViewModerateComments, "active");
 					break;
 					
-				case FeedbackStatusFlags.FlaggedAsSpam:
+				case FeedbackStatusFlag.FlaggedAsSpam:
 					HtmlHelper.AppendCssClass(this.btnViewSpam, "active");
 					break;
 					
-				case FeedbackStatusFlags.Deleted:
+				case FeedbackStatusFlag.Deleted:
 					HtmlHelper.AppendCssClass(this.btnViewTrash, "active");
 					break;
 				
 				default:
-					Debug.Assert(this.FeedbackStatusFilter == FeedbackStatusFlags.Approved, "This is an impossible value for FeedbackStatusFilter '" + FeedbackStatusFilter + "'");
+					Debug.Assert(this.FeedbackStatusFilter == FeedbackStatusFlag.Approved, "This is an impossible value for FeedbackStatusFilter '" + FeedbackStatusFilter + "'");
 					HtmlHelper.AppendCssClass(this.btnViewApprovedComments, "active");
 					break;
 			}
  			 base.OnPreRender(e);
+		}
+
+		public string CheckHiddenStyle()
+		{
+			if (_isListHidden)
+				return Constants.CSSSTYLE_HIDDEN;
+			else
+				return String.Empty;
 		}
 
 		#region Web Form Designer generated code
@@ -377,7 +396,7 @@ namespace Subtext.Web.Admin.Pages
 		}
 		#endregion
 
-		protected void OnEmptyClick(object sender, EventArgs e)
+		protected void OnEmptyClick(object sender, System.EventArgs e)
 		{
 			FeedbackItem.Destroy(FeedbackStatusFilter);
 			BindList();
@@ -389,7 +408,7 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		protected void OnApproveClick(object sender, EventArgs e)
+		protected void OnApproveClick(object sender, System.EventArgs e)
 		{
 			if (ApplyActionToCheckedFeedback(FeedbackItem.Approve) == 0)
 			{
@@ -406,7 +425,7 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		protected void OnDeleteClick(object sender, EventArgs e)
+		protected void OnDeleteClick(object sender, System.EventArgs e)
 		{
 			if (ApplyActionToCheckedFeedback(FeedbackItem.Delete) == 0)
 			{
@@ -421,7 +440,7 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		/// <param name="sender">The sender.</param>
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		protected void OnConfirmSpam(object sender, EventArgs e)
+		protected void OnConfirmSpam(object sender, System.EventArgs e)
 		{
 			if (ApplyActionToCheckedFeedback(FeedbackItem.ConfirmSpam) == 0)
 			{
@@ -437,7 +456,7 @@ namespace Subtext.Web.Admin.Pages
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		protected void OnDestroyClick(object sender, EventArgs e)
+		protected void OnDestroyClick(object sender, System.EventArgs e)
 		{
 			if (ApplyActionToCheckedFeedback(FeedbackItem.Destroy) == 0)
 			{
@@ -469,7 +488,7 @@ namespace Subtext.Web.Admin.Pages
 					}
 
 					int id;
-					if (feedbackId != null && int.TryParse(feedbackId.Value, out id))
+					if(int.TryParse(feedbackId.Value, out id))
 					{
 						FeedbackItem feedbackItem = FeedbackItem.Get(id);
 						if (feedbackItem != null)

@@ -18,16 +18,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Web.Security;
 using CookComputing.XmlRpc;
 using log4net;
 using Subtext.Extensibility;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
-using Subtext.Framework.Properties;
 using Subtext.Framework.Logging;
 using Subtext.Framework.Security;
-using Subtext.Extensibility.Plugins;
+using Subtext.Framework.Tracking;
 
 //Need to find a method that has access to context, so we can terminate the request if AllowServiceAccess == false.
 //Users will be able to access the metablogapi page, but will not be able to make a request, but the page should not be visible
@@ -37,20 +35,22 @@ namespace Subtext.Framework.XmlRpc
 	/// <summary>
 	/// Implements the MetaBlog API.
 	/// </summary>
-	public class MetaWeblog : XmlRpcService, IMetaWeblog, INotifiableControl
+	public class MetaWeblog : XmlRpcService, IMetaWeblog
 	{
+      static Log Log = new Log();
+
 		private static void ValidateUser(string username, string password, bool allowServiceAccess)
 		{
-			if(!Config.Settings.AllowServiceAccess || !allowServiceAccess)
-			{
-				throw new XmlRpcFaultException(0, "Web Service Access is not enabled.");
-			}
+            if (!Config.Settings.AllowServiceAccess || !allowServiceAccess)
+            {
+                throw new XmlRpcFaultException(0, "Web Service Access is not enabled.");
+            }
 
-			bool isValid = Membership.ValidateUser(username, password);
-			if(!isValid)
-			{
-				throw new XmlRpcFaultException(0, "Username and password denied.");
-			}
+			bool isValid = SecurityHelper.IsValidUser(username, password);
+            if (!isValid)
+            {
+                throw new XmlRpcFaultException(0, "Username and password denied.");
+            }
 		}
 
 		#region BlogApi Members
@@ -75,7 +75,7 @@ namespace Subtext.Framework.XmlRpc
 			
 			try
 			{
-				Entries.Delete(Int32.Parse(postid, NumberFormatInfo.InvariantInfo));
+				Entries.Delete(Int32.Parse(postid));
 				return true;
 			}
 			catch
@@ -91,12 +91,11 @@ namespace Subtext.Framework.XmlRpc
 			Framework.BlogInfo info = Config.CurrentBlog;
 			ValidateUser(username,password,info.AllowServiceAccess);
 			
-			Entry entry = Entries.GetEntry(Int32.Parse(postid, NumberFormatInfo.InvariantInfo), PostConfig.None, true);
+			Entry entry = Entries.GetEntry(Int32.Parse(postid), PostConfig.None, true);
 			if(entry != null)
 			{
-				MembershipUser author = Membership.GetUser(username);
-
-				entry.Author = author;
+				entry.Author = info.Author;
+				entry.Email = info.Email;
 				entry.Body = post.description;
 				entry.Title = post.title;
 				entry.Description = string.Empty;
@@ -108,16 +107,7 @@ namespace Subtext.Framework.XmlRpc
 				entry.IsActive = publish;
 		
 				entry.DateModified = Config.CurrentBlog.TimeZone.Now;
-
-				//Raise event before updating a post
-				SubtextEvents.OnEntryUpdating(this, new SubtextEventArgs(entry, ObjectState.Update));
-
-				bool updateResult = Entries.Update(entry);
-
-				//Raise event after updating a post
-				SubtextEvents.OnEntryUpdated(this, new SubtextEventArgs(entry, ObjectState.Update));
-
-				return updateResult;
+				return Entries.Update(entry);
 			}
 			return false;
 		}
@@ -127,7 +117,7 @@ namespace Subtext.Framework.XmlRpc
 			Framework.BlogInfo info = Config.CurrentBlog;
 			ValidateUser(username,password,info.AllowServiceAccess);
 			
-			Entry entry = Entries.GetEntry(Int32.Parse(postid, NumberFormatInfo.InvariantInfo), PostConfig.None, true);
+			Entry entry = Entries.GetEntry(Int32.Parse(postid), PostConfig.None, true);
 			Post post = new Post();
 			post.link = entry.Url;
 			post.description = entry.Body;
@@ -213,11 +203,10 @@ namespace Subtext.Framework.XmlRpc
 		{
 			Framework.BlogInfo info = Config.CurrentBlog;
 			ValidateUser(username,password,info.AllowServiceAccess);
-
-			MembershipUser author = Membership.GetUser(username);
 			
 			Entry entry = new Entry(PostType.BlogPost);
-			entry.Author = author;
+			entry.Author = info.Author;
+			entry.Email = info.Email;
 			entry.Body = post.description;
 			entry.Title = post.title;
 			entry.Description = string.Empty;
@@ -252,13 +241,8 @@ namespace Subtext.Framework.XmlRpc
 			int postID;
 			try
 			{
-				//Raise event before creating a post
-				SubtextEvents.OnEntryUpdating(this, new SubtextEventArgs(entry, ObjectState.Create));
-
 				postID = Entries.Create(entry);
-
-				//Raise event after creating a post
-				SubtextEvents.OnEntryUpdated(this, new SubtextEventArgs(entry, ObjectState.Create));
+                AddCommunityCredits(entry);
 			}
 			catch(Exception e)
 			{
@@ -270,6 +254,25 @@ namespace Subtext.Framework.XmlRpc
 			}
 			return postID.ToString(CultureInfo.InvariantCulture);
 		}
+
+      private void AddCommunityCredits(Entry entry)
+      {
+         string result = string.Empty;
+
+         try
+         {
+            CommunityCreditNotification.AddCommunityCredits(entry);
+         }
+         catch (CommunityCreditNotificationException ex)
+         {
+            Log.WarnFormat("Community Credit ws returned the following response while notifying for the url {0}: {1}", entry.FullyQualifiedUrl.ToString(), ex.Message);
+         }
+         catch (Exception ex)
+         {
+            Log.Error("Error while connecting to the Community Credit webservice", ex);
+         }
+      }
+
 	    public mediaObjectInfo newMediaObject(object blogid, string username, string password, mediaObject mediaobject)
 	    {
             Framework.BlogInfo info = Config.CurrentBlog;
@@ -279,10 +282,10 @@ namespace Subtext.Framework.XmlRpc
 	        {
 	            //We don't validate the file because newMediaObject allows file to be overwritten
 	            //But we do check the directory and create if necessary
-	            //The media object's name can have extra folders appended (WLW especially does this) 
-                //so we check for this here too.
+	            //The media object's name can have extra folders appended so we check for this here too.
                 Images.CheckDirectory(Config.CurrentBlog.ImageDirectory + mediaobject.name.Substring(0, mediaobject.name.LastIndexOf("/") + 1 ).Replace("/", "\\"));
-                BinaryWriter bw = new BinaryWriter(new FileStream(Config.CurrentBlog.ImageDirectory + mediaobject.name, FileMode.Create));
+                FileStream fStream = new FileStream(Config.CurrentBlog.ImageDirectory + mediaobject.name, FileMode.Create);
+                BinaryWriter bw = new BinaryWriter(fStream);
                 bw.Write(mediaobject.bits);	            
 	        }
 	        //Any IO exceptions, we throw a new XmlRpcFault Exception
@@ -403,53 +406,18 @@ namespace Subtext.Framework.XmlRpc
 		public bool SetPostCategories(string postid, string username, string password,
 			MtCategory[] categories)
 		{
-            if (postid == null)
-            {
-                throw new ArgumentNullException("postid", Resources.ArgumentNull_String);
-            }
-
-            if (username == null)
-            {
-                throw new ArgumentNullException("username", Resources.ArgumentNull_String);
-            }
-
-            if (password == null)
-            {
-                throw new ArgumentNullException("password", Resources.ArgumentNull_String);
-            }
-
-            if (postid.Length == 0)
-            {
-                throw new ArgumentException(Resources.Argument_StringZeroLength, "postid");
-            }
-
-            if (username.Length == 0)
-            {
-                throw new ArgumentException(Resources.Argument_StringZeroLength, "username");
-            }
-
-            if (password.Length == 0)
-            {
-                throw new ArgumentException(Resources.Argument_StringZeroLength, "password");
-            }
-
-            if (categories == null)
-            {
-                throw new ArgumentNullException("categories", Resources.ArgumentNull_Array);
-            }
-
-            ValidateUser(username, password, Config.CurrentBlog.AllowServiceAccess);
+			ValidateUser(username,password,Config.CurrentBlog.AllowServiceAccess);
 						
 			if (categories != null && categories.Length > 0)
 			{
-				int postID = Int32.Parse(postid, NumberFormatInfo.InvariantInfo);
+				int postID = Int32.Parse(postid);
 
 				ArrayList al = new ArrayList();
 
 														
 				for (int i = 0; i < categories.Length; i++)
 				{
-						al.Add(Int32.Parse(categories[i].categoryId, NumberFormatInfo.InvariantInfo));
+						al.Add(Int32.Parse(categories[i].categoryId));
 				}
 
 				if(al.Count > 0)
@@ -467,7 +435,7 @@ namespace Subtext.Framework.XmlRpc
 		{
 			ValidateUser(username, password, Config.CurrentBlog.AllowServiceAccess);
 
-			int postID = Int32.Parse(postid, NumberFormatInfo.InvariantInfo);
+			int postID = Int32.Parse(postid);
 			ICollection<Link> postCategories = Links.GetLinkCollectionByPostID(postID);
 			MtCategory[] categories = new MtCategory[postCategories.Count];
 			if (postCategories.Count > 0)
@@ -509,20 +477,6 @@ namespace Subtext.Framework.XmlRpc
 		{
 			return new MtTextFilter[] {new MtTextFilter("test", "test"), };
 		}
-		#endregion
-
-		#region INotifiableControl Members
-
-		public void ShowError(string message)
-		{
-			//Do nothing (evenutually add logging)
-		}
-
-		public void ShowMessage(string message)
-		{
-			//Do nothing (evenutually add logging)
-		}
-
 		#endregion
 	}
 }

@@ -23,8 +23,8 @@ namespace Subtext.Framework.Providers
 
 			SqlParameter[] p =
 			{
-				new SqlParameter("@BlogId", blogId),
-				new SqlParameter("@SearchStr", searchTerm)
+				DataHelper.MakeInParam("@BlogId", SqlDbType.Int, 4, blogId),
+				DataHelper.MakeInParam("@SearchStr", searchTerm)
 			};
 
 			IDataReader reader = SqlHelper.ExecuteReader(ConnectionString, CommandType.StoredProcedure, storedProc, p);

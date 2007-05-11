@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MbUnit.Framework;
 using Subtext.Framework;
 using Subtext.Framework.Components;
+using Subtext.Framework.Configuration;
 using Subtext.Framework.Data;
 
 namespace UnitTests.Subtext.Framework.Components.EntryTests
@@ -14,12 +15,14 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		[RollBack]
 		public void CanTagEntry()
 		{
-			UnitTestHelper.SetupBlog();
+			string hostname = UnitTestHelper.GenerateRandomString();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", hostname, string.Empty));
+			UnitTestHelper.SetHttpContextWithBlogRequest(hostname, string.Empty);
 			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("me", "title-zero", "body-zero");
 			Entries.Create(entry);
 
 			List<string> tags = new List<string>(new string[] {"Tag1", "Tag2"});
-			DatabaseObjectProvider.Instance().SetEntryTagList(entry.Id, tags);
+			new DatabaseObjectProvider().SetEntryTagList(entry.Id, tags);
 
 			IList<Entry> entries = Entries.GetEntriesByTag(1, "Tag1");
 			Assert.AreEqual(1, entries.Count);
@@ -30,7 +33,9 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		[RollBack]
 		public void CanParseMultilineTag()
 		{
-			UnitTestHelper.SetupBlog();
+			string hostname = UnitTestHelper.GenerateRandomString();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", hostname, string.Empty));
+			UnitTestHelper.SetHttpContextWithBlogRequest(hostname, string.Empty);
 			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("me", "title-zero", "body-zero");
 			Entries.Create(entry);
 			entry.Body = "<a title=\"title-bar!\" " + Environment.NewLine + " href=\"http://blah/yourtag\" " + Environment.NewLine + "rel=\"tag\">nothing</a>";
@@ -52,7 +57,9 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		[RollBack]
 		public void CanParseEntryTags(string url, string expectedTag)
 		{
-			UnitTestHelper.SetupBlog();
+			string hostname = UnitTestHelper.GenerateRandomString();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", hostname, string.Empty));
+			UnitTestHelper.SetHttpContextWithBlogRequest(hostname, string.Empty);
 			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("me", "title-zero", "body-zero");
 			Entries.Create(entry);
 			entry.Body = "<a href=\"" + url + "\" rel=\"tag\">nothing</a>";
@@ -67,7 +74,9 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		[RollBack]
 		public void CanParseMultiRelTag()
 		{
-			UnitTestHelper.SetupBlog();
+			string hostname = UnitTestHelper.GenerateRandomString();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", hostname, string.Empty));
+			UnitTestHelper.SetHttpContextWithBlogRequest(hostname, string.Empty);
 			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("me", "title-zero", "body-zero");
 			Entries.Create(entry);
 			entry.Body = "<a href=\"http://blah/yourtag\" rel=\"tag friend\">nothing</a>";
@@ -82,7 +91,9 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		[RollBack]
 		public void CanParseAnchorWithWhiteSpace()
 		{
-			UnitTestHelper.SetupBlog();
+			string hostname = UnitTestHelper.GenerateRandomString();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", hostname, string.Empty));
+			UnitTestHelper.SetHttpContextWithBlogRequest(hostname, string.Empty);
 			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("me", "title-zero", "body-zero");
 			Entries.Create(entry);
 			entry.Body = "<a href	  =  \"http://blah/sometag\" rel	=  \"tag friend\">nothing</a>";
@@ -97,7 +108,9 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		[RollBack]
 		public void DuplicateTagsDoNotThrowException()
 		{
-			UnitTestHelper.SetupBlog();
+			string hostname = UnitTestHelper.GenerateRandomString();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", hostname, string.Empty));
+			UnitTestHelper.SetHttpContextWithBlogRequest(hostname, string.Empty);
 			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("me", "title-zero", "body-zero");
 			Entries.Create(entry);
 			entry.Body = "<a href= \"http://blah/sometag\" rel= \"tag friend\">nothing</a><a href= \"http://blah/sometag\" rel= \"tag friend\">something</a>";
