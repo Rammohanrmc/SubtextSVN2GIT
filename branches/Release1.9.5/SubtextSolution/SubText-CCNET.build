@@ -64,15 +64,6 @@
 	
 	<!-- //TODO: Consider checking in this file after update the version -->
 	<target name="version" depends="get-publishing-properties">
-		<asminfo output="VersionInfo.Designer.cs" language="CSharp">
-			<imports>
-				<import namespace="System" />
-				<import namespace="System.Reflection" />
-			</imports>
-			<attributes>
-				<attribute type="AssemblyVersionAttribute" value="${CCNetLabel}" />
-			</attributes>
-		</asminfo>
 	</target>
 
 	
