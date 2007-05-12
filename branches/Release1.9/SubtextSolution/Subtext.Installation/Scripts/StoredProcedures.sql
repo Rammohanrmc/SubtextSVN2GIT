@@ -1117,6 +1117,8 @@ BEGIN
 		, CategoryListPostCount
 		, [Language]
 		, News
+		, CustomMetaTags
+		, TrackingCode
 		, SecondaryCss
 		, LastUpdated
 		, PostCount
@@ -3024,6 +3026,8 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateConfig]
 	, @ItemCount int
 	, @CategoryListPostCount int
 	, @News nText = NULL
+	, @CustomMetaTags nText = NULL
+	, @TrackingCode nText = NULL
 	, @LastUpdated datetime = NULL
 	, @SecondaryCss nText = NULL
 	, @SkinCssFile varchar(100) = NULL
@@ -3054,6 +3058,8 @@ Set
 	, ItemCount = @ItemCount
 	, CategoryListPostCount = @CategoryListPostCount
 	, News      = @News
+	, CustomMetaTags      = @CustomMetaTags
+	, TrackingCode      = @TrackingCode
 	, LastUpdated = @LastUpdated
 	, Flag = @Flag
 	, SecondaryCss = @SecondaryCss

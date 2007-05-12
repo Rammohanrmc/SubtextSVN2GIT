@@ -1161,6 +1161,8 @@ namespace Subtext.Framework.Data
 					,DataHelper.MakeInParam("@TimeZone", SqlDbType.Int, 4, info.TimeZoneId) 
 					,DataHelper.MakeInParam("@Language", SqlDbType.NVarChar, 10, info.Language) 
 					,DataHelper.MakeInParam("@News", SqlDbType.NText, 0, DataHelper.CheckNull(info.News)) 
+					,DataHelper.MakeInParam("@CustomMetaTags", SqlDbType.NText, 0, DataHelper.CheckNull(info.CustomMetaTags)) 
+					,DataHelper.MakeInParam("@TrackingCode", SqlDbType.NText, 0, DataHelper.CheckNull(info.TrackingCode)) 
 					,DataHelper.MakeInParam("@ItemCount", SqlDbType.Int,  4, info.ItemCount) 
 					,DataHelper.MakeInParam("@CategoryListPostCount", SqlDbType.Int,  4, info.CategoryListPostCount) 
 					,DataHelper.MakeInParam("@Flag", SqlDbType.Int,  4, (int)info.Flag) 
