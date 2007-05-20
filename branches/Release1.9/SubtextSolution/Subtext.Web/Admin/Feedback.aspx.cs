@@ -38,6 +38,7 @@ namespace Subtext.Web.Admin.Pages
 		LinkButton btnViewModerateComments;
 		LinkButton btnViewSpam;
 		LinkButton btnViewTrash;
+        private bool _hasViewChanged = false;
 		
 		/// <summary>
 		/// Constructs an image of this page. Sets the tab section to "Feedback".
@@ -103,7 +104,12 @@ namespace Subtext.Web.Admin.Pages
 
 		void OnViewApprovedCommentsClick(object sender, EventArgs e)
 		{
-			this.FeedbackStatusFilter = FeedbackStatusFlag.Approved;
+            if (this.FeedbackStatusFilter != FeedbackStatusFlag.Approved)
+            {
+                this.FeedbackStatusFilter = FeedbackStatusFlag.Approved;
+                this._hasViewChanged = true;
+            }
+
 			this.rbFeedbackFilter.SelectedValue = Preferences.GetFeedbackItemFilter(FeedbackStatusFilter);
 			this.Results.HeaderText = "Comments";
 			HtmlHelper.AppendCssClass(this.btnViewApprovedComments, "active");
@@ -113,12 +119,18 @@ namespace Subtext.Web.Admin.Pages
 			this.btnDelete.Visible = true;
 			this.btnConfirmSpam.Visible = true;
 			this.btnEmpty.Visible = false;
+            
 			BindList();
 		}
 
 		void OnViewCommentsForModerationClick(object sender, EventArgs e)
 		{
-			this.FeedbackStatusFilter = FeedbackStatusFlag.NeedsModeration;
+            if (this.FeedbackStatusFilter != FeedbackStatusFlag.NeedsModeration)
+            {
+                this.FeedbackStatusFilter = FeedbackStatusFlag.NeedsModeration;
+                this._hasViewChanged = true;
+            }
+			
 			this.rbFeedbackFilter.SelectedValue = Preferences.GetFeedbackItemFilter(FeedbackStatusFilter);
 			this.Results.HeaderText = "Comments Pending Moderator Approval";
 			HtmlHelper.AppendCssClass(this.btnViewModerateComments, "active");
@@ -134,7 +146,12 @@ namespace Subtext.Web.Admin.Pages
 		
 		void OnViewSpamClick(object sender, EventArgs e)
 		{
-			this.FeedbackStatusFilter = FeedbackStatusFlag.FlaggedAsSpam;
+            if (this.FeedbackStatusFilter != FeedbackStatusFlag.FlaggedAsSpam)
+            {
+                this.FeedbackStatusFilter = FeedbackStatusFlag.FlaggedAsSpam;
+                this._hasViewChanged = true;
+            }
+			
 			this.rbFeedbackFilter.SelectedValue = Preferences.GetFeedbackItemFilter(FeedbackStatusFilter);
 			HtmlHelper.AppendCssClass(this.btnViewSpam, "active");
 			this.Results.HeaderText = "Comments Flagged As SPAM";
@@ -152,6 +169,11 @@ namespace Subtext.Web.Admin.Pages
 		
 		void OnViewTrashClick(object sender, EventArgs e)
 		{
+            if (this.FeedbackStatusFilter != FeedbackStatusFlag.Deleted)
+            {
+                this.FeedbackStatusFilter = FeedbackStatusFlag.Deleted;
+                this._hasViewChanged = true;
+            }
 			this.FeedbackStatusFilter = FeedbackStatusFlag.Deleted;
 			this.rbFeedbackFilter.SelectedValue = Preferences.GetFeedbackItemFilter(FeedbackStatusFilter);
 			HtmlHelper.AppendCssClass(this.btnViewTrash, "active");
@@ -269,6 +291,9 @@ namespace Subtext.Web.Admin.Pages
 			if (Request.QueryString[Keys.QRYSTR_PAGEINDEX] != null)
 				this.pageIndex = Convert.ToInt32(Request.QueryString[Keys.QRYSTR_PAGEINDEX]);
 
+            if (this._hasViewChanged)
+                this.pageIndex = 0;
+
 			this.resultsPager.UrlFormat = "Feedback.aspx?pg={0}&status=" + (int)FeedbackStatusFilter;
 			this.resultsPager.PageSize = Preferences.ListingItemCount;
 			this.resultsPager.PageIndex = this.pageIndex;
@@ -332,7 +357,10 @@ namespace Subtext.Web.Admin.Pages
 				Results.Controls.Add(noComments);
 				this.btnDelete.Visible = false;
 				this.btnApprove.Visible = false;
-				this.btnDestroy.Visible = false;
+                if (this.FeedbackStatusFilter == FeedbackStatusFlag.Deleted)
+                    this.btnDestroy.Visible = true;
+                else
+                    this.btnDestroy.Visible = false;
 				this.btnConfirmSpam.Visible = false;
 				this.btnEmpty.Visible = false;
 			}
