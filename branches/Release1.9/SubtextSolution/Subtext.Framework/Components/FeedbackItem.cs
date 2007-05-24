@@ -175,12 +175,16 @@ namespace Subtext.Framework.Components
 
 			string to = currentBlog.Email;
 			string from = fromEmail ?? im.AdminEmail;
-			string subject = String.Format(CultureInfo.InvariantCulture, "Comment: {0} (via {1})", comment.Title, blogTitle);
-			string commenterUrl = "none given";
+			
+            string subject = String.Format(CultureInfo.InvariantCulture, "Comment: {0} (via {1})", comment.Title, blogTitle);
+            if (comment.FlaggedAsSpam)
+                subject = "[SPAM Flagged] " + subject;
+
+            string commenterUrl = "none given";
 			if(comment.SourceUrl != null)
 				commenterUrl = comment.SourceUrl.ToString();
 			
-			string bodyFormat = "Comment from {0}" + Environment.NewLine
+			string bodyFormat = "{7}Comment from {0}" + Environment.NewLine
 								+ "----------------------------------------------------" + Environment.NewLine
 								+ "From:\t{1} <{2}>" + Environment.NewLine
 								+ "Url:\t{3}" + Environment.NewLine
@@ -197,7 +201,8 @@ namespace Subtext.Framework.Components
 										comment.IpAddress,
 				// we're sending plain text email by default, but body includes <br />s for crlf
 										comment.Body.Replace("<br />", Environment.NewLine).Replace("&lt;br /&gt;", Environment.NewLine),
-										currentBlog.UrlFormats.FeedbackFullyQualifiedUrl(comment.EntryId, comment.parentEntryName, comment.ParentDateCreated, comment));
+										currentBlog.UrlFormats.FeedbackFullyQualifiedUrl(comment.EntryId, comment.parentEntryName, comment.ParentDateCreated, comment),
+                                        comment.FlaggedAsSpam ? "Spam Flagged " : string.Empty);
 
 			try
 			{
