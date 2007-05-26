@@ -421,6 +421,8 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 			                             + "====================================================" + Environment.NewLine + Environment.NewLine
 			                             + "Some Body" + Environment.NewLine + " likes me." + Environment.NewLine + Environment.NewLine
 			                             + "Source: " + entry.FullyQualifiedUrl + "#" + id;
+			
+			string expectedMessageBodyInCaseOfSpam = "Spam Flagged " + expectedMessageBody;
 
 			UnitTestEmailProvider emailProvider = (UnitTestEmailProvider)EmailProvider.Instance();
 
@@ -428,8 +430,16 @@ namespace UnitTests.Subtext.Framework.Components.CommentTests
 			if (String.IsNullOrEmpty(commenterEmail))
 				expectedEmail = "admin@YOURBLOG.com";
 			Assert.AreEqual(expectedEmail, emailProvider.From, "Email should have been sent from the value in App.config.");
-			Assert.AreEqual("Comment: Some Title (via You've been haacked)", emailProvider.Subject, "Comment subject line wrong.");
-			Assert.AreEqual(expectedMessageBody, emailProvider.Message, "Did not receive the expected message.");
+			if (feedbackItem.FlaggedAsSpam)
+			{
+				Assert.AreEqual("[SPAM Flagged] Comment: Some Title (via You've been haacked)", emailProvider.Subject, "Comment subject line wrong.");
+				Assert.AreEqual(expectedMessageBodyInCaseOfSpam, emailProvider.Message, "Did not receive the expected message.");
+			}
+			else
+			{
+				Assert.AreEqual("Comment: Some Title (via You've been haacked)", emailProvider.Subject, "Comment subject line wrong.");
+				Assert.AreEqual(expectedMessageBody, emailProvider.Message, "Did not receive the expected message.");
+			}
 		}
 
         static FeedbackItem CreateFeedbackWithSpecifiedDates(DateTime created, DateTime modified)
