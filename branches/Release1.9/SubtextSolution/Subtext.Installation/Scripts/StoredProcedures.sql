@@ -1154,6 +1154,8 @@ BEGIN
 		, CategoryListPostCount
 		, [Language]
 		, News
+		, CustomMetaTags
+		, TrackingCode
 		, SecondaryCss
 		, LastUpdated
 		, PostCount
@@ -1190,6 +1192,8 @@ BEGIN
 		, CategoryListPostCount
 		, [Language]
 		, News
+		, CustomMetaTags
+		, TrackingCode
 		, SecondaryCss
 		, LastUpdated
 		, PostCount
