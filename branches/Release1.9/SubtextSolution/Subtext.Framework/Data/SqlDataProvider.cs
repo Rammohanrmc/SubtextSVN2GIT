@@ -1340,7 +1340,7 @@ namespace Subtext.Framework.Data
 		/// </summary>
 		public override IDataReader GetHost()
 		{
-			return GetReader("[dbo].[subtext_GetHost]");
+			return GetReader("subtext_GetHost");
 		}
 
 		/// <summary>
