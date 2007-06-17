@@ -19,57 +19,83 @@ using System.Web.Configuration;
 namespace Subtext.Framework.Providers.Storage
 {
     //Handles the providers
-	public class StorageService
-	{
-		private static StorageProvider _provider;
-		private static StorageProviderCollection _providers;
+    public sealed class StorageService
+    {
+        private StorageProvider _provider;
+        private StorageProviderCollection _providers;
 
-		private static object _lock = new object();
+        private static object _lock = new object();
 
-		public StorageProvider Provider
-		{
-			get { return _provider; }
-		}
+        private static StorageService _instance;
 
-		public StorageProviderCollection Providers
-		{
-			get { return _providers; }
-		}
+        private StorageService()
+        {
+            LoadProviders();
+        }
 
-		private static void SaveFile(Asset asset)
-		{
-			LoadProviders();
-			_provider.SaveFile(asset);
-		}
-		private static Asset GetFile(string path)
-		{
-			LoadProviders();
-			return _provider.GetFile(path);
-		}
+        public StorageService Instance()
+        {
+            if (_instance == null)
+            {
+                lock (_lock)
+                {
+                    //Double Null Check
+                    if (_instance == null)
+                    {
+                        _instance = new StorageService();
+                    }
+                }
+            }
 
-		private static void LoadProviders()
-		{
-			if (_provider == null)
-			{
-				lock (_lock)
-				{
-					if (_provider == null)
-					{
-						StorageProviderServiceSection section = (StorageProviderServiceSection) WebConfigurationManager.GetSection("system.web/fileServer");
-						_providers = new StorageProviderCollection();
-						ProvidersHelper.InstantiateProviders(section.Providers, _providers, typeof(StorageProvider));
-						_providers.SetReadOnly();
+            return _instance;
+        }
 
-						_provider = _providers[section.DefaultProvider];
+        public StorageProvider Provider
+        {
+            get { return _provider; }
+        }
 
-						if (_provider == null)
-						{
-							throw new ProviderException("Unable to load default File Provider");
-						}
-					}
-				}
-			}
-		}
+        public StorageProviderCollection Providers
+        {
+            get { return _providers; }
+        }
 
-	}
+        public void SaveAsset(Asset asset)
+        {
+            _provider.SaveAsset(asset);
+        }
+
+        public Asset GetAsset(string path)
+        {
+            return _provider.GetAsset(path);
+        }
+
+        public void Delete(string path)
+        {
+            _provider.Delete(path);
+        }
+
+        public void Move(string oldPath, string newPath)
+        {
+            _provider.Move(oldPath, newPath);
+        }
+
+        private void LoadProviders()
+        {
+            if (_provider == null)
+            {
+                StorageProviderServiceSection section = (StorageProviderServiceSection)WebConfigurationManager.GetSection("system.web/assetProvider");
+                _providers = new StorageProviderCollection();
+                ProvidersHelper.InstantiateProviders(section.Providers, _providers, typeof(StorageProvider));
+                _providers.SetReadOnly();
+
+                _provider = _providers[section.DefaultProvider];
+
+                if (_provider == null)
+                {
+                    throw new ProviderException("Unable to load default Asset Provider");
+                }
+            }
+        }
+    }
 }

@@ -413,6 +413,7 @@
     </Compile>
     <Compile Include="Providers\EntrySearchProvider.cs" />
     <Compile Include="Providers\Storage\Asset.cs" />
+    <Compile Include="Providers\Storage\SqlAssetProvider.cs" />
     <Compile Include="Providers\Storage\StorageProvider.cs">
       <SubType>Code</SubType>
     </Compile>

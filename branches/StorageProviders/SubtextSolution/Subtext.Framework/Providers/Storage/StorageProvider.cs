@@ -23,8 +23,8 @@ namespace Subtext.Framework.Providers.Storage
 	/// </summary>
 	public abstract class StorageProvider : ProviderBase
 	{
-		public abstract void SaveFile(Asset asset);
-		public abstract Asset GetFile(string path);
+		public abstract void SaveAsset(Asset asset);
+		public abstract Asset GetAsset(string path);
 		
 		public abstract void Move(string oldPath, string newPath);
 		public abstract void Delete(string path);

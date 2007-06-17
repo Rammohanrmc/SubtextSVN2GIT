@@ -16,26 +16,29 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Configuration;
 
 namespace Subtext.Framework.Providers.Storage
 {
-    //The custom config section for web.config
-	public class StorageProviderServiceSection : ConfigurationSection
-	{
-		[ConfigurationProperty("providers")]
-		public ProviderSettingsCollection Providers
-		{
-			get { return (ProviderSettingsCollection)base["providers"]; }
-		}
+    public class SqlAssetProvider : StorageProvider
+    {
+        public override void SaveAsset(Asset asset)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
 
-		[StringValidator(MinLength = 1)]
-		[ConfigurationProperty("defaultProvider", DefaultValue = "SqlAssetProivder")]
-		public string DefaultProvider
-		{
-			get { return (string)base["defaultProvider"]; }
-			set { base["defaultProvider"] = value; }
-		}
+        public override Asset GetAsset(string path)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
 
-	}
+        public override void Move(string oldPath, string newPath)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public override void Delete(string path)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+    }
 }
