@@ -13,19 +13,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using System.Web.Configuration;
-using System.Configuration.Provider;
-
 namespace Subtext.Framework.Providers.Storage
 {
 
-	//TODO: This will hold all the information about the file from the Storage Provider.
-    //Badly named, but for the moment will stand.
-	public class FileObject
+	/// <summary>
+	/// This will hold all the information about the Asset (file) from the Storage Provider.
+	/// </summary>
+	public class Asset
 	{
 	}
 }

@@ -412,11 +412,19 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Providers\EntrySearchProvider.cs" />
-    <Compile Include="Providers\Storage\FileObject.cs" />
-    <Compile Include="Providers\Storage\StorageProvider.cs" />
-    <Compile Include="Providers\Storage\StorageProviderCollection.cs" />
-    <Compile Include="Providers\Storage\StorageService.cs" />
-    <Compile Include="Providers\Storage\StorageProviderServiceSection.cs" />
+    <Compile Include="Providers\Storage\Asset.cs" />
+    <Compile Include="Providers\Storage\StorageProvider.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Providers\Storage\StorageProviderCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Providers\Storage\StorageProviderServiceSection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Providers\Storage\StorageService.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Providers\SystemMailProvider.cs" />
     <Compile Include="Search\SearchEngine.cs" />
     <Compile Include="Security\MembershipApplicationScope.cs" />

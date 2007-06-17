@@ -13,12 +13,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using System.Web.Configuration;
 using System.Configuration.Provider;
+using System.Web.Configuration;
 
 namespace Subtext.Framework.Providers.Storage
 {
@@ -27,46 +23,46 @@ namespace Subtext.Framework.Providers.Storage
 	{
 		private static StorageProvider _provider;
 		private static StorageProviderCollection _providers;
-		
+
 		private static object _lock = new object();
-		
+
 		public StorageProvider Provider
 		{
 			get { return _provider; }
 		}
-		
+
 		public StorageProviderCollection Providers
 		{
 			get { return _providers; }
 		}
-		
-		private static void SaveFile(FileObject file)
+
+		private static void SaveFile(Asset asset)
 		{
 			LoadProviders();
-			_provider.SaveFile(file);
+			_provider.SaveFile(asset);
 		}
-		private static FileObject GetFile(string path)
+		private static Asset GetFile(string path)
 		{
 			LoadProviders();
 			return _provider.GetFile(path);
 		}
-		
+
 		private static void LoadProviders()
 		{
-			if ( _provider == null )
+			if (_provider == null)
 			{
-				lock ( _lock )
+				lock (_lock)
 				{
-					if ( _provider == null )
+					if (_provider == null)
 					{
-						StorageProviderServiceSection section = (StorageProviderServiceSection)WebConfigurationManager.GetSection("system.web/fileServer");
+						StorageProviderServiceSection section = (StorageProviderServiceSection) WebConfigurationManager.GetSection("system.web/fileServer");
 						_providers = new StorageProviderCollection();
 						ProvidersHelper.InstantiateProviders(section.Providers, _providers, typeof(StorageProvider));
 						_providers.SetReadOnly();
-						
+
 						_provider = _providers[section.DefaultProvider];
-						
-						if ( _provider == null )
+
+						if (_provider == null)
 						{
 							throw new ProviderException("Unable to load default File Provider");
 						}
@@ -74,8 +70,6 @@ namespace Subtext.Framework.Providers.Storage
 				}
 			}
 		}
-		
-		
+
 	}
-	
 }

@@ -13,18 +13,18 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Configuration.Provider;
 
 namespace Subtext.Framework.Providers.Storage
 {
-    //TODO: This needs documenting and work on it.  Very basic.  Defines the abstract class for a provider
+    //TODO: This needs documenting and work on it.  Very basic.  
+	/// <summary>
+	/// Defines the abstract class for a provider
+	/// </summary>
 	public abstract class StorageProvider : ProviderBase
 	{
-		public abstract void SaveFile(FileObject file);
-		public abstract FileObject GetFile(string path);
+		public abstract void SaveFile(Asset asset);
+		public abstract Asset GetFile(string path);
 		
 		public abstract void Move(string oldPath, string newPath);
 		public abstract void Delete(string path);
