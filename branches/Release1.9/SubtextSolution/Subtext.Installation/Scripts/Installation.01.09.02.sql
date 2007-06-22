@@ -8,9 +8,9 @@ UPDATE [<dbUser,varchar,dbo>].[subtext_LinkCategories] SET CategoryType = 5 WHER
 IF NOT EXISTS 
 (
     SELECT * FROM [INFORMATION_SCHEMA].[COLUMNS] 
-    WHERE   table_name = 'subtext_Config' 
-    AND table_schema = '<dbUser,varchar,dbo>'
-    AND column_name = 'AkismetAPIKey'
+    WHERE   TABLE_NAME = 'subtext_Config' 
+    AND TABLE_SCHEMA = '<dbUser,varchar,dbo>'
+    AND COLUMN_NAME = 'AkismetAPIKey'
 )
 BEGIN
 	ALTER TABLE [<dbUser,varchar,dbo>].[subtext_Config]
@@ -21,9 +21,9 @@ GO
 IF NOT EXISTS 
 (
     SELECT * FROM [INFORMATION_SCHEMA].[COLUMNS] 
-    WHERE   table_name = 'subtext_Config' 
-    AND table_schema = '<dbUser,varchar,dbo>'
-    AND column_name = 'CategoryListPostCount'
+    WHERE   TABLE_NAME = 'subtext_Config' 
+    AND TABLE_SCHEMA = '<dbUser,varchar,dbo>'
+    AND COLUMN_NAME = 'CategoryListPostCount'
 )
 BEGIN
 	ALTER TABLE [<dbUser,varchar,dbo>].[subtext_Config]
@@ -35,8 +35,8 @@ GO
 IF NOT EXISTS 
 	(
 		SELECT	* FROM [INFORMATION_SCHEMA].[TABLES] 
-		WHERE	table_name = 'subtext_Feedback' 
-		AND		table_schema = '<dbUser,varchar,dbo>'
+		WHERE	TABLE_NAME = 'subtext_Feedback' 
+		AND		TABLE_SCHEMA = '<dbUser,varchar,dbo>'
 	)
 	BEGIN
 	/* Create COMMENT table
@@ -116,9 +116,9 @@ DELETE FROM [<dbUser,varchar,dbo>].[subtext_Referrals]
 IF EXISTS 
 	(
 		SELECT	* FROM [INFORMATION_SCHEMA].[COLUMNS] 
-		WHERE	table_name = 'subtext_Content' 
-		AND		table_schema = '<dbUser,varchar,dbo>'
-		AND		column_name = 'ParentId'
+		WHERE	TABLE_NAME = 'subtext_Content' 
+		AND		TABLE_SCHEMA = '<dbUser,varchar,dbo>'
+		AND		COLUMN_NAME = 'ParentId'
 	)
 	BEGIN
 	/* clean up parent id */
@@ -167,9 +167,9 @@ GO
 IF EXISTS 
 	(
 		SELECT	* FROM [INFORMATION_SCHEMA].[COLUMNS] 
-		WHERE	table_name = 'subtext_Content' 
-		AND		table_schema = '<dbUser,varchar,dbo>'
-		AND		column_name = 'ContentChecksumHash'
+		WHERE	TABLE_NAME = 'subtext_Content' 
+		AND		TABLE_SCHEMA = '<dbUser,varchar,dbo>'
+		AND		COLUMN_NAME = 'ContentChecksumHash'
 	)
 	/* Add an URL column so we can see which URL caused the problem */
 	ALTER TABLE [<dbUser,varchar,dbo>].[subtext_Content] 
@@ -180,9 +180,9 @@ GO
 IF EXISTS 
 	(
 		SELECT	* FROM [INFORMATION_SCHEMA].[COLUMNS] 
-		WHERE	table_name = 'subtext_Content' 
-		AND		table_schema = '<dbUser,varchar,dbo>'
-		AND		column_name = 'TitleUrl'
+		WHERE	TABLE_NAME = 'subtext_Content' 
+		AND		TABLE_SCHEMA = '<dbUser,varchar,dbo>'
+		AND		COLUMN_NAME = 'TitleUrl'
 	)
 	ALTER TABLE [<dbUser,varchar,dbo>].[subtext_Content] 
 	DROP COLUMN [TitleUrl]
@@ -193,9 +193,9 @@ GO
 IF EXISTS 
 	(
 		SELECT	* FROM [INFORMATION_SCHEMA].[COLUMNS] 
-		WHERE	table_name = 'subtext_Content' 
-		AND		table_schema = '<dbUser,varchar,dbo>'
-		AND		column_name = 'SourceUrl'
+		WHERE	TABLE_NAME = 'subtext_Content' 
+		AND		TABLE_SCHEMA = '<dbUser,varchar,dbo>'
+		AND		COLUMN_NAME = 'SourceUrl'
 	)
 	ALTER TABLE [<dbUser,varchar,dbo>].[subtext_Content] 
 	DROP COLUMN [SourceUrl]
@@ -205,9 +205,9 @@ GO
 IF EXISTS 
 	(
 		SELECT	* FROM [INFORMATION_SCHEMA].[COLUMNS] 
-		WHERE	table_name = 'subtext_Content' 
-		AND		table_schema = '<dbUser,varchar,dbo>'
-		AND		column_name = 'SourceName'
+		WHERE	TABLE_NAME = 'subtext_Content' 
+		AND		TABLE_SCHEMA = '<dbUser,varchar,dbo>'
+		AND		COLUMN_NAME = 'SourceName'
 	)
 	ALTER TABLE [<dbUser,varchar,dbo>].[subtext_Content] 
 	DROP COLUMN [SourceName]
@@ -217,9 +217,9 @@ GO
 IF NOT EXISTS 
 	(
 		SELECT	* FROM [INFORMATION_SCHEMA].[COLUMNS] 
-		WHERE	table_name = 'subtext_Keywords' 
-		AND		table_schema = '<dbUser,varchar,dbo>'
-		AND		column_name = 'Rel'
+		WHERE	TABLE_NAME = 'subtext_Keywords' 
+		AND		TABLE_SCHEMA = '<dbUser,varchar,dbo>'
+		AND		COLUMN_NAME = 'Rel'
 	)
 	
 	ALTER TABLE [<dbUser,varchar,dbo>].[subtext_KeyWords] WITH NOCHECK
@@ -231,9 +231,9 @@ GO
 IF NOT EXISTS 
 	(
 		SELECT	* FROM [INFORMATION_SCHEMA].[COLUMNS] 
-		WHERE	table_name = 'subtext_Config' 
-		AND		table_schema = '<dbUser,varchar,dbo>'
-		AND		column_name = 'FeedBurnerName'
+		WHERE	TABLE_NAME = 'subtext_Config' 
+		AND		TABLE_SCHEMA = '<dbUser,varchar,dbo>'
+		AND		COLUMN_NAME = 'FeedBurnerName'
 	)
 	ALTER TABLE [<dbUser,varchar,dbo>].[subtext_Config] WITH NOCHECK
 	ADD [FeedBurnerName] [nvarchar](64) NULL
