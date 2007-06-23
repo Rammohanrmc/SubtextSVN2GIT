@@ -15,16 +15,31 @@ ex... Make this edit in PostComment.ascx
 <div class="comment livepreview"></div>
 
 */
+var allowedTagsRegExp;
+var previewElement;
+var paraRegExp = new RegExp("(.*)\n\n([^#\*\n\n].*)", "g");
+var lineBreakRegExp = new RegExp("(.*)\n([^#\*\n].*)", "g");
+var updatingPreview = false;
 
 function initLiveCommentPreview()
 {
 	if (!document.getElementsByTagName) { return; }
 
 	var divs = document.getElementsByTagName('div');
-	var previewElement = getPreviewDisplayElement(divs);
+	previewElement = getPreviewDisplayElement(divs);
 
 	if(!previewElement) {return;}	
 	var textareas = document.getElementsByTagName('textarea');
+
+	var tagNamesRegex = '';
+	for(var i = 0; i < subtextAllowedHtmlTags.length; i++)
+	{
+		tagNamesRegex += subtextAllowedHtmlTags[i] + '|'
+	}
+	if(tagNamesRegex.length > 0)
+		tagNamesRegex = tagNamesRegex.substring(0, tagNamesRegex.length - 2);
+		
+	allowedTagsRegExp = new RegExp('&lt;(/?(' + tagNamesRegex + ')(\\s+.*?)?)&gt;', "g");
 
 	// loop through all input tags
 	for (var i = 0; i < textareas.length; i++)
@@ -32,9 +47,20 @@ function initLiveCommentPreview()
 		var textarea = textareas[i];
 		if (getClassName(textarea).indexOf('livepreview') >= 0)
 		{
-			textarea.onkeyup = function () {reloadPreview(this, previewElement); return false;}
+			textarea.onkeyup = function () 
+			{
+				 //Subject to race condition. But it's not a big deal. The next keypress 
+				 //will solve it. Worst case is the preview is off by the last char in rare 
+				 //situations.
+				if(!updatingPreview)
+				{
+					updatingPreview = true;
+					window.setTimeout("reloadPreview('" + this.id + "')", 20);
+				}
+				return false;
+			}
 		}
-	}
+	}	
 }
 
 // Returns the html element responsible for previewing 
@@ -66,29 +92,27 @@ function getClassName(element)
 	return "";
 }
 
-function reloadPreview(textarea, previewDisplay) 
+function reloadPreview(textareaId) 
 {
+	var textarea = document.getElementById(textareaId);
 	var previewString = textarea.value;
+		
 	if (previewString.length > 0)
 	{
 		previewString = htmlUnencode(previewString);
-		previewString = previewString.replace(new RegExp("(.*)\n\n([^#\*\n\n].*)","g"), "<p>$1</p><p>$2</p>");
-		previewString = previewString.replace(new RegExp("(.*)\n([^#\*\n].*)","g"), "$1<br />$2");
-		
-		for(var i = 0; i < subtextAllowedHtmlTags.length; i++)
-		{
-			var allowedTag = subtextAllowedHtmlTags[i];
-			previewString = previewString.replace(new RegExp("&lt;(" + allowedTag + ".*?)&gt;(.+?)&lt;/(" + allowedTag + ")&gt;","g"), "<$1>$2</$3>");
-		}
+		previewString = previewString.replace(paraRegExp, "<p>$1</p><p>$2</p>");
+		previewString = previewString.replace(lineBreakRegExp, "$1<br />$2");
+		previewString = previewString.replace(allowedTagsRegExp, "<$1>");
 	}
 	try
 	{
-		previewDisplay.innerHTML = previewString;
+		previewElement.innerHTML = previewString;
 	}
 	catch(e)
 	{
 		alert('Sorry, but inserting a block element within is not allowed here.');
 	}
+	updatingPreview = false;
 }
 
 function htmlUnencode(s)
