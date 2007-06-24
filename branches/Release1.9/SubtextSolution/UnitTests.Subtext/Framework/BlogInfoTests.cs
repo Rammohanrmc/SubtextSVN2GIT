@@ -14,16 +14,36 @@ namespace UnitTests.Subtext.Framework
 	[TestFixture]
 	public class BlogInfoTests
 	{	
-	    [Test]
-	    public void NormalizeHostNameFunctionsProperly()
+	    [RowTest]
+		[Row("example.com", "example.com", "Should not have altered the host because it doesn't start with www.")]
+		[Row("example.com:1234", "example.com:1234", "should not strip the port number")]
+		[Row("www.example.com:1234", "example.com:1234", "should not strip the port number, but should strip www.")]
+		[Row(null, null, "Expect an exception", ExpectedException = typeof(ArgumentException))]
+	    public void StripWwwPrefixFromHostFunctionsProperly(string host, string expected, string message)
 	    {
-            string host = UnitTestHelper.GenerateRandomString();
-	        
-	        Assert.AreEqual(host, BlogInfo.NormalizeHostName(host), "Should not have altered the host");
-	        Assert.AreEqual(host, BlogInfo.NormalizeHostName("www."+host), "Did not strip the URL prefix");
-	        Assert.AreEqual(host, BlogInfo.NormalizeHostName(host+":1234"), "Did not strip the port number");
-	        Assert.AreEqual(host, BlogInfo.NormalizeHostName("www."+host+":2734"), "Need to strip both the prefix and port number");
+	        Assert.AreEqual(expected, BlogInfo.StripWwwPrefixFromHost(host), message);
 	    }
+
+	    [RowTest]
+		[Row("example.com", "example.com", "Should not have altered the host because it doesn't have the port.")]
+		[Row("example.com:1234", "example.com", "should strip the port number")]
+		[Row("www.example.com:12345678910", "www.example.com", "should strip the port number.")]
+		[Row(null, null, "Expect an exception", ExpectedException = typeof(ArgumentException))]
+		public void StripPortFromHostFunctionsProperly(string host, string expected, string message)
+	    {
+	        Assert.AreEqual(expected, BlogInfo.StripPortFromHost(host), message);
+	    }
+
+		[RowTest]
+		[Row("example.com", "www.example.com", "Should have prefixed with www.")]
+		[Row("example.com:1234", "www.example.com:1234", "should not strip the port number and add prefix")]
+		[Row("www.example.com:12345678910", "example.com:12345678910", "should strip the www prefix.")]
+		[Row("www.example.com", "example.com", "should strip the www prefix.")]
+		[Row(null, null, "Expect an exception", ExpectedException = typeof(ArgumentException))]
+		public void CanGetAlternativeHostAlias(string host, string expected, string message)
+		{
+			Assert.AreEqual(expected, BlogInfo.GetAlternateHostAlias(host), message);
+		}
 	    
 		/// <summary>
 	    /// Makes sure we can setup the fake HttpContext.

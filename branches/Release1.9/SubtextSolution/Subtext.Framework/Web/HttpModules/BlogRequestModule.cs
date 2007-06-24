@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Web;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Format;
-using Subtext.Framework.Text;
 using Subtext.Framework.Web.HttpModules;
 
 namespace Subtext.Web.HttpModules
@@ -49,24 +48,22 @@ namespace Subtext.Web.HttpModules
 		}
 		
 		/// <summary>
-		/// Gets the current host, stripping off the initial "www." if 
-		/// found.
+		/// Gets the current host.
 		/// </summary>
 		/// <returns></returns>
 		protected string Host
 		{
 			get
 			{
-				string host = HttpContext.Current.Request.Url.Host;
+				string host = HttpContext.Current.Request.Params["HTTP_HOST"];
+				if (String.IsNullOrEmpty(host))
+					host = HttpContext.Current.Request.Url.Host;
+
 				if(!HttpContext.Current.Request.Url.IsDefaultPort)
 				{
 					host  += ":" + HttpContext.Current.Request.Url.Port.ToString(CultureInfo.InvariantCulture);
 				}
 
-				if (host.StartsWith("www.", StringComparison.InvariantCultureIgnoreCase))
-				{
-					host = host.Substring(4);
-				}
 				return host;
 			}
 		}
