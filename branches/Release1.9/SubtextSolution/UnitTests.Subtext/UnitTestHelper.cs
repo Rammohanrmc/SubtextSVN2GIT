@@ -202,7 +202,7 @@ namespace UnitTests.Subtext
 			HttpContext.Current.Cache.Remove("BlogInfo-");
 			HttpContext.Current.Cache.Remove("BlogInfo-" + subfolder);
 			
-			HttpContext.Current.Items["Subtext__CurrentRequest"] = new BlogRequest(host, subfolder);
+			BlogRequest.Current = new BlogRequest(host, subfolder, HttpContext.Current.Request.Url);
 
 			#region Console Debug INfo
 			/*

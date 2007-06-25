@@ -100,7 +100,7 @@ namespace Subtext.Framework.Configuration
 			
 			if(info == null)
 			{
-				BlogRequest blogRequest = (BlogRequest)HttpContext.Current.Items["Subtext__CurrentRequest"];
+				BlogRequest blogRequest = BlogRequest.Current;
 				
 				//BlogConfig was not found in the context. It could be in the current cache.
 				string mCacheKey = cacheKey + blogRequest.Subfolder;
