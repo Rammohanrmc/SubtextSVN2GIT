@@ -15,7 +15,6 @@
 
 using System;
 using System.Configuration;
-using System.Web;
 using System.Web.Configuration;
 using log4net;
 using Subtext.Extensibility.Interfaces;
@@ -24,8 +23,6 @@ using Subtext.Framework.Format;
 using Subtext.Framework.Logging;
 using Subtext.Framework.Providers;
 using Subtext.Framework.Security;
-using Subtext.Framework.Text;
-using Subtext.Framework.Web.HttpModules;
 
 namespace Subtext.Framework.Configuration
 {

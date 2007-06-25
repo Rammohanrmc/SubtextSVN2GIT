@@ -104,8 +104,6 @@
       <Name>LumiSoft.Net</Name>
       <HintPath>ExternalDependencies\LumiSoft.Net.dll</HintPath>
     </Reference>
-    <Reference Include="MbUnit.Framework, Version=1.0.2642.28107, Culture=neutral, PublicKeyToken=5e72ecd30bc408d5" />
-    <Reference Include="MbUnit.Framework.2.0, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e72ecd30bc408d5, processorArchitecture=MSIL" />
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -121,9 +119,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ReceivedEmailMessage.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="SelfTests.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TestEmailAddress.cs">
