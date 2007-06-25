@@ -179,7 +179,7 @@ namespace UnitTests.Subtext.Framework.Configuration
 		[ExpectedException(typeof(BlogHiddenException))]
 		public void CreateBlogCannotHideAnotherBlog()
 		{
-			Config.CreateBlog("title", "username", "password", "www." + _hostName, string.Empty);
+			Config.CreateBlog("title", "username", "password", _hostName, string.Empty);
 			Config.CreateBlog("title", "username", "password", _hostName, "MyBlog");
 		}
 
