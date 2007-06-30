@@ -16,10 +16,29 @@
 namespace Subtext.Framework.Providers.Storage
 {
 
-	/// <summary>
-	/// This will hold all the information about the Asset (file) from the Storage Provider.
-	/// </summary>
-	public class Asset
-	{
-	}
+    /// <summary>
+    /// This will hold all the information about the Asset (file) from the Storage Provider.
+    /// </summary>
+    public class Asset : IAsset
+    {
+
+        private string _directoryName;
+        public string DirectoryName
+        {
+            get { return _directoryName; }
+        }
+
+
+        private long _length;
+        public long Length
+        {
+            get { return _length; }
+        }
+
+        public override string Name
+        {
+            get { return _name; }
+        }
+
+    }
 }
