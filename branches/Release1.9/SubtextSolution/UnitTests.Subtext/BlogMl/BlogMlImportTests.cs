@@ -110,6 +110,7 @@ namespace UnitTests.Subtext.Framework.Import
 
         	// Export this blog.
 			IBlogMLProvider provider = BlogMLProvider.Instance();
+        	provider.ConnectionString = Config.ConnectionString;
 			BlogMLWriter writer = BlogMLWriter.Create(provider);
             MemoryStream memoryStream = new MemoryStream();
 			
@@ -157,7 +158,7 @@ namespace UnitTests.Subtext.Framework.Import
             }
         }
 		
-		private void CreateBlogAndSetupContext()
+		private static void CreateBlogAndSetupContext()
 		{
 			string hostName = UnitTestHelper.GenerateRandomString();
             Assert.IsTrue(Config.CreateBlog("BlogML Import Unit Test Blog", "test", "test", hostName, ""), "Could not create the blog for this test");

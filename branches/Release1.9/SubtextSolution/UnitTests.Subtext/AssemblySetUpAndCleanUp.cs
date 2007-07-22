@@ -2,6 +2,7 @@ using System;
 using System.Configuration;
 using System.Data.SqlClient;
 using MbUnit.Framework;
+using Subtext.Framework.Configuration;
 using Subtext.Installation;
 
 namespace UnitTests.Subtext
@@ -11,7 +12,7 @@ namespace UnitTests.Subtext
 		[SetUp]
 		public static void SetUp()
 		{
-			using (	SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["subtextData"].ConnectionString))
+			using (	SqlConnection connection = new SqlConnection(Config.ConnectionString))
 			{
 				connection.Open();
 				using (SqlTransaction transaction = connection.BeginTransaction())

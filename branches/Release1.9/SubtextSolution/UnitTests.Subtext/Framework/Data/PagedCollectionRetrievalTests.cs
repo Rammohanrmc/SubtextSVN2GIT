@@ -290,7 +290,7 @@ namespace UnitTests.Subtext.Framework.Data
 											, new SqlParameter("@Exception", "")
 											, new SqlParameter("@Url", "http://localhost/")
 			                            };
-			SqlHelper.ExecuteNonQuery(ConfigurationManager.ConnectionStrings["subtextData"].ConnectionString, CommandType.StoredProcedure, "subtext_AddLogEntry", parameters);
+			SqlHelper.ExecuteNonQuery(Config.ConnectionString, CommandType.StoredProcedure, "subtext_AddLogEntry", parameters);
 			
 		}
 

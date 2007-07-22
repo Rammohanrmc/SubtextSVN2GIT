@@ -4,6 +4,7 @@ using System.Data;
 using MbUnit.Framework;
 using Microsoft.ApplicationBlocks.Data;
 using Subtext.Framework;
+using Subtext.Framework.Configuration;
 
 namespace UnitTests.Subtext.Framework
 {
@@ -14,7 +15,7 @@ namespace UnitTests.Subtext.Framework
 		[RollBack]
 		public void CanLoadHost()
 		{
-			SqlHelper.ExecuteNonQuery(ConfigurationManager.ConnectionStrings["subtextData"].ConnectionString, CommandType.Text, "DELETE subtext_Host");
+			SqlHelper.ExecuteNonQuery(Config.ConnectionString, CommandType.Text, "DELETE subtext_Host");
 			
 			Assert.IsNull(HostInfo.Instance, "HostInfo should be Null");
 			

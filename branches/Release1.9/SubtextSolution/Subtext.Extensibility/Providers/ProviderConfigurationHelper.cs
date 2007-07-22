@@ -64,6 +64,8 @@ namespace Subtext.Extensibility.Providers
 
             if (settingKey == "connectionStringName")
             {
+				if (String.IsNullOrEmpty(settingValue))
+					settingValue = ConfigurationManager.AppSettings["connectionStringName"];
                 ConnectionStringSettings setting = ConfigurationManager.ConnectionStrings[settingValue];
                 if (setting == null)
                     throw new ArgumentException("The Connection String '" + settingValue + "' was not found in the ConnectionStrings section.", "settingKey");

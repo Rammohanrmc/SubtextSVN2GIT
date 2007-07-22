@@ -15,10 +15,10 @@
 
 using System;
 using System.Collections.Specialized;
-using System.Configuration;
 using System.Configuration.Provider;
 using MbUnit.Framework;
 using Subtext.Extensibility.Providers;
+using Subtext.Framework.Configuration;
 
 namespace UnitTests.Subtext.Framework.Providers
 {
@@ -31,7 +31,7 @@ namespace UnitTests.Subtext.Framework.Providers
 	    [Test]
 	    public void CanFindConnectionString()
 	    {
-            Assert.AreEqual("Server=localhost;Database=SubtextData_1.9;Trusted_Connection=True", ConfigurationManager.ConnectionStrings["subtextData"].ConnectionString);
+			Assert.AreEqual(@"Server=.\SQLExpress;AttachDbFilename=|DataDirectory|App_Data\SubtextUnitTests.mdf;Database=SubtextUnitTests;Trusted_Connection=Yes;", Config.ConnectionString);
 	    }
 	    
 		/// <summary>
@@ -42,7 +42,7 @@ namespace UnitTests.Subtext.Framework.Providers
 		{
 			NameValueCollection configValue = new NameValueCollection();
 			configValue.Add("connectionStringName", "subtextData");	
-            Assert.AreEqual("Server=localhost;Database=SubtextData_1.9;Trusted_Connection=True", ProviderConfigurationHelper.GetConnectionStringSettingValue("connectionStringName", configValue));
+            Assert.AreEqual("Server=localhost;Database=SubtextData_1.9;Trusted_Connection=True;", ProviderConfigurationHelper.GetConnectionStringSettingValue("connectionStringName", configValue));
 		}
 	}
 }
