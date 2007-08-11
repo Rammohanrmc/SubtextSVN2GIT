@@ -130,10 +130,14 @@
 	-->
 	<target name="testAndCover" depends="get-publishing-properties,compile-debug">
 		<mkdir dir="${log.dir}" />
-		<exec program="${ncover.exe}" 
-			workingdir="UnitTests.Subtext\bin\${configuration}" 
-			commandline="&quot;${MbUnit.exe}&quot; /rnf:unittest /rt:xml /rf:${log.dir} UnitTests.Subtext.dll //x ${log.dir}\ncover-temp.xml" 
-			failonerror="true"/>
+		
+		<ncover
+			commandLineExe="${MbUnit.exe}"
+			commandLineArgs="/rnf:unittest /rt:xml /rf:${log.dir} UnitTests.Subtext.dll"
+			program="${ncover.exe}"
+			workingDirectory="UnitTests.Subtext\bin\${configuration}"
+			coverageFile="${log.dir}\ncover-temp.xml"
+		/>
 
 		<call target="util.ncoverexplorer.nant" />
 		<!--
