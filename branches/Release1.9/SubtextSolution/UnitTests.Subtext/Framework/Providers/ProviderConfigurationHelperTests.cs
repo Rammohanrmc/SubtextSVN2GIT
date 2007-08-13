@@ -31,7 +31,10 @@ namespace UnitTests.Subtext.Framework.Providers
 	    [Test]
 	    public void CanFindConnectionString()
 	    {
-			Assert.AreEqual(@"Server=.\SQLExpress;AttachDbFilename=|DataDirectory|App_Data\SubtextUnitTests.mdf;Database=SubtextUnitTests;Trusted_Connection=Yes;", Config.ConnectionString);
+			if (Config.ConnectionString.Contains(@".\SQLExpress"))
+				Assert.AreEqual(@"Server=.\SQLExpress;AttachDbFilename=|DataDirectory|App_Data\SubtextUnitTests.mdf;Database=SubtextUnitTests;Trusted_Connection=Yes;", Config.ConnectionString);
+			else
+				Assert.AreEqual(@"Server=localhost;Database=SubtextData_1.9;Trusted_Connection=True;", Config.ConnectionString);
 	    }
 	    
 		/// <summary>
