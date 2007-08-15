@@ -335,7 +335,8 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,
 drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateFeedbackCount]
 GO
 
-if exists (select ROUTINE_NAME from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' and OBJECTPROPERTY(OBJECT_ID(ROUTINE_NAME), 'IsMsShipped') = 0 and ROUTINE_SCHEMA = '<dbUser,varchar,dbo>' AND ROUTINE_NAME = 'subtext_UpdateBlogStats')
+if exists (select ROUTINE_NAME from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' and OBJECTPROPERTY(OBJECT_ID(ROUTINE_NAME), 'IsMsShipped') = 0 
+	and ROUTINE_SCHEMA = '<dbUser,varchar,dbo>' AND ROUTINE_NAME = 'subtext_UpdateBlogStats')
 drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateBlogStats]
 GO
 
@@ -435,7 +436,8 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,
 drop procedure [<dbUser,varchar,dbo>].[subtext_GetTopTags]
 GO
 
-if exists (select ROUTINE_NAME from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' and OBJECTPROPERTY(OBJECT_ID(ROUTINE_NAME), 'IsMsShipped') = 0 and ROUTINE_SCHEMA = '<dbUser,varchar,dbo>' AND ROUTINE_NAME = 'subtext_ClearBlogContent')
+if exists (select ROUTINE_NAME from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' and OBJECTPROPERTY(OBJECT_ID(ROUTINE_NAME), 'IsMsShipped') = 0 
+	and ROUTINE_SCHEMA = '<dbUser,varchar,dbo>' AND ROUTINE_NAME = 'subtext_ClearBlogContent')
 drop procedure [<dbUser,varchar,dbo>].[subtext_ClearBlogContent]
 GO
 
@@ -1098,11 +1100,11 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetConfig]
 )
 AS
 
-IF (@Strict = 0) AND (1 = (SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_config]))
+IF (@Strict = 0) AND (1 = (SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_Config]))
 BEGIN
 	-- Return the one and only record
 	SELECT
-		subtext_Config.BlogId
+		BlogId
 		, UserName
 		, [Password]
 		, Email
@@ -1136,7 +1138,7 @@ BEGIN
 		, FeedBurnerName
 	FROM [<dbUser,varchar,dbo>].[subtext_Config]
 END
-ELSE IF (@Strict = 0) AND (1 = (SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_config] WHERE Host = @Host))
+ELSE IF (@Strict = 0) AND (1 = (SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_Config] WHERE Host = @Host))
 BEGIN
 	 SELECT
 		BlogId
@@ -2924,7 +2926,7 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_UTILITY_AddBlog]
 
 AS
 
-IF NOT EXISTS(SELECT * FROM [<dbUser,varchar,dbo>].[subtext_config] WHERE Host = @Host AND Application = @Application)
+IF NOT EXISTS(SELECT * FROM [<dbUser,varchar,dbo>].[subtext_Config] WHERE Host = @Host AND Application = @Application)
 BEGIN
 
 INSERT subtext_Config  
@@ -3354,7 +3356,7 @@ SET ANSI_NULLS ON
 GO
 
 /*
-Returns a page of blogs within subtext_config table
+Returns a page of blogs within subtext_Config table
 */
 CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetPageableBlogs]
 (
@@ -3414,14 +3416,14 @@ SELECT	blog.BlogId
 		, blog.AkismetAPIKey
 		, blog.FeedBurnerName
 		
-FROM [<dbUser,varchar,dbo>].[subtext_config] blog
+FROM [<dbUser,varchar,dbo>].[subtext_Config] blog
 WHERE blog.BlogId >= @FirstId
 	AND @ConfigurationFlags & Flag = @ConfigurationFlags
 	AND (Host = @Host OR @Host IS NULL)
 ORDER BY blog.BlogId ASC
 
 SELECT COUNT([BlogId]) AS TotalRecords
-FROM [<dbUser,varchar,dbo>].[subtext_config]
+FROM [<dbUser,varchar,dbo>].[subtext_Config]
 WHERE @ConfigurationFlags & Flag = @ConfigurationFlags
 	AND (Host = @Host OR @Host IS NULL)
 GO
@@ -3436,7 +3438,7 @@ SET ANSI_NULLS ON
 GO
 
 /*
-Returns a single blog within the subtext_config table by id.
+Returns a single blog within the subtext_Config table by id.
 */
 CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetBlogById]
 (
@@ -3475,7 +3477,7 @@ SELECT	blog.BlogId
 		, blog.RecentCommentsLength
 		, blog.AkismetAPIKey
 		, blog.FeedBurnerName
-FROM [<dbUser,varchar,dbo>].[subtext_config] blog
+FROM [<dbUser,varchar,dbo>].[subtext_Config] blog
 WHERE	blog.BlogId = @BlogId
 GO
 
