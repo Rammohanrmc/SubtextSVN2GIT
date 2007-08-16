@@ -93,6 +93,7 @@ namespace Subtext.Web.Controls
 		{
 			get
 			{
+                //TODO: shouldn't this be "style", or "link"?
 				return "script";
 			}
 		}

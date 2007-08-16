@@ -1,6 +1,7 @@
-﻿<%@ Page Language="C#" EnableTheming="false"  AutoEventWireup="false" Inherits="Subtext.Web.UI.Pages.SubtextMasterPage" %>
+﻿<%@ Page Language="C#" EnableTheming="false" AutoEventWireup="false" Inherits="Subtext.Web.UI.Pages.SubtextMasterPage" %>
+<%@ Import namespace="Subtext.Framework.Components"%>
+<%@ Import namespace="Subtext.Framework.Configuration"%>
 <%@ Register TagPrefix="DT" Namespace="Subtext.Web.UI.WebControls" Assembly="Subtext.Web" %>
-<%@ Import Namespace="Subtext.Framework.Configuration" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
@@ -9,7 +10,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 		<asp:Literal id="authorMetaTag" runat="server" />
 		<asp:Literal id="versionMetaTag" runat="server" />
-		<asp:Literal ID="additionalMetaTags" Runat="server" />
+		<asp:Literal id="additionalMetaTags" runat="server" />
 		<link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" runat="Server" />
 		<asp:Literal ID="styles" Runat="server" />
 		<link id="MainStyle" type="text/css" rel="stylesheet" runat="Server" />
