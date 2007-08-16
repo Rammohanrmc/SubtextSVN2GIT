@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using MbUnit.Framework;
 using Subtext.Extensibility;
@@ -12,6 +11,7 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 	public class EntriesGetTests
 	{
 		[Test]
+        [RollBack2]
 		public void CanGetRecentPosts()
 		{
 			string hostname = UnitTestHelper.GenerateRandomString();
