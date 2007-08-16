@@ -1219,47 +1219,72 @@ namespace Subtext.Framework.Data
 
         #endregion
 
-        #region KeyWords
+		#region MetaTags
 
-        public override IDataReader GetKeyWord(int keyWordID)
+		public override IDataReader GetMetaTagsForBlog(BlogInfo blog)
 		{
 			SqlParameter[] p =
-			{
-				DataHelper.MakeInParam("@KeyWordID", SqlDbType.Int, 4, keyWordID),
-				BlogIdParam
-			};
+				{
+					DataHelper.MakeInParam("@BlogId", SqlDbType.Int, 4, DataHelper.CheckNull(blog.Id))
+				};
+			return GetReader("subtext_GetMetaTagsForBlog", p);
+		}
+
+
+	    public override IDataReader GetMetaTagsForEntry(Entry entry)
+	    {
+            SqlParameter[] p =
+				{
+					DataHelper.MakeInParam("@BlogId", SqlDbType.Int, 4, DataHelper.CheckNull(entry.BlogId)),
+                    DataHelper.MakeInParam("@EntryId", SqlDbType.Int, 4, DataHelper.CheckNull(entry.Id))
+				};
+            return GetReader("subtext_GetMetaTagsForEntry", p);
+	    }
+
+	    #endregion
+
+
+		#region KeyWords
+
+		public override IDataReader GetKeyWord(int keyWordID)
+		{
+			SqlParameter[] p =
+				{
+					DataHelper.MakeInParam("@KeyWordID", SqlDbType.Int, 4, keyWordID),
+					BlogIdParam
+				};
 			return GetReader("subtext_GetKeyWord",p);
 		}
 
 		public override bool DeleteKeyWord(int keywordId)
 		{
 			SqlParameter[] p =
-			{
-				DataHelper.MakeInParam("@KeyWordID", SqlDbType.Int, 4, keywordId),
-				BlogIdParam
-			};
+				{
+					DataHelper.MakeInParam("@KeyWordID", SqlDbType.Int, 4, keywordId),
+					BlogIdParam
+				};
 			return NonQueryBool("subtext_DeleteKeyWord",p);
 		}
 
-        public override int InsertKeyWord(KeyWord keyword)
+		public override int InsertKeyWord(KeyWord keyword)
 		{
 			if (keyword == null)
 				throw new ArgumentNullException("keyword", "Cannot insert a null keyword.");
         	
 			SqlParameter outParam = DataHelper.MakeOutParam("@KeyWordID",SqlDbType.Int,4);
 			SqlParameter[] p =
-			{
-				DataHelper.MakeInParam("@Word",SqlDbType.NVarChar,100,keyword.Word),
-				DataHelper.MakeInParam("@Rel",SqlDbType.NVarChar,100,keyword.Rel),
-				DataHelper.MakeInParam("@Text",SqlDbType.NVarChar,100,keyword.Text),
-				DataHelper.MakeInParam("@ReplaceFirstTimeOnly",SqlDbType.Bit,1,keyword.ReplaceFirstTimeOnly),
-				DataHelper.MakeInParam("@OpenInNewWindow",SqlDbType.Bit,1,keyword.OpenInNewWindow),
-				DataHelper.MakeInParam("@CaseSensitive",SqlDbType.Bit,1,keyword.CaseSensitive),
-				DataHelper.MakeInParam("@Url",SqlDbType.NVarChar,255,keyword.Url),
-				DataHelper.MakeInParam("@Title",SqlDbType.NVarChar,100,keyword.Title),
-				BlogIdParam,
-				outParam
-			};
+				{
+					DataHelper.MakeInParam("@Word",SqlDbType.NVarChar,100,keyword.Word),
+					DataHelper.MakeInParam("@Rel",SqlDbType.NVarChar,100,keyword.Rel),
+					DataHelper.MakeInParam("@Text",SqlDbType.NVarChar,100,keyword.Text),
+					DataHelper.MakeInParam("@ReplaceFirstTimeOnly",SqlDbType.Bit,1,keyword.ReplaceFirstTimeOnly),
+					DataHelper.MakeInParam("@OpenInNewWindow",SqlDbType.Bit,1,keyword.OpenInNewWindow),
+					DataHelper.MakeInParam("@CaseSensitive",SqlDbType.Bit,1,keyword.CaseSensitive),
+					DataHelper.MakeInParam("@Url",SqlDbType.NVarChar,255,keyword.Url),
+					DataHelper.MakeInParam("@Title",SqlDbType.NVarChar,100,keyword.Title),
+					BlogIdParam,
+					outParam
+				};
 			NonQueryInt("subtext_InsertKeyWord",p);
 			return (int)outParam.Value;
 		}
@@ -1267,38 +1292,38 @@ namespace Subtext.Framework.Data
 		public override bool UpdateKeyWord(KeyWord kw)
 		{
 			SqlParameter[] p =
-			{
-				DataHelper.MakeInParam("@KeyWordID",SqlDbType.Int,4,kw.Id),
-				DataHelper.MakeInParam("@Word",SqlDbType.NVarChar,100,kw.Word),
-				DataHelper.MakeInParam("@Rel",SqlDbType.NVarChar,100,kw.Rel),
-				DataHelper.MakeInParam("@Text",SqlDbType.NVarChar,100,kw.Text),
-				DataHelper.MakeInParam("@ReplaceFirstTimeOnly",SqlDbType.Bit,1,kw.ReplaceFirstTimeOnly),
-				DataHelper.MakeInParam("@OpenInNewWindow",SqlDbType.Bit,1,kw.OpenInNewWindow),
-				DataHelper.MakeInParam("@CaseSensitive",SqlDbType.Bit,1,kw.CaseSensitive),
-				DataHelper.MakeInParam("@Url",SqlDbType.NVarChar,255,kw.Url),
-				DataHelper.MakeInParam("@Title",SqlDbType.NVarChar,100,kw.Title),
-				BlogIdParam
-			};
+				{
+					DataHelper.MakeInParam("@KeyWordID",SqlDbType.Int,4,kw.Id),
+					DataHelper.MakeInParam("@Word",SqlDbType.NVarChar,100,kw.Word),
+					DataHelper.MakeInParam("@Rel",SqlDbType.NVarChar,100,kw.Rel),
+					DataHelper.MakeInParam("@Text",SqlDbType.NVarChar,100,kw.Text),
+					DataHelper.MakeInParam("@ReplaceFirstTimeOnly",SqlDbType.Bit,1,kw.ReplaceFirstTimeOnly),
+					DataHelper.MakeInParam("@OpenInNewWindow",SqlDbType.Bit,1,kw.OpenInNewWindow),
+					DataHelper.MakeInParam("@CaseSensitive",SqlDbType.Bit,1,kw.CaseSensitive),
+					DataHelper.MakeInParam("@Url",SqlDbType.NVarChar,255,kw.Url),
+					DataHelper.MakeInParam("@Title",SqlDbType.NVarChar,100,kw.Title),
+					BlogIdParam
+				};
 			return NonQueryBool("subtext_UpdateKeyWord",p);
 		}
 
 		public override IDataReader GetKeyWords()
 		{
 			SqlParameter[] p =
-			{
-				BlogIdParam
-			};
+				{
+					BlogIdParam
+				};
 			return GetReader("subtext_GetBlogKeyWords", p);
 		}
 
 		public override IDataReader GetPagedKeyWords(int pageIndex, int pageSize)
 		{
 			SqlParameter[] p = 
-			{
-				DataHelper.MakeInParam("@PageIndex", SqlDbType.Int, 4, pageIndex),
-				DataHelper.MakeInParam("@PageSize", SqlDbType.Int, 4, pageSize),
-				BlogIdParam
-			};
+				{
+					DataHelper.MakeInParam("@PageIndex", SqlDbType.Int, 4, pageIndex),
+					DataHelper.MakeInParam("@PageSize", SqlDbType.Int, 4, pageSize),
+					BlogIdParam
+				};
 			return GetReader("subtext_GetPageableKeyWords",p);
 		}
 
@@ -1351,11 +1376,11 @@ namespace Subtext.Framework.Data
 		public override bool UpdateHost(HostInfo host)
 		{
 			SqlParameter[] p = 
-			{
-				DataHelper.MakeInParam("@HostUserName", SqlDbType.NVarChar,  64, host.HostUserName)
-				, DataHelper.MakeInParam("@Password", SqlDbType.NVarChar,  32, host.Password)
-				, DataHelper.MakeInParam("@Salt", SqlDbType.NVarChar,  32, host.Salt)
-			};
+				{
+					DataHelper.MakeInParam("@HostUserName", SqlDbType.NVarChar,  64, host.HostUserName)
+					, DataHelper.MakeInParam("@Password", SqlDbType.NVarChar,  32, host.Password)
+					, DataHelper.MakeInParam("@Salt", SqlDbType.NVarChar,  32, host.Salt)
+				};
 
 			return NonQueryBool("subtext_UpdateHost", p);
 		}

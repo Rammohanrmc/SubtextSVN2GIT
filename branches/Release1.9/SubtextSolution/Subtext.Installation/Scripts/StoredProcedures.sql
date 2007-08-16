@@ -437,6 +437,16 @@ drop procedure [<dbUser,varchar,dbo>].[subtext_GetTopTags]
 GO
 
 if exists (select ROUTINE_NAME from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' and OBJECTPROPERTY(OBJECT_ID(ROUTINE_NAME), 'IsMsShipped') = 0 
+	and ROUTINE_SCHEMA = '<dbUser,varchar,dbo>' AND ROUTINE_NAME = 'subtext_GetMetaTagsForBlog')
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetMetaTagsForBlog]
+GO
+
+if exists (select ROUTINE_NAME from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' and OBJECTPROPERTY(OBJECT_ID(ROUTINE_NAME), 'IsMsShipped') = 0 
+	and ROUTINE_SCHEMA = '<dbUser,varchar,dbo>' AND ROUTINE_NAME = 'subtext_GetMetaTagsForEntry')
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetMetaTagsForEntry]
+GO
+
+if exists (select ROUTINE_NAME from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' and OBJECTPROPERTY(OBJECT_ID(ROUTINE_NAME), 'IsMsShipped') = 0 
 	and ROUTINE_SCHEMA = '<dbUser,varchar,dbo>' AND ROUTINE_NAME = 'subtext_ClearBlogContent')
 drop procedure [<dbUser,varchar,dbo>].[subtext_ClearBlogContent]
 GO
@@ -4616,4 +4626,42 @@ ORDER BY Count(*) DESC
 GO 
 
 GRANT  EXECUTE  ON [<dbUser,varchar,dbo>].[subtext_GetTopTags] TO [public]
+GO
+
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetMetaTagsForBlog] 
+	(
+		@BlogId int
+	)
+AS
+	SELECT Id, Content, [Name], HttpEquiv, DateCreated FROM [<dbUser,varchar,dbo>].subtext_MetaTag
+	WHERE BlogId = @BlogId
+	ORDER BY DateCreated DESC
+GO 
+
+GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_GetMetaTagsForBlog] TO [public]
+GO
+
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetMetaTagsForEntry] 
+	(
+		@BlogId int,
+		@EntryId int
+	)
+AS
+	SELECT Id, Content, [Name], HttpEquiv, DateCreated FROM [<dbUser,varchar,dbo>].subtext_MetaTag
+	WHERE BlogId = @BlogId
+		AND EntryId = @EntryId
+	ORDER BY DateCreated DESC
+GO 
+
+GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_GetMetaTagsForEntry] TO [public]
 GO

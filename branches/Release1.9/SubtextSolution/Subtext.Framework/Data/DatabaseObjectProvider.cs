@@ -935,9 +935,45 @@ namespace Subtext.Framework.Data
 
         #endregion
 
-        #region KeyWords
+		#region MetaTags
 
-        public override KeyWord GetKeyWord(int KeyWordID)
+		public override ICollection<MetaTag> GetMetaTagsForBlog(BlogInfo blog)
+		{
+			using (IDataReader reader = DbProvider.Instance().GetMetaTagsForBlog(blog))
+			{
+				List<MetaTag> tags = new List<MetaTag>();
+
+				while(reader.Read())
+				{
+					tags.Add(DataHelper.LoadMetaTag(reader));
+				}
+
+				return tags;
+			}
+		}
+
+
+	    public override ICollection<MetaTag> GetMetaTagsForEntry(Entry entry)
+	    {
+	        using (IDataReader reader = DbProvider.Instance().GetMetaTagsForEntry(entry))
+	        {
+	            List<MetaTag> tags = new List<MetaTag>();
+
+                while (reader.Read())
+                {
+                    tags.Add(DataHelper.LoadMetaTag(reader));
+                }
+
+	            return tags;
+	        }
+	    }
+
+	    #endregion
+
+
+		#region KeyWords
+
+		public override KeyWord GetKeyWord(int KeyWordID)
 		{
 			IDataReader reader = DbProvider.Instance().GetKeyWord(KeyWordID);
 			try
@@ -974,12 +1010,12 @@ namespace Subtext.Framework.Data
 			}
 		}
 
-        public override IPagedCollection<KeyWord> GetPagedKeyWords(int pageIndex, int pageSize)
+		public override IPagedCollection<KeyWord> GetPagedKeyWords(int pageIndex, int pageSize)
 		{
 			IDataReader reader = DbProvider.Instance().GetPagedKeyWords(pageIndex, pageSize);
 			try
 			{
-                IPagedCollection<KeyWord> pkwc = new PagedCollection<KeyWord>();
+				IPagedCollection<KeyWord> pkwc = new PagedCollection<KeyWord>();
 				while(reader.Read())
 				{
 					pkwc.Add(DataHelper.LoadKeyWord(reader));
@@ -1014,7 +1050,7 @@ namespace Subtext.Framework.Data
 
 		#region Images
 
-        public override ImageCollection GetImagesByCategoryID(int catID, bool activeOnly)
+		public override ImageCollection GetImagesByCategoryID(int catID, bool activeOnly)
 		{
 			IDataReader reader = DbProvider.Instance().GetImagesByCategoryID(catID, activeOnly);
 			try
@@ -1075,12 +1111,12 @@ namespace Subtext.Framework.Data
 
 		#region Archives
 
-        public override ICollection<ArchiveCount> GetPostsByMonthArchive()
+		public override ICollection<ArchiveCount> GetPostsByMonthArchive()
 		{
 			IDataReader reader = DbProvider.Instance().GetPostsByMonthArchive();
 			try
 			{
-                ICollection<ArchiveCount> acc = DataHelper.LoadArchiveCount(reader);
+				ICollection<ArchiveCount> acc = DataHelper.LoadArchiveCount(reader);
 				return acc;
 			}
 			finally
@@ -1089,12 +1125,12 @@ namespace Subtext.Framework.Data
 			}
 		}
 
-        public override ICollection<ArchiveCount> GetPostsByYearArchive()
+		public override ICollection<ArchiveCount> GetPostsByYearArchive()
 		{
 			IDataReader reader = DbProvider.Instance().GetPostsByYearArchive();
 			try
 			{
-                ICollection<ArchiveCount> acc = DataHelper.LoadArchiveCount(reader);
+				ICollection<ArchiveCount> acc = DataHelper.LoadArchiveCount(reader);
 				return acc;
 			}
 			finally
@@ -1103,19 +1139,19 @@ namespace Subtext.Framework.Data
 			}
 		}
 
-        public override ICollection<ArchiveCount> GetPostsByCategoryArchive()
-        {
-            IDataReader reader = DbProvider.Instance().GetPostsByCategoryArchive();
-            try
-            {
-                ICollection<ArchiveCount> acc = DataHelper.LoadArchiveCount(reader);
-                return acc;
-            }
-            finally
-            {
-                reader.Close();
-            }
-        }
+		public override ICollection<ArchiveCount> GetPostsByCategoryArchive()
+		{
+			IDataReader reader = DbProvider.Instance().GetPostsByCategoryArchive();
+			try
+			{
+				ICollection<ArchiveCount> acc = DataHelper.LoadArchiveCount(reader);
+				return acc;
+			}
+			finally
+			{
+				reader.Close();
+			}
+		}
 
 		#endregion
 	}

@@ -427,6 +427,23 @@ namespace Subtext.Framework.Providers
 
         #endregion
 
+		#region MetaTags
+
+        /// <summary>
+		/// Gets a collection of MetaTags for the given Blog.
+		/// </summary>
+		/// <returns></returns>
+		public abstract ICollection<MetaTag> GetMetaTagsForBlog(BlogInfo blog);
+
+        /// <summary>
+        /// Gets a collection of MetaTags for the given Entry
+        /// </summary>
+        /// <param name="entry"></param>
+        /// <returns></returns>
+	    public abstract ICollection<MetaTag> GetMetaTagsForEntry(Entry entry);
+
+		#endregion
+
         #region KeyWords
 
         public abstract KeyWord GetKeyWord(int KeyWordID);

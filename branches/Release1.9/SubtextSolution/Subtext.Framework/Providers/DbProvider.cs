@@ -326,8 +326,16 @@ namespace Subtext.Framework.Providers
 
         #endregion
 
-        #region KeyWord
-        public abstract IDataReader GetKeyWord(int keyWordID);
+		#region MetaTags
+
+		public abstract IDataReader GetMetaTagsForBlog(BlogInfo blog);
+
+	    public abstract IDataReader GetMetaTagsForEntry(Entry entry);
+
+		#endregion
+
+		#region KeyWord
+		public abstract IDataReader GetKeyWord(int keyWordID);
 		public abstract IDataReader GetPagedKeyWords(int pageIndex, int pageSize);
 
 		public abstract bool DeleteKeyWord(int keywordId);
@@ -413,15 +421,15 @@ namespace Subtext.Framework.Providers
 		public abstract IDataReader GetPagedViewStats(int pageIndex, int pageSize, DateTime beginDate, DateTime endDate);
 		public abstract IDataReader GetPagedReferrers(int pageIndex, int pageSize, int entryId);
 	    
-	    /// <summary>
-	    /// Clears all content (Entries, Comments, Track/Ping-backs, Statistices, etc...) 
-	    /// for a the current blog (sans the Image Galleries).
-	    /// </summary>
-	    /// <returns>
-	    ///     TRUE - At least one unit of content was cleared.
-	    ///     FALSE - No content was cleared.
-	    /// </returns>
-        public abstract bool ClearBlogContent();
+		/// <summary>
+		/// Clears all content (Entries, Comments, Track/Ping-backs, Statistices, etc...) 
+		/// for a the current blog (sans the Image Galleries).
+		/// </summary>
+		/// <returns>
+		///     TRUE - At least one unit of content was cleared.
+		///     FALSE - No content was cleared.
+		/// </returns>
+		public abstract bool ClearBlogContent();
 
 		#endregion
 
@@ -429,7 +437,7 @@ namespace Subtext.Framework.Providers
 
 		public abstract IDataReader GetPostsByMonthArchive();
 		public abstract IDataReader GetPostsByYearArchive();
-        public abstract IDataReader GetPostsByCategoryArchive();
+		public abstract IDataReader GetPostsByCategoryArchive();
 
 		#endregion
 		#endregion

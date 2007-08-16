@@ -73,3 +73,35 @@ BEGIN
 		ADD [TrackingCode] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL
 END
 GO
+
+/* Create the new MetaTag table */
+
+IF NOT EXISTS
+(
+	SELECT * FROM [INFORMATION_SCHEMA].[COLUMNS]
+	WHERE TABLE_NAME = 'subtext_MetaTag'
+	AND TABLE_SCHEMA = '<dbUser,varchar,dbo>'
+)
+BEGIN
+	CREATE TABLE [<dbUser,varchar,dbo>].[subtext_MetaTag]
+	(
+		[Id] int IDENTITY(1,1) NOT NULL,
+		[Content] nvarchar(512) NOT NULL,
+		[Name] nvarchar(100) NULL,
+		[HttpEquiv] nvarchar(100) NULL,
+		[BlogId] int NOT NULL,
+		[EntryId] int NULL,
+		[DateCreated] datetime NULL CONSTRAINT [DF_subtext_MetaTag_DateCreated] DEFAULT (getdate()),
+		CONSTRAINT [PK_subtext_MetaTag] PRIMARY KEY CLUSTERED
+		(
+			[Id] ASC
+		) ON [PRIMARY],
+		CONSTRAINT [FK_subtext_MetaTag_subtext_Config] FOREIGN KEY
+		( [BlogId] ) REFERENCES <dbUser,varchar,dbo>.[subtext_Config]
+		( [BlogId] ),
+		CONSTRAINT [FK_subtext_MetaTag_subtext_Content] FOREIGN KEY
+		( [EntryId] ) REFERENCES <dbUser,varchar,dbo>.[subtext_Content]
+		( [ID] )
+	)
+END
+GO
