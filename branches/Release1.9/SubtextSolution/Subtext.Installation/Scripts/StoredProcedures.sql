@@ -3414,7 +3414,6 @@ SELECT	blog.BlogId
 		, blog.StoryCount
 		, blog.PingTrackCount
 		, blog.CommentCount
-		, blog.IsAggregated
 		, blog.Flag
 		, blog.SkinCssFile 
 		, blog.BlogGroup
@@ -3476,7 +3475,6 @@ SELECT	blog.BlogId
 		, blog.StoryCount
 		, blog.PingTrackCount
 		, blog.CommentCount
-		, blog.IsAggregated
 		, blog.Flag
 		, blog.SkinCssFile 
 		, blog.BlogGroup
