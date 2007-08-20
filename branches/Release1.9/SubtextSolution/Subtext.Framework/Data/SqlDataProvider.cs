@@ -15,7 +15,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
@@ -655,7 +654,7 @@ namespace Subtext.Framework.Data
 		public override int InsertEntry(Entry entry)
 		{
 			if (entry == null)
-				throw new ArgumentNullException("link", "Cannot insert a null entry.");
+				throw new ArgumentNullException("entry", "Cannot insert a null entry.");
         	
 			SqlParameter outIdParam = DataHelper.MakeOutParam("@ID", SqlDbType.Int, 4);
 			SqlParameter[] p =
@@ -1220,6 +1219,30 @@ namespace Subtext.Framework.Data
         #endregion
 
 		#region MetaTags
+
+        public override int InsertMetaTag(MetaTag metaTag)
+        {
+            if (metaTag == null)
+                throw new ArgumentNullException("metaTag", "Cannon insert a null metaTag");
+
+            object entryIdValue = metaTag.EntryId.HasValue ? DataHelper.CheckNull(metaTag.EntryId.Value) : DBNull.Value;
+            SqlParameter id = DataHelper.MakeOutParam("@Id", SqlDbType.Int, 4);
+
+            SqlParameter[] p =
+                {
+                    DataHelper.MakeInParam("@Content", SqlDbType.NVarChar, 512, metaTag.Content),
+                    DataHelper.MakeInParam("@Name", SqlDbType.NVarChar, 100, DataHelper.CheckNull(metaTag.Name)),
+                    DataHelper.MakeInParam("@HttpEquiv", SqlDbType.NVarChar, 100,
+                                           DataHelper.CheckNull(metaTag.HttpEquiv)),
+                    DataHelper.MakeInParam("@DateCreated", SqlDbType.DateTime, 8, metaTag.DateCreated),
+                    DataHelper.MakeInParam("@BlogId", SqlDbType.Int, 4, metaTag.BlogId),
+                    DataHelper.MakeInParam("@EntryId", SqlDbType.Int, 4, entryIdValue),
+                    id
+                };
+            NonQueryInt("subtext_InsertMetaTag", p);
+
+            return (int) id.Value;
+        }
 
 		public override IDataReader GetMetaTagsForBlog(BlogInfo blog)
 		{

@@ -937,7 +937,12 @@ namespace Subtext.Framework.Data
 
 		#region MetaTags
 
-		public override ICollection<MetaTag> GetMetaTagsForBlog(BlogInfo blog)
+	    public override int Create(MetaTag metaTag)
+	    {
+	        return DbProvider.Instance().InsertMetaTag(metaTag);
+	    }
+
+	    public override IList<MetaTag> GetMetaTagsForBlog(BlogInfo blog)
 		{
 			using (IDataReader reader = DbProvider.Instance().GetMetaTagsForBlog(blog))
 			{
@@ -953,7 +958,7 @@ namespace Subtext.Framework.Data
 		}
 
 
-	    public override ICollection<MetaTag> GetMetaTagsForEntry(Entry entry)
+	    public override IList<MetaTag> GetMetaTagsForEntry(Entry entry)
 	    {
 	        using (IDataReader reader = DbProvider.Instance().GetMetaTagsForEntry(entry))
 	        {

@@ -28,7 +28,7 @@ namespace Subtext.Framework
 	{
 		public static int Create(MetaTag metaTag)
 		{
-			throw new NotImplementedException();
+			return ObjectProvider.Instance().Create(metaTag);
 		}
 
 		public static bool Update(MetaTag metaTag)
@@ -41,12 +41,12 @@ namespace Subtext.Framework
 			throw new NotImplementedException();
 		}
 
-		public static ICollection<MetaTag> GetMetaTagsForBlog(BlogInfo blog)
+		public static IList<MetaTag> GetMetaTagsForBlog(BlogInfo blog)
 		{
 			return ObjectProvider.Instance().GetMetaTagsForBlog(blog);
 		}
 
-        public static ICollection<MetaTag> GetMetaTagsForEntry(Entry entry)
+        public static IList<MetaTag> GetMetaTagsForEntry(Entry entry)
         {
             return ObjectProvider.Instance().GetMetaTagsForEntry(entry);
         }

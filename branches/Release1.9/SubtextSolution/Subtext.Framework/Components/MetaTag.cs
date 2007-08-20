@@ -64,7 +64,21 @@ namespace Subtext.Framework.Components
 			set { httpEquiv = value; }
 		}
 
-		private DateTime dateCreated;
+	    private int blogId;
+        public int BlogId
+	    {
+	        get { return blogId; }
+	        set { blogId = value; }
+	    }
+
+	    private int? entryId;
+        public int? EntryId
+	    {
+	        get { return entryId; }
+	        set { entryId = value; }
+	    }
+
+	    private DateTime dateCreated;
 		public DateTime DateCreated
 		{
 			get { return dateCreated; }

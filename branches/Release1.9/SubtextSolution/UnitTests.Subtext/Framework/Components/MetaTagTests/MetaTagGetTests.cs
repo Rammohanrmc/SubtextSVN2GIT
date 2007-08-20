@@ -93,7 +93,7 @@ namespace UnitTests.Subtext.Framework.Components.MetaTagTests
         private static readonly string insertSql = @"INSERT INTO subtext_MetaTag ([Content], [Name], HttpEquiv, DateCreated, BlogId, EntryId) VALUES (@Content, @Name, @HttpEquiv, @DateCreated, @BlogId, @EntryId)";
 
 
-        private void InsertNewMetaTag(string content, string nameValue, string httpEquivValue, DateTime created, int blogId, int? entryId)
+        private static void InsertNewMetaTag(string content, string nameValue, string httpEquivValue, DateTime created, int blogId, int? entryId)
         {
             object entryIdValue = entryId.HasValue ? DataHelper.CheckNull(entryId.Value) : DBNull.Value;
 

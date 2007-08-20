@@ -430,17 +430,24 @@ namespace Subtext.Framework.Providers
 		#region MetaTags
 
         /// <summary>
+        /// Adds the given metatag to the data store.
+        /// </summary>
+        /// <param name="metaTag"></param>
+        /// <returns></returns>
+	    public abstract int Create(MetaTag metaTag);
+
+        /// <summary>
 		/// Gets a collection of MetaTags for the given Blog.
 		/// </summary>
 		/// <returns></returns>
-		public abstract ICollection<MetaTag> GetMetaTagsForBlog(BlogInfo blog);
+		public abstract IList<MetaTag> GetMetaTagsForBlog(BlogInfo blog);
 
         /// <summary>
         /// Gets a collection of MetaTags for the given Entry
         /// </summary>
         /// <param name="entry"></param>
         /// <returns></returns>
-	    public abstract ICollection<MetaTag> GetMetaTagsForEntry(Entry entry);
+	    public abstract IList<MetaTag> GetMetaTagsForEntry(Entry entry);
 
 		#endregion
 

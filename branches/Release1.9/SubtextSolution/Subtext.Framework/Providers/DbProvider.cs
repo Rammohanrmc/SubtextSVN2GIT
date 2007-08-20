@@ -328,6 +328,8 @@ namespace Subtext.Framework.Providers
 
 		#region MetaTags
 
+	    public abstract int InsertMetaTag(MetaTag metaTag);
+
 		public abstract IDataReader GetMetaTagsForBlog(BlogInfo blog);
 
 	    public abstract IDataReader GetMetaTagsForEntry(Entry entry);
