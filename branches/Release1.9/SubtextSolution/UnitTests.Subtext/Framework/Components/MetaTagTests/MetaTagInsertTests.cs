@@ -14,6 +14,13 @@ namespace UnitTests.Subtext.Framework.Components.MetaTagTests
         [RowTest]
         [Row("Steve loves Testing.", "description", null, false, "Did not create blog specific MetaTag.")]
         [Row("Still testing.", "description", null, true, "Did not create Entry specific MetaTag.")]
+        [Row("no-cache", null, "cache-control", false, "Did not create blog specific MetaTag.")]
+        [Row("Mon, 11 Jul 2020 11:12:01 GMT", null, "expires", true, "Did not create blog specific MetaTag.")]
+        [Row(null, null, null, false, "MetaTag invalid - requires Contents and Name or Http-Equiv.", ExpectedException = typeof(ArgumentException))]
+        [Row(null, "author", null, false, "MetaTag invalid - requires Contents.", ExpectedException = typeof(ArgumentException))]
+        [Row(null, null, "expires", false, "MetaTag invalid - requires Contents.", ExpectedException = typeof(ArgumentException))]
+        [Row("sending nulls", null, null, false, "MetaTag invalid - requires Name or Http-Equiv.", ExpectedException = typeof(ArgumentException))]
+        [Row("set both attributes", "description", "expires", true, "MetaTag invalid - requires either Name or Http-Equiv.", ExpectedException = typeof(ArgumentException))]
         [RollBack2]
         public void CanInsertNewMetaTag(string content, string name, string httpEquiv, bool withEntry, string errMsg)
         {

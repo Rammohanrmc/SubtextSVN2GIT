@@ -28,6 +28,8 @@ namespace Subtext.Framework
 	{
 		public static int Create(MetaTag metaTag)
 		{
+            if (!metaTag.IsValid)
+                throw new ArgumentException("The meta tag is invalid.", "metaTag");
 			return ObjectProvider.Instance().Create(metaTag);
 		}
 
