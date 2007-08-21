@@ -1,5 +1,4 @@
 using System;
-using System.Web;
 
 namespace Subtext.Framework.Web.HttpModules
 {
@@ -8,29 +7,17 @@ namespace Subtext.Framework.Web.HttpModules
 	/// </summary>
 	public struct BlogRequest
 	{
-		public const int DefaultPort = 80;
-
-		/// <summary>
-		/// Gets or sets the current blog request.
-		/// </summary>
-		/// <value>The current.</value>
-		public static BlogRequest Current
-		{
-			get { return (BlogRequest)HttpContext.Current.Items["Subtext__CurrentRequest"]; }
-			set { HttpContext.Current.Items["Subtext__CurrentRequest"] = value; }
-		}
+        public const int DefaultPort = 80;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BlogRequest"/> class.
 		/// </summary>
 		/// <param name="host">The host.</param>
 		/// <param name="subfolder">The subfolder.</param>
-		/// <param name="url">The raw requested URL</param>
-		public BlogRequest(string host, string subfolder, Uri url)
+		public BlogRequest(string host, string subfolder)
 		{
 			this.host = host;
 			this.subfolder = subfolder;
-			this.rawUrl = url;
 		}
 		
 		/// <summary>
@@ -62,13 +49,5 @@ namespace Subtext.Framework.Web.HttpModules
 			}
 		}
 		string subfolder;
-
-		public Uri RawUrl
-		{
-			get { return this.rawUrl; }
-			set { this.rawUrl = value; }
-		}
-
-		private Uri rawUrl;
 	}
 }

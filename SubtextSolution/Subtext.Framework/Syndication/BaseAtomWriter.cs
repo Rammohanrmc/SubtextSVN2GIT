@@ -29,24 +29,23 @@ namespace Subtext.Framework.Syndication
 	public abstract class BaseAtomWriter : BaseSyndicationWriter<Entry>
 	{
 		#region TimeHelpers
-		private static string W3UTC(DateTime dt, TimeZone tz)
+		private string W3UTC(DateTime dt, TimeZone tz)
 		{
 			return dt.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture) + tz.GetUtcOffset(dt);
 		}
 
-		private static string W3UTCZ(DateTime dt)
+		private string W3UTCZ(DateTime dt)
 		{
 			return dt.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
 		}
 		#endregion
 
-		private bool isBuilt;
+		private bool isBuilt = false;
 
 		/// <summary>
 		/// Bases the syndication writer.
 		/// </summary>
 		/// <param name="dateLastViewedFeedItemPublished">Last viewed feed item.</param>
-		/// <param name="useDeltaEncoding">if set to <c>true</c> [use delta encoding].</param>
 		protected BaseAtomWriter(DateTime dateLastViewedFeedItemPublished, bool useDeltaEncoding) : base(dateLastViewedFeedItemPublished, useDeltaEncoding)
 		{
 		}
@@ -159,32 +158,22 @@ namespace Subtext.Framework.Syndication
 
 			foreach(Entry entry in this.Items)
 			{
-				WriteEntry(entry, settings);
-			}
-		}
-
-		protected virtual void WriteEntry(Entry entry, BlogConfigurationSettings settings)
-		{
-			
-			// We'll show every entry if RFC3229 is not enabled.
-			//TODO: This is wrong.  What if a post is not published 
-			// and then gets published later. It will not be displayed.
-			if (!useDeltaEncoding || entry.DateSyndicated > this.DateLastViewedFeedItemPublished)
-			{
-				base.WriteEntry(entry);
-
-				this.WriteStartElement("entry");
-				EntryXml(entry, settings, info.UrlFormats, info.TimeZone);
-				this.WriteEndElement();
-				this.clientHasAllFeedItems = false;
-
-				//Update the latest publish date.
-				if (entry.DateSyndicated > latestPublishDate)
+				// We'll show every entry if RFC3229 is not enabled.
+				//TODO: This is wrong.  What if a post is not published 
+				// and then gets published later. It will not be displayed.
+				if(!useDeltaEncoding || entry.DateSyndicated > this.DateLastViewedFeedItemPublished)
 				{
-					latestPublishDate = entry.DateSyndicated;
+					this.WriteStartElement("entry");
+					EntryXml(entry, settings, info.UrlFormats, info.TimeZone);
+					this.WriteEndElement();
+					this.clientHasAllFeedItems = false;
+					
+					//Update the latest publish date.
+					if(entry.DateSyndicated > latestPublishDate)
+					{
+						latestPublishDate = entry.DateSyndicated;
+					}
 				}
-
-				base.RaisePostSyndicateEvent(entry);
 			}
 		}
 
@@ -204,7 +193,7 @@ namespace Subtext.Framework.Syndication
 				//(Duncanma 11/13/2005, hiding created, change issued to
 			    //published and modified to updated for 1.0 feed)
 				//this.WriteElementString("created",W3UTCZ(entry.DateCreated));
-				this.WriteElementString("published", W3UTC(entry.DateSyndicated, info.TimeZone));
+				this.WriteElementString("published", W3UTC(entry.DateCreated, info.TimeZone));
 				this.WriteElementString("updated", W3UTCZ(entry.DateModified));
 
 				if(entry.HasDescription)
@@ -225,9 +214,7 @@ namespace Subtext.Framework.Syndication
 				this.WriteString
 				(
 					string.Format
-					(
-                        CultureInfo.CurrentUICulture,
-                        "{0}{1}", //tag def
+					("{0}{1}", //tag def
 						entry.SyndicateDescriptionOnly ? entry.Description : entry.Body,  //use desc or full post
 						(UseAggBugs && settings.Tracking.EnableAggBugs) ? TrackingUrls.AggBugImage(urlFormats.AggBugkUrl(entry.Id)) : null //use aggbugs
 					)
@@ -251,5 +238,4 @@ namespace Subtext.Framework.Syndication
 		}
 	}
 }
-
 

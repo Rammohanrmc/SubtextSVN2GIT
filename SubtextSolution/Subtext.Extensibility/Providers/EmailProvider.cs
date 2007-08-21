@@ -15,9 +15,6 @@
 
 using System;
 using System.Collections.Specialized;
-using System.Configuration;
-using Subtext.Extensibility.Properties;
-using System.Net.Configuration;
 
 namespace Subtext.Extensibility.Providers
 {
@@ -30,41 +27,35 @@ namespace Subtext.Extensibility.Providers
 		private static GenericProviderCollection<EmailProvider> providers = ProviderConfigurationHelper.LoadProviderCollection<EmailProvider>("Email", out provider);
 		const int DefaultSmtpPort = 25;
 
-		string providerName;
-		string smtpServer = "localhost";
-		int port = DefaultSmtpPort;
-		string password;
-		string userName;
-		string adminEmail;
+		string _name;
+		string _smtpServer = "localhost";
+		int _port = DefaultSmtpPort;
+		string _password;
+		string _userName;
+		string _adminEmail;
 
 		/// <summary>
 		/// Initializes the specified provider.
 		/// </summary>
 		/// <param name="name">Friendly Name of the provider.</param>
-		/// <param name="config">Config value.</param>
-		public override void Initialize(string name, NameValueCollection config)
+		/// <param name="configValue">Config value.</param>
+		public override void Initialize(string name, NameValueCollection configValue)
 		{
-            if (name == null)
-            {
-                throw new ArgumentNullException("name", Resources.ArgumentNull_String);
-            }
-
-            if (config == null)
-            {
-                throw new ArgumentNullException("configV", Resources.ArgumentNull_Collection);
-            }
-			this.providerName = name;
-
-			SmtpSection smtpSettings = (SmtpSection)ConfigurationManager.GetSection("mailSettings/smtp");
-			
-			this.adminEmail = config["adminEmail"] ?? smtpSettings.From;
-			this.smtpServer = config["smtpServer"] ?? smtpSettings.Network.Host;
-			this.password = config["password"] ?? smtpSettings.Network.Password;
-			this.userName = config["username"] ?? smtpSettings.Network.UserName;
-
-			if (String.IsNullOrEmpty(config["port"]) || !int.TryParse(config["port"], out this.port))
+			_name = name;
+			_adminEmail = configValue["adminEmail"];
+			_smtpServer = configValue["smtpServer"];
+			_password = configValue["password"];
+			_userName = configValue["username"];
+			if (configValue["port"] != null)
 			{
-				this.port = smtpSettings.Network.Port;
+				try
+				{
+					_port = int.Parse(configValue["port"]);
+				}
+				catch (System.FormatException)
+				{
+					//Do nothing.
+				}
 			}
 		}
 
@@ -98,11 +89,11 @@ namespace Subtext.Extensibility.Providers
 		{
 			get
 			{
-				return this.adminEmail;
+				return _adminEmail;
 			}
 			set
 			{
-				this.adminEmail = value;
+				_adminEmail = value;
 			}
 		}
 
@@ -115,13 +106,13 @@ namespace Subtext.Extensibility.Providers
 		{
 			get
 			{
-				if (this.smtpServer == null || this.smtpServer.Length == 0)
-					this.smtpServer = "localhost";
-				return this.smtpServer;
+				if (_smtpServer == null || _smtpServer.Length == 0)
+					_smtpServer = "localhost";
+				return _smtpServer;
 			}
 			set
 			{
-				this.smtpServer = value;
+				_smtpServer = value;
 			}
 		}
 
@@ -132,8 +123,8 @@ namespace Subtext.Extensibility.Providers
 		/// <value>The port.</value>
 		public int Port
 		{
-			get { return this.port; }
-			set { this.port = value; }
+			get { return this._port; }
+			set { this._port = value; }
 		}
 
 
@@ -146,11 +137,11 @@ namespace Subtext.Extensibility.Providers
 		{
 			get
 			{
-				return this.password;
+				return _password;
 			}
 			set
 			{
-				this.password = value;
+				_password = value;
 			}
 		}
 
@@ -162,11 +153,11 @@ namespace Subtext.Extensibility.Providers
 		{
 			get
 			{
-				return this.userName;
+				return _userName;
 			}
 			set
 			{
-				this.userName = value;
+				_userName = value;
 			}
 		}
 
@@ -179,7 +170,7 @@ namespace Subtext.Extensibility.Providers
 		{
 			get
 			{
-				return this.providerName;
+				return _name;
 			}
 		}
 		
@@ -187,23 +178,12 @@ namespace Subtext.Extensibility.Providers
 		/// <summary>
 		/// Sends an email.
 		/// </summary>
-        /// <param name="to">The address to send the email to</param>
-        /// <param name="from">The address to send the email from</param>
-        /// <param name="subject">The subject of the email</param>
-        /// <param name="message">The email contents</param>
-        /// <returns>True if the email has sent, otherwise false</returns>
+		/// <param name="to"></param>
+		/// <param name="from"></param>
+		/// <param name="subject"></param>
+		/// <param name="message"></param>
+		/// <returns></returns>
 		public abstract bool Send(string to, string from, string subject, string message);
-
-        /// <summary>
-        /// Sends an email.
-        /// </summary>
-        /// <param name="to">The address to send the email to</param>
-        /// <param name="from">The address to send the email from</param>
-        /// <param name="replyTo">The email address to use in the ReplyTo header</param>
-        /// <param name="subject">The subject of the email</param>
-        /// <param name="message">The email contents</param>
-        /// <returns>True if the email has sent, otherwise false</returns>
-        public abstract bool Send(string to, string from, string replyTo, string subject, string message);
 		#endregion
 	}
 }

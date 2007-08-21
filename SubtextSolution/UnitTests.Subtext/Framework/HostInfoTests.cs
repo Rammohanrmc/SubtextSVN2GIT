@@ -1,7 +1,8 @@
 using System;
-using System.Web.Security;
+using System.Configuration;
+using System.Data;
 using MbUnit.Framework;
-using SubSonic;
+using Microsoft.ApplicationBlocks.Data;
 using Subtext.Framework;
 
 namespace UnitTests.Subtext.Framework
@@ -10,39 +11,47 @@ namespace UnitTests.Subtext.Framework
 	public class HostInfoTests
 	{
 		[Test]
-		[RollBack2]
+		[RollBack]
 		public void CanLoadHost()
 		{
-			SetupHostInfo();
-			Assert.IsTrue(HostInfo.HostInfoTableExists);
+			SqlHelper.ExecuteNonQuery(ConfigurationManager.ConnectionStrings["subtextData"].ConnectionString, CommandType.Text, "DELETE subtext_Host");
+			
+			Assert.IsNull(HostInfo.Instance, "HostInfo should be Null");
+			
+			HostInfo.CreateHost("test", "test");
+			
 			Assert.IsNotNull(HostInfo.Instance, "Host should not be null.");
-			Assert.IsNotNull(HostInfo.Instance.Owner);
-			Assert.Greater(HostInfo.Instance.DateCreated, NullValue.NullDateTime);
-			StringAssert.IsNonEmpty(HostInfo.Instance.HostUserName);
 		}
 
 		[Test]
-		[RollBack2]
-		public void CanSetApplicationId()
+		[RollBack]
+		public void CanUpdateHost()
 		{
-			SetupHostInfo();
-			Guid guid = Guid.NewGuid();
-			HostInfo.Instance.ApplicationId = guid;
-			Assert.AreEqual(guid, HostInfo.Instance.ApplicationId);
+			EnsureHost();
+			HostInfo host = HostInfo.Instance;
+			Assert.IsNotNull(host, "Host should not be null.");
+
+			host.HostUserName = "test2";
+			host.Password = "password2";
+			host.Salt = "salt2";
+
+			HostInfo.UpdateHost(host);
+
+			host = HostInfo.LoadHost(false);
+			Assert.AreEqual("test2", host.HostUserName, "Username wasn't changed.");			
 		}
-
-		private static void SetupHostInfo()
+		
+		void EnsureHost()
 		{
-			QueryCommand command = new QueryCommand("DELETE subtext_Host");
-			DataService.ExecuteQuery(command);
-
-			if (HostInfo.Instance == null || HostInfo.Instance.ApplicationId == Guid.Empty)
+			try
 			{
-				string username = UnitTestHelper.GenerateRandomString();
-				MembershipUser user =
-					Membership.CreateUser(username, "test", UnitTestHelper.GenerateRandomString() + "@example.com");
-				HostInfo.CreateHost(user);
-				Assert.AreEqual(username, HostInfo.Instance.Owner.UserName, "The owner was not set.");
+				HostInfo host = HostInfo.LoadHost(true);
+				if (host == null)
+					HostInfo.CreateHost("test", "test");
+			}
+			catch(InvalidOperationException)
+			{
+				//Ignore.
 			}
 		}
 	}

@@ -20,7 +20,6 @@ using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Security;
-using Subtext.Framework.Properties;
 
 namespace Subtext.Framework
 {
@@ -51,7 +50,7 @@ namespace Subtext.Framework
 		/// <exception type="CommentDuplicateException">Thrown if the blog does not allow duplicate comments and too many are received in a short period of time.</exception>
 		public void FilterBeforePersist(FeedbackItem feedback)
 		{
-			if (!Rights.CanPostComment())
+			if (!SecurityHelper.IsAdmin)
 			{
 				if (!SourceFrequencyIsValid(feedback))
 					throw new CommentFrequencyException();
@@ -76,13 +75,8 @@ namespace Subtext.Framework
 		/// </p>
 		/// </remarks>
 		/// <param name="feedbackItem">Entry.</param>
-		public static void FilterAfterPersist(FeedbackItem feedbackItem)
+		public void FilterAfterPersist(FeedbackItem feedbackItem)
 		{
-            if (feedbackItem == null)
-            {
-                throw new ArgumentNullException("feedbackItem", Resources.ArgumentNull_Generic);
-            }
-            
 			if (!SecurityHelper.IsAdmin)
 			{
 				if (!Config.CurrentBlog.ModerationEnabled)
@@ -98,20 +92,20 @@ namespace Subtext.Framework
 					}
 					//Note, we need to explicitely set the status flag here.
 					//Just setting Approved = true would not reset any other bits in the flag that may be set.
-					feedbackItem.Status = FeedbackStatusFlags.Approved;
+					feedbackItem.Status = FeedbackStatusFlag.Approved;
 				}
 				else //Moderated!
 				{
 					//Note, we need to explicitely set the status flag here.
 					//Just setting NeedsModeration = true would not reset any other bits in the flag that may be set.
-					feedbackItem.Status = FeedbackStatusFlags.NeedsModeration;
+					feedbackItem.Status = FeedbackStatusFlag.NeedsModeration;
 				}
 			}
 			else
 			{
 				//Note, we need to explicitely set the status flag here.
 				//Just setting Approved = true would not reset any other bits in the flag that may be set.
-				feedbackItem.Status = FeedbackStatusFlags.Approved;
+				feedbackItem.Status = FeedbackStatusFlag.Approved;
 			}
 			FeedbackItem.Update(feedbackItem);
 		}

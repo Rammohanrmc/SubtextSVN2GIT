@@ -18,6 +18,7 @@ using System.ComponentModel;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using Subtext.Framework;
 using Subtext.Framework.Configuration;
 using Subtext.Web.Admin.WebUI;
 using Subtext.Web.Controls;
@@ -36,13 +37,19 @@ namespace Subtext.Web.Admin.Pages
 	/// <summary>
 	/// Base Page class for all pages in the admin tool.
 	/// </summary>
-	public class AdminPage : Page
+	public class AdminPage : System.Web.UI.Page
 	{
         private HtmlGenericControl body;
 		private ConfirmCommand _command;
 		
 		protected override void OnLoad(EventArgs e)
 		{
+			if(!SecurityHelper.IsAdmin)
+			{
+				Response.Redirect(Config.CurrentBlog.VirtualUrl + "Login.aspx?ReturnUrl=" + Request.Path, false);
+			    return;
+			}		
+
             if (this.Page.Master != null)
             {
                 this.body = this.Page.Master.FindControl("AdminSection") as HtmlGenericControl;
@@ -72,7 +79,7 @@ namespace Subtext.Web.Admin.Pages
 	        }
 	    }
 
-		static void SetTextBoxStyle(Control control)
+		void SetTextBoxStyle(Control control)
 		{
 			TextBox textBox = control as TextBox;
 			if(textBox != null)
@@ -86,7 +93,7 @@ namespace Subtext.Web.Admin.Pages
 			}
 		}
 	    
-	    private static  void AddCssClass(WebControl control, string cssClass)
+	    private void AddCssClass(WebControl control, string cssClass)
 	    {
 			if (control.CssClass != null && control.CssClass.Length > 0 && !String.Equals(cssClass, control.CssClass, StringComparison.InvariantCultureIgnoreCase))
             {

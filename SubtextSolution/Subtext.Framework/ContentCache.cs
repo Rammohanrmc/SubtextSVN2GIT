@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Threading;
 using System.Web;
 using System.Web.Caching;
-using Subtext.Framework.Properties;
 
 namespace Subtext.Framework
 {
@@ -26,16 +25,16 @@ namespace Subtext.Framework
 		{
 			//Check per-request cache.
 			ContentCache cache = HttpContext.Current.Items["ContentCache"] as ContentCache;
-            if (cache != null)
-            {
-                return cache;
-            }
+			if(cache != null)
+				return cache;
 
 			cache = new ContentCache(HttpContext.Current.Cache);
 			//Per-Request Cache.
 			HttpContext.Current.Items["ContentCache"] = cache;
 			return cache;
 		}
+
+		private ContentCache() {}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ContentCache"/> class. 
@@ -48,7 +47,7 @@ namespace Subtext.Framework
 		}
 
 		//Returns a language aware cache key.
-		private static string GetCacheKey(string key)
+		private string GetCacheKey(string key)
 		{
 			return key + ":" + Thread.CurrentThread.CurrentCulture.LCID.ToString(CultureInfo.InvariantCulture);
 		}
@@ -78,10 +77,8 @@ namespace Subtext.Framework
 		/// <param name="value">The value.</param>
 		public void Insert(string key, object value)
 		{
-            if (value == null)
-            {
-                throw new ArgumentNullException("value", Resources.ArgumentNull_Generic);
-            }
+			if(value == null)
+				throw new ArgumentNullException("value", "Cannot cache a null object.");
 			this.cache.Insert(GetCacheKey(key), value);
 		}
 
@@ -99,10 +96,8 @@ namespace Subtext.Framework
 		/// <param name="cacheDuration">The cache duration.</param>
 		public void Insert(string key, object value, CacheDuration cacheDuration)
 		{
-            if (value == null)
-            {
-                throw new ArgumentNullException("value", Resources.ArgumentNull_Generic);
-            }
+			if(value == null)
+				throw new ArgumentNullException("value", "Cannot cache a null object.");
 			
 			this.cache.Insert(GetCacheKey(key), value, null, DateTime.Now.AddSeconds((int)cacheDuration), TimeSpan.Zero, CacheItemPriority.Normal, null);
 		}
@@ -121,10 +116,8 @@ namespace Subtext.Framework
 		/// <param name="cacheDependency">The cache dependency.</param>
 		public void Insert(string key, object value, CacheDependency cacheDependency)
 		{
-            if (value == null)
-            {
-                throw new ArgumentNullException("value", Resources.ArgumentNull_Generic);
-            }
+			if(value == null)
+				throw new ArgumentNullException("value", "Cannot cache a null object.");
 			
 			this.cache.Insert(GetCacheKey(key), value, cacheDependency);
 		}
@@ -162,5 +155,14 @@ namespace Subtext.Framework
 		}
 	}
 
-
+	/// <summary>
+	/// Low granularity Cache Duration.
+	/// </summary>
+	public enum CacheDuration
+	{
+		None = 0,
+		Short = 10,
+		Medium = 20,
+		Long = 30
+	};
 }
