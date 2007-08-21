@@ -113,7 +113,7 @@ namespace UnitTests.Subtext.Framework
             Assert.IsTrue(Config.CreateBlog("TestVirtualUrlPropertySetCorrectly", "username", "password", host, subfolder));
             
             Entry entry = new Entry(PostType.BlogPost);
-            entry.DateCreated = DateTime.Parse("1/23/1975");
+			entry.DateCreated = DateTime.Parse("January 23, 1975");
             entry.Id = 987123;
             Assert.AreEqual("http://" + host + expected, Config.CurrentBlog.UrlFormats.EntryFullyQualifiedUrl(entry), "Did not set the entry url correctly.");
         }
