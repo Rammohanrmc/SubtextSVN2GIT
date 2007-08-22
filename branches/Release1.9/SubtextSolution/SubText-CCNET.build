@@ -252,7 +252,7 @@
 			</fileset>
 		</attrib>
 		
-		<!-- <call target="javascript.minify" /> -->
+		<call target="javascript.minify" />
 	</target>
 
 	<target name="javascript.minify" depends="get-publishing-properties">
