@@ -29,16 +29,17 @@ namespace Subtext.Framework.Syndication
 	public abstract class BaseAtomWriter : BaseSyndicationWriter<Entry>
 	{
 		#region TimeHelpers
-		private string W3UTC(DateTime dt, TimeZone tz)
+		
+		private static string W3UTC(DateTime dt, TimeZone tz)
 		{
-      TimeSpan timeZone = tz.GetUtcOffset(dt);
-      if (timeZone.TotalHours >= 0) {
-        return dt.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture) + "+" + tz.GetUtcOffset(dt);
-      }
-      return dt.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture) + tz.GetUtcOffset(dt);
+			TimeSpan timeZone = tz.GetUtcOffset(dt);
+			if (timeZone.TotalHours >= 0) {
+			return dt.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture) + "+" + tz.GetUtcOffset(dt);
+			}
+			return dt.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture) + tz.GetUtcOffset(dt);
 		}
 
-		private string W3UTCZ(DateTime dt)
+		private static string W3UTCZ(IFormattable dt)
 		{
 			return dt.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
 		}
@@ -50,6 +51,7 @@ namespace Subtext.Framework.Syndication
 		/// Bases the syndication writer.
 		/// </summary>
 		/// <param name="dateLastViewedFeedItemPublished">Last viewed feed item.</param>
+		/// <param name="useDeltaEncoding">if set to <c>true</c> [use delta encoding].</param>
 		protected BaseAtomWriter(DateTime dateLastViewedFeedItemPublished, bool useDeltaEncoding) : base(dateLastViewedFeedItemPublished, useDeltaEncoding)
 		{
 		}
