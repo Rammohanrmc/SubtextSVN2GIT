@@ -430,11 +430,18 @@ namespace Subtext.Framework.Providers
 		#region MetaTags
 
         /// <summary>
-        /// Adds the given metatag to the data store.
+        /// Adds the given MetaTag to the data store.
         /// </summary>
         /// <param name="metaTag"></param>
         /// <returns></returns>
 	    public abstract int Create(MetaTag metaTag);
+
+        /// <summary>
+        /// Updates the given MetaTag in the data store.
+        /// </summary>
+        /// <param name="metaTag"></param>
+        /// <returns></returns>
+	    public abstract bool Update(MetaTag metaTag);
 
         /// <summary>
 		/// Gets a collection of MetaTags for the given Blog.

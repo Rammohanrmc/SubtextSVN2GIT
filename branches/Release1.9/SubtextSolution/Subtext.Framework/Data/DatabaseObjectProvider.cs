@@ -942,6 +942,12 @@ namespace Subtext.Framework.Data
 	        return DbProvider.Instance().InsertMetaTag(metaTag);
 	    }
 
+
+	    public override bool Update(MetaTag metaTag)
+	    {
+	        return DbProvider.Instance().UpdateMetaTag(metaTag);
+	    }
+
 	    public override IList<MetaTag> GetMetaTagsForBlog(BlogInfo blog)
 		{
 			using (IDataReader reader = DbProvider.Instance().GetMetaTagsForBlog(blog))

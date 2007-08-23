@@ -27,7 +27,7 @@ using Subtext.Framework.Data;
 namespace UnitTests.Subtext.Framework.Components.MetaTagTests
 {
     [TestFixture]
-    class MetaTagGetTests
+    public class MetaTagGetTests
     {
         private BlogInfo blog;
 

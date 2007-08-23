@@ -28,14 +28,25 @@ namespace Subtext.Framework
 	{
 		public static int Create(MetaTag metaTag)
 		{
+            if (metaTag == null)
+                throw new ArgumentNullException("metaTag", "The meta tag can not be NULL.");
+
             if (!metaTag.IsValid)
-                throw new ArgumentException("The meta tag is invalid.", "metaTag");
-			return ObjectProvider.Instance().Create(metaTag);
+                throw new ArgumentException("The meta tag not valid.", "metaTag");
+			metaTag.Id = ObjectProvider.Instance().Create(metaTag);
+		    
+            return metaTag.Id;
 		}
 
 		public static bool Update(MetaTag metaTag)
 		{
-			throw new NotImplementedException();
+            if (metaTag == null)
+                throw new ArgumentNullException("metaTag", "The meta tag can not be NULL.");
+
+            if (!metaTag.IsValid)
+                throw new ArgumentException("The meta tag is not valid", "metaTag");
+		    
+            return ObjectProvider.Instance().Update(metaTag);
 		}
 
 		public static bool Delete(int metaTagId)

@@ -1244,7 +1244,28 @@ namespace Subtext.Framework.Data
             return (int) id.Value;
         }
 
-		public override IDataReader GetMetaTagsForBlog(BlogInfo blog)
+
+	    public override bool UpdateMetaTag(MetaTag metaTag)
+	    {
+            if (metaTag == null)
+                throw new ArgumentNullException("metaTag", "Cannon update a null metaTag");
+
+            object entryIdValue = metaTag.EntryId.HasValue ? DataHelper.CheckNull(metaTag.EntryId.Value) : DBNull.Value;
+
+            SqlParameter[] p =
+                {
+                    DataHelper.MakeInParam("@Id", SqlDbType.Int, 4, metaTag.Id),
+                    DataHelper.MakeInParam("@Content", SqlDbType.NVarChar, 512, metaTag.Content),
+                    DataHelper.MakeInParam("@Name", SqlDbType.NVarChar, 100, DataHelper.CheckNull(metaTag.Name)),
+                    DataHelper.MakeInParam("@HttpEquiv", SqlDbType.NVarChar, 100,
+                                           DataHelper.CheckNull(metaTag.HttpEquiv)),
+                    DataHelper.MakeInParam("@BlogId", SqlDbType.Int, 4, metaTag.BlogId),
+                    DataHelper.MakeInParam("@EntryId", SqlDbType.Int, 4, entryIdValue)
+                };
+	        return NonQueryBool("subtext_UpdateMetaTag", p);
+	    }
+
+	    public override IDataReader GetMetaTagsForBlog(BlogInfo blog)
 		{
 			SqlParameter[] p =
 				{

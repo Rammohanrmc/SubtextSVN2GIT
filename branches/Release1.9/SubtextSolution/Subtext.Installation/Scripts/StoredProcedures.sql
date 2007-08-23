@@ -442,6 +442,11 @@ drop procedure [<dbUser,varchar,dbo>].[subtext_InsertMetaTag]
 GO
 
 if exists (select ROUTINE_NAME from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' and OBJECTPROPERTY(OBJECT_ID(ROUTINE_NAME), 'IsMsShipped') = 0 
+	and ROUTINE_SCHEMA = '<dbUser,varchar,dbo>' AND ROUTINE_NAME = 'subtext_UpdateMetaTag')
+drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateMetaTag]
+GO
+
+if exists (select ROUTINE_NAME from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' and OBJECTPROPERTY(OBJECT_ID(ROUTINE_NAME), 'IsMsShipped') = 0 
 	and ROUTINE_SCHEMA = '<dbUser,varchar,dbo>' AND ROUTINE_NAME = 'subtext_GetMetaTagsForBlog')
 drop procedure [<dbUser,varchar,dbo>].[subtext_GetMetaTagsForBlog]
 GO
@@ -4643,11 +4648,11 @@ GO
 CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_InsertMetaTag] 
 	(
 		@Content nvarchar(512),
-		@Name nvarchar(100) = null,
-		@HttpEquiv nvarchar(100) = null,
+		@Name nvarchar(100) = NULL,
+		@HttpEquiv nvarchar(100) = NULL,
 		@BlogId int,
-		@EntryId int,
-		@DateCreated datetime,
+		@EntryId int = NULL,
+		@DateCreated datetime = NULL,
 		@Id int OUTPUT
 	)
 AS
@@ -4669,6 +4674,42 @@ AS
 GO 
 
 GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_InsertMetaTag] TO [public]
+GO
+
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_UpdateMetaTag] 
+	(
+		@Id int,
+		@Content nvarchar(512),
+		@Name nvarchar(100) = NULL,
+		@HttpEquiv nvarchar(100) = NULL,
+		@BlogId int,
+		@EntryId int = NULL
+	)
+AS
+		
+	IF LEN(RTRIM(LTRIM(@Name))) = 0
+		SET @Name = NULL
+	IF LEN(RTRIM(LTRIM(@HttpEquiv))) = 0
+		SET @HttpEquiv = NULL
+
+	UPDATE [<dbUser,varchar,dbo>].subtext_MetaTag
+	SET
+		[Content] = @Content,
+		[Name] = @Name,
+		HttpEquiv = @HttpEquiv,
+		BlogId = @BlogId,
+		EntryId = @EntryId
+	WHERE
+		[Id] = @Id
+
+GO
+
+GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UpdateMetaTag] TO [public]
 GO
 
 

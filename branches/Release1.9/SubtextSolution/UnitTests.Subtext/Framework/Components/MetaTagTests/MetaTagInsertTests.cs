@@ -1,3 +1,18 @@
+#region Disclaimer/Info
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Subtext WebLog
+// 
+// Subtext is an open source weblog system that is a fork of the .TEXT
+// weblog system.
+//
+// For updated news and information please visit http://subtextproject.com/
+// Subtext is hosted at SourceForge at http://sourceforge.net/projects/subtext
+// The development mailing list is at subtext-devs@lists.sourceforge.net 
+//
+// This project is licensed under the BSD license.  See the License.txt file for more information.
+///////////////////////////////////////////////////////////////////////////////////////////////////
+#endregion
+
 using System;
 using System.Collections.Generic;
 using MbUnit.Framework;
@@ -7,7 +22,7 @@ using Subtext.Framework.Components;
 namespace UnitTests.Subtext.Framework.Components.MetaTagTests
 {
     [TestFixture]
-    class MetaTagInsertTests
+    public class MetaTagInsertTests
     {
         private BlogInfo blog; 
 
@@ -31,7 +46,7 @@ namespace UnitTests.Subtext.Framework.Components.MetaTagTests
                 entryId = Entries.Create(e);
             }
 
-            MetaTag mt = BuildMetaTag(content, name, httpEquiv, blog.Id, entryId, DateTime.Now);
+            MetaTag mt = UnitTestHelper.BuildMetaTag(content, name, httpEquiv, blog.Id, entryId, DateTime.Now);
 
             // make sure there are no meta-tags for this blog in the data store
             IList<MetaTag> tags = MetaTags.GetMetaTagsForBlog(blog);
@@ -67,31 +82,22 @@ namespace UnitTests.Subtext.Framework.Components.MetaTagTests
         [RollBack2]
         public void CanNotInsertInvalidMetaTag(string content, string name, string httpEquiv, string errMsg)
         {
-            MetaTag mt = BuildMetaTag(content, name, httpEquiv, blog.Id, null, DateTime.Now);
+            MetaTag mt = UnitTestHelper.BuildMetaTag(content, name, httpEquiv, blog.Id, null, DateTime.Now);
 
             MetaTags.Create(mt);
+        }
+
+        [Test]
+        [ExpectedArgumentNullException]
+        public void CanNotInsertNullMetaTag()
+        {
+            MetaTags.Create(null);
         }
 
         [SetUp]
         public void Setup()
         {
             this.blog = UnitTestHelper.CreateBlogAndSetupContext();
-        }
-
-        private static MetaTag BuildMetaTag(string content, string name, string httpEquiv, int blogId, int? entryId, DateTime created)
-        {
-            MetaTag mt = new MetaTag();
-            mt.Name = name;
-            mt.HttpEquiv = httpEquiv;
-            mt.Content = content;
-            mt.BlogId = blogId;
-
-            if (entryId.HasValue)
-                mt.EntryId = entryId.Value;
-
-            mt.DateCreated = created;
-
-            return mt;
         }
     }
 }
