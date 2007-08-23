@@ -8,6 +8,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Subtext.Framework.Web;
 
 namespace Subtext.Web.Controls.Captcha
 {
@@ -108,7 +109,7 @@ namespace Subtext.Web.Controls.Captcha
             }
             writer.Write(">");
 
-			string src = ControlHelper.ExpandTildePath("~/CaptchaImage.ashx");
+			string src = HttpHelper.ExpandTildePath("~/CaptchaImage.ashx");
         	
             writer.Write("<img src=\"{0}", src);
             if (!IsDesignMode)

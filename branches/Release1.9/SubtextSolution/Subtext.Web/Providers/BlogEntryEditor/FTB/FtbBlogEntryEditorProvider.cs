@@ -19,6 +19,7 @@ using System.IO;
 using System.Web.UI.WebControls;
 using Subtext.Extensibility.Providers;
 using System.Web;
+using Subtext.Framework.Web;
 using Subtext.Web.Controls;
 
 using FreeTextBoxControls;
@@ -87,7 +88,7 @@ namespace Subtext.Web.Providers.BlogEntryEditor.FTB
 			_ftbCtl.RemoveServerNameFromUrls=_removeServerNamefromUrls;
 
 			if(_webFormFolder!=null && _webFormFolder.Length!=0)
-				_ftbCtl.ImageGalleryUrl=ControlHelper.ExpandTildePath(_webFormFolder+"ftb.imagegallery.aspx?rif={0}&cif={0}");
+				_ftbCtl.ImageGalleryUrl=HttpHelper.ExpandTildePath(_webFormFolder+"ftb.imagegallery.aspx?rif={0}&cif={0}");
 
 			string blogImageRootPath=Subtext.Framework.Format.UrlFormats.StripHostFromUrl(Subtext.Framework.Configuration.Config.CurrentBlog.ImagePath);
 

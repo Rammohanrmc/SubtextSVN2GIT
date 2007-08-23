@@ -25,7 +25,7 @@ namespace UnitTests.Subtext.SubtextWeb
 			script.Type = type;
 			script.Src = src;
 
-			string scriptTag = SubtextMasterPage.ScriptElementCollectionRenderer.RenderScriptElement(skinPath, script);
+			string scriptTag = ScriptElementCollectionRenderer.RenderScriptElement(skinPath, script);
 			Assert.AreEqual(scriptTag, expected + Environment.NewLine, "The rendered script tag was not what we expected.");
 		}
 
@@ -43,7 +43,7 @@ namespace UnitTests.Subtext.SubtextWeb
 			Style style = new Style();
 			style.Href = src;
 
-			string stylePath = SubtextMasterPage.StyleSheetElementCollectionRenderer.GetStylesheetHrefPath(skinPath, style);
+			string stylePath = StyleSheetElementCollectionRenderer.GetStylesheetHrefPath(skinPath, style);
 			Assert.AreEqual(stylePath, expected, "The rendered style path was not what we expected.");
 		}
 	}

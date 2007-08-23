@@ -26,9 +26,7 @@ using Subtext.Framework.Configuration;
 using Subtext.Framework.Text;
 using Subtext.Framework.UI.Skinning;
 using Subtext.Framework.UrlManager;
-using Subtext.Web.Controls;
 using Subtext.Web.UI.Controls;
-using Style=Subtext.Framework.UI.Skinning.Style;
 
 namespace Subtext.Web.UI.Pages
 {
@@ -46,7 +44,6 @@ namespace Subtext.Web.UI.Pages
 		protected Literal pageTitle;
 		protected Literal docTypeDeclaration;
 		protected HtmlLink MainStyle;
-		protected HtmlLink SecondaryCss;
 		protected HtmlLink CustomCss;
 		protected HtmlLink RSSLink;
 		protected HtmlLink Rsd;
@@ -73,7 +70,7 @@ namespace Subtext.Web.UI.Pages
 			MaintainScrollPositionOnPostBack = true;
 			CurrentBlog = Config.CurrentBlog;
 
-			string skinFolder = Config.CurrentBlog.Skin.TemplateFolder;
+            string skinFolder = CurrentBlog.Skin.TemplateFolder;
 
 			string[] controls = HandlerConfiguration.GetControls(Context);
             if (controls != null)
@@ -107,18 +104,7 @@ namespace Subtext.Web.UI.Pages
                 }
             }
 
-			string path = (HttpContext.Current.Request.ApplicationPath + "/skins/" + skinFolder + "/").Replace("//","/");
-
-			MainStyle.Attributes.Add("href", path + "style.css");
-
-			if(CurrentBlog.Skin.HasStyleSheet)
-			{
-				SecondaryCss.Attributes.Add("href", path + CurrentBlog.Skin.SkinStyleSheet);
-			}
-			else
-			{
-				SecondaryCss.Visible = false;
-			}
+            MainStyle.Attributes.Add("href", Request.ApplicationPath + "css.axd?name=" + CurrentBlog.Skin.SkinKey);
 			
 			if(CurrentBlog.Skin.HasCustomCssText)
 			{
@@ -148,16 +134,16 @@ namespace Subtext.Web.UI.Pages
 			// if specified, add script elements
 			if (scripts != null)
 			{
-				scripts.Text = scriptRenderer.RenderScriptElementCollection(Config.CurrentBlog.Skin.SkinKey);
+                scripts.Text = scriptRenderer.RenderScriptElementCollection(CurrentBlog.Skin.SkinKey);
 			}
 
 			if(styles != null)
 			{
-				styles.Text = styleRenderer.RenderStyleElementCollection(Config.CurrentBlog.Skin.SkinKey);
+                styles.Text = styleRenderer.RenderStyleElementCollection(CurrentBlog.Skin.SkinKey,false);
 			}
 
             // Add the per-blog MetaTags to the page Head section.
-            ICollection<MetaTag> blogMetaTags = MetaTags.GetMetaTagsForBlog(Config.CurrentBlog);
+            ICollection<MetaTag> blogMetaTags = MetaTags.GetMetaTagsForBlog(CurrentBlog);
             foreach (MetaTag tag in blogMetaTags)
             {
                 HtmlMeta mt = new HtmlMeta();
@@ -240,176 +226,9 @@ namespace Subtext.Web.UI.Pages
 
 		#region private class ScriptElementCollectionRenderer
 
-		/// <summary>
-		/// Provides rendering facilities for script elements in the head element of the page
-		/// </summary>
-		public class ScriptElementCollectionRenderer
-		{
-			SkinTemplates templates;
-			
-			public ScriptElementCollectionRenderer(SkinTemplates templates)
-			{
-				this.templates = templates;
-			}
-			
-			private static string RenderScriptAttribute(string attributeName, string attributeValue)
-			{
-                return attributeValue != null ? " " + attributeName + "=\"" + attributeValue + "\"" : String.Empty;
-			}
+	    #endregion
 
-			public static string RenderScriptElement(string skinPath, Script script)
-			{
-				return "<script" +
-				       RenderScriptAttribute("type", script.Type) +
-				       RenderScriptAttribute("src", GetScriptSourcePath(skinPath, script)) +
-				       RenderScriptAttribute("defer", script.Defer ? "defer" : null) +
-					"></script>" + Environment.NewLine;
-			}
-
-			private static string GetScriptSourcePath(string skinPath, Script script)
-			{
-				if(script.Src.StartsWith("~"))
-				{
-					return ControlHelper.ExpandTildePath(script.Src);
-				}
-				else if(script.Src.StartsWith("/"))
-				{
-					return script.Src;
-				}
-				else
-				{
-					return skinPath + script.Src;
-				}
-			}
-
-			/// <summary>
-			/// Gets the skin path.
-			/// </summary>
-			/// <param name="skinTemplateFolder">Name of the skin.</param>
-			/// <returns></returns>
-			private static string GetSkinPath(string skinTemplateFolder)
-			{
-				string applicationPath = HttpContext.Current.Request.ApplicationPath;
-				return (applicationPath == "/" ? String.Empty : applicationPath) + "/Skins/" + skinTemplateFolder + "/";
-			}
-
-			/// <summary>
-			/// Renders the script element collection for thes kin key.
-			/// </summary>
-			/// <param name="skinKey">The skin key.</param>
-			/// <returns></returns>
-			public string RenderScriptElementCollection(string skinKey)
-			{
-				StringBuilder result = new StringBuilder();
-
-				SkinTemplate skinTemplate = templates.GetTemplate(skinKey);
-				if (skinTemplate != null && skinTemplate.Scripts != null)
-				{
-					string skinPath = GetSkinPath(skinTemplate.TemplateFolder);
-					foreach(Script script in skinTemplate.Scripts)
-					{
-						result.Append(RenderScriptElement(skinPath, script));
-					}
-				}
-				return result.ToString();
-			}
-		}
-
-		#endregion
-
-		/// <summary>
-		/// Provides rendering facilities for stylesheet elements in the head element of the page
-		/// </summary>
-		public class StyleSheetElementCollectionRenderer
-		{
-			SkinTemplates templates;
-			
-			public StyleSheetElementCollectionRenderer(SkinTemplates templates)
-			{
-				this.templates = templates;
-			}
-			
-			private static string RenderStyleAttribute(string attributeName, string attributeValue)
-			{
-				return attributeValue != null ? " " + attributeName + "=\"" + attributeValue + "\"" : String.Empty;
-			}
-
-			private static string RenderStyleElement(string skinPath, Style style)
-			{
-                string element = string.Empty;
-			    
-                if (!String.IsNullOrEmpty(style.Conditional))
-                {
-                    element = string.Format("<!--[{0}]>{1}", style.Conditional, Environment.NewLine);
-                }
-			    
-                element += "<link";
-                    if (style.Media != null && style.Media.Length > 0)
-                        element += RenderStyleAttribute("media", style.Media);
-
-				element +=
-					RenderStyleAttribute("type", "text/css") + 
-					RenderStyleAttribute("rel", "stylesheet") + 
-					RenderStyleAttribute("title", style.Title) + 
-					RenderStyleAttribute("href", GetStylesheetHrefPath(skinPath, style)) + //TODO: Look at this line again.
-					"></link>" + Environment.NewLine;
-
-                if (!String.IsNullOrEmpty(style.Conditional))
-                {
-                    element += "<![endif]-->" + Environment.NewLine;
-                }
-			    
-			    return element;
-			}
-
-			/// <summary>
-			/// Gets the stylesheet href path.
-			/// </summary>
-			/// <param name="skinPath">The skin path.</param>
-			/// <param name="style">The style.</param>
-			/// <returns></returns>
-			public static string GetStylesheetHrefPath(string skinPath, Style style)
-			{
-				if(style.Href.StartsWith("~"))
-				{
-					return ControlHelper.ExpandTildePath(style.Href);
-				}
-				else if(style.Href.StartsWith("/") || style.Href.StartsWith("http://") || style.Href.StartsWith("https://"))
-				{
-					return style.Href;
-				}
-				else
-				{
-					return skinPath + style.Href;
-				}
-			}
-
-			private static string CreateStylePath(string skinTemplateFolder)
-			{
-				string applicationPath = HttpContext.Current.Request.ApplicationPath;
-				string path = (applicationPath == "/" ? String.Empty : applicationPath) + "/Skins/" + skinTemplateFolder + "/";
-				return path;
-			}
-
-			public string RenderStyleElementCollection(string skinName)
-			{
-				StringBuilder result = new StringBuilder();
-
-				SkinTemplate skinTemplate = templates.GetTemplate(skinName);
-				
-				if (skinTemplate != null && skinTemplate.Styles != null)
-				{
-					string skinPath = CreateStylePath(skinTemplate.TemplateFolder);
-					foreach(Style style in skinTemplate.Styles)
-					{
-						result.Append(RenderStyleElement(skinPath, style));
-					}
-				}
-				return Environment.NewLine + result + Environment.NewLine;
-			}
-		}
-
-		/// <summary>
+	    /// <summary>
 		/// Returns the text for a javascript array of allowed elements. 
 		/// This will be used by other scripts.
 		/// </summary>

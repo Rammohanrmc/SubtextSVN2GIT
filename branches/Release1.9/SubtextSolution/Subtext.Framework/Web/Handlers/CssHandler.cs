@@ -1,0 +1,91 @@
+
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Text;
+using System.Web;
+using System.Xml;
+using Subtext.Extensibility.Web;
+using Subtext.Framework.Configuration;
+using Subtext.Framework.Text;
+using Subtext.Framework.UI.Skinning;
+
+namespace Subtext.Framework.Web.Handlers
+{
+	public class CssHandler : BaseHttpHandler
+	{
+        private static readonly StyleSheetElementCollectionRenderer styleRenderer = new StyleSheetElementCollectionRenderer(SkinTemplates.Instance());
+
+		public override void HandleRequest(HttpContext context)
+		{
+			context.Response.ContentEncoding = Encoding.UTF8;
+
+		    string skinName = context.Request.Params["name"];
+
+            List<string> styles = (List<string>)styleRenderer.GetStylesToBeMerged(skinName);
+          
+            //Append all styles into one file
+
+            foreach (string style in styles)
+            {
+                context.Response.Write("/* -- " + style + " -- */\r\n");
+            }
+
+		    foreach (string style in styles)
+		    {
+                context.Response.Write("/* -- " + style + " -- */\r\n");
+                context.Response.WriteFile(context.Server.MapPath(style));
+		    }
+
+            SetHeaders(styles, context);
+		}
+
+
+        private static void SetHeaders(List<string> styles, HttpContext context)
+        {
+            foreach (string style in styles)
+            {
+                context.Response.AddFileDependency(context.Server.MapPath(style));
+            }
+            
+            context.Response.Cache.VaryByParams["name"] = true;
+            context.Response.Cache.SetValidUntilExpires(true);
+            // Client-side caching
+            context.Response.Cache.SetLastModifiedFromFileDependencies();
+            context.Response.Cache.SetCacheability(HttpCacheability.Public);
+        }
+
+        public override void SetResponseCachePolicy(HttpCachePolicy cache)
+        {
+            return;
+        }
+
+        public new bool IsReusable
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+		public override bool ValidateParameters(HttpContext context)
+		{
+            string skinName = context.Request.Params["name"];
+            if (String.IsNullOrEmpty(skinName))
+                return false;
+            else
+                return true;
+		}
+
+		public override bool RequiresAuthentication
+		{
+			get { return false; }
+		}
+
+		public override string ContentMimeType
+		{
+			get { return "text/css"; }
+		}
+	}
+}

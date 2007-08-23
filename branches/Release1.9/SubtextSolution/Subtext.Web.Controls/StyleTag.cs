@@ -16,6 +16,7 @@
 using System.Globalization;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
+using Subtext.Framework.Web;
 
 namespace Subtext.Web.Controls
 {
@@ -82,7 +83,7 @@ namespace Subtext.Web.Controls
 		/// <returns></returns>
 		static string ConvertToAppPath(string path)
 		{
-			return ControlHelper.ExpandTildePath(path);
+			return HttpHelper.ExpandTildePath(path);
 		}
 
 		/// <summary>

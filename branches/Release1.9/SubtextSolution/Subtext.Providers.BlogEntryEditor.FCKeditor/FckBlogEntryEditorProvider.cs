@@ -18,6 +18,7 @@ using System.IO;
 using System.Web.UI.WebControls;
 using Subtext.Extensibility.Providers;
 using System.Web;
+using Subtext.Framework.Web;
 using Subtext.Web.Controls;
 
 namespace Subtext.Providers.BlogEntryEditor.FCKeditor
@@ -106,7 +107,7 @@ namespace Subtext.Providers.BlogEntryEditor.FCKeditor
 		{
 			_fckCtl = new FredCK.FCKeditorV2.FCKeditor();
 			_fckCtl.ID = this.ControlId;
-			_fckCtl.BasePath = ControlHelper.ExpandTildePath(_webFormFolder);
+			_fckCtl.BasePath = HttpHelper.ExpandTildePath(_webFormFolder);
 
 			if(this.Width != Unit.Empty)
 				_fckCtl.Width = this.Width;
@@ -130,8 +131,8 @@ namespace Subtext.Providers.BlogEntryEditor.FCKeditor
                 currentLinkConnector = _linkConnectorURL.Replace("~/", "~/" + blogSubFolder + "/");
             }
 
-			_fckCtl.ImageBrowserURL=String.Format(ControlHelper.ExpandTildePath(_imageBrowserURL),ControlHelper.ExpandTildePath(currentImageConnector));
-			_fckCtl.LinkBrowserURL=String.Format(ControlHelper.ExpandTildePath(_linkBrowserURL),ControlHelper.ExpandTildePath(currentLinkConnector));
+			_fckCtl.ImageBrowserURL=String.Format(HttpHelper.ExpandTildePath(_imageBrowserURL),HttpHelper.ExpandTildePath(currentImageConnector));
+			_fckCtl.LinkBrowserURL=String.Format(HttpHelper.ExpandTildePath(_linkBrowserURL),HttpHelper.ExpandTildePath(currentLinkConnector));
 		}
 
 		public override string Text

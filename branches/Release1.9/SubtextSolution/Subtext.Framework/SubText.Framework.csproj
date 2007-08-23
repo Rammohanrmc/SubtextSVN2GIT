@@ -479,6 +479,7 @@
     <Compile Include="UI\Skinning\Script.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="UI\Skinning\ScriptElementCollectionRenderer.cs" />
     <Compile Include="UI\Skinning\SkinTemplate.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -488,6 +489,7 @@
     <Compile Include="UI\Skinning\Style.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="UI\Skinning\StyleSheetElementCollectionRenderer.cs" />
     <Compile Include="UrlManager\HandlerConfiguration.cs" />
     <Compile Include="UrlManager\HttpHandler.cs" />
     <Compile Include="UrlManager\PageHandlerFactory.cs" />
@@ -517,6 +519,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
+    <Compile Include="Web\Handlers\CssHandler.cs" />
     <Compile Include="Web\Handlers\RsdHandler.cs" />
     <Compile Include="Web\HttpHelper.cs">
       <SubType>Code</SubType>
