@@ -445,12 +445,17 @@ namespace Subtext.Web.Admin.UserControls
 				{
 					this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, 
 						Constants.RES_FAILUREEDIT, ex.Message));
+                    successMessage = string.Empty;
 				}
 				finally
 				{
 					Results.Collapsible = false;
 				}
-				this.Messages.ShowMessage(successMessage);
+                
+                if (!String.IsNullOrEmpty(successMessage)) //Prepared success messages were reset in the catch block because of some error on posting the content
+                {
+                    this.Messages.ShowMessage(successMessage);
+                }
 			}
 		}
 
@@ -622,4 +627,5 @@ namespace Subtext.Web.Admin.UserControls
 		}
 	}
 }
+
 
