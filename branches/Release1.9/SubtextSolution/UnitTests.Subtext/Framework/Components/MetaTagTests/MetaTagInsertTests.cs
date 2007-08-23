@@ -56,6 +56,22 @@ namespace UnitTests.Subtext.Framework.Components.MetaTagTests
             Assert.AreEqual(mt.DateCreated.Date, newTag.DateCreated.Date, "Wrong created date");
         }
 
+        [RowTest]
+        [Row(null, null, null, "All attributs are null, should not be valid.", ExpectedException = typeof(ArgumentException))]
+        [Row("This is content", null, null, "MetaTag requires either name or http-equiv.", ExpectedException = typeof(ArgumentException))]
+        [Row(null, "description", "expires", "Can't have both name and http-equiv.", ExpectedException = typeof(ArgumentException))]
+        [Row("Steven Harman's content", "description", "expires", "Can't have both name and http-equiv.", ExpectedException = typeof(ArgumentException))]
+        [Row("", "", "", "All attributs are EmptyString, should not be valid.", ExpectedException = typeof(ArgumentException))]
+        [Row("This is content", "", "", "MetaTag requires either name or http-equiv.", ExpectedException = typeof(ArgumentException))]
+        [Row("", "description", "expires", "Can't have both name and http-equiv.", ExpectedException = typeof(ArgumentException))]
+        [RollBack2]
+        public void CanNotInsertInvalidMetaTag(string content, string name, string httpEquiv, string errMsg)
+        {
+            MetaTag mt = BuildMetaTag(content, name, httpEquiv, blog.Id, null, DateTime.Now);
+
+            MetaTags.Create(mt);
+        }
+
         [SetUp]
         public void Setup()
         {

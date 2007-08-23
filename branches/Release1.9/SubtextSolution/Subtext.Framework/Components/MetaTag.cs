@@ -87,6 +87,11 @@ namespace Subtext.Framework.Components
 
 	    #endregion
 
+        /// <summary>
+        /// Validates that this MetaTag is Valid:
+        /// - Content must not be null nor empty
+        /// - Must have either a name or http-equiv, but not both
+        /// </summary>
         public bool IsValid
         {
             get
