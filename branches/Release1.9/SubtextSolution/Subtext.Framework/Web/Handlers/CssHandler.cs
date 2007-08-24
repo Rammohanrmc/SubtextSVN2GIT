@@ -31,8 +31,11 @@ namespace Subtext.Framework.Web.Handlers
 			context.Response.ContentEncoding = Encoding.UTF8;
 
 		    string skinName = context.Request.Params["name"];
+            string skinMedia = context.Request.Params["media"];
+            string skinTitle = context.Request.Params["title"];
+            string skinConditional = context.Request.Params["conditional"];
 
-            List<string> styles = (List<string>)styleRenderer.GetStylesToBeMerged(skinName);
+            List<string> styles = (List<string>)styleRenderer.GetStylesToBeMerged(skinName, skinMedia, skinTitle, skinConditional);
           
             //Append all styles into one file
 
@@ -40,6 +43,8 @@ namespace Subtext.Framework.Web.Handlers
             {
                 context.Response.Write("/* -- " + style + " -- */\r\n");
             }
+            
+            context.Response.Write("\r\n");
 
 		    foreach (string style in styles)
 		    {
@@ -59,6 +64,10 @@ namespace Subtext.Framework.Web.Handlers
             }
             
             context.Response.Cache.VaryByParams["name"] = true;
+            context.Response.Cache.VaryByParams["media"] = true;
+            context.Response.Cache.VaryByParams["title"] = true;
+            context.Response.Cache.VaryByParams["conditional"] = true;
+
             context.Response.Cache.SetValidUntilExpires(true);
             // Client-side caching
             context.Response.Cache.SetLastModifiedFromFileDependencies();

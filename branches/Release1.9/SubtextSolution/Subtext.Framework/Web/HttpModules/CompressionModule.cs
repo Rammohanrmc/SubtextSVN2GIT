@@ -59,7 +59,8 @@ namespace Subtext.Framework.Web.HttpModules
         {
             HttpApplication app = sender as HttpApplication;
             if (app.Context.CurrentHandler is System.Web.UI.Page
-                || app.Request.Path.Contains("css.axd"))
+                || app.Request.Path.Contains("css.axd")
+                || app.Request.Path.Contains("js.axd"))
             {
                 if (IsEncodingAccepted(GZIP))
                 {

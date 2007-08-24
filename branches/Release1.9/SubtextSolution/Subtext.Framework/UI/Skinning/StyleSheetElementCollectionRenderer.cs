@@ -40,23 +40,38 @@ namespace Subtext.Framework.UI.Skinning
 
         private static string RenderStyleElement(string skinPath, Style style)
         {
+            return RenderStyleElement(skinPath, style, string.Empty, string.Empty);
+        }
+
+        private static string RenderStyleElement(string skinPath, Style style, string skinName, string cssRequestParam)
+        {
             string element = string.Empty;
-		    
+
             if (!String.IsNullOrEmpty(style.Conditional))
             {
                 element = string.Format("<!--[{0}]>{1}", style.Conditional, Environment.NewLine);
             }
 		    
             element += "<link";
-            if (style.Media != null && style.Media.Length > 0)
+            if (style.Media != null && style.Media.Length > 0 && !style.Media.ToLower().Equals("all"))
                 element += RenderStyleAttribute("media", style.Media);
 
             element +=
-                RenderStyleAttribute("type", "text/css") + 
-                RenderStyleAttribute("rel", "stylesheet") + 
-                RenderStyleAttribute("title", style.Title) + 
-                RenderStyleAttribute("href", GetStylesheetHrefPath(skinPath, style)) + //TODO: Look at this line again.
-                " />" + Environment.NewLine;
+                RenderStyleAttribute("type", "text/css") +
+                RenderStyleAttribute("rel", "stylesheet") +
+                RenderStyleAttribute("title", style.Title);
+            if(string.IsNullOrEmpty(skinName))
+            {
+                element += 
+                    RenderStyleAttribute("href", GetStylesheetHrefPath(skinPath, style)) + //TODO: Look at this line again.
+                    " />" + Environment.NewLine;
+            }
+            else
+            {
+                element +=
+                    RenderStyleAttribute("href", GetStylesheetHrefPath(skinPath, style, skinName, cssRequestParam)) + //TODO: Look at this line again.
+                    " />" + Environment.NewLine;                
+            }
 
             if (!String.IsNullOrEmpty(style.Conditional))
             {
@@ -66,6 +81,7 @@ namespace Subtext.Framework.UI.Skinning
             return element;
         }
 
+
         /// <summary>
         /// Gets the stylesheet href path.
         /// </summary>
@@ -74,17 +90,35 @@ namespace Subtext.Framework.UI.Skinning
         /// <returns></returns>
         public static string GetStylesheetHrefPath(string skinPath, Style style)
         {
-            if(style.Href.StartsWith("~"))
+            if (style.Href.StartsWith("~"))
             {
                 return HttpHelper.ExpandTildePath(style.Href);
             }
-            else if(style.Href.StartsWith("/") || style.Href.StartsWith("http://") || style.Href.StartsWith("https://"))
+            else if (style.Href.StartsWith("/") || style.Href.StartsWith("http://") || style.Href.StartsWith("https://"))
             {
                 return style.Href;
             }
             else
             {
                 return skinPath + style.Href;
+            }
+        }
+
+        /// <summary>
+        /// Gets the stylesheet href path.
+        /// </summary>
+        /// <param name="skinName">The skin name as in the key.</param>
+        /// <param name="skinPath">The skin path.</param>
+        /// <param name="style">The style.</param>
+        /// <param name="cssRequestParam">The parameters used to request the css via the css handler.</param>
+        /// <returns></returns>
+        public static string GetStylesheetHrefPath(string skinPath, Style style, string skinName, string cssRequestParam)
+        {
+            if(IsStyleRemote(style))
+                return style.Href;
+            else
+            {
+                return skinPath + "css.axd?name=" + skinName + "&" + cssRequestParam;
             }
         }
 
@@ -106,23 +140,63 @@ namespace Subtext.Framework.UI.Skinning
 
             SkinTemplate skinTemplate = templates.GetTemplate(skinName);
 			
+            List<string> addedStyle = new List<string>();
+
             if (skinTemplate != null && skinTemplate.Styles != null)
             {
                 string skinPath = CreateStylePath(skinTemplate.TemplateFolder);
                 foreach(Style style in skinTemplate.Styles)
                 {
-                    if(includeAll || !CanStyleBeMerged(style))
+                    if(includeAll)
+                    {
                         result.Append(RenderStyleElement(skinPath, style));
+                    }
+                    else if(!CanStyleBeMerged(style))
+                    {
+                        string styleKey = BuildStyleKey(style);
+                        if(!addedStyle.Contains(styleKey) || IsStyleRemote(style))
+                        {
+                            result.Append(RenderStyleElement(skinPath, style, skinName, styleKey));
+                            addedStyle.Add(styleKey);
+                        }
+                    }
+                        
                 }
             }
             return Environment.NewLine + result;
         }
 
-        public IList<string> GetStylesToBeMerged(string skinName)
+        private static string BuildStyleKey(Style style)
         {
+            StringBuilder keyBuilder = new StringBuilder();
+            if (!String.IsNullOrEmpty(style.Media) && !style.Media.ToLower().Equals("all"))
+                keyBuilder.Append("media=" + style.Media + "&");
+            if (!String.IsNullOrEmpty(style.Title))
+                keyBuilder.Append("title=" + style.Title + "&");
+            if (!String.IsNullOrEmpty(style.Conditional))
+                keyBuilder.Append("conditional=" + HttpUtility.UrlEncode(style.Conditional) + "&");
+
+            string key = keyBuilder.ToString();
+            if(key.Length>0)
+                return key.Substring(0, key.Length - 1);
+            return
+                string.Empty;
+        }
+
+        public IList<string> GetStylesToBeMerged(string name)
+        {
+            return GetStylesToBeMerged(name, null, null, null);
+        }
+
+        public IList<string> GetStylesToBeMerged(string skinName, string media, string title, string conditional)
+        {
+            bool normalCss = false;
             List<string> styles = new List<string>();
 
             SkinTemplate skinTemplate = templates.GetTemplate(skinName);
+
+            if((string.IsNullOrEmpty(media)) && string.IsNullOrEmpty(title) && string.IsNullOrEmpty(conditional))
+                normalCss = true;
             
             if (skinTemplate != null)
             {
@@ -132,26 +206,50 @@ namespace Subtext.Framework.UI.Skinning
                 {
                     foreach (Style style in skinTemplate.Styles)
                     {
-                        if (CanStyleBeMerged(style))
+                        if(normalCss)
                         {
-                            if (style.Href.StartsWith("~"))
+                            if (CanStyleBeMerged(style))
                             {
-                                styles.Add(HttpHelper.ExpandTildePath(style.Href));
-                            }
-                            else
+                                if (style.Href.StartsWith("~"))
+                                {
+                                    styles.Add(HttpHelper.ExpandTildePath(style.Href));
+                                }
+                                else
+                                {
+                                    styles.Add(skinPath + style.Href);
+                                }
+                            }                            
+                        }
+                        else
+                        {
+                            string tmpMedia = style.Media;
+                            if (tmpMedia!=null && tmpMedia.Equals("all"))
+                                tmpMedia = null;
+                            if (string.Compare(media, tmpMedia, StringComparison.InvariantCultureIgnoreCase) == 0 && string.Compare(title, style.Title, StringComparison.InvariantCultureIgnoreCase) == 0 && string.Compare(conditional, style.Conditional, StringComparison.InvariantCultureIgnoreCase) == 0)
                             {
-                                styles.Add(skinPath + style.Href);
+                                if (style.Href.StartsWith("~"))
+                                {
+                                    styles.Add(HttpHelper.ExpandTildePath(style.Href));
+                                }
+                                else
+                                {
+                                    styles.Add(skinPath + style.Href);
+                                }
                             }
                         }
                     }  
                 }
 
-                //Main style
-                styles.Add(skinPath + "style.css");
+                if(normalCss)
+                {
+                    //Main style
+                    styles.Add(skinPath + "style.css");
 
-                //Secondary Style
-                if (skinTemplate.HasSkinStylesheet)
-                    styles.Add(skinPath + skinTemplate.StyleSheet);
+                    //Secondary Style
+                    if (skinTemplate.HasSkinStylesheet)
+                        styles.Add(skinPath + skinTemplate.StyleSheet);
+                }
+
             }
             return styles;
         }
@@ -164,9 +262,17 @@ namespace Subtext.Framework.UI.Skinning
                 return false;
             if(!string.IsNullOrEmpty(style.Media) && !style.Media.ToLower().Equals("all"))
                 return false;
-            if(style.Href.StartsWith("http://") || style.Href.StartsWith("https://"))
+            if (IsStyleRemote(style))
                 return false;
             return true;
+        }
+
+        public static bool IsStyleRemote(Style style)
+        {
+            if (style.Href.StartsWith("http://") || style.Href.StartsWith("https://"))
+                return true;
+            else
+                return false;
         }
     }
 }
