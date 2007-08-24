@@ -103,7 +103,7 @@ namespace Subtext.Web.UI.Pages
                 }
             }
 
-            MainStyle.Attributes.Add("href", Request.ApplicationPath + "css.axd?name=" + CurrentBlog.Skin.SkinKey);
+            MainStyle.Attributes.Add("href", StyleSheetElementCollectionRenderer.CreateStylePath(skinFolder) + "css.axd?name=" + CurrentBlog.Skin.SkinKey);
 			
 			if(CurrentBlog.Skin.HasCustomCssText)
 			{

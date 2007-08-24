@@ -531,6 +531,7 @@
     <Compile Include="Web\HttpModules\BlogRequestModule.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Web\HttpModules\CompressionModule.cs" />
     <Compile Include="Web\HttpModules\InstallationCheckModule.cs">
       <SubType>Code</SubType>
     </Compile>

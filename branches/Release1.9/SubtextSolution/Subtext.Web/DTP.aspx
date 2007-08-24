@@ -13,8 +13,8 @@
 		<asp:Literal id="additionalMetaTags" runat="server" />
 		<link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" runat="Server" />
         <asp:literal id="styles" runat="server"></asp:literal>
-        <link id="MainStyle" runat="server" rel="stylesheet" type="text/css" />
-        <link id="CustomCss" runat="server" rel="stylesheet" type="text/css" />
+        <link id="MainStyle" runat="server" type="text/css" rel="stylesheet" />
+        <link id="CustomCss" runat="server" type="text/css" rel="stylesheet" />
 		<link id="Rsd" rel="EditURI" type="application/rsd+xml" title="RSD" runat="server" />
 		<link id="AtomLink" title="RSS" type="application/rss+xml" rel="alternate" runat="Server" />
 		<st:ScriptTag id="commonJs" src="~/Scripts/common.js" runat="server" />
