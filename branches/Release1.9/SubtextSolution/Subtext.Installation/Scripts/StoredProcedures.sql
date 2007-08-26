@@ -2744,19 +2744,29 @@ AS
 IF @PostID = -1
 	SET @PostID = NULL
 
---DELETE categories that have been removed
-DELETE [<dbUser,varchar,dbo>].[subtext_Links] FROM [<dbUser,varchar,dbo>].[subtext_Links]
-WHERE 
-	CategoryID not in (SELECT str FROM iter_charlist_to_table(@CategoryList,','))
-And 
-	BlogId = @BlogId AND (PostID = @PostID)
+IF @CategoryList = ''
+BEGIN
+	DELETE [<dbUser,varchar,dbo>].[subtext_Links] FROM [<dbUser,varchar,dbo>].[subtext_Links]
+	WHERE 
+		BlogId = @BlogId AND (PostID = @PostID)
+END
+ELSE
+BEGIN
 
---Add updated/new categories
-INSERT INTO subtext_Links ( Title, Url, Rss, Active, NewWindow, PostID, CategoryID, BlogId )
-SELECT NULL, NULL, NULL, 1, 0, @PostID, Convert(int, [str]), @BlogId
-FROM iter_charlist_to_table(@CategoryList,',')
-WHERE 
-	Convert(int, [str]) not in (SELECT CategoryID FROM [<dbUser,varchar,dbo>].[subtext_Links] WHERE PostID = @PostID AND BlogId = @BlogId)
+	--DELETE categories that have been removed
+	DELETE [<dbUser,varchar,dbo>].[subtext_Links] FROM [<dbUser,varchar,dbo>].[subtext_Links]
+	WHERE 
+		CategoryID not in (SELECT str FROM iter_charlist_to_table(@CategoryList,','))
+	And 
+		BlogId = @BlogId AND (PostID = @PostID)
+
+	--Add updated/new categories
+	INSERT INTO subtext_Links ( Title, Url, Rss, Active, NewWindow, PostID, CategoryID, BlogId )
+	SELECT NULL, NULL, NULL, 1, 0, @PostID, Convert(int, [str]), @BlogId
+	FROM iter_charlist_to_table(@CategoryList,',')
+	WHERE 
+		Convert(int, [str]) not in (SELECT CategoryID FROM [<dbUser,varchar,dbo>].[subtext_Links] WHERE PostID = @PostID AND BlogId = @BlogId)
+END
 
 GO
 SET QUOTED_IDENTIFIER OFF 

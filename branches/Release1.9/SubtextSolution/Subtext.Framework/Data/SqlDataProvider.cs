@@ -595,11 +595,9 @@ namespace Subtext.Framework.Data
 	    /// <returns></returns>
 		public override bool SetEntryCategoryList(int postId, int[] categoryIds)
 		{
-			if(categoryIds == null || categoryIds.Length == 0)
-			{
+			if(categoryIds == null)
 				return false;
-			}
-
+			
 			string[] cats = new string[categoryIds.Length];
 			for(int i = 0; i< categoryIds.Length; i++)
 			{
