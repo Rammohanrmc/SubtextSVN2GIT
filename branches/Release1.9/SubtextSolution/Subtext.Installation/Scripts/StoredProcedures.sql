@@ -4555,7 +4555,14 @@ SELECT	content.BlogId
 	, content.DateSyndicated
 FROM [<dbUser,varchar,dbo>].[subtext_Content] content WITH (NOLOCK)
 WHERE  content.BlogId = @BlogId 
-	AND content.ID IN (SELECT EntryId FROM [<dbUser,varchar,dbo>].[subtext_EntryTag] WHERE BlogId = @BlogId AND TagId = @TagId)
+	AND content.PostConfig & 1 = 1
+	AND content.ID IN 
+	(
+		SELECT EntryId 
+		FROM [<dbUser,varchar,dbo>].[subtext_EntryTag] 
+		WHERE BlogId = @BlogId 
+			AND TagId = @TagId
+	)
 ORDER BY content.DateAdded DESC
 GO
 
