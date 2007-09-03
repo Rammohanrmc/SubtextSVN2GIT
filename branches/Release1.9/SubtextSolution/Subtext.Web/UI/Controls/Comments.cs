@@ -38,7 +38,7 @@ namespace Subtext.Web.UI.Controls
 	/// </summary>
 	public class Comments : BaseControl, ICommentControl
 	{
-		static ILog log = new Log();
+		static readonly ILog log = new Log();
 		
 		protected Repeater CommentList;
 		protected Literal NoCommentMessage;
@@ -154,7 +154,7 @@ namespace Subtext.Web.UI.Controls
 						}
 						else if (feedbackItem.FeedbackType == FeedbackType.PingTrack)
 						{
-							namelink.Text =  feedbackItem.Author != null ? feedbackItem.Author : "Pingback/TrackBack";
+							namelink.Text =  !String.IsNullOrEmpty(feedbackItem.Author) ? feedbackItem.Author : "Pingback/TrackBack";
 							ControlHelper.SetTitleIfNone(namelink, "PingBack/TrackBack");
 						}
 					
