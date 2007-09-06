@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Web;
 using Subtext.Extensibility.Web;
@@ -39,17 +40,18 @@ namespace Subtext.Framework.Web.Handlers
           
             //Append all styles into one file
 
+            context.Response.Write("/*" + Environment.NewLine);
             foreach (string style in styles)
             {
-                context.Response.Write("/* -- " + style + " -- */\r\n");
+                context.Response.Write(style + Environment.NewLine);
             }
-            
-            context.Response.Write("\r\n");
+            context.Response.Write("*/" + Environment.NewLine);
 
 		    foreach (string style in styles)
 		    {
-                context.Response.Write("/* -- " + style + " -- */\r\n");
-                context.Response.WriteFile(context.Server.MapPath(style));
+                //context.Response.Write(Environment.NewLine + "/*" + Environment.NewLine + style + Environment.NewLine + "*/" + Environment.NewLine);
+		        string cssFile = File.ReadAllText(context.Server.MapPath(style));
+                context.Response.Write(cssFile);
 		    }
 
             SetHeaders(styles, context);
