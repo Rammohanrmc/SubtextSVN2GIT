@@ -43,6 +43,19 @@ namespace Subtext.Framework.UI.Skinning
             return RenderStyleElement(skinPath, style, string.Empty, string.Empty);
         }
 
+        private static string RenderStyleElement(string skinPath, string cssFilename)
+        {
+            string element = string.Empty;
+            element += "<link";
+            element +=
+                RenderStyleAttribute("type", "text/css") +
+                RenderStyleAttribute("rel", "stylesheet") +
+                RenderStyleAttribute("href", skinPath + cssFilename) +
+                " />" + Environment.NewLine;
+
+            return element;
+        }
+
         private static string RenderStyleElement(string skinPath, Style style, string skinName, string cssRequestParam)
         {
             string element = string.Empty;
@@ -60,6 +73,7 @@ namespace Subtext.Framework.UI.Skinning
                 RenderStyleAttribute("type", "text/css") +
                 RenderStyleAttribute("rel", "stylesheet") +
                 RenderStyleAttribute("title", style.Title);
+
             if(string.IsNullOrEmpty(skinName))
             {
                 element += 
@@ -129,14 +143,11 @@ namespace Subtext.Framework.UI.Skinning
             return path;
         }
 
+
         public string RenderStyleElementCollection(string skinName)
         {
-            return RenderStyleElementCollection(skinName, true);
-        }
-
-        public string RenderStyleElementCollection(string skinName, bool includeAll)
-        {
-            StringBuilder result = new StringBuilder();
+            StringBuilder templateDefinedStyles = new StringBuilder();
+            string finalStyleDefinition = string.Empty;
 
             SkinTemplate skinTemplate = templates.GetTemplate(skinName);
 			
@@ -145,26 +156,53 @@ namespace Subtext.Framework.UI.Skinning
             if (skinTemplate != null && skinTemplate.Styles != null)
             {
                 string skinPath = CreateStylePath(skinTemplate.TemplateFolder);
-                foreach(Style style in skinTemplate.Styles)
+
+                // If skin doesn't want to be merged, just write plain css
+                if (skinTemplate.StyleMergeMode == StyleMergeMode.None)
                 {
-                    if(includeAll)
+                    foreach (Style style in skinTemplate.Styles)
                     {
-                        result.Append(RenderStyleElement(skinPath, style));
+                        templateDefinedStyles.Append(RenderStyleElement(skinPath, style));
                     }
-                    else if(!CanStyleBeMerged(style))
+
+                    if (!skinTemplate.ExcludeDefaultStyle)
+                        templateDefinedStyles.Append(RenderStyleElement(skinPath,"style.css"));
+
+                    if(skinTemplate.HasSkinStylesheet)
+                        templateDefinedStyles.Append(RenderStyleElement(skinPath, skinTemplate.StyleSheet));
+
+                    finalStyleDefinition = templateDefinedStyles.ToString();
+                }
+                else if (skinTemplate.StyleMergeMode == StyleMergeMode.MergedAfter || skinTemplate.StyleMergeMode == StyleMergeMode.MergedFirst)
+                {
+                    foreach (Style style in skinTemplate.Styles)
                     {
-                        string styleKey = BuildStyleKey(style);
-                        if(!addedStyle.Contains(styleKey) || IsStyleRemote(style))
+                        if (!CanStyleBeMerged(style))
                         {
-                            result.Append(RenderStyleElement(skinPath, style, skinName, styleKey));
-                            addedStyle.Add(styleKey);
+                            string styleKey = BuildStyleKey(style);
+                            if (!addedStyle.Contains(styleKey) || IsStyleRemote(style))
+                            {
+                                templateDefinedStyles.Append(RenderStyleElement(skinPath, style, skinName, styleKey));
+                                addedStyle.Add(styleKey);
+                            }
                         }
                     }
-                        
+
+                    string mergedStyleLink = RenderStyleElement(skinPath, "css.axd?name=" + skinName);
+                    if(skinTemplate.StyleMergeMode == StyleMergeMode.MergedAfter)
+                    {
+                        finalStyleDefinition = templateDefinedStyles + mergedStyleLink;
+                    }
+                    else if (skinTemplate.StyleMergeMode== StyleMergeMode.MergedFirst)
+                    {
+                        finalStyleDefinition = mergedStyleLink + templateDefinedStyles;
+                    }
                 }
             }
-            return Environment.NewLine + result;
+            return Environment.NewLine + finalStyleDefinition;
         }
+
+
 
         private static string BuildStyleKey(Style style)
         {
@@ -243,7 +281,8 @@ namespace Subtext.Framework.UI.Skinning
                 if(normalCss)
                 {
                     //Main style
-                    styles.Add(skinPath + "style.css");
+                    if(!skinTemplate.ExcludeDefaultStyle)
+                        styles.Add(skinPath + "style.css");
 
                     //Secondary Style
                     if (skinTemplate.HasSkinStylesheet)
