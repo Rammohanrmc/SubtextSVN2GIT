@@ -14,6 +14,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Web;
 using Subtext.Framework.Web;
@@ -101,20 +102,60 @@ namespace Subtext.Framework.UI.Skinning
             return result.ToString();
         }
 
+
+        public IList<string> GetScriptsToBeMerged(string skinName)
+        {
+            List<string> scripts = new List<string>();
+
+            SkinTemplate skinTemplate = templates.GetTemplate(skinName);
+
+            if (skinTemplate != null && skinTemplate.Scripts!=null)
+            {
+                if(CanScriptsBeMerged(skinTemplate))
+                {
+                    string skinPath = CreateStylePath(skinTemplate.TemplateFolder);
+                    foreach (Script script in skinTemplate.Scripts)
+                    {
+                        if (script.Src.StartsWith("~"))
+                        {
+                            scripts.Add(HttpHelper.ExpandTildePath(script.Src));
+                        }
+                        else
+                        {
+                            scripts.Add(skinPath + script.Src);
+                        }
+                    }
+                }
+            }
+            return scripts;
+        }
+
+        private static string CreateStylePath(string skinTemplateFolder)
+        {
+            string applicationPath = HttpContext.Current.Request.ApplicationPath;
+            string path = (applicationPath == "/" ? String.Empty : applicationPath) + "/Skins/" + skinTemplateFolder + "/";
+            return path;
+        }
+
         public static bool CanScriptsBeMerged(SkinTemplate template)
         {
             if(!template.MergeScripts)
                 return false;
             else
             {
-                foreach (Script script in template.Scripts)
+                if (template.Scripts==null)
+                    return false;
+                else
                 {
-                    if (script.Src.Contains("?"))
-                        return false;
-                    if (IsScriptRemote(script))
-                        return false;
+                    foreach (Script script in template.Scripts)
+                    {
+                        if (script.Src.Contains("?"))
+                            return false;
+                        if (IsScriptRemote(script))
+                            return false;
+                    }
+                    return true;
                 }
-                return true;
             }
         }
 

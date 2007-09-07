@@ -67,6 +67,20 @@ namespace UnitTests.Subtext.Framework.Skinning
             Assert.IsTrue(scriptElements.IndexOf(script) > -1, "Rendered the script improperly. We got: " + scriptElements);
         }
 
+        [Test]
+        public void SkinsWithNoScriptsAreNotMerged()
+        {
+            MockRepository mocks = new MockRepository();
+
+            VirtualPathProvider pathProvider = GetTemplatesPathProviderMock(mocks);
+            mocks.ReplayAll();
+
+            SkinTemplates templates = SkinTemplates.Instance(pathProvider);
+            SkinTemplate template = templates.GetTemplate("Gradient");
+            bool canBeMerged = ScriptElementCollectionRenderer.CanScriptsBeMerged(template);
+
+            Assert.IsFalse(canBeMerged, "Skins without scripts should not be mergeable.");
+        }
 
         [Test]
         public void ScriptsWithRemoteSrcAreNotMerged()
@@ -112,6 +126,41 @@ namespace UnitTests.Subtext.Framework.Skinning
 
             Assert.IsFalse(canBeMerged, "Skins with scripts that have query string parameters should not be mergeable.");
         }
+
+        [RowTest]
+        [Row("AnotherEon001", 0)]
+        [Row("Colors-Blue.css", 0)]
+        [Row("RedBook-Blue.css", 1)]
+        [Row("Gradient", 0)]
+        [Row("RedBook-Green.css", 0)]
+        [Row("KeyWest", 0)]
+        [Row("Nature-Leafy.css", 0)]
+        [Row("Lightz", 0)]
+        [Row("Naked", 0)]
+        [Row("Colors", 0)]
+        [Row("Origami", 7)]
+        [Row("Piyo", 0)]
+        [Row("Nature-rain.css", 2)]
+        [Row("RedBook-Red.css", 0)]
+        [Row("Semagogy", 0)]
+        [Row("Submarine", 6)]
+        [Row("WPSkin", 0)]
+        [Row("Haacked", 0)]
+        public void MergedScriptIsCorrect(string skinKey, int expectedStyles)
+        {
+            UnitTestHelper.SetHttpContextWithBlogRequest("localhost", "blog", string.Empty);
+            MockRepository mocks = new MockRepository();
+
+            VirtualPathProvider pathProvider = GetTemplatesPathProviderMock(mocks);
+            mocks.ReplayAll();
+
+            SkinTemplates templates = SkinTemplates.Instance(pathProvider);
+            ScriptElementCollectionRenderer renderer = new ScriptElementCollectionRenderer(templates);
+            int mergedStyles = renderer.GetScriptsToBeMerged(skinKey).Count;
+
+            Assert.AreEqual(expectedStyles, mergedStyles, String.Format("Skin {0} should have {1} merged scripts but found {2}", skinKey, expectedStyles, mergedStyles));
+        }
+
 
         private static VirtualPathProvider GetTemplatesPathProviderMock(MockRepository mocks)
         {
