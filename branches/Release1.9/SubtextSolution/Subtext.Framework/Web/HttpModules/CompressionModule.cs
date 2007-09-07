@@ -58,9 +58,7 @@ namespace Subtext.Framework.Web.HttpModules
         void context_PostReleaseRequestState(object sender, EventArgs e)
         {
             HttpApplication app = sender as HttpApplication;
-            if (app.Context.CurrentHandler is System.Web.UI.Page
-                || app.Request.Path.Contains("css.axd")
-                || app.Request.Path.Contains("js.axd"))
+            if (app.Request.Path.Contains("css.axd") || app.Request.Path.Contains("js.axd"))
             {
                 if (IsEncodingAccepted(GZIP))
                 {

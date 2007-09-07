@@ -49,9 +49,17 @@ namespace Subtext.Framework.Web.Handlers
 
 		    foreach (string style in styles)
 		    {
-                //context.Response.Write(Environment.NewLine + "/*" + Environment.NewLine + style + Environment.NewLine + "*/" + Environment.NewLine);
-		        string cssFile = File.ReadAllText(context.Server.MapPath(style));
-                context.Response.Write(cssFile);
+                context.Response.Write(Environment.NewLine + "/* " + style + " */" + Environment.NewLine);
+		        string path = context.Server.MapPath(style);
+                if(File.Exists(path))
+                {
+                    string cssFile = File.ReadAllText(context.Server.MapPath(style));
+                    context.Response.Write(cssFile);
+                }
+                else
+                {
+                    context.Response.Write(Environment.NewLine + "/* CSS file at " + path + " doesn't exist so cannot be included in the merged CSS file. */" + Environment.NewLine);
+                }
 		    }
 
             SetHeaders(styles, context);
