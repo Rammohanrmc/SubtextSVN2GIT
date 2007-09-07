@@ -85,9 +85,13 @@ namespace Subtext.Framework.UI.Skinning
 
 
         /// <summary>
-        /// .
+        /// Whether or not to merge all scripts into one.
         /// </summary>
-        /// <value>Whether to merge all scripts into one or not.</value>
+        /// <remarks>
+        /// Even if set to true, if the list of scripts is unsafe (remote scripts or scripts with parameters)
+        /// the scripts are not merged.
+        /// </remarks>
+        /// <value>Whether to merge all scripts into one.</value>
         [XmlAttribute]
 	    public bool MergeScripts
 	    {

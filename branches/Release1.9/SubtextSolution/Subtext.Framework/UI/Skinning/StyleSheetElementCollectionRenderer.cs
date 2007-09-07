@@ -306,7 +306,7 @@ namespace Subtext.Framework.UI.Skinning
             return true;
         }
 
-        public static bool IsStyleRemote(Style style)
+        private static bool IsStyleRemote(Style style)
         {
             if (style.Href.StartsWith("http://") || style.Href.StartsWith("https://"))
                 return true;

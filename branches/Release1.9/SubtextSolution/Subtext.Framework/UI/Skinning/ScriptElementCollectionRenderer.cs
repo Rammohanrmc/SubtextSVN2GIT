@@ -52,7 +52,7 @@ namespace Subtext.Framework.UI.Skinning
             {
                 return HttpHelper.ExpandTildePath(script.Src);
             }
-            else if(script.Src.StartsWith("/"))
+            else if (script.Src.StartsWith("/") || script.Src.StartsWith("http://") || script.Src.StartsWith("https://"))
             {
                 return script.Src;
             }
@@ -86,12 +86,44 @@ namespace Subtext.Framework.UI.Skinning
             if (skinTemplate != null && skinTemplate.Scripts != null)
             {
                 string skinPath = GetSkinPath(skinTemplate.TemplateFolder);
-                foreach(Script script in skinTemplate.Scripts)
+                if(CanScriptsBeMerged(skinTemplate))
                 {
-                    result.Append(RenderScriptElement(skinPath, script));
+                    result.Append(skinPath + "js.axd?name=" + skinKey);
+                }
+                else
+                {
+                    foreach (Script script in skinTemplate.Scripts)
+                    {
+                        result.Append(RenderScriptElement(skinPath, script));
+                    }
                 }
             }
             return result.ToString();
+        }
+
+        public static bool CanScriptsBeMerged(SkinTemplate template)
+        {
+            if(!template.MergeScripts)
+                return false;
+            else
+            {
+                foreach (Script script in template.Scripts)
+                {
+                    if (script.Src.Contains("?"))
+                        return false;
+                    if (IsScriptRemote(script))
+                        return false;
+                }
+                return true;
+            }
+        }
+
+        private static bool IsScriptRemote(Script script)
+        {
+            if (script.Src.StartsWith("http://") || script.Src.StartsWith("https://"))
+                return true;
+            else
+                return false;
         }
     }
 }
