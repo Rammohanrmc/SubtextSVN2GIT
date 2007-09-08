@@ -15,6 +15,7 @@
 
 using System;
 using System.Configuration;
+using System.Text.RegularExpressions;
 using System.Web.Configuration;
 using log4net;
 using Subtext.Extensibility.Interfaces;
@@ -47,6 +48,35 @@ namespace Subtext.Framework.Configuration
 			{
 				return ((BlogConfigurationSettings)ConfigurationManager.GetSection("BlogConfigurationSettings"));
 			}
+		}
+
+		private static readonly BlogInfo aggregateBlog = InitAggregateBlog();
+		
+		private static BlogInfo InitAggregateBlog()
+		{
+			string host = ConfigurationManager.AppSettings["AggregateUrl"];
+			if (host == null)
+				return null;
+
+			Regex regex = new Regex(@"^(https?://)?(?<host>.+?)(/.*)?$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+			Match match = regex.Match(host);
+
+			if (match.Success)
+				host = match.Groups["host"].Value;
+
+			BlogInfo blog = new BlogInfo();
+            blog.Title = ConfigurationManager.AppSettings["AggregateTitle"];
+			blog.Skin = SkinConfig.GetDefaultSkin();
+            blog.Host = host;
+			blog.Subfolder = string.Empty;
+			blog.UserName = HostInfo.Instance.HostUserName;
+			
+			return blog;
+		}
+		
+		public static BlogInfo AggregateBlog
+		{
+			get { return aggregateBlog; }
 		}
 
 		/// <summary>
@@ -333,7 +363,7 @@ namespace Subtext.Framework.Configuration
 		public static bool IsValidSubfolderName(string subfolder)
 		{
 			if(subfolder == null)
-				throw new ArgumentNullException("Subfolder cannot be null.");
+				throw new ArgumentNullException("subfolder", "Subfolder cannot be null.");
 
 			if (subfolder.EndsWith("."))
 				return false;

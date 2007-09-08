@@ -135,7 +135,7 @@ namespace Subtext.Framework.Configuration
 
                         if (anyBlogsExist && ConfigurationManager.AppSettings["AggregateEnabled"] == "true")
 						{
-							return GetAggregateBlog();
+							return Config.AggregateBlog;
 						}
 
 						if(InstallationManager.IsOnLoginPage)
@@ -204,18 +204,6 @@ namespace Subtext.Framework.Configuration
 			//TODO: Use dependency injection or a provider. This'll do for now.
 			
 			return info;
-		}
-
-		private static BlogInfo GetAggregateBlog()
-		{
-			BlogInfo aggregateBlog = new BlogInfo();
-            aggregateBlog.Title = ConfigurationManager.AppSettings["AggregateTitle"];
-			aggregateBlog.Skin = SkinConfig.GetDefaultSkin();
-            aggregateBlog.Host = ConfigurationManager.AppSettings["AggregateHost"];
-			aggregateBlog.Subfolder = "";
-			aggregateBlog.UserName = HostInfo.Instance.HostUserName;
-			
-			return aggregateBlog;
 		}
 
 		/// <summary>

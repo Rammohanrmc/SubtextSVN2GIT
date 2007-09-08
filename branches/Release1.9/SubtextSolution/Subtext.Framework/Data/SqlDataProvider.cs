@@ -69,7 +69,7 @@ namespace Subtext.Framework.Data
             string sql = "DNW_HomePageData";
             SqlParameter[] p = 
 				{
-					DataHelper.MakeInParam("@Host", SqlDbType.NVarChar, 100, ConfigurationManager.AppSettings["AggregateHost"]),
+					DataHelper.MakeInParam("@Host", SqlDbType.NVarChar, 100, Config.AggregateBlog.Host),
 					DataHelper.MakeInParam("@GroupID", SqlDbType.Int, 4, groupId)
 				};
 
@@ -83,7 +83,7 @@ namespace Subtext.Framework.Data
 
             SqlParameter[] p = 
 				{
-					DataHelper.MakeInParam("@Host", SqlDbType.NVarChar,100, ConfigurationManager.AppSettings["AggregateHost"]),
+					DataHelper.MakeInParam("@Host", SqlDbType.NVarChar,100, Config.AggregateBlog.Host),
 					DataHelper.MakeInParam("@GroupID", SqlDbType.Int, 4, groupId)
 				};
 

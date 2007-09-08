@@ -14,11 +14,11 @@
 #endregion
 
 using System;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Xml;
+using Subtext.Framework.Configuration;
 using Subtext.Framework.Data;
 
 namespace Subtext.Web
@@ -28,34 +28,28 @@ namespace Subtext.Web
 	/// </summary>
 	public class OPML : System.Web.UI.Page
 	{
-		private void Page_Load(object sender, System.EventArgs e)
+		private void Page_Load(object sender, EventArgs e)
 		{
 			string sql = "DNW_Stats";
 			string conn = Subtext.Framework.Providers.DbProvider.Instance().ConnectionString;
 
-			int GroupID = 1;
+			int groupID = 1;
 
 			if(Request.QueryString["GroupID"] !=null)
 			{
-				try
-				{
-					GroupID = Int32.Parse(Request.QueryString["GroupID"]);
-				}
-				catch{}
-
+				Int32.TryParse(Request.QueryString["GroupID"], out groupID);
 			}
 
 			SqlParameter[] p = 
 				{
-					DataHelper.MakeInParam("@Host",SqlDbType.NVarChar,100,ConfigurationManager.AppSettings["AggregateHost"]),
-					DataHelper.MakeInParam("@GroupID",SqlDbType.Int,4,GroupID)
+					DataHelper.MakeInParam("@Host", SqlDbType.NVarChar,100, Config.AggregateBlog.Host),
+					DataHelper.MakeInParam("@GroupID", SqlDbType.Int, 4, groupID)
 				};
 
 
 			DataTable dt = DataHelper.ExecuteDataTable(conn, CommandType.StoredProcedure, sql, p);
 			Response.ContentType = "text/xml";
-			//Response.ContentEncoding = System.Text.Encoding.UTF8;
-			Response.Write(Write(dt,Request.ApplicationPath));
+			Response.Write(Write(dt, Request.ApplicationPath));
 		}
 		
 		private static string Write(DataTable dt, string appPath)
