@@ -65,7 +65,7 @@ namespace Subtext.Framework.Configuration
 				{
 					string connectionStringName = ConfigurationManager.AppSettings["connectionStringName"];
 					if (ConfigurationManager.ConnectionStrings[connectionStringName] == null)
-						throw new ConfigurationErrorsException("There is no connectionString entry associated with the connectionStringName '{0}'.");
+						throw new ConfigurationErrorsException(String.Format("There is no connectionString entry associated with the connectionStringName '{0}'.", connectionStringName));
 					connectionString = ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
 				}
 				return connectionString;
