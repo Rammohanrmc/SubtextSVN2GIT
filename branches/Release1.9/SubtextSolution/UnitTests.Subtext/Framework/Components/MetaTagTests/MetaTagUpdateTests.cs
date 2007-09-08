@@ -32,6 +32,8 @@ namespace UnitTests.Subtext.Framework.Components.MetaTagTests
         [RollBack2]
         public void CanUpdateMetaTag(string content, string name, string httpequiv)
         {
+            this.blog = UnitTestHelper.CreateBlogAndSetupContext();
+
             MetaTag tag = UnitTestHelper.BuildMetaTag(content, name, httpequiv, blog.Id, null, DateTime.Now);
             MetaTags.Create(tag);
 
@@ -55,6 +57,8 @@ namespace UnitTests.Subtext.Framework.Components.MetaTagTests
         [RollBack2]
         public void CanRemoveNameAndAddHttpEquiv()
         {
+            this.blog = UnitTestHelper.CreateBlogAndSetupContext();
+
             MetaTag tag = UnitTestHelper.BuildMetaTag("Nothing to see here.", "description", null, blog.Id, null, DateTime.Now);
             MetaTags.Create(tag);
 
@@ -71,6 +75,8 @@ namespace UnitTests.Subtext.Framework.Components.MetaTagTests
         [RollBack2]
         public void CanRemoveHttpEquivAndAddName()
         {
+            this.blog = UnitTestHelper.CreateBlogAndSetupContext();
+
             MetaTag tag = UnitTestHelper.BuildMetaTag("Still nothing to see here.", null, "expires", blog.Id, null, DateTime.Now);
             MetaTags.Create(tag);
 
@@ -94,6 +100,8 @@ namespace UnitTests.Subtext.Framework.Components.MetaTagTests
         [RollBack2]
         public void CantUpdateWithInvalidMetaTags(string updContent, string updName, string updHttpEquiv, string errMsg)
         {
+            this.blog = UnitTestHelper.CreateBlogAndSetupContext();
+
             MetaTag tag = UnitTestHelper.BuildMetaTag("Nothing to see here.", "description", null, blog.Id, null, DateTime.Now);
             MetaTags.Create(tag);
 
@@ -109,16 +117,12 @@ namespace UnitTests.Subtext.Framework.Components.MetaTagTests
         [RollBack2]
         public void CantUpateWithNullMetaTag()
         {
+            this.blog = UnitTestHelper.CreateBlogAndSetupContext();
+
             MetaTag tag = UnitTestHelper.BuildMetaTag("Yet again...", null, "description", blog.Id, null, DateTime.Now);
             MetaTags.Create(tag);
 
             MetaTags.Update(null);
-        }
-
-        [SetUp]
-        public void Setup()
-        {
-            this.blog = UnitTestHelper.CreateBlogAndSetupContext();
         }
 
         private static void ValidateMetaTags(MetaTag expected, MetaTag result)

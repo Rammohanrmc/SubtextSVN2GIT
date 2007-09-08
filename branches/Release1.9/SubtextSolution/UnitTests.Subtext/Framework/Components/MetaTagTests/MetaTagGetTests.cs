@@ -35,6 +35,7 @@ namespace UnitTests.Subtext.Framework.Components.MetaTagTests
         [RollBack2]
         public void GetReturnsZeroWhenNoMetaTagsExistForBlog()
         {
+            this.blog = UnitTestHelper.CreateBlogAndSetupContext();
             Assert.AreEqual(0, MetaTags.GetMetaTagsForBlog(blog).Count, "Shouldn't have found any MetaTags for this blog.");
         }
 
@@ -42,6 +43,8 @@ namespace UnitTests.Subtext.Framework.Components.MetaTagTests
         [RollBack2]
         public void GetReturnsZeroWhenNoMetaTagsExistForEntry()
         {
+            this.blog = UnitTestHelper.CreateBlogAndSetupContext();
+
             Entry e =
                 UnitTestHelper.CreateEntryInstanceForSyndication("Steve Harman", "Loves Subtexting!", "Roses are red...");
             Entries.Create(e);
@@ -53,6 +56,8 @@ namespace UnitTests.Subtext.Framework.Components.MetaTagTests
         [RollBack2]
         public void CanGetMetaTagsForBlog()
         {
+            this.blog = UnitTestHelper.CreateBlogAndSetupContext();
+
             InsertNewMetaTag("Adding description meta tag", "description", null, DateTime.Now, blog.Id, null);
             InsertNewMetaTag("no-cache", null, "cache-control", DateTime.Now, blog.Id, null);
 
@@ -65,6 +70,8 @@ namespace UnitTests.Subtext.Framework.Components.MetaTagTests
         [RollBack2]
         public void CanGetMetaTagsForEntry()
         {
+            this.blog = UnitTestHelper.CreateBlogAndSetupContext();
+
             Entry e = UnitTestHelper.CreateEntryInstanceForSyndication("Steve-o", "Bar", "Steve is still rockin it... or is he?");
             Entries.Create(e);
 
@@ -80,12 +87,6 @@ namespace UnitTests.Subtext.Framework.Components.MetaTagTests
             ICollection<MetaTag> tags = MetaTags.GetMetaTagsForEntry(e);
 
             Assert.AreEqual(4, tags.Count, "Should have found 4 MetaTags for this entry.");
-        }
-
-        [SetUp]
-        public void Setup()
-        {
-            this.blog = UnitTestHelper.CreateBlogAndSetupContext();
         }
 
         #region Some helper code to populate the db w/metatags
