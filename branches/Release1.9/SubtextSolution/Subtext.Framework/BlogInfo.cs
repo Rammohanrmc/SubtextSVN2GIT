@@ -93,7 +93,7 @@ namespace Subtext.Framework
         public static IPagedCollection<BlogInfo> GetBlogsByHost(string host, int pageIndex, int pageSize, ConfigurationFlag flags)
 		{
 			if (String.IsNullOrEmpty(host))
-				throw new ArgumentNullException("Host must not be null or empty.");
+				throw new ArgumentNullException("host", "Host must not be null or empty.");
 
 			return ObjectProvider.Instance().GetPagedBlogs(host, pageIndex, pageSize, flags);
 		}
