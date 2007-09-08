@@ -457,6 +457,11 @@ drop procedure [<dbUser,varchar,dbo>].[subtext_GetMetaTagsForEntry]
 GO
 
 if exists (select ROUTINE_NAME from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' and OBJECTPROPERTY(OBJECT_ID(ROUTINE_NAME), 'IsMsShipped') = 0 
+	and ROUTINE_SCHEMA = '<dbUser,varchar,dbo>' AND ROUTINE_NAME = 'subtext_DeleteMetaTag')
+drop procedure [<dbUser,varchar,dbo>].[subtext_DeleteMetaTag]
+GO
+
+if exists (select ROUTINE_NAME from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' and OBJECTPROPERTY(OBJECT_ID(ROUTINE_NAME), 'IsMsShipped') = 0 
 	and ROUTINE_SCHEMA = '<dbUser,varchar,dbo>' AND ROUTINE_NAME = 'subtext_ClearBlogContent')
 drop procedure [<dbUser,varchar,dbo>].[subtext_ClearBlogContent]
 GO
@@ -4765,4 +4770,19 @@ AS
 GO 
 
 GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_GetMetaTagsForEntry] TO [public]
+GO
+
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_DeleteMetaTag] 
+	(
+		@Id int
+	)
+AS
+	DELETE FROM [<dbUser,varchar,dbo>].[subtext_MetaTag] WHERE [Id] = @Id
+
 GO
