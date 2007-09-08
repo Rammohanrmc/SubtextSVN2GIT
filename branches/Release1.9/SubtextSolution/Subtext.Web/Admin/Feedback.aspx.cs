@@ -37,7 +37,7 @@ namespace Subtext.Web.Admin.Pages
 	/// </summary>
 	public partial class Feedback : ConfirmationPage
 	{
-				private const string VSKEY_FEEDBACKID = "PostID";
+		private const string VSKEY_FEEDBACKID = "FeedbackID";
 		private int pageIndex = 0;
 		private bool _isListHidden = false;
 		LinkButton btnViewApprovedComments;
@@ -88,16 +88,8 @@ namespace Subtext.Web.Admin.Pages
 				int feedbackID = NullValue.NullInt32;
 				if (feedbackIDText != null && feedbackIDText.Length > 0)
 				{
-					try
-					{
-						feedbackID = int.Parse(feedbackIDText);
-						//Ok, we came from outside the admin tool.
-						ReturnToOriginalPost = true;
-					}
-					catch (FormatException)
-					{
-						//Swallow it. Gulp!
-					}
+					//Ok, we came from outside the admin tool.
+					ReturnToOriginalPost = int.TryParse(feedbackIDText,out feedbackID);
 				}
 				if (feedbackID > NullValue.NullInt32)
 				{
@@ -610,6 +602,7 @@ namespace Subtext.Web.Admin.Pages
 				return;
 			}
 			SetConfirmation();
+			rbFeedbackFilter.Visible = false;
 			Results.Visible = false;
 			Edit.Visible = true;
 			rbFeedbackFilter.SelectedIndex = -1;
@@ -713,10 +706,13 @@ namespace Subtext.Web.Admin.Pages
 			FeedbackID = NullValue.NullInt32;
 			Edit.Visible = showEdit;
 			Results.Visible = !showEdit;
+			rbFeedbackFilter.Visible = !showEdit;
 
 		}
 	}
 }
+
+
 
 
 
