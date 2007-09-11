@@ -1256,7 +1256,8 @@ namespace Subtext.Framework.Data
 			return NonQueryBool("subtext_UpdateDomainAlias", p);
 		}
 		#endregion
-		#region Archives
+		
+        #region Archives
 
 		public override IDataReader GetPostsByMonthArchive()
 		{
@@ -1318,7 +1319,6 @@ namespace Subtext.Framework.Data
             return (int) id.Value;
         }
 
-
 	    public override bool UpdateMetaTag(MetaTag metaTag)
 	    {
             if (metaTag == null)
@@ -1348,7 +1348,6 @@ namespace Subtext.Framework.Data
 			return GetReader("subtext_GetMetaTagsForBlog", p);
 		}
 
-
 	    public override IDataReader GetMetaTagsForEntry(Entry entry)
 	    {
             SqlParameter[] p =
@@ -1359,8 +1358,16 @@ namespace Subtext.Framework.Data
             return GetReader("subtext_GetMetaTagsForEntry", p);
 	    }
 
-	    #endregion
+	    public override bool DeleteMetaTag(int metaTagId)
+	    {
+            SqlParameter[] p =
+			{
+				DataHelper.MakeInParam("@Id", SqlDbType.Int, 4, metaTagId)
+			};
+            return NonQueryBool("subtext_DeleteMetaTag", p);
+	    }
 
+	    #endregion
 
 		#region KeyWords
 

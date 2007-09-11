@@ -345,6 +345,8 @@ namespace Subtext.Framework.Providers
 
 	    public abstract IDataReader GetMetaTagsForEntry(Entry entry);
 
+        public abstract bool DeleteMetaTag(int metaTagId);
+
 		#endregion
 
 		#region KeyWord

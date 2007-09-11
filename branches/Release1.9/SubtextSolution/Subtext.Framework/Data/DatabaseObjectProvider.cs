@@ -1042,6 +1042,12 @@ namespace Subtext.Framework.Data
 	        }
 	    }
 
+
+	    public override bool DeleteMetaTag(int metaTagId)
+	    {
+	        return DbProvider.Instance().DeleteMetaTag(metaTagId);
+	    }
+
 	    #endregion
 
 

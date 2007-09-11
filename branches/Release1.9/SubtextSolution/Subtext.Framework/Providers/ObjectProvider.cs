@@ -471,6 +471,13 @@ namespace Subtext.Framework.Providers
         /// <returns></returns>
 	    public abstract IList<MetaTag> GetMetaTagsForEntry(Entry entry);
 
+        /// <summary>
+        /// Deletes the MetaTag with the given metaTagId.
+        /// </summary>
+        /// <param name="metaTagId"></param>
+        /// <returns></returns>
+        public abstract bool DeleteMetaTag(int metaTagId);
+
 		#endregion
 
         #region KeyWords

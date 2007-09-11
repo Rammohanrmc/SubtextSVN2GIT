@@ -51,7 +51,7 @@ namespace Subtext.Framework
 
 		public static bool Delete(int metaTagId)
 		{
-			throw new NotImplementedException();
+			return ObjectProvider.Instance().DeleteMetaTag(metaTagId);
 		}
 
 		public static IList<MetaTag> GetMetaTagsForBlog(BlogInfo blog)
