@@ -1216,6 +1216,10 @@ body > #top-link {position:fixed;}
 	
 /* END CONTENT */
 
+/* Fixes for some _system/CommonStyle.css rules */
+.dropshadow + p { clear:left; }
+.innerbox { overflow:auto; }
+
 /* =FOOTER */
 
 	#footer-pad {display:none;}
