@@ -91,6 +91,18 @@ BEGIN
 END
 GO
 
+/* Change the subtext_Content.EntryName column to have nVarChar data type */
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+			WHERE TABLE_NAME = 'subtext_Content' 
+				AND TABLE_SCHEMA = 'dbo'
+				AND COLUMN_NAME = 'EntryName' 
+				AND DATA_TYPE = 'varchar')
+	ALTER TABLE subtext_Content ALTER COLUMN EntryName NVARCHAR(100)
+
+GO
+
+
 /* Create the new MetaTag table */
 
 IF NOT EXISTS
