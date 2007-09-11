@@ -219,6 +219,8 @@ namespace Subtext.Framework.Configuration
 		/// Domain Alias.
 		/// </summary>
 		/// <param name="domainAlias">Domain alias</param>
+		/// <param name="subfolder">Sub Folder</param>
+		/// <param name="strict">Strict</param>
 		/// <returns></returns>
 		public static BlogInfo GetBlogInfoFromDomainAlias(string domainAlias, string subfolder, bool strict)
 		{
@@ -362,8 +364,8 @@ namespace Subtext.Framework.Configuration
 			return ObjectProvider.Instance().UpdateBlog(info);
 		}
 
-		//TODO: Is this the right place to put this list?
-        private static string[] _invalidSubfolders = {"Tags", "Admin", "bin", "ExternalDependencies", "HostAdmin", "Images", "Install", "Properties", "Providers", "Scripts", "Skins", "SystemMessages", "UI", "Modules", "Services", "Category", "Archive", "Archives", "Comments", "Articles", "Posts", "Story", "Stories", "Gallery", "aggbug", "Sitemap" };
+        //TODO: Is this the right place to put this list?
+        private static readonly string[] _invalidSubfolders = { "Tags", "Admin", "bin", "ExternalDependencies", "HostAdmin", "Images", "Install", "Properties", "Providers", "Scripts", "Skins", "SystemMessages", "UI", "Modules", "Services", "Category", "Archive", "Archives", "Comments", "Articles", "Posts", "Story", "Stories", "Gallery", "aggbug", "Sitemap" };
 
 		/// <summary>
 		/// Returns true if the specified subfolder name has a 
@@ -411,8 +413,6 @@ namespace Subtext.Framework.Configuration
 		{
 			return ObjectProvider.Instance().DeleteBlogAlias(alias);
 		}
-
-
 
 		public static BlogAlias GetBlogAlias(int aliasId)
 		{
