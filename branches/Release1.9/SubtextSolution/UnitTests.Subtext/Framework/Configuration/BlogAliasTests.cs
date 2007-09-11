@@ -56,7 +56,20 @@ namespace UnitTests.Subtext.Framework.Configuration
 			Assert.AreEqual(blog1.Id, testBlog1.Id,"Found the wrong blog.");
 			Assert.AreEqual(blog2.Id, testBlog2.Id, "Found the wrong blog.");
 		}
+		[Test]
+		[RollBack2]
+		public void CheckThatAliasChecksSubfolderIfBlogOnSameHost()
+		{
+			BlogInfo blog = UnitTestHelper.CreateBlogAndSetupContext();
+			BlogAlias alias = UnitTestHelper.CreateBlogAlias(blog, blog.Host, UnitTestHelper.GenerateRandomString());
 
+			Config.AddBlogAlias(alias);
+
+			BlogInfo testBlog = Config.GetBlogInfoFromDomainAlias(blog.Host, "", false);
+			Console.WriteLine((testBlog==blog).ToString());
+			Assert.IsNull(testBlog, "Should not have found a blog, alias is on same host.");
+
+		}
 		[Test]
 		[RollBack2]
 		public void GetBlogAliasById()

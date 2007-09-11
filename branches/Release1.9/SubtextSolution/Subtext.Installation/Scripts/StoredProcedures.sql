@@ -4822,7 +4822,9 @@ AS
 DECLARE
 	@BlogId int
 
-	IF @Strict = 0 AND (1 = (SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].subtext_DomainAliases WHERE Host = @Host))
+	IF @Strict = 0 
+		AND NOT EXISTS(SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].subtext_Config WHERE Host = @Host)
+		AND (1 = (SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].subtext_DomainAliases WHERE Host = @Host))
 	BEGIN
 		SELECT @BlogId = BlogId FROM [<dbUser,varchar,dbo>].subtext_DomainAliases WHERE (Host = @Host OR Host = 'www.' + @Host) AND IsActive = 1
 	END
