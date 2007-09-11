@@ -110,6 +110,55 @@ namespace Subtext.Framework.Data
 			}
 			return null;
 		}
+
+		public override BlogAlias GetBlogAliasById(int aliasId)
+		{
+			BlogAlias alias = null;
+			using (IDataReader reader = DbProvider.Instance().GetBlogAliasById(aliasId))
+			{
+				if (reader.Read())
+				{
+					alias = DataHelper.LoadBlogAlias(reader);
+				}
+				reader.Close();
+			}
+			return alias;
+		}
+		public override BlogInfo GetBlogByDomainAlias(string host, string subfolder, bool strict)
+		{
+			BlogInfo info = null;
+			using (IDataReader reader = DbProvider.Instance().GetBlogByDomainAlias(host, subfolder, strict))
+			{	
+				if (reader.Read())
+				{
+					info = DataHelper.LoadConfigData(reader);
+				}
+				reader.Close();
+			}
+			return info;
+		}
+
+		public override PagedCollection<BlogAlias> GetPagedBlogDomainAlias(BlogInfo blog, int pageIndex, int pageSize)
+		{
+			IDataReader reader = DbProvider.Instance().GetPagedBlogDomainAliases(blog.Id, pageIndex, pageSize);
+			try
+			{
+				PagedCollection<BlogAlias> pec = new PagedCollection<BlogAlias>();
+				while (reader.Read())
+				{
+					pec.Add(DataHelper.LoadBlogAlias(reader));
+				}
+				reader.NextResult();
+				pec.MaxItems = DataHelper.GetMaxItems(reader);
+				return pec;
+
+			}
+			finally
+			{
+				reader.Close();
+			}
+		}
+
 		#endregion
 
 		#region Entries
@@ -882,7 +931,21 @@ namespace Subtext.Framework.Data
 		{
 			return DbProvider.Instance().AddBlogConfiguration(title, userName, password, host, subfolder);
 		}
-		
+
+		public override bool CreateBlogAlias(BlogAlias alias)
+		{
+			return DbProvider.Instance().AddBlogAlias(alias);
+		}
+
+		public override bool UpdateBlogAlias(BlogAlias alias)
+		{
+			return DbProvider.Instance().UpdateBlogAlias(alias);
+		}
+		public override bool DeleteBlogAlias(BlogAlias alias)
+		{
+			return DbProvider.Instance().DeleteBlogAlias(alias);
+		}
+
 		public override bool UpdateBlog(BlogInfo info)
 		{
 			return DbProvider.Instance().UpdateBlog(info);

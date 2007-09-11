@@ -134,3 +134,28 @@ BEGIN
 	)
 END
 GO
+
+IF NOT EXISTS
+(
+	SELECT * FROM [INFORMATION_SCHEMA].[COLUMNS]
+	WHERE TABLE_NAME = 'subtext_DomainAliases'
+	AND TABLE_SCHEMA = '<dbUser,varchar,dbo>'
+)
+BEGIN
+	CREATE TABLE [<dbUser,varchar,dbo>].[subtext_DomainAliases]
+	(
+		[AliasId] int IDENTITY(0,1) NOT NULL,
+		[BlogId] int NOT NULL ,
+		[Host] nvarchar(100) NOT NULL ,
+		[Application] nvarchar(50) NOT NULL, 
+		[IsActive] [bit] NULL ,
+		CONSTRAINT [PK_subtext_DomainAliases] PRIMARY KEY CLUSTERED
+		(
+			[AliasId] ASC
+		) ON [PRIMARY],
+		CONSTRAINT [FK_subtext_DomainAliases_subtext_Config] FOREIGN KEY
+		( [BlogId] ) REFERENCES <dbUser,varchar,dbo>.[subtext_Config]
+		( [BlogId] )
+	)
+END
+GO

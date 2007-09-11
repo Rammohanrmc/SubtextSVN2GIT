@@ -214,6 +214,19 @@ namespace Subtext.Framework.Configuration
 		}
 
 		/// <summary>
+		/// Returns a <see cref="BlogInfo"/> instance containing 
+		/// the configuration settings for the blog specified by the 
+		/// Domain Alias.
+		/// </summary>
+		/// <param name="domainAlias">Domain alias</param>
+		/// <returns></returns>
+		public static BlogInfo GetBlogInfoFromDomainAlias(string domainAlias, string subfolder, bool strict)
+		{
+			domainAlias = BlogInfo.StripPortFromHost(domainAlias);
+			return ObjectProvider.Instance().GetBlogByDomainAlias(domainAlias,subfolder,strict);
+		}
+
+		/// <summary>
 		/// Creates an initial blog.  This is a convenience method for 
 		/// allowing a user with a freshly installed blog to immediately gain access 
 		/// to the admin section to edit the blog.
@@ -382,6 +395,28 @@ namespace Subtext.Framework.Configuration
 					return false;
 			}
 			return true;
+		}
+
+		public static bool AddBlogAlias(BlogAlias alias)
+		{
+			return ObjectProvider.Instance().CreateBlogAlias(alias);
+		}
+		public static bool UpdateBlogAlias(BlogAlias alias)
+		{
+
+			return ObjectProvider.Instance().UpdateBlogAlias(alias);
+		}
+
+		public static bool DeleteBlogAlias(BlogAlias alias)
+		{
+			return ObjectProvider.Instance().DeleteBlogAlias(alias);
+		}
+
+
+
+		public static BlogAlias GetBlogAlias(int aliasId)
+		{
+			return ObjectProvider.Instance().GetBlogAliasById(aliasId);			
 		}
 	}
 }

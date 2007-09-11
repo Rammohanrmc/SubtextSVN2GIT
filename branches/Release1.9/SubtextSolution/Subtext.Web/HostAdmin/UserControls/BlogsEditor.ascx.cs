@@ -24,6 +24,8 @@ using Subtext.Framework.Exceptions;
 using Subtext.Framework.Format;
 using Subtext.Web.Admin;
 using Subtext.Framework.Security;
+using Subtext.Framework.Providers;
+using System.Web.UI;
 
 namespace Subtext.Web.HostAdmin.UserControls
 {
@@ -36,6 +38,8 @@ namespace Subtext.Web.HostAdmin.UserControls
 	public partial class BlogsEditor : System.Web.UI.UserControl
 	{
 		const string VSKEY_BLOGID = "VS_BLOGID";
+		const string VSKEY_ALIASID = "VSKEY_ALIAS";
+		
 		int pageIndex = 0;
 
 		#region Declared Controls
@@ -109,7 +113,10 @@ namespace Subtext.Web.HostAdmin.UserControls
 				this.txtApplication.Text = blog.Subfolder;
 				this.txtHost.Text = blog.Host;
 				this.txtUsername.Text = blog.UserName;
-				this.txtTitle.Text = blog.Title;	
+				this.txtTitle.Text = blog.Title;
+				IPagedCollection<BlogAlias> aliases = blog.GetBlogAliases(0, 1000);
+				rprBlogAliasList.DataSource = aliases;
+				rprBlogAliasList.DataBind();
 			}
 			this.txtTitle.Visible = true;
 
@@ -188,12 +195,27 @@ namespace Subtext.Web.HostAdmin.UserControls
 		{
 			get
 			{
-				if(ViewState[VSKEY_BLOGID] != null)
+				if (ViewState[VSKEY_BLOGID] != null)
 					return (int)ViewState[VSKEY_BLOGID];
 				else
 					return NullValue.NullInt32;
 			}
 			set { ViewState[VSKEY_BLOGID] = value; }
+		}
+		/// <summary>
+		/// Gets or sets the blog id.
+		/// </summary>
+		/// <value></value>
+		public int AliasId
+		{
+			get
+			{
+				if (ViewState[VSKEY_ALIASID] != null)
+					return (int)ViewState[VSKEY_ALIASID];
+				else
+					return NullValue.NullInt32;
+			}
+			set { ViewState[VSKEY_ALIASID] = value; }
 		}
 
 		/// <summary>
@@ -447,6 +469,95 @@ namespace Subtext.Web.HostAdmin.UserControls
 		{
 			this.messagePanel.ShowMessage("Blog Update Cancelled. Nothing to see here.");
 			BindList();
+		}
+
+		protected void SetAliasEdit(bool editing)
+		{
+			tdAliasHost.Visible = editing;
+			btnAliasSave.Visible = editing;
+			btnAliasCancel.Visible = editing;
+			tdAliasApplication.Visible = editing;
+			tbAliasActive.Visible = editing;
+
+			tdAliasList.Visible = !editing;
+			btnSave.Visible = !editing;
+			btnCancel.Visible = !editing;
+			txtHost.Enabled = !editing;
+			txtPassword.Enabled = !editing;
+			txtPasswordConfirm.Enabled = !editing;
+			txtApplication.Enabled = !editing;
+			txtTitle.Enabled = !editing;
+			txtUsername.Enabled = !editing;
+			rprBlogAliasList.Visible = !editing;
+
+		}
+		protected void lbAddAlias_OnClick(object sender, EventArgs e)
+		{
+			BindEdit();
+			txtAliasApplication.Text = "";
+			txtAliasHost.Text = "";
+			cbAliasActive.Checked = true;
+			SetAliasEdit(true);
+		}
+
+		protected void btnAliasCancel_Click(object sender, EventArgs e)
+		{
+			BindEdit();
+			AliasId = NullValue.NullInt32;
+			SetAliasEdit(false);
+
+		}
+
+		protected void rprBlogAliasList_ItemCommand(object sender, EventArgs e)
+		{
+			CommandEventArgs args = (CommandEventArgs)e;
+			BlogAlias alias = Config.GetBlogAlias(Convert.ToInt32(args.CommandArgument));
+			if (args.CommandName == "EditAlias")
+			{
+
+				AliasId = alias.Id;
+				BindEdit();
+				SetAliasEdit(true);
+				txtAliasHost.Text = alias.Host;
+				txtAliasApplication.Text = alias.Subfolder;
+				cbAliasActive.Checked = alias.IsActive;
+				
+				Config.UpdateBlogAlias(alias);
+			}
+
+			if (args.CommandName == "DeleteAlias")
+			{
+				AliasId = NullValue.NullInt32;
+				Config.DeleteBlogAlias(alias);
+				BindEdit();
+				SetAliasEdit(false);
+			}
+
+		}
+		protected void btnAliasSave_Click(object sender, EventArgs e)
+		{
+
+			BlogAlias alias = new BlogAlias();
+			if (AliasId != NullValue.NullInt32)
+				alias.Id = AliasId;
+
+			alias.Host = txtAliasHost.Text;
+			alias.Subfolder = txtAliasApplication.Text;
+			alias.BlogId = BlogId;
+			alias.IsActive = cbAliasActive.Checked;
+
+			if (AliasId == NullValue.NullInt32)
+			{
+				Config.AddBlogAlias(alias);
+			}
+			else
+			{
+				Config.UpdateBlogAlias(alias);
+			}
+
+			AliasId = NullValue.NullInt32;
+			BindEdit();
+			SetAliasEdit(false);
 		}
 	}
 }

@@ -320,9 +320,18 @@ namespace Subtext.Framework.Providers
 
 		#endregion
 
-        #region Tags
+		#region BlogAlias
 
-        public abstract IDataReader GetTopTags(int ItemCount);
+		public abstract bool AddBlogAlias(BlogAlias alias);
+		
+		public abstract bool DeleteBlogAlias(BlogAlias alias);
+		
+		public abstract bool UpdateBlogAlias(BlogAlias alias);
+
+		#endregion
+		#region Tags
+
+		public abstract IDataReader GetTopTags(int ItemCount);
 
         #endregion
 
@@ -388,7 +397,18 @@ namespace Subtext.Framework.Providers
 		/// <param name="blogId">Blog id.</param>
 		/// <returns></returns>
 		public abstract IDataReader GetBlogById(int blogId);
-		
+
+		/// <summary>
+		/// Get blog using a domain alias
+		/// </summary>
+		/// <param name="host"></param>
+		/// <param name="subfolder"></param>
+		/// <param name="strict"></param>
+		/// <returns></returns>
+		public abstract IDataReader GetBlogByDomainAlias(string host,string subfolder, bool strict);
+
+		public abstract IDataReader GetPagedBlogDomainAliases(int blogId, int pageIndex, int pageSize);
+
 		public abstract IDataReader GetPagedLinks(int categoryId, int pageIndex, int pageSize, bool sortDescending);
 		
 		/// <summary>
@@ -445,5 +465,7 @@ namespace Subtext.Framework.Providers
 
 		#endregion
 		#endregion
+
+		public abstract IDataReader GetBlogAliasById(int aliasId);
 	}
 }

@@ -519,6 +519,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
+    <Compile Include="BlogAlias.cs" />
     <Compile Include="Web\Handlers\CssHandler.cs" />
     <Compile Include="Web\Handlers\RsdHandler.cs" />
     <Compile Include="Web\HttpHelper.cs">

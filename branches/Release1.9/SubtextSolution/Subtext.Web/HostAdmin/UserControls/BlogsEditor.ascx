@@ -165,6 +165,8 @@
 			<td>
 				<asp:TextBox id="txtTitle" Runat="server" MaxLength="100"></asp:TextBox>
 			</td>
+			<td valign="top"><label>Blog Aliases </label></td>
+
 		</tr>
 		<tr valign="top">
 			<td>
@@ -173,6 +175,67 @@
 			</td>
 			<td>
 				<asp:TextBox id="txtHost" Runat="server" MaxLength="100"></asp:TextBox><input id="virtualDirectory" type="hidden" runat="server" />
+			</td>	
+			<td id="tdAliasHost" runat="server" visible="false">
+				<asp:HiddenField ID="hdnAliasId" runat="server" />
+				<asp:TextBox id="txtAliasHost" Runat="server" MaxLength="100"></asp:TextBox>
+			</td>			
+			<td rowspan="7" runat="Server" id="tdAliasList">
+				<asp:Repeater runat="server" ID="rprBlogAliasList" OnItemCommand="rprBlogAliasList_ItemCommand">
+					<HeaderTemplate>
+						<table class="Listing" cellspacing="2" cellpadding="0" border="0">
+							<tr></tr>
+							<tr>
+								<th width="10px">&nbsp;</th>
+								<th>
+									Host</th>
+								<th>
+									Subfolder</th>
+								<th>
+									Active</th>
+								<th>
+									</th>
+							</tr>
+					</HeaderTemplate>
+					<ItemTemplate>
+						<tr>
+							<td><asp:ImageButton ID="btnEditAlias" runat="server" ImageUrl="~\Images\edit.gif" CommandName="EditAlias" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "Id") %>' /> </td>
+							<td>
+								<%# DataBinder.Eval(Container.DataItem, "Host") %>
+							</td>
+							<td>
+								<%# DataBinder.Eval(Container.DataItem, "Subfolder") %>
+							</td>
+							<td>
+								<%# DataBinder.Eval(Container.DataItem, "IsActive") %>
+							</td>
+							<td><asp:LinkButton ID="btnDeleteAlias" runat="server" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "Id") %>' CommandName="DeleteAlias" Text="Delete" /></td>
+						</tr>
+					</ItemTemplate>
+					<AlternatingItemTemplate>
+						<tr class="Alt">
+							<td><asp:ImageButton ID="btnEditAlias" runat="server" ImageUrl="~\Images\edit.gif" CommandName="EditAlias" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "Id") %>' /> </td>
+							<td>
+								<%# DataBinder.Eval(Container.DataItem, "Host") %>
+							</td>
+							<td>
+								<%# DataBinder.Eval(Container.DataItem, "Subfolder")%>
+							</td>
+							<td>
+								<%# DataBinder.Eval(Container.DataItem, "IsActive") %>
+							</td>
+							<td><asp:LinkButton ID="btnDeleteAlias" runat="server" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "Id") %>' CommandName="DeleteAlias" Text="Delete" /></td>
+						</tr>						
+					</AlternatingItemTemplate>
+					<FooterTemplate>
+							<tr>
+								<td colspan="5">
+								<asp:LinkButton ID="lbAddAlias" CssClass="button"  Text="Add Alias" runat="server" CommandName="Add" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "BlogId") %>' OnClick="lbAddAlias_OnClick"></asp:LinkButton>
+								</td>
+							</tr>
+						</table>
+					</FooterTemplate>
+				</asp:Repeater>
 			</td>
 		</tr>
 		<tr valign="top">
@@ -183,6 +246,9 @@
 			<td>
 				<asp:TextBox id="txtApplication" Runat="server" MaxLength="50"></asp:TextBox>
 			</td>
+			<td id="tdAliasApplication" runat="server" visible="false">
+				<asp:TextBox id="txtAliasApplication" Runat="server" MaxLength="50"></asp:TextBox>
+			</td>
 		</tr>
 		<tr valign="top">
 			<td><label for="txtUsername">
@@ -191,6 +257,10 @@
 			</td>
 			<td>
 				<asp:TextBox id="txtUsername" Runat="server" MaxLength="50"></asp:TextBox></td>
+			<td runat="server" id="tbAliasActive" visible="false">
+				<asp:CheckBox ID="cbAliasActive" runat="server" />
+			</td>
+
 		</tr>
 		<tr id="passwordRow" runat="server" valign="top">
 			<td><label for="txtPassword">
@@ -198,6 +268,10 @@
 			</td>
 			<td>
 				<asp:TextBox id="txtPassword" Runat="server" MaxLength="50" TextMode="Password"></asp:TextBox>
+			</td>
+			<td>
+				<asp:Button ID="btnAliasCancel" Text="Cancel" runat="server" CssClass="button" OnClick="btnAliasCancel_Click" Visible="False" />
+				<asp:Button ID="btnAliasSave" runat="server" CssClass="button" OnClick="btnAliasSave_Click" Text="Save" Visible="False" />
 			</td>
 		</tr>
 		<tr id="passwordRowConfirm" runat="server" valign="top">
@@ -208,8 +282,10 @@
 		</tr>
 		<tr valign="top">
 			<td colspan="2">
-				<asp:Button id="btnCancel" Text="Cancel" Runat="server" CssClass="button" onclick="btnCancel_Click"></asp:Button>
-				<asp:Button id="btnSave" Text="Save" Runat="server" CssClass="button" onclick="btnSave_Click"></asp:Button>
+				<asp:Button ID="btnCancel" Text="Cancel" runat="server" CssClass="button" OnClick="btnCancel_Click">
+				</asp:Button>
+				<asp:Button ID="btnSave" Text="Save" runat="server" CssClass="button" OnClick="btnSave_Click">
+				</asp:Button>
 			</td>
 		</tr>
 	</table>

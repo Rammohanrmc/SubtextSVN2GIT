@@ -270,6 +270,38 @@ namespace Subtext.Framework.Data
 			return command.ExecuteReader(CommandBehavior.CloseConnection);
 		}
 
+		public override IDataReader GetBlogByDomainAlias(string host, string subfolder, bool strict)
+		{
+			string sql = "subtext_GetBlogByDomainAlias";
+
+			SqlConnection conn = new SqlConnection(ConnectionString);
+			SqlCommand command = new SqlCommand(sql, conn);
+
+			command.CommandType = CommandType.StoredProcedure;
+			command.Parameters.Add(DataHelper.MakeInParam("@Host", SqlDbType.VarChar, 100, host));
+			command.Parameters.Add(DataHelper.MakeInParam("@Application", SqlDbType.VarChar, 50, subfolder));
+			command.Parameters.Add(DataHelper.MakeInParam("@Strict", SqlDbType.Bit, 1, strict));
+
+			conn.Open();
+			return command.ExecuteReader(CommandBehavior.CloseConnection); 
+		}
+
+		public override IDataReader GetPagedBlogDomainAliases(int blogId, int pageIndex, int pageSize)
+		{
+			string sql = "subtext_GetPageableDomainAliases";
+
+			SqlConnection conn = new SqlConnection(ConnectionString);
+			SqlCommand command = new SqlCommand(sql, conn);
+
+			command.CommandType = CommandType.StoredProcedure;
+			command.Parameters.Add(DataHelper.MakeInParam("@BlogId", SqlDbType.Int, 4, blogId));
+			command.Parameters.Add(DataHelper.MakeInParam("@PageIndex", SqlDbType.Int, 4, pageIndex));
+			command.Parameters.Add(DataHelper.MakeInParam("@PageSize", SqlDbType.Int, 4, pageSize));
+
+			conn.Open();
+			return command.ExecuteReader(CommandBehavior.CloseConnection);
+		}
+
 		public override IDataReader GetPagedLinks(int categoryId, int pageIndex, int pageSize, bool sortDescending)
 		{
 			bool useCategory = categoryId > -1;
@@ -1179,7 +1211,51 @@ namespace Subtext.Framework.Data
 		}
 
 		#endregion
+																		
+		#region BlogAlias
+		public override IDataReader GetBlogAliasById(int aliasId)
+		{
+			return GetReader("subtext_GetDomainAliasById", new SqlParameter[] { DataHelper.MakeInParam("@AliasId",aliasId)});
+		}
+		public override bool AddBlogAlias(BlogAlias alias)
+		{
+			SqlParameter aliasId = DataHelper.MakeOutParam("@AliasId", SqlDbType.Int, 4);
+			SqlParameter[] p = 
+				{
+					 aliasId
+					,DataHelper.MakeInParam("@BlogId",SqlDbType.Int,4,alias.BlogId)
+					,DataHelper.MakeInParam("@Host",SqlDbType.NVarChar,100,alias.Host)
+					,DataHelper.MakeInParam("@Application",SqlDbType.NVarChar,50,alias.Subfolder)
+					,DataHelper.MakeInParam("@Active",SqlDbType.Bit,100,alias.IsActive)
+				};
+			bool retValue = NonQueryBool("subtext_CreateDomainAlias", p);
+			if(aliasId.Value!=DBNull.Value)
+				alias.Id = (int)aliasId.Value;
+			return retValue;
+		}
 
+		public override bool DeleteBlogAlias(BlogAlias alias)
+		{
+			SqlParameter[] p = { DataHelper.MakeInParam("@AliasId",SqlDbType.Int,4,alias.Id)
+			};
+
+			return NonQueryBool("subtext_DeleteDomainAlias", p);
+		}
+
+		public override bool UpdateBlogAlias(BlogAlias alias)
+		{
+			SqlParameter[] p = 
+				{
+					DataHelper.MakeInParam("@AliasId",SqlDbType.Int,4,alias.Id)
+					,DataHelper.MakeInParam("@BlogId",SqlDbType.Int,4,alias.BlogId)
+					,DataHelper.MakeInParam("@Host",SqlDbType.NVarChar,100,alias.Host)
+					,DataHelper.MakeInParam("@Application",SqlDbType.NVarChar,50,alias.Subfolder)
+					,DataHelper.MakeInParam("@Active",SqlDbType.Bit,100,alias.IsActive)
+				};
+
+			return NonQueryBool("subtext_UpdateDomainAlias", p);
+		}
+		#endregion
 		#region Archives
 
 		public override IDataReader GetPostsByMonthArchive()
@@ -1449,6 +1525,7 @@ namespace Subtext.Framework.Data
 		}
 	}
 }
+
 
 
 
