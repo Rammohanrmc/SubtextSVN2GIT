@@ -70,8 +70,9 @@ namespace Subtext.Framework
 		}
 
 		/// <summary>
-		/// Loads the host from the Object Provider.  This is provided 
-		/// for those cases when we really need to hit the db.
+		/// Loads the host from the Object Provider. This is provided for 
+		/// those cases when we really need to hit the data strore. Calling this
+		/// method will also reload the HostInfo.Instance from the data store.
 		/// </summary>
 		/// <param name="suppressException">If true, won't throw an exception.</param>
 		/// <returns></returns>
@@ -79,7 +80,8 @@ namespace Subtext.Framework
 		{
 			try
 			{
-				return ObjectProvider.Instance().LoadHostInfo(new HostInfo());
+                _instance = ObjectProvider.Instance().LoadHostInfo(new HostInfo());
+			    return _instance;
 			}
 			catch(SqlException e)
 			{
@@ -123,13 +125,8 @@ namespace Subtext.Framework
 			host.HostUserName = hostUserName;
 
 			SetHostPassword(host, hostPassword);
-			
-			if(UpdateHost(host))
-			{
-				_instance = host;
-				return true;
-			}
-			return false;
+
+		    return UpdateHost(host);
 		}
 
 		public static void SetHostPassword(HostInfo host, string newPassword)
