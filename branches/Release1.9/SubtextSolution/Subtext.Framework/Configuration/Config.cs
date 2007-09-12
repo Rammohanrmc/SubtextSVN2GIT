@@ -54,31 +54,25 @@ namespace Subtext.Framework.Configuration
 		
 		private static BlogInfo InitAggregateBlog()
 		{
-            BlogInfo blog = new BlogInfo();
+			string host = ConfigurationManager.AppSettings["AggregateUrl"];
+			if (host == null)
+				return null;
 
-            try
-            {
-                string host = ConfigurationManager.AppSettings["AggregateUrl"];
-                if (host == null)
-                    return null;
+			Regex regex = new Regex(@"^(https?://)?(?<host>.+?)(/.*)?$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+			Match match = regex.Match(host);
 
-                Regex regex = new Regex(@"^(https?://)?(?<host>.+?)(/.*)?$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-                Match match = regex.Match(host);
+			if (match.Success)
+				host = match.Groups["host"].Value;
 
-                if (match.Success)
-                    host = match.Groups["host"].Value;
+			BlogInfo blog = new BlogInfo();
+            blog.Title = ConfigurationManager.AppSettings["AggregateTitle"];
+			blog.Skin = SkinConfig.GetDefaultSkin();
+            blog.Host = host;
+			blog.Subfolder = string.Empty;
 
-                blog.Title = ConfigurationManager.AppSettings["AggregateTitle"];
-                blog.Skin = SkinConfig.GetDefaultSkin();
-                blog.Host = host;
-                blog.Subfolder = string.Empty;
-                blog.UserName = HostInfo.Instance.HostUserName;
-            }
-			catch (Exception e)
-			{
-			    Log.Fatal("Can't Init the static AggregateBlog variable", e);
-			    throw;
-			}
+		    HostInfo hostInfo = HostInfo.Instance;
+            if (hostInfo != null)
+                blog.UserName = hostInfo.HostUserName;
 			
 			return blog;
 		}
