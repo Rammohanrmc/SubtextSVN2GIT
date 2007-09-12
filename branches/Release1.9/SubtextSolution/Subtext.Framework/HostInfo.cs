@@ -85,7 +85,8 @@ namespace Subtext.Framework
 			}
 			catch(SqlException e)
 			{
-				if(e.Message.IndexOf("Invalid object name 'subtext_Host'") >= 0)
+				// LoadHostInfo now executes the stored proc subtext_GetHost, instead of checking the table subtext_Host 
+				if (e.Message.IndexOf("Invalid object name 'subtext_Host'") >= 0 || e.Message.IndexOf("Could not find stored procedure 'subtext_GetHost'") >= 0)
 				{
 					if(suppressException)
 						return null;
