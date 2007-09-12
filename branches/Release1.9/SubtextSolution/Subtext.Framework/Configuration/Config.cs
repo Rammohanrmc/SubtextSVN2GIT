@@ -54,24 +54,28 @@ namespace Subtext.Framework.Configuration
 		
 		private static BlogInfo InitAggregateBlog()
 		{
-			string host = ConfigurationManager.AppSettings["AggregateUrl"];
-			if (host == null)
+            HostInfo hostInfo = HostInfo.Instance;
+			string aggregateHost = ConfigurationManager.AppSettings["AggregateUrl"];
+			if (aggregateHost == null)
 				return null;
 
 			Regex regex = new Regex(@"^(https?://)?(?<host>.+?)(/.*)?$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-			Match match = regex.Match(host);
+			Match match = regex.Match(aggregateHost);
 
 			if (match.Success)
-				host = match.Groups["host"].Value;
+				aggregateHost = match.Groups["host"].Value;
 
 			BlogInfo blog = new BlogInfo();
             blog.Title = ConfigurationManager.AppSettings["AggregateTitle"];
 			blog.Skin = SkinConfig.GetDefaultSkin();
-            blog.Host = host;
+            blog.Host = aggregateHost;
 			blog.Subfolder = string.Empty;
 
-		    HostInfo hostInfo = HostInfo.Instance;
-            if (hostInfo != null)
+            // When running on the build server there are no Host records in the system
+            // so HostInfo.Instance returns NULL, meaning a NullRefernce on the server.
+		    if (hostInfo == null)
+                Log.Warn("There is no Host record in for this installation.");
+            else
                 blog.UserName = hostInfo.HostUserName;
 			
 			return blog;
