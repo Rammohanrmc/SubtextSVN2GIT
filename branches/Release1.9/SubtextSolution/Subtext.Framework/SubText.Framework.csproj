@@ -521,6 +521,7 @@
     </Compile>
     <Compile Include="BlogAlias.cs" />
     <Compile Include="Web\Handlers\CssHandler.cs" />
+    <Compile Include="Web\Handlers\JsHandler.cs" />
     <Compile Include="Web\Handlers\RsdHandler.cs" />
     <Compile Include="Web\HttpHelper.cs">
       <SubType>Code</SubType>

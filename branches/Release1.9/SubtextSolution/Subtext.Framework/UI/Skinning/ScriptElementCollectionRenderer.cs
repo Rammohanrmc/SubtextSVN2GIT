@@ -47,6 +47,14 @@ namespace Subtext.Framework.UI.Skinning
                    "></script>" + Environment.NewLine;
         }
 
+        public static string RenderScriptElement(string scriptPath)
+        {
+            return "<script" +
+                   RenderScriptAttribute("type", "text/javascript") +
+                   RenderScriptAttribute("src", scriptPath) +
+                   "></script>" + Environment.NewLine;
+        }
+
         private static string GetScriptSourcePath(string skinPath, Script script)
         {
             if(script.Src.StartsWith("~"))
@@ -89,7 +97,7 @@ namespace Subtext.Framework.UI.Skinning
                 string skinPath = GetSkinPath(skinTemplate.TemplateFolder);
                 if(CanScriptsBeMerged(skinTemplate))
                 {
-                    result.Append(skinPath + "js.axd?name=" + skinKey);
+                    result.Append(RenderScriptElement(skinPath + "js.axd?name=" + skinKey));
                 }
                 else
                 {
@@ -102,6 +110,11 @@ namespace Subtext.Framework.UI.Skinning
             return result.ToString();
         }
 
+        public ScriptMergeMode GetScriptMergeMode(string skinName)
+        {
+            SkinTemplate skinTemplate = templates.GetTemplate(skinName);
+            return skinTemplate.ScriptMergeMode;
+        }
 
         public IList<string> GetScriptsToBeMerged(string skinName)
         {

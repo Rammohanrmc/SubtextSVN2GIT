@@ -26,6 +26,7 @@ namespace UnitTests.Subtext.Framework.Util
 		}
 
 		[Test]
+        [RollBack2]
 		public void CanPerformEmoticonTransform()
 		{
 			string host = UnitTestHelper.GenerateRandomString();
