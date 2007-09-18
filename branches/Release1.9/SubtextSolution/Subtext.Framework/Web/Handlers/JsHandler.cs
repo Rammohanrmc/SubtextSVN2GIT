@@ -110,7 +110,7 @@ namespace Subtext.Framework.Web.Handlers
 
         public override string ContentMimeType
         {
-            get { return "text/css"; }
+            get { return "text/javascript"; }
         }
 
     }
