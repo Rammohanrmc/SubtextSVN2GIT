@@ -19,6 +19,7 @@ using System.Net;
 using System.Web;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Syndication.Compression;
+using Subtext.Framework.Security;
 
 namespace Subtext.Framework.Syndication
 {
@@ -34,6 +35,16 @@ namespace Subtext.Framework.Syndication
 		protected BlogInfo CurrentBlog ;
 		protected HttpContext Context = null;
 		protected CachedFeed Feed = null;
+
+		protected virtual bool RequiresAdminRole
+		{
+			get { return false; }
+		}
+
+		protected virtual bool RequiresHostAdminRole
+		{
+			get { return false; }
+		}
 
 		/// <summary>
 		/// Returns the "If-Modified-Since" HTTP header.  This indicates 
@@ -281,6 +292,12 @@ namespace Subtext.Framework.Syndication
 		/// <param name="context">Context.</param>
 		public void ProcessRequest(HttpContext context)
 		{
+			if ((RequiresAdminRole && !SecurityHelper.IsAdmin) || (RequiresHostAdminRole && !SecurityHelper.IsHostAdmin))
+			{
+				System.Web.Security.FormsAuthentication.RedirectToLoginPage();
+				return;
+			}
+
 			CurrentBlog = Config.CurrentBlog;
 			Context = context;
 

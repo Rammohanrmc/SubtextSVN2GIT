@@ -308,6 +308,7 @@
     <Compile Include="Framework\Skinning\SkinScriptsTests.cs" />
     <Compile Include="Framework\Skinning\SkinStylesTests.cs" />
     <Compile Include="Framework\Skinning\SkinTests.cs" />
+    <Compile Include="Framework\Syndication\Admin\ModeratedCommentRssWriterTests.cs" />
     <Compile Include="Framework\Syndication\AtomHandlerTests.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -72,7 +72,8 @@ namespace Subtext.Web.Admin.Pages
 		protected void Page_Load(object sender, EventArgs e)
 		{
 			this.btnViewApprovedComments = AddFolderLink("Approved", "btnViewActiveComments", "Approved Comments", OnViewApprovedCommentsClick);
-			this.btnViewModerateComments = AddFolderLink("Moderate", "btnModerateComments", "Comments in need of moderation", OnViewCommentsForModerationClick);
+			this.btnViewModerateComments = AddFolderLink("Moderate", "btnModerateComments", "Comments in need of moderation", OnViewCommentsForModerationClick
+				,CreateAdminRssUrl("ModeratedCommentRss.aspx"));
 			this.btnViewModerateComments.Enabled = Config.CurrentBlog.ModerationEnabled;
 			this.btnViewSpam = AddFolderLink("Flagged Spam", "btnViewSpam", "Comments Flagged As Spam By Filters", OnViewSpamClick);
 			this.btnViewTrash = AddFolderLink("Trash", "btnViewTrash", "Comments In The Trash Bin (Confirmed Spam or Deleted Items)", OnViewTrashClick);
@@ -109,15 +110,18 @@ namespace Subtext.Web.Admin.Pages
 			}
 			return (FeedbackStatusFlag)filterId;
 		}
-
 		private LinkButton AddFolderLink(string label, string id, string title, EventHandler handler)
+		{
+			return AddFolderLink(label, id, title, handler,"");
+		}
+		private LinkButton AddFolderLink(string label, string id, string title, EventHandler handler, string RssUrl)
 		{
 			LinkButton button = Utilities.CreateLinkButton(label);
 			button.ID = id;
 			button.CausesValidation = false;
 			button.Click += handler;
 			button.Attributes["title"] = title;
-			AdminMasterPage.AddToActions(button);
+			AdminMasterPage.AddToActions(button,RssUrl);
 			return button;
 		}
 

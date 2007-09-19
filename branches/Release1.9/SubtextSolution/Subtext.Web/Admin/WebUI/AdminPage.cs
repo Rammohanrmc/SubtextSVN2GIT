@@ -92,7 +92,11 @@ namespace Subtext.Web.Admin.Pages
                 }
 			}
 		}
-	    
+
+		protected string CreateAdminRssUrl(string pageName)
+		{
+			return String.Format("{0}Admin/{1}", Config.CurrentBlog.RootUrl, pageName);
+		}
 	    private void AddCssClass(WebControl control, string cssClass)
 	    {
 			if (control.CssClass != null && control.CssClass.Length > 0 && !String.Equals(cssClass, control.CssClass, StringComparison.InvariantCultureIgnoreCase))

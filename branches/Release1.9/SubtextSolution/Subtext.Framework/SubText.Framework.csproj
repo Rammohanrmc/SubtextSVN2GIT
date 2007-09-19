@@ -387,6 +387,12 @@
     <Compile Include="Stats.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Syndication\Admin\LogRssWriter.cs" />
+    <Compile Include="Syndication\Admin\RssErrorHandler.cs" />
+    <Compile Include="Syndication\Admin\ReferrerRssWriter.cs" />
+    <Compile Include="Syndication\Admin\RssModeratedCommentHandler.cs.cs" />
+    <Compile Include="Syndication\Admin\ModeratedCommentRssWriter.cs" />
+    <Compile Include="Syndication\Admin\RssReferrerHandler.cs" />
     <Compile Include="Syndication\AtomHandler.cs" />
     <Compile Include="Syndication\AtomWriter.cs" />
     <Compile Include="Syndication\BaseAtomWriter.cs">
@@ -419,6 +425,7 @@
     <Compile Include="Syndication\Compression\SyndicationCompressionSettings.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Syndication\GenericRssWriter.cs" />
     <Compile Include="Syndication\EntryCollectionHandler.cs" />
     <Compile Include="Syndication\RssCategoryHandler.cs" />
     <Compile Include="Syndication\RssCommentHandler.cs" />
@@ -527,6 +534,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Web\HttpModules\AuthenticationModule.cs" />
+    <Compile Include="Web\HttpModules\FormToBasicAuthenticationModule.cs" />
     <Compile Include="Web\HttpModules\BlogRequest.cs">
       <SubType>Code</SubType>
     </Compile>

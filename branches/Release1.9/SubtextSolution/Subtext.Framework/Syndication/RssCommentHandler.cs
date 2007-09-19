@@ -59,6 +59,10 @@ namespace Subtext.Framework.Syndication
 			return Comments;
 		}
 
+		protected virtual CommentRssWriter GetCommentWriter(IList<FeedbackItem> comments, Entry entry)
+		{
+			return new CommentRssWriter(comments, entry);
+		}
 
 		/// <summary>
 		/// Builds the feed using delta encoding if it's true.
@@ -74,7 +78,7 @@ namespace Subtext.Framework.Syndication
 
 		
 			feed = new CachedFeed();
-			CommentRssWriter crw = new CommentRssWriter(comments,ParentEntry);
+			CommentRssWriter crw = GetCommentWriter(comments, ParentEntry);
 			if(comments.Count > 0)
 			{
 				feed.LastModified = ConvertLastUpdatedDate(comments[comments.Count-1].DateCreated);
