@@ -648,9 +648,6 @@
   <ItemGroup>
     <Content Include="blue.css" />
     <Content Include="default.aspx" />
-    <Content Include="Providers\DTP.aspx">
-      <SubType>ASPXCodeBehind</SubType>
-    </Content>
     <Content Include="emoticons.txt" />
     <Content Include="ExternalDependencies\AngryPets.Web.Frameworks.ReverseDOS.dll" />
     <Content Include="ExternalDependencies\freetextbox.dll" />
@@ -1899,6 +1896,7 @@
     <None Include="Providers\BlogEntryEditor\FCKeditor\editor\dialog\fck_spellerpages\spellerpages\server-scripts\spellchecker.cfm" />
     <None Include="Providers\BlogEntryEditor\FCKeditor\editor\dialog\fck_spellerpages\spellerpages\server-scripts\spellchecker.php" />
     <None Include="Providers\BlogEntryEditor\FCKeditor\editor\dialog\fck_spellerpages\spellerpages\server-scripts\spellchecker.pl" />
+    <Content Include="Providers\BlogEntryEditor\FCKeditor\editor\filemanager\browser\default\connectors\aspx\Web.config" />
     <None Include="Providers\BlogEntryEditor\FCKeditor\editor\filemanager\browser\default\images\icons\32\Thumbs.db" />
     <Content Include="SiteMap\SiteMapHttpHandler.ashx" />
     <None Include="Skins\RedBook\Controls\EntryList.ascx" />
