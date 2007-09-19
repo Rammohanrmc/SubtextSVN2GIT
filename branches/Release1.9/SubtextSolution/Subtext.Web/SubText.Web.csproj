@@ -1034,6 +1034,7 @@
     <Content Include="Images\ms_help.gif" />
     <Content Include="Images\next.gif" />
     <Content Include="Images\nextlabel.gif" />
+    <Content Include="Images\pencil.png" />
     <Content Include="Images\permalink.gif" />
     <Content Include="Images\PoweredByAsp.Net.gif" />
     <Content Include="Images\PoweredBySubtext85x33.png" />
