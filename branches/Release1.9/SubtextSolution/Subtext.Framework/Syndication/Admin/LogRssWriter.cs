@@ -20,6 +20,10 @@ namespace Subtext.Framework.Syndication.Admin
 			return "";
 		}
 
+		protected override string GetGuid(LogEntry item)
+		{
+			return item.Message+item.Date.ToUniversalTime();
+		}
 		protected override string GetTrackBackUrl(LogEntry item, Subtext.Framework.Format.UrlFormats urlFormats)
 		{
 			return "";
@@ -39,6 +43,9 @@ namespace Subtext.Framework.Syndication.Admin
 		{
 			StringCollection collection = new StringCollection();
 			collection.Add(item.Level);
+
+			string path = item.Url.PathAndQuery.Split('?')[0];
+			collection.Add(path);
 			return collection;
 		}
 
