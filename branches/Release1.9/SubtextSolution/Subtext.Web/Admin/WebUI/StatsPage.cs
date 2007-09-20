@@ -16,12 +16,14 @@ namespace Subtext.Web.Admin.WebUI
         {
 			HyperLink lnkReferrals = Utilities.CreateHyperLink("Referrals", "Referrers.aspx");
             HyperLink lnkViews = Utilities.CreateHyperLink("Views", "StatsView.aspx");
-            HyperLink lnkErrorLog = Utilities.CreateHyperLink("Error Log", "ErrorLog.aspx");
+			HyperLink lnkErrorLog = Utilities.CreateHyperLink("Error Log", "ErrorLog.aspx");
+			HyperLink lnkRssFeed = Utilities.CreateHyperLink("Custom Feed", "RssFeeds.aspx");
 
             // Add the buttons to the PageContainer.
             AdminMasterPage.AddToActions(lnkReferrals, CreateAdminRssUrl("ReferrersRss.aspx"));
             AdminMasterPage.AddToActions(lnkViews);
-            AdminMasterPage.AddToActions(lnkErrorLog, CreateAdminRssUrl("ErrorsRss.aspx"));
+			AdminMasterPage.AddToActions(lnkErrorLog, CreateAdminRssUrl("ErrorsRss.aspx"));
+			AdminMasterPage.AddToActions(lnkRssFeed);
         }
 
         protected override void OnLoad(EventArgs e)

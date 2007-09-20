@@ -106,7 +106,7 @@ namespace Subtext.Framework.Syndication
 			return false;			
 		}
 
-		protected override BaseSyndicationWriter<FeedbackItem> SyndicationWriter
+		protected override BaseSyndicationWriter SyndicationWriter
 		{
 			get
 			{

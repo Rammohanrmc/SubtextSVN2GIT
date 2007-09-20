@@ -24,7 +24,7 @@ namespace Subtext.Framework.Syndication
     /// <summary>
     /// Base class for writing RSS and ATOM feeds.
     /// </summary>
-    public abstract class BaseSyndicationWriter<T> : XmlTextWriter
+    public abstract class BaseSyndicationWriter : XmlTextWriter
     {
         private StringWriter writer  = null;
         protected BlogInfo info;
@@ -149,16 +149,7 @@ namespace Subtext.Framework.Syndication
             set {this._allowComments = value;}
         }
 
-		/// <summary>
-		/// Gets or sets the entries to be rendered in the feed.
-		/// </summary>
-		/// <value>The entries.</value>
-        public IList<T> Items
-        {
-            get {return this.items;}
-            set {this.items = value;}
-        }
-		private IList<T> items;
+
 
 		/// <summary>
 		/// Builds the feed.

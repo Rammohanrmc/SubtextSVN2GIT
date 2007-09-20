@@ -43,7 +43,7 @@ namespace Subtext.Framework.Syndication.Admin
 		{
 			return new ModeratedCommentRssWriter(comments, entry);
 		}
-		protected override BaseSyndicationWriter<FeedbackItem> SyndicationWriter
+		protected override BaseSyndicationWriter SyndicationWriter
 		{
 			get
 			{

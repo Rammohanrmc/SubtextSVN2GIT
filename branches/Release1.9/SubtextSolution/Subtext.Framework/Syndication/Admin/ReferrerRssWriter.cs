@@ -23,6 +23,7 @@ namespace Subtext.Framework.Syndication.Admin
 		{
 			StringCollection strings = new StringCollection();
 			strings.Add(item.PostTitle);
+			strings.Add(new Uri(item.ReferrerURL).Host);
 			return strings;
 		}
 		protected override string GetGuid(Referrer item)
@@ -32,12 +33,12 @@ namespace Subtext.Framework.Syndication.Admin
 
 		protected override string GetTitleFromItem(Referrer item)
 		{
-			return item.PostTitle + " 1- " + UrlFormats.ShortenUrl(item.ReferrerURL,20) ;
+			return item.PostTitle + " - " + UrlFormats.ShortenUrl(item.ReferrerURL,20) ;
 		}
 
 		protected override string GetLinkFromItem(Referrer item)
 		{
-			return currentBlog.UrlFormats.EntryFullyQualifiedUrl(Entries.GetEntry(item.EntryID, PostConfig.None, false));
+			return currentBlog.UrlFormats.AdminUrl("Referrers.aspx");
 		}
 
 		protected override string GetBodyFromItem(Referrer item)

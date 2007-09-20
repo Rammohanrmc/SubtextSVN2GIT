@@ -224,13 +224,13 @@ namespace Subtext.Framework.Syndication
 		/// Gets the syndication writer.
 		/// </summary>
 		/// <returns></returns>
-		protected abstract BaseSyndicationWriter<T> SyndicationWriter{ get; }
+		protected abstract BaseSyndicationWriter SyndicationWriter{ get; }
 
 		protected virtual CachedFeed BuildFeed()
 		{
 			CachedFeed feed = new CachedFeed();
 			feed.LastModified = ConvertLastUpdatedDate(CurrentBlog.LastUpdated);
-			BaseSyndicationWriter<T> writer = SyndicationWriter;
+			BaseSyndicationWriter writer = SyndicationWriter;
 			feed.Xml = writer.Xml;
 			feed.ClientHasAllFeedItems = writer.ClientHasAllFeedItems;
 			feed.Etag = writer.DateLastViewedFeedItemPublished.ToString(CultureInfo.InvariantCulture);

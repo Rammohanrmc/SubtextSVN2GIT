@@ -388,11 +388,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Syndication\Admin\LogRssWriter.cs" />
-    <Compile Include="Syndication\Admin\RssErrorHandler.cs" />
+    <Compile Include="Syndication\Admin\RssAdminHandler.cs" />
     <Compile Include="Syndication\Admin\ReferrerRssWriter.cs" />
-    <Compile Include="Syndication\Admin\RssModeratedCommentHandler.cs.cs" />
     <Compile Include="Syndication\Admin\ModeratedCommentRssWriter.cs" />
-    <Compile Include="Syndication\Admin\RssReferrerHandler.cs" />
     <Compile Include="Syndication\AtomHandler.cs" />
     <Compile Include="Syndication\AtomWriter.cs" />
     <Compile Include="Syndication\BaseAtomWriter.cs">
@@ -407,6 +405,7 @@
     <Compile Include="Syndication\BaseSyndicationWriter.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Syndication\BaseSyndicationWriterGeneric.cs" />
     <Compile Include="Syndication\CachedFeed.cs">
       <SubType>Code</SubType>
     </Compile>

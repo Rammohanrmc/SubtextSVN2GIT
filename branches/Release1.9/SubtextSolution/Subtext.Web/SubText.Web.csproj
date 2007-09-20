@@ -192,6 +192,13 @@
     <Compile Include="Admin\Referrers.aspx.designer.cs">
       <DependentUpon>Referrers.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Admin\RssFeeds.aspx.cs">
+      <DependentUpon>RssFeeds.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\RssFeeds.aspx.designer.cs">
+      <DependentUpon>RssFeeds.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Admin\Statistics.aspx.cs">
       <DependentUpon>Statistics.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -935,6 +942,7 @@
     <Content Include="Admin\Resources\Scripts\niceForms.js" />
     <Content Include="Admin\Resources\toggle_gray_down.gif" />
     <Content Include="Admin\Resources\toggle_gray_up.gif" />
+    <Content Include="Admin\RssFeeds.aspx" />
     <Content Include="Admin\Statistics.aspx" />
     <Content Include="Admin\StatsView.aspx" />
     <Content Include="Admin\Syndication.aspx">
