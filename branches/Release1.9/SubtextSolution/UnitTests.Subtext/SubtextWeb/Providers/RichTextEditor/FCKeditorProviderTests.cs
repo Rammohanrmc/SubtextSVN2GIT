@@ -14,11 +14,11 @@
 #endregion
 
 using System;
+using System.Security.Principal;
+using System.Threading;
 using MbUnit.Framework;
 using System.Web.UI.WebControls;
-using FredCK.FCKeditorV2;
-using Subtext.Framework;
-using Subtext.Framework.Components;
+using Rhino.Mocks;
 using Subtext.Framework.Configuration;
 using Subtext.Providers.BlogEntryEditor.FCKeditor;
 
@@ -31,14 +31,26 @@ namespace UnitTests.Subtext.SubtextWeb.Providers.RichTextEditor
 	[Author("Simone Chiaretta", "simone@piyosailing.com", "http://www.codeclimber.net.nz")]
 	public class FCKeditorProviderTests
 	{
-		string _hostName = System.Guid.NewGuid().ToString().Replace("-", string.Empty) + ".com";
+		readonly string _hostName = Guid.NewGuid().ToString().Replace("-", string.Empty) + ".com";
 		FckBlogEntryEditorProvider frtep;
+		readonly MockRepository mocks = new MockRepository();
 
 		[SetUp]
 		public void SetUp()
 		{
-            frtep = new FckBlogEntryEditorProvider();
+			IPrincipal principal;
+			UnitTestHelper.SetCurrentPrincipalRoles(mocks, out principal, "Admins");
+			mocks.ReplayAll();
+			Thread.CurrentPrincipal = principal;
+			frtep = new FckBlogEntryEditorProvider();
 			UnitTestHelper.SetHttpContextWithBlogRequest(_hostName, "MyBlog", "Subtext.Web");
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			Thread.CurrentPrincipal = null;
+			mocks.VerifyAll();
 		}
 
 		[Test]
@@ -86,33 +98,22 @@ namespace UnitTests.Subtext.SubtextWeb.Providers.RichTextEditor
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void TestInitializationWithNullName() 
 		{
-			frtep.Initialize(null,null);
+			frtep.Initialize(null, null);
 		}
 
 		[Test]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void TestInitializationWithNullConfigValue() 
 		{
-			frtep.Initialize("FCKProvider",null);
+			frtep.Initialize("FCKProvider", null);
 		}
 
 		[Test]
 		[ExpectedException(typeof(InvalidOperationException))]
 		public void TestInitializationWithEmptyWebFolder() 
 		{
-			frtep.Initialize("FCKProvider",new System.Collections.Specialized.NameValueCollection());
+			frtep.Initialize("FCKProvider", new System.Collections.Specialized.NameValueCollection());
 		}
-
-		private System.Collections.Specialized.NameValueCollection GetNameValueCollection() 
-		{
-			System.Collections.Specialized.NameValueCollection ret=new System.Collections.Specialized.NameValueCollection(3);
-			ret.Add("WebFormFolder","~/Providers/BlogEntryEditor/FCKeditor/");
-			ret.Add("ToolbarSet","SubText");
-			ret.Add("Skin","office2003");
-			ret.Add("RemoveServerNamefromUrls","false");
-			return ret;
-		}
-
 	}
 
 }

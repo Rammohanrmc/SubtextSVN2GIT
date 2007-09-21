@@ -16,7 +16,7 @@ using System;
 using System.Configuration;
 using System.Web;
 using System.Web.Compilation;
-using System.Web.UI;
+using System.Web.Security;
 using Subtext.Framework;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Text;
@@ -61,7 +61,7 @@ namespace Subtext.Framework.UrlManager
 					handlerUrl += "/";
 
 				handlerUrl += "Default.aspx";
-				return BuildManager.CreateInstanceFromVirtualPath(handlerUrl, typeof(Page)) as IHttpHandler;
+				return GetHandlerForUrl(handlerUrl);
 			}
 			
 			//Get the Handlers to process. By default, we grab them from the blog.config
@@ -123,9 +123,20 @@ namespace Subtext.Framework.UrlManager
 			if (!url.EndsWith("/"))
 				url += "/";
 			url += pagepath;
-			
-            return BuildManager.CreateInstanceFromVirtualPath(url, typeof(Page)) as IHttpHandler;
+
+			return GetHandlerForUrl(url);
         }
+
+		private static IHttpHandler GetHandlerForUrl(string url)
+		{
+			if(!UrlAuthorizationModule.CheckUrlAccessForPrincipal(url, HttpContext.Current.User, HttpContext.Current.Request.HttpMethod))
+			{
+				FormsAuthentication.RedirectToLoginPage();
+				return null;
+			}
+			Type t = BuildManager.GetCompiledType(url);
+			return (IHttpHandler)Activator.CreateInstance(t);
+		}
 
 		private static IHttpHandler ProcessHandlerTypeDirectory(HttpContext context, string url)
 		{
@@ -143,8 +154,8 @@ namespace Subtext.Framework.UrlManager
                     url += "default.aspx";
 		        }
 		    }
-		    
-            return BuildManager.CreateInstanceFromVirtualPath(url, typeof(Page)) as IHttpHandler;
+
+			return GetHandlerForUrl(url);
 		}
 
 

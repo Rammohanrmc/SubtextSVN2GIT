@@ -305,6 +305,9 @@
     <Compile Include="HostAdmin\ErrorLog.aspx.designer.cs">
       <DependentUpon>ErrorLog.aspx</DependentUpon>
     </Compile>
+    <Compile Include="HostAdmin\HostAdminPage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="HostAdmin\HostAdminTemplate.Master.cs">
       <DependentUpon>HostAdminTemplate.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

@@ -27,7 +27,7 @@ namespace Subtext.Extensibility.Providers
 	public abstract class BlogEntryEditorProvider : ProviderBase
 	{
 		private static BlogEntryEditorProvider provider;
-		private static GenericProviderCollection<BlogEntryEditorProvider> providers = ProviderConfigurationHelper.LoadProviderCollection<BlogEntryEditorProvider>("BlogEntryEditor", out provider);
+		private static readonly GenericProviderCollection<BlogEntryEditorProvider> providers = ProviderConfigurationHelper.LoadProviderCollection("BlogEntryEditor", out provider);
 		
 		/// <summary>
 		/// Returns the default instance of this provider.

@@ -18,8 +18,10 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Reflection;
+using System.Security;
 using System.Security.Principal;
 using System.Text;
+using System.Threading;
 using System.Web;
 using System.Web.Security;
 using ICSharpCode.SharpZipLib.GZip;
@@ -27,6 +29,7 @@ using ICSharpCode.SharpZipLib.Zip;
 using ICSharpCode.SharpZipLib.Zip.Compression;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using MbUnit.Framework;
+using Rhino.Mocks;
 using Subtext.Extensibility;
 using Subtext.Framework;
 using Subtext.Framework.Components;
@@ -731,5 +734,60 @@ namespace UnitTests.Subtext
 
             return tags;
         }
+
+		/// <summary>
+		/// Helper method. Makes sure you can create
+		/// </summary>
+		/// <param name="allowedRoles">The allowed roles.</param>
+		/// <param name="constructorArguments">The constructor arguments.</param>
+		public static void AssertSecureCreation<T>(string[] allowedRoles, params object[] constructorArguments)
+		{
+			try
+			{
+				Activator.CreateInstance(typeof(T), constructorArguments);
+				Assert.Fail("Was able to create the instance with no security.");
+			}
+			catch(TargetInvocationException e)
+			{
+				Assert.IsInstanceOfType(typeof(SecurityException), e.InnerException, "Expected a security exception, got something else.");
+			}
+
+			MockRepository mocks = new MockRepository();
+
+			IPrincipal principal;
+			SetCurrentPrincipalRoles(mocks, out principal, allowedRoles);
+
+			using (mocks.Playback())
+			{
+				IPrincipal oldPrincipal = Thread.CurrentPrincipal;
+				try
+				{
+					Thread.CurrentPrincipal = principal;
+					Activator.CreateInstance(typeof(T), constructorArguments);
+					//Test passes if no exception is thrown.
+				}
+				finally
+				{
+					Thread.CurrentPrincipal = oldPrincipal;
+				}
+			}
+		}
+
+		public static void SetCurrentPrincipalRoles(MockRepository mocks, out IPrincipal principal, params string[] roles)
+		{
+			using (mocks.Record())
+			{
+				
+				IIdentity identity = mocks.CreateMock<IIdentity>();
+				SetupResult.For(identity.IsAuthenticated).Return(true);
+				IPrincipal user = mocks.CreateMock<IPrincipal>();
+				SetupResult.For(user.Identity).Return(identity);
+				Array.ForEach(roles, delegate(string role)
+             	{
+					SetupResult.For(user.IsInRole(role)).Return(true);		
+             	});
+				principal = user;
+			}
+		}
 	}
 }

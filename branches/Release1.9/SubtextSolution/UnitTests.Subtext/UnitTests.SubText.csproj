@@ -234,6 +234,7 @@
     </Compile>
     <Compile Include="Akismet\AkismetApiTests.cs" />
     <Compile Include="AssemblySetUpAndCleanUp.cs" />
+    <Compile Include="BlogEntryProvider\FileBrowserConnectorTests.cs" />
     <Compile Include="BlogMl\BlogMlImportTests.cs" />
     <Compile Include="BlogMl\BlogMLReaderTests.cs" />
     <Compile Include="BlogMl\BlogMlWriterTests.cs" />
@@ -380,9 +381,11 @@
     <Compile Include="StubDataReader.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SubtextWeb\Admin\AdminPageTests.cs" />
     <Compile Include="SubtextWeb\Controls\CaptchaTests.cs" />
     <Compile Include="SubtextWeb\Controls\ControlHelperTests.cs" />
     <Compile Include="SubtextWeb\Controls\InvisibleCaptchaTests.cs" />
+    <Compile Include="SubtextWeb\HostAdmin\HostAdminPageTests.cs" />
     <Compile Include="SubtextWeb\Providers\RichTextEditor\FCKeditorProviderTests.cs">
       <SubType>Code</SubType>
     </Compile>

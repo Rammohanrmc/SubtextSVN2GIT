@@ -14,21 +14,20 @@
 #endregion
 
 using System;
-using System.IO;
+using System.Resources;
 using System.Web.UI.WebControls;
 using Subtext.Extensibility.Providers;
-using System.Web;
 using Subtext.Framework.Web;
-using Subtext.Web.Controls;
 
 namespace Subtext.Providers.BlogEntryEditor.FCKeditor
 {
 	/// <summary>
-	/// Summary description for FCKeditorRichTextEditorProvider.
+	/// Implements the BlogEntryEditorProvider abstract provider to allow the 
+	/// user use the FCKEditor control for editing blog posts.
 	/// </summary>
     public class FckBlogEntryEditorProvider : BlogEntryEditorProvider
 	{
-		FredCK.FCKeditorV2.FCKeditor _fckCtl = new FredCK.FCKeditorV2.FCKeditor(); //There's a good reason to do this early.
+		readonly FredCK.FCKeditorV2.FCKeditor _fckCtl = new FredCK.FCKeditorV2.FCKeditor(); //There's a good reason to do this early.
 		string _webFormFolder=string.Empty;
 		string _imageBrowserURL=string.Empty;
 		string _linkBrowserURL=string.Empty;
@@ -39,7 +38,7 @@ namespace Subtext.Providers.BlogEntryEditor.FCKeditor
 		static string _fileAllowedExtensions=string.Empty;
 		static string _imageAllowedExtensions=string.Empty;
 
-        private static System.Resources.ResourceManager rm = new System.Resources.ResourceManager("Subtext.Providers.BlogEntryEditor.FCKeditor.resources.ErrorMessages", System.Reflection.Assembly.GetExecutingAssembly());
+        private static readonly ResourceManager rm = new ResourceManager("Subtext.Providers.BlogEntryEditor.FCKeditor.resources.ErrorMessages", System.Reflection.Assembly.GetExecutingAssembly());
 
 		public override System.Web.UI.Control RichTextEditorControl
 		{
@@ -105,7 +104,6 @@ namespace Subtext.Providers.BlogEntryEditor.FCKeditor
 
 		public override void InitializeControl()
 		{
-			_fckCtl = new FredCK.FCKeditorV2.FCKeditor();
 			_fckCtl.ID = this.ControlId;
 			_fckCtl.BasePath = HttpHelper.ExpandTildePath(_webFormFolder);
 

@@ -1,4 +1,5 @@
 using System;
+using System.Security.Permissions;
 using System.Web.UI;
 using Subtext.Framework;
 using Subtext.Framework.Configuration;
@@ -8,7 +9,8 @@ namespace Subtext.Web.HostAdmin
 	/// <summary>
 	/// Master page template for the host admin.
 	/// </summary>
-	public partial class HostAdminTemplate : System.Web.UI.MasterPage
+	[PrincipalPermission(SecurityAction.Demand, Role = "HostAdmins")]
+	public partial class HostAdminTemplate : MasterPage
 	{
 		protected void Page_Load(object sender, EventArgs e)
 		{

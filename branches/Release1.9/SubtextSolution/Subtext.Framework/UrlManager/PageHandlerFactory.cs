@@ -16,7 +16,6 @@
 using System;
 using System.Web;
 using System.Web.Compilation;
-using System.Web.UI;
 
 namespace Subtext.Framework.UrlManager 
 {
@@ -30,7 +29,8 @@ namespace Subtext.Framework.UrlManager
 	{
 		public static IHttpHandler GetHandler(HttpContext context, string requestType, string url, string path)
 		{
-            return BuildManager.CreateInstanceFromVirtualPath(url, typeof(Page)) as IHttpHandler;
+            Type t = BuildManager.GetCompiledType(url);
+			return (IHttpHandler) Activator.CreateInstance(t);
 		}
 	}
 }
