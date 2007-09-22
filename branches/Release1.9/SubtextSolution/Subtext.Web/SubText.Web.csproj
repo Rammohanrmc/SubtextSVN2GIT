@@ -1911,6 +1911,7 @@
     <Content Include="Providers\BlogEntryEditor\FCKeditor\editor\filemanager\browser\default\connectors\aspx\Web.config" />
     <None Include="Providers\BlogEntryEditor\FCKeditor\editor\filemanager\browser\default\images\icons\32\Thumbs.db" />
     <Content Include="SiteMap\SiteMapHttpHandler.ashx" />
+    <Content Include="Providers\Web.config" />
     <None Include="Skins\RedBook\Controls\EntryList.ascx" />
     <Content Include="Skins\RedBook\Controls\Footer.ascx" />
     <Content Include="Skins\Naked\Controls\FullTagCloud.ascx" />

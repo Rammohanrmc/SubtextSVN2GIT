@@ -22,7 +22,6 @@ using System.Web.Caching;
 using log4net;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Logging;
-using Subtext.Framework.Text;
 using Subtext.Framework.Web.HttpModules;
 
 namespace Subtext.Framework.Configuration
@@ -34,7 +33,7 @@ namespace Subtext.Framework.Configuration
 	{
 		private readonly static ILog log = new Log();
 
-		static UrlBasedBlogInfoProvider _singletonInstance = new UrlBasedBlogInfoProvider();
+		static readonly UrlBasedBlogInfoProvider _singletonInstance = new UrlBasedBlogInfoProvider();
 		
 		/// <summary>
 		/// Returns a singleton instance of the UrlConfigProvider.
@@ -70,7 +69,7 @@ namespace Subtext.Framework.Configuration
 		}
 
 		#region IConfig
-		private int _cacheTime;
+		private int _cacheTime = 5;
 		/// <summary>
 		/// Gets or sets the cache time.
 		/// </summary>
@@ -104,7 +103,7 @@ namespace Subtext.Framework.Configuration
 				BlogRequest blogRequest = BlogRequest.Current;
 				
 				//BlogConfig was not found in the context. It could be in the current cache.
-				string mCacheKey = cacheKey + blogRequest.Subfolder;
+				string mCacheKey = cacheKey + blogRequest.Host + "/" + blogRequest.Subfolder;
 
 				//check the cache.
 				info = (BlogInfo)HttpContext.Current.Cache[mCacheKey];
@@ -150,7 +149,10 @@ namespace Subtext.Framework.Configuration
 
                         if (anyBlogsExist && ConfigurationManager.AppSettings["AggregateEnabled"] == "true")
 						{
-							return Config.AggregateBlog;
+                            info = Config.AggregateBlog;
+                            CacheConfig(HttpContext.Current.Cache, info, mCacheKey);
+                            HttpContext.Current.Items.Add(cacheKey, info);
+                            return info;
 						}
 
 						if(InstallationManager.IsOnLoginPage)

@@ -57,12 +57,7 @@ namespace Subtext.Web.HttpModules
 			{
 				string host = HttpContext.Current.Request.Params["HTTP_HOST"];
 				if (String.IsNullOrEmpty(host))
-					host = HttpContext.Current.Request.Url.Host;
-
-				if(!HttpContext.Current.Request.Url.IsDefaultPort)
-				{
-					host  += ":" + HttpContext.Current.Request.Url.Port.ToString(CultureInfo.InvariantCulture);
-				}
+					host = HttpContext.Current.Request.Url.Authority;
 
 				return host;
 			}
