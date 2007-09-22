@@ -636,8 +636,11 @@ namespace Subtext.Framework.Text
                 Match urlMatch = hrefRegex.Match(anchorHtml);
                 if (urlMatch.Success)
                 {
+                    string urlStr = urlMatch.Groups["url"].Value;
+                    if (urlStr.EndsWith("/default.aspx", StringComparison.InvariantCultureIgnoreCase))
+                        urlStr = urlStr.Substring(0, urlStr.Length - 13);
                     Uri url;
-                    if (Uri.TryCreate(urlMatch.Groups["url"].Value, UriKind.RelativeOrAbsolute, out url))
+                    if (Uri.TryCreate(urlStr, UriKind.RelativeOrAbsolute, out url))
                     {
                         string[] seg = url.Segments;
                         string tag = HttpUtility.UrlDecode(seg[seg.Length - 1].Replace("/", ""));
