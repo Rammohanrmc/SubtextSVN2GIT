@@ -18,40 +18,35 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using Subtext.Framework.Configuration;
-using Subtext.Extensibility.Plugins;
-using Subtext.Framework.Components;
 
 namespace Subtext.Framework.Syndication
 {
-	/// <summary>
-	/// Base class for writing RSS and ATOM feeds.
-	/// </summary>
-	public abstract class BaseSyndicationWriter<T> : XmlTextWriter
-	{
-		private StringWriter writer = null;
-		protected BlogInfo info;
+    /// <summary>
+    /// Base class for writing RSS and ATOM feeds.
+    /// </summary>
+    public abstract class BaseSyndicationWriter<T> : XmlTextWriter
+    {
+        private StringWriter writer  = null;
+        protected BlogInfo info;
 		DateTime dateLastViewedFeedItemPublished = NullValue.NullDateTime;
 		protected DateTime latestPublishDate = NullValue.NullDateTime;
 		protected bool useDeltaEncoding = false;
 		protected bool clientHasAllFeedItems = false;
 
 		/// <summary>
-        /// Creates a new <see cref="BaseSyndicationWriter"/> instance.
+		/// Creates a new <see cref="BaseSyndicationWriter"/> instance.
 		/// </summary>
 		/// <param name="sw">Sw.</param>
-		protected BaseSyndicationWriter(StringWriter sw)
-			: this(sw, NullValue.NullDateTime, false)
-		{
-		}
+        protected BaseSyndicationWriter(StringWriter sw) : this(sw, NullValue.NullDateTime, false)
+        {
+        }
 
 		/// <summary>
 		/// Creates a new <see cref="BaseSyndicationWriter"/> instance.
 		/// </summary>
 		/// <param name="dateLastViewedFeedItemPublished"></param>
-		/// <param name="useDeltaEncoding"></param>
-		protected BaseSyndicationWriter(DateTime dateLastViewedFeedItemPublished, bool useDeltaEncoding)
-			: this(new StringWriter(), dateLastViewedFeedItemPublished, useDeltaEncoding)
-		{
+        protected BaseSyndicationWriter(DateTime dateLastViewedFeedItemPublished, bool useDeltaEncoding) : this(new StringWriter(), dateLastViewedFeedItemPublished, useDeltaEncoding)
+        {
 		}
 
 		/// <summary>
@@ -59,57 +54,55 @@ namespace Subtext.Framework.Syndication
 		/// </summary>
 		/// <param name="sw">Sw.</param>
 		/// <param name="dateLastViewedFeedItemPublished">Last viewed feed item.</param>
-		/// <param name="useDeltaEncoding"></param>
-		protected BaseSyndicationWriter(StringWriter sw, DateTime dateLastViewedFeedItemPublished, bool useDeltaEncoding)
-			: base(sw)
+		protected BaseSyndicationWriter(StringWriter sw, DateTime dateLastViewedFeedItemPublished, bool useDeltaEncoding) : base(sw)
 		{
 			this.dateLastViewedFeedItemPublished = dateLastViewedFeedItemPublished;
 			writer = sw;
 			info = Config.CurrentBlog;
 			this.useDeltaEncoding = useDeltaEncoding;
-			Formatting = System.Xml.Formatting.Indented;
-			Indentation = 4;
+			this.Formatting = System.Xml.Formatting.Indented;
+			this.Indentation = 4;
 		}
 
 		/// <summary>
 		/// Gets the string writer.
 		/// </summary>
 		/// <value></value>
-		public StringWriter StringWriter
-		{
-			get
-			{
-				Build();
-				return writer;
-			}
-		}
+        public StringWriter StringWriter
+        {
+            get
+            {
+                Build();
+                return writer;
+            }
+        }
 
 		/// <summary>
 		/// Gets the XML.
 		/// </summary>
 		/// <value></value>
-		public string Xml
-		{
-			get
+        public string Xml
+        {
+            get
 			{
-				return StringWriter.ToString();
+				return this.StringWriter.ToString();
 			}
-		}
+        }
 
 		/// <summary>
 		/// Returns the XML
 		/// </summary>
 		/// <returns></returns>
-		public override string ToString()
-		{
-			return Xml;
-		}
+        public override string ToString()
+        {
+            return Xml;
+        }
 
 		/// <summary>
-		/// Gets a value indicating whether the feed client has all the feed _items.
+		/// Gets a value indicating whether the feed client has all the feed items.
 		/// </summary>
 		/// <value>
-		/// 	<c>true</c> if the client has all feed _items; otherwise, <c>false</c>.
+		/// 	<c>true</c> if the client has all feed items; otherwise, <c>false</c>.
 		/// </value>
 		public bool ClientHasAllFeedItems
 		{
@@ -130,7 +123,7 @@ namespace Subtext.Framework.Syndication
 				return latestPublishDate;
 			}
 		}
-
+		
 		/// <summary>
 		/// Gets the publish date of the last syndicated feed item 
 		/// that the client aggregator viewed.  This is sent as 
@@ -139,64 +132,43 @@ namespace Subtext.Framework.Syndication
 		/// <value></value>
 		public DateTime DateLastViewedFeedItemPublished
 		{
-			get { return dateLastViewedFeedItemPublished; }
+			get {return this.dateLastViewedFeedItemPublished;}
 		}
 
-		private bool _useAggBugs = false;
-		public bool UseAggBugs
-		{
-			get { return _useAggBugs; }
-			set { _useAggBugs = value; }
-		}
+    	private bool _useAggBugs = false;
+        public bool UseAggBugs
+        {
+            get {return this._useAggBugs;}
+            set {this._useAggBugs = value;}
+        }
 
-		private bool _allowComments = true;
-		public bool AllowComments
-		{
-			get { return _allowComments; }
-			set { _allowComments = value; }
-		}
+        private bool _allowComments = true;
+        public bool AllowComments
+        {
+            get {return this._allowComments;}
+            set {this._allowComments = value;}
+        }
 
-        private IList<T> _items;
 		/// <summary>
 		/// Gets or sets the entries to be rendered in the feed.
 		/// </summary>
 		/// <value>The entries.</value>
-		public IList<T> Items
-		{
-			get { return _items; }
-			set { _items = value; }
-		}
-		
+        public IList<T> Items
+        {
+            get {return this.items;}
+            set {this.items = value;}
+        }
+		private IList<T> items;
 
 		/// <summary>
 		/// Builds the feed.
 		/// </summary>
-		protected abstract void Build();
-
-		/// <summary>
+        protected abstract void Build();
+		
+    	/// <summary>
 		/// Builds the feed with delta-encoding possible.
 		/// </summary>
 		/// <param name="dateLastViewedFeedItemPublished">The date last viewed feed item published.</param>
 		protected abstract void Build(DateTime dateLastViewedFeedItemPublished);
-
-
-        protected virtual void WriteEntry(T entry)
-        {
-            Entry theEntry = entry as Entry;
-            if (theEntry != null)
-            {
-                SubtextEvents.OnEntrySyndicating(this, new EntryEventArgs(theEntry));
-            }
-        }
-
-		protected virtual void RaisePostSyndicateEvent(T entry)
-		{
-			Entry theEntry = entry as Entry;
-			if (theEntry != null)
-			{
-				SubtextEvents.OnEntrySyndicated(this, new EntryEventArgs(theEntry));
-			}
-		}
-
-	}
+    }
 }

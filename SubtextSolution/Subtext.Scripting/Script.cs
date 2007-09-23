@@ -16,18 +16,16 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
-using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.ApplicationBlocks.Data;
 using Subtext.Scripting.Exceptions;
-using Subtext.Scripting.Properties;
 
 namespace Subtext.Scripting
 {
 	/// <summary>
 	/// Represents a single executable script within the full SQL script.
 	/// </summary>
-	[Serializable]
 	public class Script : IScript, ITemplateScript
 	{
 		ScriptToken _scriptTokens;
@@ -41,21 +39,15 @@ namespace Subtext.Scripting
 		/// <param name="fullScriptText">Full script text.</param>
 		public static ScriptCollection ParseScripts(string fullScriptText)
 		{
-			string cleanScriptText = StripComments(fullScriptText);
-	
 			Regex regex = new Regex(@"(^\s*|\s+)GO(\s+|\s*$)",  RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-			string[] scriptTexts = regex.Split(cleanScriptText);
+			string[] scriptTexts = regex.Split(fullScriptText);
 			ScriptCollection scripts = new ScriptCollection(fullScriptText);
 			foreach(string scriptText in scriptTexts)
 			{
-				if (scriptText == null)
-					continue;
-
-				string trimmedScriptText = scriptText.Trim();
-
-				if (trimmedScriptText.Length > 0)
+				string cleanScriptText = StripComments(scriptText);
+				if (cleanScriptText != null && cleanScriptText.Trim().Length > 0)
 				{
-					scripts.Add(new Script(trimmedScriptText));
+					scripts.Add(new Script(cleanScriptText.Trim()));
 				}
 
 			}
@@ -113,20 +105,17 @@ namespace Subtext.Scripting
 		public int Execute(SqlTransaction transaction)
 		{
             if (transaction == null)
-                throw new ArgumentNullException("transaction", Resources.ArgumentNull_Generic);
+                throw new ArgumentNullException("transaction", "Transaction was null.");
 
 			int returnValue = 0;
 			try
 			{
-				using(SqlCommand command = new SqlCommand(this.ScriptText, transaction.Connection, transaction))
-				{
-					command.CommandType = CommandType.Text;
-					return command.ExecuteNonQuery();
-				}
+				returnValue = SqlHelper.ExecuteNonQuery(transaction, CommandType.Text, this.ScriptText);
+				return returnValue;
 			}
 			catch(SqlException e)
 			{
-				throw new SqlScriptExecutionException(Resources.SqlScriptExecutionError, this, returnValue, e);
+				throw new SqlScriptExecutionException("Error in executing the script: " + this.ScriptText, this, returnValue, e);
 			}
 		}
 
@@ -140,60 +129,45 @@ namespace Subtext.Scripting
 			{
 				if(_parameters == null)
 				{
-					PopulateParametersAndTokens();
+					_parameters = new TemplateParameterCollection();
+
+					if(this._scriptText.Length == 0)
+						return _parameters;
+
+					Regex regex = new Regex(@"<\s*(?<name>[^()\[\]>,]*)\s*,\s*(?<type>[^>,]*)\s*,\s*(?<default>[^>,]*)\s*>", RegexOptions.Compiled);
+					MatchCollection matches = regex.Matches(this._scriptText);
+			
+					_scriptTokens = new ScriptToken();
+			
+					int lastIndex = 0;
+					foreach(Match match in matches)
+					{
+						if(match.Index > 0)
+						{
+							string textBeforeMatch = this._scriptText.Substring(lastIndex, match.Index - lastIndex);
+							_scriptTokens.Append(textBeforeMatch);
+						}
+
+						lastIndex = match.Index + match.Length;
+						TemplateParameter parameter = _parameters.Add(match);
+						_scriptTokens.Append(parameter);
+					}
+					string textAfterLastMatch = this._scriptText.Substring(lastIndex);
+					if(textAfterLastMatch.Length > 0)
+						_scriptTokens.Append(textAfterLastMatch);
 				}
 				return _parameters;
 			}
 		}
 
-		private ScriptToken ScriptTokens
-		{
-			get
-			{
-				if(_scriptTokens == null)
-				{
-					PopulateParametersAndTokens();
-				}
-				return _scriptTokens;
-			}
-		}
-
-		private void PopulateParametersAndTokens()
-		{
-			_parameters = new TemplateParameterCollection();
-			_scriptTokens = new ScriptToken();
-
-			if(_scriptText == null)
-				throw new InvalidOperationException(Resources.InvalidOperation_NullScriptText);
-
-			if (_scriptText.Length == 0)
-				return;
-
-			Regex regex = new Regex(@"<\s*(?<name>[^()\[\]>,]*)\s*,\s*(?<type>[^>,]*)\s*,\s*(?<default>[^>,]*)\s*>", RegexOptions.Compiled);
-			MatchCollection matches = regex.Matches(this._scriptText);
-
-			int lastIndex = 0;
-			foreach (Match match in matches)
-			{
-				if (match.Index > 0)
-				{
-					string textBeforeMatch = this._scriptText.Substring(lastIndex, match.Index - lastIndex);
-					_scriptTokens.Append(textBeforeMatch);
-				}
-
-				lastIndex = match.Index + match.Length;
-				TemplateParameter parameter = _parameters.Add(match);
-				_scriptTokens.Append(parameter);
-			}
-			string textAfterLastMatch = this._scriptText.Substring(lastIndex);
-			if (textAfterLastMatch.Length > 0)
-				_scriptTokens.Append(textAfterLastMatch);
-		}
-
 		string ApplyTemplateReplacements()
 		{
 			StringBuilder builder = new StringBuilder();
-			ScriptTokens.AggregateText(builder);
+			if(_scriptTokens == null && TemplateParameters == null)
+			{
+				throw new InvalidOperationException("The Template parameters are null. This is impossible.");
+			}
+			_scriptTokens.AggregateText(builder);
 			return builder.ToString();
 		}
 
@@ -207,7 +181,7 @@ namespace Subtext.Scripting
 		{
 			if(_scriptTokens != null)
 				return this._scriptTokens.ToString();
-			return Resources.NoTokensFound;
+			return "Script has no tokens.";
 		}
 
 		/// <summary>
@@ -215,7 +189,6 @@ namespace Subtext.Scripting
 		/// of a script making it trivial to replace template parameters with their 
 		/// values.
 		/// </summary>
-		[Serializable]
 		class ScriptToken
 		{
 			/// <summary>
@@ -308,7 +281,7 @@ namespace Subtext.Scripting
 				int length = 0;
 				if(this.Text != null)
 					length = this.Text.Length;
-				string result = string.Format(CultureInfo.InvariantCulture, @"<ScriptToken length=""{0}"">{1}", length, Environment.NewLine);
+				string result = string.Format(@"<ScriptToken length=""{0}"">{1}", length, Environment.NewLine);
 				if(this.Next != null)
 					result += Next.ToString();
 				return result;
@@ -352,7 +325,7 @@ namespace Subtext.Scripting
 				string result = "<TemplateParameter";
 				if(this._parameter != null)
 				{
-					result += string.Format(CultureInfo.InvariantCulture, @" name=""{0}"" value=""{1}"" type=""{2}""", _parameter.Name, _parameter.Value, _parameter.DataType);
+					result += string.Format(@" name=""{0}"" value=""{1}"" type=""{2}""", _parameter.Name, _parameter.Value, _parameter.DataType);
 				}
 				result += " />" + Environment.NewLine;
 				if(this.Next != null)

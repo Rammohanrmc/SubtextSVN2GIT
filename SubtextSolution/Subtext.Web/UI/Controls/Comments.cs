@@ -153,8 +153,8 @@ namespace Subtext.Web.UI.Controls
 						}
 						else if (feedbackItem.FeedbackType == FeedbackType.PingTrack)
 						{
-							namelink.Text =  !String.IsNullOrEmpty(feedbackItem.Author) ? feedbackItem.Author : "Pingback/TrackBack";
-							ControlHelper.SetTitleIfNone(namelink, "PingBack/TrackBack");
+							namelink.Text =  feedbackItem.Author != null ? feedbackItem.Author : "Pingback/TrackBack";
+							namelink.Attributes.Add("title", "PingBack/TrackBack");
 						}
 					
 						if(feedbackItem.IsBlogAuthor)
@@ -253,9 +253,8 @@ namespace Subtext.Web.UI.Controls
 		private static string Link(string title, Uri link)
 		{
 			if (link == null)
-			{
 				return string.Empty;
-			}			
+			
 			return string.Format(linktag, title, link);
 		}
 
@@ -276,14 +275,10 @@ namespace Subtext.Web.UI.Controls
 
 			string processedEmail = string.Empty;
 
-            if (Request.Url.Port != 80)
-            {
-                defaultGravatar = string.Format("{0}://{1}:{2}{3}", Request.Url.Scheme, Request.Url.Host, Request.Url.Port, ControlHelper.ExpandTildePath(defaultGravatar));
-            }
-            else
-            {
-                defaultGravatar = string.Format("{0}://{1}{2}", Request.Url.Scheme, Request.Url.Host, ControlHelper.ExpandTildePath(defaultGravatar));
-            }
+			if (Request.Url.Port != 80)
+				defaultGravatar = string.Format("{0}://{1}:{2}{3}", Request.Url.Scheme, Request.Url.Host, Request.Url.Port, ControlHelper.ExpandTildePath(defaultGravatar));
+			else
+				defaultGravatar = string.Format("{0}://{1}{2}", Request.Url.Scheme, Request.Url.Host, ControlHelper.ExpandTildePath(defaultGravatar));
 
 			defaultGravatar = Server.UrlEncode(defaultGravatar);
 
@@ -293,16 +288,12 @@ namespace Subtext.Web.UI.Controls
 			}
 			else if(gravatarEmailFormat.Equals("MD5")) 
 			{
-				processedEmail = FormsAuthentication.HashPasswordForStoringInConfigFile(email, "md5").ToLower();
+				processedEmail=FormsAuthentication.HashPasswordForStoringInConfigFile(email, "md5").ToLower();
 			}
-            if (processedEmail.Length != 0)
-            {
+			if(processedEmail.Length != 0)
                 return String.Format(gravatarUrlFormatString, processedEmail, defaultGravatar);
-            }
-            else
-            {
-                return string.Empty;
-            }
+			else
+				return string.Empty;
 		}
 
 		internal void BindFeedback(Entry entry, bool fromCache)
@@ -333,6 +324,4 @@ namespace Subtext.Web.UI.Controls
 		}
 	}
 }
-
-
 

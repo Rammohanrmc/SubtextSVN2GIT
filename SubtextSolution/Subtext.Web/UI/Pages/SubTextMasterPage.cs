@@ -56,8 +56,6 @@ namespace Subtext.Web.UI.Pages
 		protected Literal styles;
 		protected Literal virtualRoot;
 		protected Literal virtualBlogRoot;
-		protected Literal customTrackingCode;
-		protected Literal additionalMetaTags;
 		#endregion
 		
 		protected BlogInfo CurrentBlog;
@@ -174,22 +172,11 @@ namespace Subtext.Web.UI.Pages
 			//Is this for extra security?
 			EnableViewState = false;
 			pageTitle.Text = Globals.CurrentTitle(Context);
-			if (!String.IsNullOrEmpty(Config.CurrentBlog.Author))
+            if (Config.CurrentBlog.Author != null && Config.CurrentBlog.Author.Length > 0)
             {
-				authorMetaTag.Text = String.Format(Environment.NewLine + "<meta name=\"author\" content=\"{0}\" />", Config.CurrentBlog.Author);
+                authorMetaTag.Text = String.Format("<meta name=\"author\" content=\"{0}\" />", Config.CurrentBlog.Author);
             }
-			versionMetaTag.Text = String.Format(Environment.NewLine + "<meta name=\"Generator\" content=\"{0}\" />", VersionInfo.VersionDisplayText);
-
-			if (!String.IsNullOrEmpty(Config.CurrentBlog.CustomMetaTags))
-			{
-				additionalMetaTags.Text = Environment.NewLine + Config.CurrentBlog.CustomMetaTags + Environment.NewLine;
-			}
-
-			if (!String.IsNullOrEmpty(Config.CurrentBlog.TrackingCode))
-			{
-				customTrackingCode.Text = Config.CurrentBlog.TrackingCode;
-			}
-
+            versionMetaTag.Text = String.Format("<meta name=\"Generator\" content=\"{0}\" />", VersionInfo.VersionDisplayText);
             base.OnPreRender (e);
 
 		}
@@ -319,31 +306,30 @@ namespace Subtext.Web.UI.Pages
 
 			private static string RenderStyleElement(string skinPath, Style style)
 			{
-                StringBuilder element = new StringBuilder();
+                string element = string.Empty;
 			    
                 if (!String.IsNullOrEmpty(style.Conditional))
                 {
-                    element.Append(string.Format("<!--[{0}]>{1}", style.Conditional, Environment.NewLine));
+                    element = string.Format("<!--[{0}]>{1}", style.Conditional, Environment.NewLine);
                 }
+			    
+                element += "<link";
+                    if (style.Media != null && style.Media.Length > 0)
+                        element += RenderStyleAttribute("media", style.Media);
 
-                element.Append("<link");
-                if (style.Media != null && style.Media.Length > 0)
-                {
-                    element.Append(RenderStyleAttribute("media", style.Media));
-                }
-
-                element.Append(RenderStyleAttribute("type", "text/css") + 
+				element +=
+					RenderStyleAttribute("type", "text/css") + 
 					RenderStyleAttribute("rel", "stylesheet") + 
 					RenderStyleAttribute("title", style.Title) + 
 					RenderStyleAttribute("href", GetStylesheetHrefPath(skinPath, style)) + //TODO: Look at this line again.
-					"></link>" + Environment.NewLine);
+					"></link>" + Environment.NewLine;
 
                 if (!String.IsNullOrEmpty(style.Conditional))
                 {
-                    element.Append("<![endif]-->" + Environment.NewLine);
+                    element += "<![endif]-->" + Environment.NewLine;
                 }
 			    
-			    return element.ToString();
+			    return element;
 			}
 
 			/// <summary>
@@ -389,7 +375,7 @@ namespace Subtext.Web.UI.Pages
 						result.Append(RenderStyleElement(skinPath, style));
 					}
 				}
-				return Environment.NewLine + result.ToString() + Environment.NewLine;
+				return result.ToString();
 			}
 		}
 

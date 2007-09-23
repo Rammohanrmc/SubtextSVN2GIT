@@ -1,7 +1,6 @@
 ﻿<%@ Page Language="C#" EnableTheming="false"  AutoEventWireup="false" Inherits="Subtext.Web.UI.Pages.SubtextMasterPage" %>
-<%@ Import namespace="Subtext.Framework.Configuration"%>
-<%@ Import namespace="Subtext.Framework"%>
 <%@ Register TagPrefix="DT" Namespace="Subtext.Web.UI.WebControls" Assembly="Subtext.Web" %>
+<%@ Import Namespace="Subtext.Framework.Configuration" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
@@ -10,18 +9,17 @@
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 		<asp:Literal id="authorMetaTag" runat="server" />
 		<asp:Literal id="versionMetaTag" runat="server" />
-		<asp:Literal ID="additionalMetaTags" Runat="server" />
-		<link id="RSSLink" title="RSS Feed" type="application/rss+xml" rel="alternate" runat="Server" />
-		<link id="AtomLink" title="Atom Feed" type="application/rss+xml" rel="alternate" runat="Server" />
+		<link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" runat="Server" />
 		<asp:Literal ID="styles" Runat="server" />
 		<link id="MainStyle" type="text/css" rel="stylesheet" runat="Server" />
 		<link id="SecondaryCss" type="text/css" rel="stylesheet" runat="Server" />
 		<link id="CustomCss" type="text/css" rel="stylesheet" runat="Server" />
 		<link id="Rsd" rel="EditURI" type="application/rsd+xml" title="RSD" runat="server" />
+		<link id="AtomLink" title="RSS" type="application/rss+xml" rel="alternate" runat="Server" />
 		<st:ScriptTag id="commonJs" src="~/Scripts/common.js" runat="server" />
 		<script type="text/javascript">
 			<%= AllowedHtmlJavascriptDeclaration %>
-			var subtextBlogInfo = new blogInfo('<%= BlogInfo.VirtualDirectoryRoot %>', '<%= Config.CurrentBlog.VirtualUrl %>');
+			var subtextBlogInfo = new blogInfo('<%= Config.CurrentBlog.VirtualDirectoryRoot %>', '<%= Config.CurrentBlog.VirtualUrl %>');
 		</script>
 		<asp:Literal ID="scripts" Runat="server" />
 		<asp:PlaceHolder ID="coCommentPlaceholder" Runat="server" />
@@ -37,6 +35,5 @@
 				</DT:ContentRegion>
 			</DT:MasterPage>
 		</form>
-	<asp:Literal ID="customTrackingCode" Runat="server" />
 	</body>
 </html>

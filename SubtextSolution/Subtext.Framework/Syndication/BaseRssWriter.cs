@@ -32,10 +32,9 @@ namespace Subtext.Framework.Syndication
 		private bool isBuilt = false;
 
 		/// <summary>
-		/// Creates a new instance of BaseRssWriter&gt;T&lt;.
+		/// Creates a new <see cref="BaseRssWriter"/> instance.
 		/// </summary>
 		/// <param name="dateLastViewedFeedItemPublished">Last viewed feed item.</param>
-		/// <param name="useDeltaEncoding">if set to <c>true</c> [use delta encoding].</param>
 		protected BaseRssWriter(DateTime dateLastViewedFeedItemPublished, bool useDeltaEncoding) : base(dateLastViewedFeedItemPublished, useDeltaEncoding)
 		{
 		}
@@ -121,7 +120,7 @@ namespace Subtext.Framework.Syndication
 		protected virtual void WriteChannel()
 		{
 			RssImageElement image = new RssImageElement(GetRssImage(), info.Title, info.HomeFullyQualifiedUrl, 77, 60, null);
-			BuildChannel(info.Title, info.HomeFullyQualifiedUrl.ToString(), info.Owner.Email, info.SubTitle, info.Language, info.Author, Config.CurrentBlog.LicenseUrl, image);
+			BuildChannel(info.Title, info.HomeFullyQualifiedUrl.ToString(), info.Email, info.SubTitle, info.Language, info.Author, Config.CurrentBlog.LicenseUrl, image);
 		}
 		
 		/// <summary>
@@ -203,37 +202,28 @@ namespace Subtext.Framework.Syndication
 			
 			foreach(T entry in this.Items)
 			{
-				WriteEntry(entry, settings);
+				if (this.useDeltaEncoding && GetSyndicationDate(entry) <= DateLastViewedFeedItemPublished)
+				{
+					// Since Entries are ordered by DatePublished descending, as soon 
+					// as we encounter one that is smaller than or equal to 
+					// one the client has already seen, we're done as we 
+					// know the client already has the rest of the items in 
+					// the collection.
+					return;
+				}
+
+				// If we're here, we know that entry.EntryId is larger than 
+				// the LastViewedFeedItemId.  Thus we can send it.
+				this.WriteStartElement("item");
+				EntryXml(entry, settings, info.UrlFormats);
+				this.WriteEndElement();
+				if(GetSyndicationDate(entry) > latestPublishDate)
+				{
+					latestPublishDate = GetSyndicationDate(entry);
+				}
+
+				this.clientHasAllFeedItems = false;
 			}
-		}
-
-		protected virtual void WriteEntry(T entry, BlogConfigurationSettings settings)
-		{
-			
-			if (this.useDeltaEncoding && GetSyndicationDate(entry) <= DateLastViewedFeedItemPublished)
-			{
-				// Since Entries are ordered by DatePublished descending, as soon 
-				// as we encounter one that is smaller than or equal to 
-				// one the client has already seen, we're done as we 
-				// know the client already has the rest of the items in 
-				// the collection.
-				return;
-			}
-
-			base.WriteEntry(entry);
-
-			// If we're here, we know that entry.EntryId is larger than 
-			// the LastViewedFeedItemId.  Thus we can send it.
-			this.WriteStartElement("item");
-			EntryXml(entry, settings, info.UrlFormats);
-			this.WriteEndElement();
-			if (GetSyndicationDate(entry) > latestPublishDate)
-			{
-				latestPublishDate = GetSyndicationDate(entry);
-			}
-
-			this.clientHasAllFeedItems = false;
-			base.RaisePostSyndicateEvent(entry);
 		}
 
 		/// <summary>
@@ -264,7 +254,6 @@ namespace Subtext.Framework.Syndication
 				"description", //Tag
 				string.Format
 				(
-                    CultureInfo.CurrentUICulture,
 					"{0}{1}", //tag def
 					GetBodyFromItem(item), (UseAggBugs && settings.Tracking.EnableAggBugs) ? TrackingUrls.AggBugImage(urlFormats.AggBugkUrl(item.Id)) : null //use aggbugs
 				)

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Web.Security;
 using System.Xml;
 using MbUnit.Framework;
 using Subtext.BlogML;
@@ -11,7 +10,6 @@ using Subtext.Extensibility;
 using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
-using Subtext.Framework.Security;
 using Subtext.ImportExport;
 
 namespace UnitTests.Subtext.Framework.Import
@@ -21,32 +19,17 @@ namespace UnitTests.Subtext.Framework.Import
 	/// </summary>
     [TestFixture]
     public class BlogMLImportTests
-    {
-		[Test]
-		[ExtractResource("UnitTests.Subtext.Resources.BlogMl.TwoCategories.xml", typeof(BlogMLImportTests))]
-		[RollBack2]
-		public void CanReadAndCreateCategories()
-		{
-			UnitTestHelper.SetupBlog();
-
-			BlogMLReader reader = BlogMLReader.Create(new SubtextBlogMLProvider());
-			reader.ReadBlog(ExtractResourceAttribute.Stream);
-
-			ICollection<LinkCategory> categories = Links.GetCategories(CategoryType.PostCollection, ActiveFilter.None);
-			Assert.AreEqual(2, categories.Count, "Expected two categories to be created");
-		}
-
-		[Test]
-		[ExtractResource("UnitTests.Subtext.Resources.BlogMl.SimpleBlogMl.xml", typeof(BlogMLImportTests))]
-		[RollBack2]
-		public void ReadBlogCreatesEntriesAndAttachments()
-		{
+    {		
+        [Test]
+        [RollBack]
+        public void ReadBlogCreatesEntriesAndAttachments()
+        {
             //Create blog.
-			UnitTestHelper.SetupBlog();
+			CreateBlogAndSetupContext();
         	
             //Test BlogML reader.
             BlogMLReader reader = BlogMLReader.Create(new SubtextBlogMLProvider());
-            Stream stream = ExtractResourceAttribute.Stream;
+            Stream stream = UnitTestHelper.UnpackEmbeddedResource("BlogMl.SimpleBlogMl.xml");
             reader.ReadBlog(stream);
 
             IList<Entry> entries = Entries.GetRecentPosts(20, PostType.BlogPost, PostConfig.None, true);
@@ -54,17 +37,30 @@ namespace UnitTests.Subtext.Framework.Import
 
             string[] attachments = Directory.GetFiles(Config.CurrentBlog.ImageDirectory, "*.png");
             Assert.AreEqual(3, attachments.Length, "There should be two file attachments created.");
+        }
+
+		[Test]
+		[RollBack]
+		public void CanReadAndCreateCategories()
+		{
+			CreateBlogAndSetupContext();
+
+			BlogMLReader reader = BlogMLReader.Create(new SubtextBlogMLProvider());
+			Stream stream = UnitTestHelper.UnpackEmbeddedResource("BlogMl.TwoCategories.xml");
+			reader.ReadBlog(stream);
+
+			ICollection<LinkCategory> categories = Links.GetCategories(CategoryType.PostCollection, ActiveFilter.None);
+			Assert.AreEqual(2, categories.Count, "Expected two categories to be created");
 		}
 
 		[Test]
-		[ExtractResource("UnitTests.Subtext.Resources.BlogMl.SinglePostWithCategory.xml", typeof(BlogMLImportTests))]
-		[RollBack2]
+		[RollBack]
 		public void CanPostAndReferenceCategoryAppropriately()
 		{
-			UnitTestHelper.SetupBlog();
+			CreateBlogAndSetupContext();
 
 			BlogMLReader reader = BlogMLReader.Create(new SubtextBlogMLProvider());
-			Stream stream = ExtractResourceAttribute.Stream;
+			Stream stream = UnitTestHelper.UnpackEmbeddedResource("BlogMl.SinglePostWithCategory.xml");
 			reader.ReadBlog(stream);
 
 			ICollection<LinkCategory> categories = Links.GetCategories(CategoryType.PostCollection, ActiveFilter.None);
@@ -80,14 +76,13 @@ namespace UnitTests.Subtext.Framework.Import
 		/// doesn't exist, then we just don't add that category.
 		/// </summary>
 		[Test]
-		[ExtractResource("UnitTests.Subtext.Resources.BlogMl.SinglePostWithBadCategoryRef.xml", typeof(BlogMLImportTests))]
-		[RollBack2]
+		[RollBack]
 		public void ImportOfPostWithBadCategoryRefHandlesGracefully()
 		{
-			UnitTestHelper.SetupBlog();
+			CreateBlogAndSetupContext();
 
 			BlogMLReader reader = BlogMLReader.Create(new SubtextBlogMLProvider());
-			Stream stream = ExtractResourceAttribute.Stream;
+			Stream stream = UnitTestHelper.UnpackEmbeddedResource("BlogMl.SinglePostWithBadCategoryRef.xml");
 			reader.ReadBlog(stream);
 
 			ICollection<LinkCategory> categories = Links.GetCategories(CategoryType.PostCollection, ActiveFilter.None);
@@ -99,15 +94,14 @@ namespace UnitTests.Subtext.Framework.Import
 		}
 
         [Test]
-		[ExtractResource("UnitTests.Subtext.Resources.BlogMl.SimpleBlogMl.xml", typeof(BlogMLImportTests))]
-        [RollBack2]
+        [RollBack]
         public void RoundTripBlogMlTest()
         {
-			UnitTestHelper.SetupBlog();
+			CreateBlogAndSetupContext();
 
             // Import /Resources/BlogMl/SimpleBlogMl.xml into the current blog
 			BlogMLReader reader = BlogMLReader.Create(new SubtextBlogMLProvider());
-			Stream stream = ExtractResourceAttribute.Stream;
+            Stream stream = UnitTestHelper.UnpackEmbeddedResource("BlogMl.SimpleBlogMl.xml");
             reader.ReadBlog(stream);
 
         	// Confirm the entries
@@ -118,26 +112,22 @@ namespace UnitTests.Subtext.Framework.Import
 			IBlogMLProvider provider = BlogMLProvider.Instance();
 			BlogMLWriter writer = BlogMLWriter.Create(provider);
             MemoryStream memoryStream = new MemoryStream();
-
-        	IDisposable blogRequest;
+			
         	using (XmlTextWriter xmlWriter = new XmlTextWriter(memoryStream, Encoding.UTF8))
         	{
         		writer.Write(xmlWriter);
 				reader = BlogMLReader.Create(new SubtextBlogMLProvider());
                 
                 // Now read it back in.
-				MembershipUser owner = Membership.CreateUser(UnitTestHelper.MembershipTestUsername, "test", UnitTestHelper.MembershipTestEmail);
-                BlogInfo blog = Config.CreateBlog("BlogML Import Unit Test Blog", Config.CurrentBlog.Host + "1", "", owner);
-				blogRequest = BlogRequestSimulator.SimulateRequest(blog, blog.Host, "", "");
-				Assert.IsTrue(Config.CurrentBlog.Host.EndsWith("1"), "Looks like we've cached our old blog.");
+                Assert.IsTrue(Config.CreateBlog("BlogML Import Unit Test Blog", "test", "test", Config.CurrentBlog.Host + "1", ""), "Could not create the blog for this test");
+                UnitTestHelper.SetHttpContextWithBlogRequest(Config.CurrentBlog.Host + "1", "");
+        		Assert.IsTrue(Config.CurrentBlog.Host.EndsWith("1"), "Looks like we've cached our old blog.");
 				memoryStream.Position = 0;
-				reader.ReadBlog(memoryStream);
-        	}
+            	reader.ReadBlog(memoryStream);
+            }
 
             IList<Entry> newEntries = Entries.GetRecentPosts(100, PostType.BlogPost, PostConfig.None, true);
             Assert.AreEqual(newEntries.Count, entries.Count, "Round trip failed to create the same number of entries.");
-			if (blogRequest != null)
-				blogRequest.Dispose();
         }
 
         [SetUp]
@@ -166,5 +156,16 @@ namespace UnitTests.Subtext.Framework.Import
                 }
             }
         }
+		
+		private void CreateBlogAndSetupContext()
+		{
+			string hostName = UnitTestHelper.GenerateRandomString();
+            Assert.IsTrue(Config.CreateBlog("BlogML Import Unit Test Blog", "test", "test", hostName, ""), "Could not create the blog for this test");
+            UnitTestHelper.SetHttpContextWithBlogRequest(hostName, "");
+            Assert.IsNotNull(Config.CurrentBlog, "Current Blog is null.");
+
+            Config.CurrentBlog.ImageDirectory = Path.Combine(Environment.CurrentDirectory, "images");
+            Config.CurrentBlog.ImagePath = "/image/";
+		}
     }
 }

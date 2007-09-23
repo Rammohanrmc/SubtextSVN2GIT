@@ -15,9 +15,12 @@
 
 using System;
 using System.Web.UI;
+using System.IO;
 using System.Web.UI.WebControls;
 using Subtext.Extensibility.Providers;
+using System.Web;
 using Subtext.Web.Controls;
+
 using FreeTextBoxControls;
 
 namespace Subtext.Web.Providers.BlogEntryEditor.FTB

@@ -16,12 +16,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Web;
 using System.Web.UI.WebControls;
 using MbUnit.Framework;
 using Subtext.Extensibility;
 using Subtext.Framework;
 using Subtext.Framework.Components;
-using Subtext.Framework.Exceptions;
 using Subtext.Framework.Text;
 
 namespace UnitTests.Subtext.Framework.Text
@@ -32,22 +32,6 @@ namespace UnitTests.Subtext.Framework.Text
 	[TestFixture]
 	public class HtmlHelperTests
 	{
-		[RowTest]
-		[Row("http://example.com", "www.example.com", "http://www.example.com")]
-		[Row("http://example.com", "example.com", "http://example.com")]
-		[Row("http://example.com/", "example.com", "http://example.com/")]
-		[Row("http://example.com/example.com/", "example.com", "http://example.com/example.com/")]
-		[Row("http://www.example.com", "example.com", "http://example.com")]
-		[Row("http://example.com/", "www.example.com", "http://www.example.com/")]
-		[Row("http://example.com:8080/", "www.example.com", "http://www.example.com:8080/")]
-		[Row("http://example.com:8080/example.com/blah.html", "www.example.com", "http://www.example.com:8080/example.com/blah.html")]
-		[Row("http://example.com/example.com/blah.html", "www.example.com", "http://www.example.com/example.com/blah.html")]
-		[Row("http://example.com/example.com/", "www.example.com", "http://www.example.com/example.com/")]
-		public void CanReplaceHostInUrl(string url, string host, string expected)
-		{
-			Assert.AreEqual(expected, HtmlHelper.ReplaceHost(url, host));
-		}
-
 		[Test]
 		[ExpectedArgumentNullException]
 		public void AppendNullClassThrowsArgumentNullException()
@@ -148,7 +132,7 @@ namespace UnitTests.Subtext.Framework.Text
 		{
 			Entry entry = new Entry(PostType.BlogPost);
 			entry.Body = goodMarkup;
-			HtmlHelper.ConvertHtmlToXHtml(entry);
+			Assert.IsTrue(HtmlHelper.ConvertHtmlToXHtml(entry));
 			Assert.AreEqual(expected, entry.Body);
 		}
 
@@ -164,7 +148,7 @@ namespace UnitTests.Subtext.Framework.Text
 		{
 			Entry entry = new Entry(PostType.BlogPost);
 			entry.Body = badMarkup;
-			HtmlHelper.ConvertHtmlToXHtml(entry);
+			Assert.IsTrue(HtmlHelper.ConvertHtmlToXHtml(entry));
 			Assert.AreEqual(corrected, entry.Body);
 		}
 
@@ -174,7 +158,7 @@ namespace UnitTests.Subtext.Framework.Text
 		[Test, ExpectedException(typeof(IllegalPostCharactersException))]
 		public void HasIllegalContentThrowsExceptionWithScriptTag()
 		{
-			HtmlHelper.CheckForIllegalContent("blah <script ");
+			HtmlHelper.HasIllegalContent("blah <script ");
 		}
 
 		/// <summary>
@@ -185,7 +169,7 @@ namespace UnitTests.Subtext.Framework.Text
 		{
 			try
 			{
-				HtmlHelper.CheckForIllegalContent("blah &#60script ");
+				HtmlHelper.HasIllegalContent("blah &#60script ");
 				Assert.Fail("Method should have thrown an exception");
 			}
 			catch(IllegalPostCharactersException)
@@ -199,7 +183,7 @@ namespace UnitTests.Subtext.Framework.Text
 
 			try
 			{
-				HtmlHelper.CheckForIllegalContent("blah &60script ");
+				HtmlHelper.HasIllegalContent("blah &60script ");
 				Assert.Fail("Method should have thrown an exception");
 			}
 			catch(IllegalPostCharactersException)
@@ -211,13 +195,13 @@ namespace UnitTests.Subtext.Framework.Text
 				Assert.Fail("Method should have thrown an IllegalPostCharactersException exception");
 			}
 
-			HtmlHelper.CheckForIllegalContent("blah %60script ");
+			HtmlHelper.HasIllegalContent("blah %60script ");
 		}
 
 		[Test]
 		public void CanParseTag()
 		{
-			IList<string> tags = HtmlHelper.ParseTags("blah blah <a href=\"http://blah.com/subdir/mytag/\" rel=\"tag\">test1</a> goo goo");
+			List<string> tags = HtmlHelper.ParseTags("blah blah <a href=\"http://blah.com/subdir/mytag/\" rel=\"tag\">test1</a> goo goo");
 			Assert.AreEqual(1, tags.Count, "Should have found one tag.");
 			Assert.AreEqual("mytag", tags[0], "Should have found one tag.");
 
@@ -226,14 +210,14 @@ namespace UnitTests.Subtext.Framework.Text
 		[Test]
 		public void ParseTagsDoesNotParseDuplicates()
 		{
-			IList<string> tags = HtmlHelper.ParseTags("<a href=\"http://blah.com/subdir/mytag/\" rel=\"tag\">test1</a><a href=\"http://blah.com/another-dir/mytag/\" rel=\"tag\">test2</a>");
+			List<string> tags = HtmlHelper.ParseTags("<a href=\"http://blah.com/subdir/mytag/\" rel=\"tag\">test1</a><a href=\"http://blah.com/another-dir/mytag/\" rel=\"tag\">test2</a>");
 			Assert.AreEqual(1, tags.Count, "The same tag exists twice, should only count as one.");
 		}
 
 		[Test]
 		public void ParseTagsDoesNotMatchRelOfAnotherTag()
 		{
-			IList<string> tags = HtmlHelper.ParseTags("<a title=\"blah\" href=\"http://blah.com/subdir/mytag1/\" " + Environment.NewLine + " rel=\"lightbox\">mytag1</a>other junk " + Environment.NewLine + "<a href=\"http://blah.com/another-dir/mytag2/\" rel=\"tag\">mytag2</a>");
+			List<string> tags = HtmlHelper.ParseTags("<a title=\"blah\" href=\"http://blah.com/subdir/mytag1/\" " + Environment.NewLine + " rel=\"lightbox\">mytag1</a>other junk " + Environment.NewLine + "<a href=\"http://blah.com/another-dir/mytag2/\" rel=\"tag\">mytag2</a>");
 			Assert.AreEqual(1, tags.Count, "The first anchor is not a tag.");
 			Assert.AreEqual("mytag2", tags[0]);
 		}
@@ -241,7 +225,7 @@ namespace UnitTests.Subtext.Framework.Text
         [Test]
         public void ParseTagsWithWhitespaceAttributes()
         {
-            IList<string> tags = HtmlHelper.ParseTags("<a title=\"blah\" href = " + Environment.NewLine + " \"http://blah.com/subdir/mytag1/\" rel = " + Environment.NewLine + " \"tag\">mytag1</a>");
+            List<string> tags = HtmlHelper.ParseTags("<a title=\"blah\" href = " + Environment.NewLine + " \"http://blah.com/subdir/mytag1/\" rel = " + Environment.NewLine + " \"tag\">mytag1</a>");
             Assert.AreEqual(1, tags.Count, "The attributes contain whitespace but should be recognized as valid");
             Assert.AreEqual("mytag1", tags[0]);
         }
@@ -249,7 +233,7 @@ namespace UnitTests.Subtext.Framework.Text
 		[Test]
 		public void ParseTagsWithWeirdWhiteSpace()
 		{
-			IList<string> tags = HtmlHelper.ParseTags("<a title=\"Programmer's Bill of Rights\" href=\"http://www.codinghorror.com/blog/archives/000666.html\">Programmer&rsquo;s Bill of Rights</a> that <a rel=\"friend met\" href=\"http://www.codinghorror.com/blog/\">Jeff Atwood</a>" + Environment.NewLine + "<div class=\"tags\">Technorati tags: <a rel=\"tag\" href=\"http://technorati.com/tag/Programming\">Programming</a>");
+			List<string> tags = HtmlHelper.ParseTags("<a title=\"Programmer's Bill of Rights\" href=\"http://www.codinghorror.com/blog/archives/000666.html\">Programmer&rsquo;s Bill of Rights</a> that <a rel=\"friend met\" href=\"http://www.codinghorror.com/blog/\">Jeff Atwood</a>" + Environment.NewLine + "<div class=\"tags\">Technorati tags: <a rel=\"tag\" href=\"http://technorati.com/tag/Programming\">Programming</a>");
 			Assert.AreEqual(1, tags.Count, "The attributes contain whitespace but should be recognized as valid");
 			Assert.AreEqual("Programming", tags[0]);
 		}
@@ -302,23 +286,21 @@ namespace UnitTests.Subtext.Framework.Text
             UnitTestHelper.AssertAppSettings();
 		}
 
-		private IDisposable blogRequest;
-
 		[SetUp]
 		public void SetUp()
-		{			
+		{
+			UnitTestHelper.SetHttpContextWithBlogRequest("localhost", "MyBlog");
 			BlogInfo blogInfo = new BlogInfo();
 			blogInfo.Host = "localhost";
 			blogInfo.Subfolder = "MyBlog";
 
-			blogRequest = BlogRequestSimulator.SimulateRequest(blogInfo, "localhost", "", "MyBlog");
+			HttpContext.Current.Items.Add("BlogInfo-", blogInfo);
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			if(blogRequest != null)
-				blogRequest.Dispose();
+			HttpContext.Current = null;
 		}
 	}
 }

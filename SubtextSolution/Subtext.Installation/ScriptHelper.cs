@@ -26,7 +26,6 @@ namespace Subtext.Installation
 	/// </summary>
 	public static class ScriptHelper
 	{
-	
 		/// <summary>
 		/// Executes the script.
 		/// </summary>
@@ -38,10 +37,10 @@ namespace Subtext.Installation
 		/// <param name="transaction">The current transaction.</param>
 		public static void ExecuteScript(string scriptName, SqlTransaction transaction)
 		{
-			ExecuteScript(scriptName, transaction, null);
+			SqlScriptRunner scriptRunner = new SqlScriptRunner(UnpackEmbeddedScript(scriptName), Encoding.UTF8);
+			scriptRunner.Execute(transaction);
 		}
-	
-	
+
 		/// <summary>
 		/// Executes the script.
 		/// </summary>
@@ -49,15 +48,25 @@ namespace Subtext.Installation
 		/// Use script.Execute(transaction) to do the work. We will also pull the
 		/// status of our script exection from here.
 		/// </remarks>
-		/// <param name="scriptName">Name of the script.</param>
+		/// <param name="scripts">The collection of scripts to execute.</param>
 		/// <param name="transaction">The current transaction.</param>
-		/// <param name="dbUserName">Name of the DB owner.</param>
-		public static void ExecuteScript(string scriptName, SqlTransaction transaction, string dbUserName)
+		public static void ExecuteScript(ScriptCollection scripts, SqlTransaction transaction)
 		{
-			SqlScriptRunner scriptRunner = new SqlScriptRunner(UnpackEmbeddedScript(scriptName), Encoding.UTF8);
-			if(!string.IsNullOrEmpty(dbUserName))
-				scriptRunner.TemplateParameters.SetValue("dbUser", dbUserName);
+			SqlScriptRunner scriptRunner = new SqlScriptRunner(scripts);
 			scriptRunner.Execute(transaction);
+		}
+
+		/// <summary>
+		/// Unpacks an embedded script into a string.
+		/// </summary>
+		/// <param name="scriptName">The file name of the script to run.</param>
+		public static string UnpackEmbeddedScriptAsString(string scriptName)
+		{
+			Stream stream = UnpackEmbeddedScript(scriptName);
+			using(StreamReader reader = new StreamReader(stream))
+			{
+				return reader.ReadToEnd();
+			}
 		}
 
 		/// <summary>

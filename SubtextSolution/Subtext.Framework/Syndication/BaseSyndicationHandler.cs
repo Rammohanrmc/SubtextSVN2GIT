@@ -17,10 +17,7 @@ using System;
 using System.Globalization;
 using System.Net;
 using System.Web;
-using log4net;
-using Subtext.Extensibility.Web;
 using Subtext.Framework.Configuration;
-using Subtext.Framework.Logging;
 using Subtext.Framework.Syndication.Compression;
 
 namespace Subtext.Framework.Syndication
@@ -29,13 +26,12 @@ namespace Subtext.Framework.Syndication
 	/// Abstract base class used to respond to requests for 
 	/// syndicated feeds such as RSS and ATOM.
 	/// </summary>
-	public abstract class BaseSyndicationHandler<T> : BaseHttpHandler
+	public abstract class BaseSyndicationHandler<T> : IHttpHandler
 	{
-		private ILog Log = new Log();
 		const int HTTP_IM_USED = 226;
 		const int HTTP_MOVED_PERMANENTLY = 301;
 
-		protected BlogInfo CurrentBlog;
+		protected BlogInfo CurrentBlog ;
 		protected HttpContext Context = null;
 		protected CachedFeed Feed = null;
 
@@ -63,7 +59,7 @@ namespace Subtext.Framework.Syndication
 		{
 			get
 			{
-				return Context.Request.Headers["If-None-Match"];
+				return Context.Request.Headers["If-None-Match"];	
 			}
 		}
 
@@ -78,15 +74,15 @@ namespace Subtext.Framework.Syndication
 		{
 			get
 			{
-				if (IfNonMatchHeader != null && IfNonMatchHeader.Length > 0)
+				if(IfNonMatchHeader != null && IfNonMatchHeader.Length > 0)
 				{
 					try
 					{
 						return DateTime.Parse(IfNonMatchHeader);
 					}
-					catch(FormatException e)
+					catch(FormatException)
 					{
-						Log.Info("Format Exception occured Grabbing PublishDateOfLastFeedItemReceived", e);
+						//Swallow it.
 					}
 				}
 				return NullValue.NullDateTime;
@@ -103,7 +99,7 @@ namespace Subtext.Framework.Syndication
 		{
 			get
 			{
-				return CurrentBlog.RFC3229DeltaEncodingEnabled && AcceptDeltaEncoding;
+				return CurrentBlog.RFC3229DeltaEncodingEnabled && AcceptDeltaEncoding;	
 			}
 		}
 
@@ -116,14 +112,14 @@ namespace Subtext.Framework.Syndication
 		protected virtual bool IsLocalCacheOK()
 		{
 			string dt = LastModifiedHeader;
-			if (dt != null)
+			if(dt != null)
 			{
 				try
 				{
 					DateTime feedDT = DateTime.Parse(dt);
-					DateTime lastUpdated = ConvertLastUpdatedDate(CurrentBlog.LastUpdated);
+					DateTime lastUpdated = ConvertLastUpdatedDate(CurrentBlog.LastUpdated); 
 					TimeSpan ts = feedDT - lastUpdated;
-
+					
 					//We need to allow some margin of error.
 					return Math.Abs(ts.TotalMilliseconds) <= 500;
 				}
@@ -145,7 +141,7 @@ namespace Subtext.Framework.Syndication
 		protected virtual bool IsHttpCacheOK()
 		{
 			Feed = Context.Cache[this.CacheKey(this.PublishDateOfLastFeedItemReceived)] as CachedFeed;
-			if (Feed == null)
+			if(Feed == null)
 			{
 				return false;
 			}
@@ -177,23 +173,23 @@ namespace Subtext.Framework.Syndication
 		/// </summary>
 		protected virtual void ProcessFeed()
 		{
-			if (RedirectToFeedBurnerIfNecessary())
+			if(RedirectToFeedBurnerIfNecessary())
 				return;
-
+			
 			// Checks Last Modified Header.
-			if (IsLocalCacheOK())
+			if(IsLocalCacheOK())
 			{
 				Send304();
 				return;
 			}
-
+		
 			// Checks our cache against last modified header.
-			if (!IsHttpCacheOK())
+			if(!IsHttpCacheOK())
 			{
 				Feed = BuildFeed();
-				if (Feed != null)
+				if(Feed != null)
 				{
-					if (UseDeltaEncoding && Feed.ClientHasAllFeedItems)
+					if(UseDeltaEncoding && Feed.ClientHasAllFeedItems)
 					{
 						Send304();
 						return;
@@ -212,12 +208,12 @@ namespace Subtext.Framework.Syndication
 		/// <returns></returns>
 		protected abstract string CacheKey(DateTime dateLastViewedFeedItemPublished);
 		protected abstract void Cache(CachedFeed feed);
-
+		
 		/// <summary>
 		/// Gets the syndication writer.
 		/// </summary>
 		/// <returns></returns>
-		protected abstract BaseSyndicationWriter<T> SyndicationWriter { get; }
+		protected abstract BaseSyndicationWriter<T> SyndicationWriter{ get; }
 
 		protected virtual CachedFeed BuildFeed()
 		{
@@ -239,21 +235,21 @@ namespace Subtext.Framework.Syndication
 		{
 			string encoding = null;
 
-			if (Feed != null)
+			if(Feed != null)
 			{
-				if (Config.CurrentBlog.UseSyndicationCompression && this.AcceptGzipCompression)
+				if(Config.CurrentBlog.UseSyndicationCompression && this.AcceptGzipCompression)
 				{
 					// We're GZip Encoding!
 					SyndicationCompressionFilter filter = SyndicationCompressionHelper.GetFilterForScheme(this.AcceptEncoding, Context.Response.Filter);
-
-					if (filter != null)
+	
+					if(filter != null)
 					{
 						encoding = filter.ContentEncoding;
 						Context.Response.Filter = filter.Filter;
 					}
 				}
 
-				if (encoding == null)
+				if(encoding == null)
 				{
 					Context.Response.ContentEncoding = System.Text.Encoding.UTF8;
 				}
@@ -262,7 +258,7 @@ namespace Subtext.Framework.Syndication
 				Context.Response.Cache.SetCacheability(HttpCacheability.Public);
 				Context.Response.Cache.SetLastModified(Feed.LastModified);
 				Context.Response.Cache.SetETag(Feed.Etag);
-				if (AcceptGzipCompression)
+				if(AcceptGzipCompression)
 				{
 					Context.Response.AddHeader("IM", "feed, gzip");
 				}
@@ -270,7 +266,7 @@ namespace Subtext.Framework.Syndication
 				{
 					Context.Response.AddHeader("IM", "feed");
 				}
-				if (this.UseDeltaEncoding)
+				if(this.UseDeltaEncoding)
 					Context.Response.StatusCode = HTTP_IM_USED; //IM Used
 				else
 					Context.Response.StatusCode = (int)HttpStatusCode.OK;
@@ -283,12 +279,26 @@ namespace Subtext.Framework.Syndication
 		/// Processs the request and sends the feed to the response.
 		/// </summary>
 		/// <param name="context">Context.</param>
-		public override void HandleRequest(HttpContext context)
+		public void ProcessRequest(HttpContext context)
 		{
 			CurrentBlog = Config.CurrentBlog;
 			Context = context;
 
 			ProcessFeed();
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this handler is reusable.
+		/// </summary>
+		/// <value>
+		/// 	<c>true</c> if it is reusable; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsReusable
+		{
+			get
+			{
+				return false;
+			}
 		}
 
 		/// <summary>
@@ -304,7 +314,7 @@ namespace Subtext.Framework.Syndication
 			get
 			{
 				string header = Context.Request.Headers["Accept-Encoding"];
-				if (header != null)
+				if(header != null)
 					return header;
 				else
 					return string.Empty;
@@ -320,7 +330,7 @@ namespace Subtext.Framework.Syndication
 			get
 			{
 				string header = Context.Request.Headers["A-IM"];
-				if (header != null)
+				if(header != null)
 					return header;
 				else
 					return string.Empty;
@@ -353,11 +363,11 @@ namespace Subtext.Framework.Syndication
 		{
 			get
 			{
-				return AcceptEncoding.IndexOf("gzip") >= 0 ||
+				return AcceptEncoding.IndexOf("gzip") >= 0 || 
 					AcceptIMHeader.IndexOf("gzip") >= 0;
 			}
 		}
-
+		
 		// Adapted from DasBlog
 		private bool RedirectToFeedBurnerIfNecessary()
 		{
@@ -385,42 +395,5 @@ namespace Subtext.Framework.Syndication
 		/// Returns true if the feed is the main feed.  False for category feeds and comment feeds.
 		/// </summary>
 		protected abstract bool IsMainfeed { get;}
-
-		/// <summary>
-		/// Gets the content MIME type.
-		/// </summary>
-		/// <value></value>
-		public override string ContentMimeType
-		{
-			get { return "text/xml"; }
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether this handler
-		/// requires users to be authenticated.
-		/// </summary>
-		/// <value>
-		/// 	<c>true</c> if authentication is required
-		/// otherwise, <c>false</c>.
-		/// </value>
-		public override bool RequiresAuthentication
-		{
-			get { return false; }
-		}
-
-		/// <summary>
-		/// Validates the parameters.  Inheriting classes must
-		/// implement this and return true if the parameters are
-		/// valid, otherwise false.
-		/// </summary>
-		/// <param name="context">Context.</param>
-		/// <returns>
-		/// 	<c>true</c> if the parameters are valid,
-		/// otherwise <c>false</c>
-		/// </returns>
-		public override bool ValidateParameters(HttpContext context)
-		{
-			return true;
-		}
 	}
 }

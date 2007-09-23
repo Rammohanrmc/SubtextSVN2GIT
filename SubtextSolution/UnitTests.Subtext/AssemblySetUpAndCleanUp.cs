@@ -3,9 +3,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using MbUnit.Framework;
 using Subtext.Installation;
-using UnitTests.Subtext;
 
-[assembly: AssemblyCleanup(typeof(AssemblySetUpAndCleanUp))]
 namespace UnitTests.Subtext
 {
 	public static class AssemblySetUpAndCleanUp
@@ -13,25 +11,15 @@ namespace UnitTests.Subtext
 		[SetUp]
 		public static void SetUp()
 		{
-			string connectionString = ConfigurationManager.ConnectionStrings["subtextData"].ConnectionString;
-			SqlInstaller installer = new SqlInstaller(connectionString);
-			using (SqlConnection conn = new SqlConnection(connectionString))
+			using (	SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["subtextData"].ConnectionString))
 			{
-				conn.Open();
-				using (SqlTransaction transaction = conn.BeginTransaction())
+				connection.Open();
+				using (SqlTransaction transaction = connection.BeginTransaction())
 				{
-					installer.UpdateInstallationVersionNumber(installer.SubtextAssemblyVersion);
+					ScriptHelper.ExecuteScript("StoredProcedures.sql", transaction);
 					transaction.Commit();
 				}
 			}
-/*
-Console.WriteLine("Rebuilding Database for unit tests...");
-
-Arguments arguments = new Arguments("install /connect \"" + connectionString + "\"");
-InstallCommand installer = new InstallCommand();
-installer.Execute(arguments);
-Console.WriteLine("Rebuild complete!");
-*/			
 		}
 		
 		[TearDown]

@@ -33,24 +33,24 @@ namespace Subtext.Web.UI.Controls
 		protected DataList ThumbNails;
 		protected Literal Description;
 
-		private string baseImagePath;
+		private string _baseImagePath;
 
 		protected string BaseImagePath
 		{
 			get 
 			{
-				return baseImagePath;
+				return _baseImagePath;
 			}
 		}
 
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad (e);
-
+			// Put user code to initialize the page here
 			if(Context != null)
 			{
 				int catID = UrlFormats.GetPostIDFromUrl(Request.Path);
-				baseImagePath = Images.GalleryVirtualUrl(catID);
+				_baseImagePath = Images.HttpGalleryFilePath(Context,catID);
 
 				ImageCollection ic = Images.GetImagesByCategoryID(catID, true);
 				if(ic != null)
@@ -70,23 +70,18 @@ namespace Subtext.Web.UI.Controls
 		{
 			if(e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
 			{
-				Image image = (Image)e.Item.DataItem;
-				if(image != null)
+				Image _image = (Image)e.Item.DataItem;
+				if(_image != null)
 				{
 					HyperLink ThumbNailImage = (HyperLink)e.Item.FindControl("ThumbNailImage");
 					if(ThumbNailImage != null)
 					{
-						ThumbNailImage.ImageUrl = BaseImagePath + image.ThumbNailFile;
-						ThumbNailImage.NavigateUrl = Config.CurrentBlog.UrlFormats.ImageUrl(null,image.ImageID);
-						ThumbNailImage.ToolTip = image.Title;
+						ThumbNailImage.ImageUrl = _baseImagePath + _image.ThumbNailFile;
+						ThumbNailImage.NavigateUrl = Config.CurrentBlog.UrlFormats.ImageUrl(null,_image.ImageID);
+						ThumbNailImage.ToolTip = _image.Title;
 					}
 				}
 			}
-		}
-
-		protected static Image EvalImage(object dataItem)
-		{
-			return (Image) dataItem;
 		}
 	}
 }

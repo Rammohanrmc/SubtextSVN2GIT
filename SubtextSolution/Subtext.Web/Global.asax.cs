@@ -17,19 +17,15 @@ using System;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Globalization;
-using System.Security;
-using System.Threading;
 using System.Web;
 using log4net;
 using log4net.Appender;
 using log4net.Repository.Hierarchy;
-using Subtext.Data;
 using Subtext.Framework;
 using Subtext.Framework.Configuration;
+using Subtext.Framework.Data;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Logging;
-using Subtext.Framework.Services;
-using System.Text;
 
 namespace Subtext 
 {
@@ -37,17 +33,12 @@ namespace Subtext
 	{
 		//This call is to kickstart log4net.
 		//log4net Configuration Attribute is in AssemblyInfo
-		private readonly static ILog Log = LogManager.GetLogger(typeof(Global));
-
-        //CHANGE: Mail To Weblog - Gurkan Yeniceri
-        private MailToWeblog mailToWeblog ;
-        private Thread mailToWeblogThread;
-        //End of changes - Gurkan Yeniceri
+		private readonly static ILog log = LogManager.GetLogger(typeof(Global));
 
 		static Global()
 		{
 			//Wrap the logger with our own.
-			Log = new Log(Log);
+			log = new Log(log);
 		}
 		
 		/// <summary>
@@ -96,21 +87,11 @@ namespace Subtext
 		protected void Application_Start(Object sender, EventArgs e)
 		{
 			//This line will trigger the configuration.
-			Log.Info("Application_Start - This is not a malfunction.");
+			log.Info("Application_Start - This is not a malfunction.");
 #if DEBUG
 			Hierarchy h = LogManager.GetRepository() as Hierarchy;
 			EnsureLog4NetConnectionString(h);
 #endif
-            if (ConfigurationManager.AppSettings.Get("EnableMailToWeblog") == "true")
-            {
-                mailToWeblog = new MailToWeblog();
-
-                mailToWeblogThread = new Thread(new ThreadStart(mailToWeblog.Run));
-                mailToWeblogThread.Name = "MailToWeblog";
-                mailToWeblogThread.IsBackground = true;
-                mailToWeblogThread.Start();
-                Log.Info("Mail to Weblog is started");
-            }
 		}
 
 #if DEBUG
@@ -126,12 +107,10 @@ namespace Subtext
 				{
 					adoAppender.ActivateOptions();
 					//Normalize appender connection string, since Log4Net seems to truncate that last semicolon.
-                    if (!String.IsNullOrEmpty(adoAppender.ConnectionString) && !adoAppender.ConnectionString.EndsWith(";"))
-                    {
-                        adoAppender.ConnectionString += ";";
-                    }
+					if (!String.IsNullOrEmpty(adoAppender.ConnectionString) && !adoAppender.ConnectionString.EndsWith(";"))
+						adoAppender.ConnectionString += ";";
 					
-					if( String.Compare(adoAppender.ConnectionString,ConfigurationManager.ConnectionStrings["subtextData"].ConnectionString, false) != 0 )
+					if(adoAppender.ConnectionString != ConfigurationManager.ConnectionStrings["subtextData"].ConnectionString)
 					{
 						throw new InvalidOperationException("Log4Net is not picking up our connection string.");
 					}					
@@ -159,7 +138,7 @@ namespace Subtext
 		{		
 			//KLUDGE: This is required due to a bug in Log4Net 1.2.9.
 			// This should be fixed in the next release.
-			Framework.Logging.Log.SetBlogIdContext(NullValue.NullInt32);
+			Log.SetBlogIdContext(NullValue.NullInt32);
 		}
 
 		/// <summary>
@@ -202,12 +181,12 @@ namespace Subtext
 			BaseCommentException commentException = exception as BaseCommentException;
 			if (commentException != null)
 			{
-                StringBuilder message = new StringBuilder("Comment exception thrown and handled in Global.asax.");
+				string message = "Comment exception thrown and handled in Global.asax.";
 				if(HttpContext.Current != null && HttpContext.Current.Request != null)
 				{
-					message.Append("-- User Agent: " + HttpContext.Current.Request.UserAgent);
+					message += "-- User Agent: " + HttpContext.Current.Request.UserAgent;
 				}
-				Log.Info(message.ToString(), commentException);
+				log.Info(message, commentException);
 			}
 			
 			//Sql Exception and request is for "localhost"
@@ -215,19 +194,11 @@ namespace Subtext
 			if (sqlExc != null)
 			{
 				if (sqlExc.Number == (int)SqlErrorMessage.SqlServerDoesNotExistOrAccessDenied
-					|| sqlExc.Number == (int)SqlErrorMessage.ErrorConnectingToDatabase
 				    || (sqlExc.Number == (int)SqlErrorMessage.CouldNotFindStoredProcedure && sqlExc.Message.IndexOf("'blog_GetConfig'") > 0)
 					)
 				{
-					try
-					{
-						// Probably a bad connection string.
-						Server.Transfer(BadConnectionStringPage);
-					}
-					catch(SecurityException se)
-					{
-						Log.Error("Security exception while transferring to new page", se);
-					}
+					// Probably a bad connection string.
+					Server.Transfer(BadConnectionStringPage);
 					return;
 				}
 
@@ -239,19 +210,12 @@ namespace Subtext
 					)
 				{
 					// Probably a bad connection string.
-					try
-					{
-						Server.Transfer(DatabaseLoginFailedPage);
-					}
-					catch (SecurityException se)
-					{
-						Log.Error("Security exception while transferring to new page", se);
-					}
+					Server.Transfer(DatabaseLoginFailedPage);
 					return;
 				}
 			}
 
-			if (!InstallationManager.IsInInstallDirectory)
+			if (!InstallationManager.IsInInstallDirectory && !InstallationManager.IsInUpgradeDirectory)
 			{
 				// User could be logging into the HostAdmin.
 				if(exception.GetType() == typeof(BlogDoesNotExistException))
@@ -310,7 +274,7 @@ namespace Subtext
 			}
 			else
 			{
-				Log.Error("Unhandled Exception trapped in Global.asax", exception);
+				log.Error("Unhandled Exception trapped in Global.asax", exception);
 			}
 		}
 

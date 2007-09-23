@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #endregion
 
+using System;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.Configuration.Provider;
@@ -30,7 +31,7 @@ namespace UnitTests.Subtext.Framework.Providers
 	    [Test]
 	    public void CanFindConnectionString()
 	    {
-            Assert.AreEqual("Server=localhost;Database=SubtextData;Trusted_Connection=True;", ConfigurationManager.ConnectionStrings["subtextData"].ConnectionString);
+            Assert.AreEqual("Server=localhost;Database=SubtextData_1.9;Trusted_Connection=True", ConfigurationManager.ConnectionStrings["subtextData"].ConnectionString);
 	    }
 	    
 		/// <summary>
@@ -41,57 +42,7 @@ namespace UnitTests.Subtext.Framework.Providers
 		{
 			NameValueCollection configValue = new NameValueCollection();
 			configValue.Add("connectionStringName", "subtextData");	
-            Assert.AreEqual("Server=localhost;Database=SubtextData;Trusted_Connection=True;", ProviderConfigurationHelper.GetConnectionStringSettingValue("connectionStringName", configValue));
-		}
-
-		[Test]
-		[ExpectedException(typeof(ProviderException))]
-		public void LoadProviderCollectionThrowsProviderExceptionWhenDefaultProviderIsNull()
-		{
-			FakeProvider provider;
-			ProviderConfigurationHelper.LoadProviderCollection("FakeProvider", out provider);
-		}
-
-		[Test]
-		[ExpectedArgumentNullException]
-		public void GetConnectionStringSettingByValueThrowsArgumentNullExceptionForNullSettingKey()
-		{
-			ProviderConfigurationHelper.GetConnectionStringSettingValue(null, new NameValueCollection());
-		}
-
-		[Test]
-		[ExpectedArgumentNullException]
-		public void GetConnectionStringSettingByValueThrowsArgumentNullExceptionForNullConfigValues()
-		{
-			ProviderConfigurationHelper.GetConnectionStringSettingValue("Test", null);
-		}
-
-		[Test]
-		[ExpectedArgumentException]
-		public void GetConnectionStringSettingByValueThrowsArgumentExceptionForNonExistentConnectionString()
-		{
-			NameValueCollection config = new NameValueCollection();
-			config.Add("connectionStringName", "nonexistentConnectionString");
-			ProviderConfigurationHelper.GetConnectionStringSettingValue("connectionStringName", config);
-		}
-
-		[Test]
-		public void GetConnectionStringSettingByValueReturnsNullIfSettingKeyIsNotConnectionStringName()
-		{
-			NameValueCollection config = new NameValueCollection();
-			config.Add("blah", "nonexistentConnectionString");
-			Assert.IsNull(ProviderConfigurationHelper.GetConnectionStringSettingValue("blah", config));
-		}
-
-		[Test]
-		public void CanSetDefaultProvider()
-		{
-			ProviderSectionHandler handler = new ProviderSectionHandler();
-			handler.DefaultProvider = "Test";
-			Assert.AreEqual("Test", handler.DefaultProvider);
+            Assert.AreEqual("Server=localhost;Database=SubtextData_1.9;Trusted_Connection=True", ProviderConfigurationHelper.GetConnectionStringSettingValue("connectionStringName", configValue));
 		}
 	}
-
-	public class FakeProvider : ProviderBase
-	{ }
 }

@@ -3,8 +3,8 @@ using System.Globalization;
 using System.Web;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Format;
+using Subtext.Framework.Text;
 using Subtext.Framework.Web.HttpModules;
-using Subtext.Framework.Properties;
 
 namespace Subtext.Web.HttpModules
 {
@@ -21,11 +21,6 @@ namespace Subtext.Web.HttpModules
 		/// <param name="context">An <see cref="T:System.Web.HttpApplication"/> that provides access to the methods, properties, and events common to all application objects within an ASP.NET application</param>
 		public void Init(HttpApplication context)
 		{
-            if (context == null)
-            {
-                throw new ArgumentNullException(Resources.ArgumentNull_Generic);
-            }
-
 			context.BeginRequest += MapUrlToBlogStatus;
 		}
 
@@ -44,32 +39,34 @@ namespace Subtext.Web.HttpModules
 		/// </summary>
 		/// <param name="sender">The sender.</param>
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private static void MapUrlToBlogStatus(object sender, EventArgs e)
+		private void MapUrlToBlogStatus(object sender, EventArgs e)
 		{
 			string subfolder = UrlFormats.GetBlogSubfolderFromRequest(HttpContext.Current.Request.RawUrl, HttpContext.Current.Request.ApplicationPath);
 			if(!Config.IsValidSubfolderName(subfolder))
 				subfolder = string.Empty;
-
-			BlogRequest.Current = new BlogRequest(Host, subfolder, HttpContext.Current.Request.Url);
+			
+			HttpContext.Current.Items["Subtext__CurrentRequest"] = new BlogRequest(Host, subfolder);
 		}
 		
 		/// <summary>
-		/// Gets the current host.
+		/// Gets the current host, stripping off the initial "www." if 
+		/// found.
 		/// </summary>
 		/// <returns></returns>
-		protected static string Host
+		protected string Host
 		{
 			get
 			{
-				string host = HttpContext.Current.Request.Params["HTTP_HOST"];
-				if (String.IsNullOrEmpty(host))
-					host = HttpContext.Current.Request.Url.Host;
-
+				string host = HttpContext.Current.Request.Url.Host;
 				if(!HttpContext.Current.Request.Url.IsDefaultPort)
 				{
 					host  += ":" + HttpContext.Current.Request.Url.Port.ToString(CultureInfo.InvariantCulture);
 				}
 
+				if (host.StartsWith("www.", StringComparison.InvariantCultureIgnoreCase))
+				{
+					host = host.Substring(4);
+				}
 				return host;
 			}
 		}
