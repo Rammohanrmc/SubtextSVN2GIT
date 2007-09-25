@@ -15,7 +15,6 @@
 
 using System;
 using System.Configuration;
-using System.Text.RegularExpressions;
 using System.Web.Configuration;
 using log4net;
 using Subtext.Extensibility.Interfaces;
@@ -24,6 +23,7 @@ using Subtext.Framework.Format;
 using Subtext.Framework.Logging;
 using Subtext.Framework.Providers;
 using Subtext.Framework.Security;
+using Subtext.Scripting;
 
 namespace Subtext.Framework.Configuration
 {
@@ -50,41 +50,7 @@ namespace Subtext.Framework.Configuration
 			}
 		}
 
-		private static readonly BlogInfo aggregateBlog = InitAggregateBlog();
 		
-		private static BlogInfo InitAggregateBlog()
-		{
-            HostInfo hostInfo = HostInfo.Instance;
-			string aggregateHost = ConfigurationManager.AppSettings["AggregateUrl"];
-			if (aggregateHost == null)
-				return null;
-
-			Regex regex = new Regex(@"^(https?://)?(?<host>.+?)(/.*)?$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-			Match match = regex.Match(aggregateHost);
-
-			if (match.Success)
-				aggregateHost = match.Groups["host"].Value;
-
-			BlogInfo blog = new BlogInfo();
-            blog.Title = ConfigurationManager.AppSettings["AggregateTitle"];
-			blog.Skin = SkinConfig.GetDefaultSkin();
-            blog.Host = aggregateHost;
-			blog.Subfolder = string.Empty;
-
-            // When running on the build server there are no Host records in the system
-            // so HostInfo.Instance returns NULL, meaning a NullRefernce on the server.
-		    if (hostInfo == null)
-                Log.Warn("There is no Host record in for this installation.");
-            else
-                blog.UserName = hostInfo.HostUserName;
-			
-			return blog;
-		}
-		
-		public static BlogInfo AggregateBlog
-		{
-			get { return aggregateBlog; }
-		}
 
 		/// <summary>
 		/// Returns the Subtext connection string.
@@ -94,21 +60,22 @@ namespace Subtext.Framework.Configuration
 		/// The AppSetting "connectionStringName" points to which of those strings 
 		/// is the one in use.
 		/// </remarks>
-		public static string ConnectionString
+		public static ConnectionString ConnectionString
 		{
 			get
 			{
-				if(String.IsNullOrEmpty(connectionString))
+				if(connectionString == null)
 				{
 					string connectionStringName = ConfigurationManager.AppSettings["connectionStringName"];
 					if (ConfigurationManager.ConnectionStrings[connectionStringName] == null)
 						throw new ConfigurationErrorsException(String.Format("There is no connectionString entry associated with the connectionStringName '{0}'.", connectionStringName));
-					connectionString = ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
+					string connectionStringText = ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
+					connectionString = ConnectionString.Parse(connectionStringText);
 				}
 				return connectionString;
 			}
 		}
-		static string connectionString;
+		static ConnectionString connectionString;
 
 		/// <summary>
 		/// Gets the file not found page from web.config.

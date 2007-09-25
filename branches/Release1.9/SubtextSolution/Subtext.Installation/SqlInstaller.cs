@@ -11,7 +11,7 @@ namespace Subtext.Installation
 {
 	public class SqlInstaller
 	{
-		private string connectionString;
+		private readonly string connectionString;
 		
 		public SqlInstaller(string connectionString)
 		{

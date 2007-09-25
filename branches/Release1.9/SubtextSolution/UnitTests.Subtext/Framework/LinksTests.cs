@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Web;
 using MbUnit.Framework;
+using Subtext.Extensibility.Interfaces;
 using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
@@ -29,16 +30,14 @@ namespace UnitTests.Subtext.Framework
 	[TestFixture]
 	public class LinksTests
 	{
-		string _hostName = Guid.NewGuid().ToString().Replace("-", string.Empty) + ".com";
-
 		/// <summary>
 		/// Ensures CreateLinkCategory assigns unique CatIDs
 		/// </summary>
 		[Test]
-		[RollBack]
+		[RollBack2]
 		public void CreateLinkCategoryAssignsUniqueCatIDs()
 		{
-			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, "MyBlog"));
+			UnitTestHelper.CreateBlogAndSetupContext();
 
 			// Create some categories
 			CreateSomeLinkCategories();
@@ -78,16 +77,17 @@ namespace UnitTests.Subtext.Framework
 		/// Ensure UpdateLInkCategory updates the correct link category
 		/// </summary>
 		[Test]
-		[RollBack]
+		[RollBack2]
 		public void UpdateLinkCategoryIsFine()
 		{
-			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, "MyBlog"));
+			UnitTestHelper.CreateBlogAndSetupContext();
 
 			// Create the categories
 			CreateSomeLinkCategories();
 
 			// Retrieve the categories, grab the first one and update it
             ICollection<LinkCategory> originalCategories = Links.GetCategories(CategoryType.LinkCollection, ActiveFilter.None);
+			Assert.Greater(originalCategories.Count, 0, "Expected some categories in there.");
 		    LinkCategory linkCat = null;
             foreach (LinkCategory linkCategory in originalCategories)
 		    {
@@ -115,9 +115,36 @@ namespace UnitTests.Subtext.Framework
 
 		static void CreateSomeLinkCategories()
 		{
-			Links.CreateLinkCategory(CreateCategory("My Favorite Feeds", "Some of my favorite RSS feeds", CategoryType.LinkCollection, true));
-			Links.CreateLinkCategory(CreateCategory("Google Blogs", "My favorite Google blogs", CategoryType.LinkCollection, true));
-			Links.CreateLinkCategory(CreateCategory("Microsoft Blogs", "My favorite Microsoft blogs", CategoryType.LinkCollection, false));
+			try
+			{
+				Links.CreateLinkCategory(
+					CreateCategory("My Favorite Feeds", "Some of my favorite RSS feeds", CategoryType.LinkCollection, true));
+				Links.CreateLinkCategory(
+					CreateCategory("Google Blogs", "My favorite Google blogs", CategoryType.LinkCollection, true));
+				Links.CreateLinkCategory(
+					CreateCategory("Microsoft Blogs", "My favorite Microsoft blogs", CategoryType.LinkCollection, false));
+			}
+			catch(Exception)
+			{
+				Console.WriteLine("Current Blog ID: {0}", Config.CurrentBlog.Id);
+
+				IPagedCollection<BlogInfo> blogs = BlogInfo.GetBlogs(0, 10, ConfigurationFlag.None);
+				Console.WriteLine("All Blogs");
+				Console.WriteLine("------------------------------------------");
+				foreach(BlogInfo blog in blogs)
+				{
+					Console.WriteLine("ID: {0}, Host: {1}", blog.Id, blog.Host);
+				}
+
+				ICollection<LinkCategory> linkCategories = Links.GetCategories(CategoryType.LinkCollection, ActiveFilter.None);
+				Console.WriteLine("All Link Categories");
+				Console.WriteLine("------------------------------------------");
+				foreach (LinkCategory linkCategory in linkCategories)
+				{
+					Console.WriteLine("ID: {0}, Description: {1}", linkCategory.Id, linkCategory.Description);
+				}
+				throw;
+			}
 		}
 
 		static LinkCategory CreateCategory(string title, string description, CategoryType categoryType, bool isActive)
@@ -142,15 +169,6 @@ namespace UnitTests.Subtext.Framework
             UnitTestHelper.AssertAppSettings();
 		}
 		
-		/// <summary>
-		/// Called before each unit test.
-		/// </summary>
-		[SetUp]
-		public void SetUp()
-		{
-			UnitTestHelper.SetHttpContextWithBlogRequest(_hostName, "MyBlog", "Subtext.Web");
-		}
-
 		[TearDown]
 		public void TearDown()
 		{

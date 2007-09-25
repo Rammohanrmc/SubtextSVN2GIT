@@ -68,7 +68,7 @@ namespace Subtext.Framework.Data
             string sql = "DNW_HomePageData";
             SqlParameter[] p = 
 				{
-					DataHelper.MakeInParam("@Host", SqlDbType.NVarChar, 100, Config.AggregateBlog.Host),
+					DataHelper.MakeInParam("@Host", SqlDbType.NVarChar, 100, BlogInfo.AggregateBlog.Host),
 					DataHelper.MakeInParam("@GroupID", SqlDbType.Int, 4, groupId)
 				};
 
@@ -82,7 +82,7 @@ namespace Subtext.Framework.Data
 
             SqlParameter[] p = 
 				{
-					DataHelper.MakeInParam("@Host", SqlDbType.NVarChar,100, Config.AggregateBlog.Host),
+					DataHelper.MakeInParam("@Host", SqlDbType.NVarChar,100, BlogInfo.AggregateBlog.Host),
 					DataHelper.MakeInParam("@GroupID", SqlDbType.Int, 4, groupId)
 				};
 
@@ -991,15 +991,14 @@ namespace Subtext.Framework.Data
 		{
 			if (category == null)
 				throw new ArgumentNullException("category", "Cannot insert a null category.");
-			
+
 			SqlParameter outParam = DataHelper.MakeOutParam("@CategoryID",SqlDbType.Int,4);
 			SqlParameter[] p =
 			{
-
-				DataHelper.MakeInParam("@Title",SqlDbType.NVarChar,150,category.Title),
-				DataHelper.MakeInParam("@Active",SqlDbType.Bit,1,category.IsActive),
-				DataHelper.MakeInParam("@CategoryType",SqlDbType.TinyInt,1,category.CategoryType),
-				DataHelper.MakeInParam("@Description",SqlDbType.NVarChar,1000,DataHelper.CheckNull(category.Description)),
+				DataHelper.MakeInParam("@Title", SqlDbType.NVarChar, 150, category.Title),
+				DataHelper.MakeInParam("@Active", SqlDbType.Bit, 1, category.IsActive),
+				DataHelper.MakeInParam("@CategoryType", SqlDbType.TinyInt, 1, category.CategoryType),
+				DataHelper.MakeInParam("@Description", SqlDbType.NVarChar, 1000, DataHelper.CheckNull(category.Description)),
 				BlogIdParam,
 				outParam
 			};

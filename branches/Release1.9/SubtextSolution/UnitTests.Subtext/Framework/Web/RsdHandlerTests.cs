@@ -28,7 +28,7 @@ namespace UnitTests.Subtext.Framework.Web
 			blog.Host = host;
 			UnitTestHelper.SetHttpContextWithBlogRequest(host, subfolder, application);
 
-			HttpContext.Current.Cache["BlogInfo-" + subfolder] = blog;
+			HttpContext.Current.Cache["BlogInfo-" + host + "/" + subfolder] = blog;
 			
 			handler.WriteRsd(writer, blog);
 			

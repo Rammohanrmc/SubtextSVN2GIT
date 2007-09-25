@@ -47,5 +47,13 @@ namespace UnitTests.Subtext.Scripting
 			Assert.AreEqual(userId, connectionInfo2.UserId, "Did not parse the user id correctly.");
 			Assert.AreEqual(password, connectionInfo2.Password, "Did not parse the password correctly.");
 		}
+
+		[Test]
+		public void CanImplicitlyConvertConnectionStringToString()
+		{
+			ConnectionString connection = ConnectionString.Parse("Data Source=TEST;Initial Catalog=pubs;User Id=sa;Password=asdasd;");
+			string s = connection;
+			Assert.AreEqual("Data Source=TEST;Initial Catalog=pubs;User ID=sa;Password=asdasd;", s, "Strings are still equal.");
+		}
 	}
 }

@@ -18,7 +18,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Xml;
-using Subtext.Framework.Configuration;
+using Subtext.Framework;
 using Subtext.Framework.Data;
 
 namespace Subtext.Web
@@ -42,7 +42,7 @@ namespace Subtext.Web
 
 			SqlParameter[] p = 
 				{
-					DataHelper.MakeInParam("@Host", SqlDbType.NVarChar,100, Config.AggregateBlog.Host),
+					DataHelper.MakeInParam("@Host", SqlDbType.NVarChar,100, BlogInfo.AggregateBlog.Host),
 					DataHelper.MakeInParam("@GroupID", SqlDbType.Int, 4, groupID)
 				};
 

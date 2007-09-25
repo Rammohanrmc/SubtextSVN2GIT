@@ -15,11 +15,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Text.RegularExpressions;
 using System.Web;
+using log4net;
 using Subtext.Extensibility.Interfaces;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Format;
+using Subtext.Framework.Logging;
 using Subtext.Framework.Providers;
 using Subtext.Framework.Services;
 using Subtext.Framework.Text;
@@ -36,6 +39,7 @@ namespace Subtext.Framework
 	[Serializable]
 	public class BlogInfo
 	{
+		private readonly static ILog Log = new Log();
 		const int DefaultRecentCommentsLength = 50;
 		private UrlFormats _urlFormats;
 
@@ -1091,6 +1095,45 @@ namespace Subtext.Framework
 		public override int GetHashCode()
 		{
 			return this.Host.GetHashCode() ^ this.Subfolder.GetHashCode();
+		}
+
+		private static readonly BlogInfo aggregateBlog = InitAggregateBlog();
+
+		private static BlogInfo InitAggregateBlog()
+		{
+			HostInfo hostInfo = HostInfo.Instance;
+			string aggregateHost = ConfigurationManager.AppSettings["AggregateUrl"];
+			if (aggregateHost == null)
+				return null;
+
+			Regex regex = new Regex(@"^(https?://)?(?<host>.+?)(/.*)?$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+			Match match = regex.Match(aggregateHost);
+
+			if (match.Success)
+				aggregateHost = match.Groups["host"].Value;
+
+			BlogInfo blog = new BlogInfo();
+			blog.Title = ConfigurationManager.AppSettings["AggregateTitle"];
+			blog.Skin = SkinConfig.GetDefaultSkin();
+			blog.Host = aggregateHost;
+			blog.Subfolder = string.Empty;
+
+			// When running on the build server there are no Host records in the system
+			// so HostInfo.Instance returns NULL, meaning a NullRefernce on the server.
+			if (hostInfo == null)
+				Log.Warn("There is no Host record in for this installation.");
+			else
+				blog.UserName = hostInfo.HostUserName;
+
+			return blog;
+		}
+
+		public static BlogInfo AggregateBlog
+		{
+			get
+			{
+				return aggregateBlog;
+			}
 		}
 	}
 }

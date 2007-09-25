@@ -149,7 +149,7 @@ namespace Subtext.Framework.Configuration
 
                         if (anyBlogsExist && ConfigurationManager.AppSettings["AggregateEnabled"] == "true")
 						{
-                            info = Config.AggregateBlog;
+                            info = BlogInfo.AggregateBlog;
                             CacheConfig(HttpContext.Current.Cache, info, mCacheKey);
                             HttpContext.Current.Items.Add(cacheKey, info);
                             return info;
