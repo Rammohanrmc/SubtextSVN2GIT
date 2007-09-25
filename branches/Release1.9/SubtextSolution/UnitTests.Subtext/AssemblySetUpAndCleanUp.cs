@@ -76,8 +76,15 @@ namespace UnitTests.Subtext
 		private static void DeleteDatabase(string serverName, string databaseName)
 		{
 			DetachDatabase(serverName, databaseName);
-			File.Delete(Path.Combine(Path.GetFullPath(@"App_Data"), databaseName + ".mdf"));
-			File.Delete(Path.Combine(Path.GetFullPath(@"App_Data"), databaseName + ".ldf"));
+			
+			DeleteFile(Path.Combine(Path.GetFullPath(@"App_Data"), databaseName + ".mdf"));
+			DeleteFile(Path.Combine(Path.GetFullPath(@"App_Data"), databaseName + ".ldf"));
+		}
+
+		private static void DeleteFile(string path)
+		{
+			if(File.Exists(path))
+				File.Delete(path);
 		}
 
 		private static void CreateDatabase(string serverName, string databaseName)
