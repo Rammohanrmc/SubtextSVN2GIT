@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using log4net;
@@ -368,6 +369,14 @@ namespace Subtext.Framework
 			return AutoGenerateFriendlyUrl(title, wordSeparator, 0, textTransform);
 		}
 
+		static string ReplaceUnicodeCharacters(string text)
+		{
+			string normalized = text.Normalize(NormalizationForm.FormKD);
+			Encoding removal = Encoding.GetEncoding(Encoding.ASCII.CodePage, new EncoderReplacementFallback(string.Empty), new DecoderReplacementFallback(string.Empty));
+			byte[] bytes = removal.GetBytes(normalized);
+			return Encoding.ASCII.GetString(bytes);
+		} 
+
 		/// <summary>
 		/// Converts a title of a blog post into a friendly, but URL safe string.
 		/// </summary>
@@ -383,6 +392,7 @@ namespace Subtext.Framework
 			
 			string entryName = RemoveNonWordCharacters(title);
 			entryName = ReplaceSpacesWithSeparator(entryName, wordSeparator);
+			entryName = ReplaceUnicodeCharacters(entryName);
 			entryName = HttpUtility.UrlEncode(entryName);
 			entryName = RemoveTrailingPeriods(entryName);
 			entryName = entryName.Trim(new char[] {wordSeparator});
