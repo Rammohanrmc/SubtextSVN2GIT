@@ -19,6 +19,7 @@ namespace UnitTests.Subtext
 		[SetUp]
 		public static void SetUp()
 		{
+			Console.WriteLine("Assembly Setup beginning...");
 			if (ConfigurationManager.AppSettings["connectionStringName"] == "subtextExpress")
 			{
 				//For use with SQL Express. If you use "subtextData", we assume you already have the database created.
@@ -63,6 +64,7 @@ namespace UnitTests.Subtext
 			DeleteDatabase(connectionString.Server, "Subtext_Tests");
 			CreateDatabase(connectionString.Server, "Subtext_Tests");
 
+			//Test connection.
 			using (SqlConnection connection = new SqlConnection(connectionString))
 			{
 				connection.Open();
@@ -119,6 +121,8 @@ namespace UnitTests.Subtext
 				logFile.Growth = 10.0;
 
 				db.Create(false);
+
+				Console.WriteLine("Database Created at path '{0}'.", dataFile.FileName);
 
 				if (!server.Logins.Contains(@"BUILTIN\Users"))
 				{
