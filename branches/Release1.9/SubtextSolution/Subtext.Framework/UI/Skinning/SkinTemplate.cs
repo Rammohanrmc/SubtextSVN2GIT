@@ -190,13 +190,17 @@ namespace Subtext.Framework.UI.Skinning
         /// </summary>
         None = 0,
         /// <summary>
-        /// The merged JS file will be added in the head section of the page
+        /// The merged JS file will be added in the head section of the page (not used at the moment)
         /// </summary>
         MergeOnTop = 1,
         /// <summary>
-        /// The merged JS file will be added at the bottom of the page
+        /// The merged JS file will be added at the bottom of the page (not used at the moment)
         /// </summary>
-        MergeOnBottom = 2
+        MergeOnBottom = 2,
+        /// <summary>
+        /// Generic merge
+        /// </summary>
+        Merge = 3
     }
 
     public enum StyleMergeMode
