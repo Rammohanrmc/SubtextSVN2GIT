@@ -122,7 +122,15 @@ namespace UnitTests.Subtext
 
 				if (!server.Logins.Contains(@"BUILTIN\Users"))
 				{
-					CreateLogin(server, db, @"BUILTIN\Users");
+					try
+					{
+						CreateLogin(server, db, @"BUILTIN\Users");
+					}
+					catch(FailedOperationException e)
+					{
+						Console.WriteLine(e);
+						Console.WriteLine("Trying to continue...");
+					}
 				}
 
 				if(!db.Users.Contains("Users"))
