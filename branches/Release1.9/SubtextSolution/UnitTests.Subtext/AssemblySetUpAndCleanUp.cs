@@ -89,6 +89,9 @@ namespace UnitTests.Subtext
 
 		private static void CreateDatabase(string serverName, string databaseName)
 		{
+			if (!Directory.Exists("App_Data"))
+				Directory.CreateDirectory("App_Data");
+
 			Server server = null;
 			try
 			{
