@@ -26,7 +26,7 @@ namespace Subtext.Framework.UI.Skinning
     /// </summary>
     public class StyleSheetElementCollectionRenderer
     {
-        SkinTemplates templates;
+        readonly SkinTemplates templates;
 		
         public StyleSheetElementCollectionRenderer(SkinTemplates templates)
         {
@@ -221,15 +221,15 @@ namespace Subtext.Framework.UI.Skinning
                 string.Empty;
         }
 
-        public IList<string> GetStylesToBeMerged(string name)
+        public IList<StyleDefinition> GetStylesToBeMerged(string name)
         {
             return GetStylesToBeMerged(name, null, null, null);
         }
 
-        public IList<string> GetStylesToBeMerged(string skinName, string media, string title, string conditional)
+        public IList<StyleDefinition> GetStylesToBeMerged(string skinName, string media, string title, string conditional)
         {
             bool normalCss = false;
-            List<string> styles = new List<string>();
+            List<StyleDefinition> styles = new List<StyleDefinition>();
 
             SkinTemplate skinTemplate = templates.GetTemplate(skinName);
 
@@ -248,14 +248,16 @@ namespace Subtext.Framework.UI.Skinning
                         {
                             if (CanStyleBeMerged(style))
                             {
+                                string tmpHref;
                                 if (style.Href.StartsWith("~"))
                                 {
-                                    styles.Add(HttpHelper.ExpandTildePath(style.Href));
+                                    tmpHref = HttpHelper.ExpandTildePath(style.Href);
                                 }
                                 else
                                 {
-                                    styles.Add(skinPath + style.Href);
+                                    tmpHref = skinPath + style.Href;
                                 }
+                                styles.Add(new StyleDefinition(tmpHref, style.Media));
                             }                            
                         }
                         else
@@ -265,14 +267,16 @@ namespace Subtext.Framework.UI.Skinning
                                 tmpMedia = null;
                             if (string.Compare(media, tmpMedia, StringComparison.InvariantCultureIgnoreCase) == 0 && string.Compare(title, style.Title, StringComparison.InvariantCultureIgnoreCase) == 0 && string.Compare(conditional, style.Conditional, StringComparison.InvariantCultureIgnoreCase) == 0)
                             {
+                                string tmpHref;
                                 if (style.Href.StartsWith("~"))
                                 {
-                                    styles.Add(HttpHelper.ExpandTildePath(style.Href));
+                                    tmpHref = HttpHelper.ExpandTildePath(style.Href);
                                 }
                                 else
                                 {
-                                    styles.Add(skinPath + style.Href);
+                                    tmpHref = skinPath + style.Href;
                                 }
+                                styles.Add(new StyleDefinition(tmpHref, style.Media));
                             }
                         }
                     }  
@@ -282,11 +286,11 @@ namespace Subtext.Framework.UI.Skinning
                 {
                     //Main style
                     if(!skinTemplate.ExcludeDefaultStyle)
-                        styles.Add(skinPath + "style.css");
+                        styles.Add(new StyleDefinition(skinPath + "style.css"));
 
                     //Secondary Style
                     if (skinTemplate.HasSkinStylesheet)
-                        styles.Add(skinPath + skinTemplate.StyleSheet);
+                        styles.Add(new StyleDefinition(skinPath + skinTemplate.StyleSheet));
                 }
 
             }
@@ -299,8 +303,6 @@ namespace Subtext.Framework.UI.Skinning
                 return false;
             if(!string.IsNullOrEmpty(style.Title))
                 return false;
-            if(!string.IsNullOrEmpty(style.Media) && !style.Media.ToLower().Equals("all"))
-                return false;
             if (IsStyleRemote(style))
                 return false;
             return true;
@@ -312,6 +314,57 @@ namespace Subtext.Framework.UI.Skinning
                 return true;
             else
                 return false;
+        }
+    }
+
+    public class StyleDefinition : IEquatable<StyleDefinition>
+    {
+        private string href;
+        private string media = string.Empty;
+
+        public string Href
+        {
+            get { return href; }
+            set { href = value; }
+        }
+
+        public string Media
+        {
+            get { return media; }
+            set { media = value; }
+        }
+
+        public StyleDefinition(string href)
+        {
+            this.href = href;
+        }
+
+        public StyleDefinition(string href, string media)
+        {
+            this.href = href;
+            this.media = media;
+        }
+
+        public override string ToString()
+        {
+            return "Href: " + href + ", Media: " + media;
+        }
+
+        public bool Equals(StyleDefinition styleDefinition)
+        {
+            if (styleDefinition == null) return false;
+            return Equals(href, styleDefinition.href) && Equals(media, styleDefinition.media);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(this, obj)) return true;
+            return Equals(obj as StyleDefinition);
+        }
+
+        public override int GetHashCode()
+        {
+            return href.GetHashCode() + 29*media.GetHashCode();
         }
     }
 }
