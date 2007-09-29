@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Security.Principal;
 using MbUnit.Framework;
+using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 using Subtext.Framework;
 using Subtext.Framework.Configuration;
@@ -250,23 +251,32 @@ namespace UnitTests.Subtext
 			}
 			Database db = server.Databases[databaseName];
 
-			DataFile dataFile = db.FileGroups[0].Files[0];
-			if(!File.Exists(dataFile.FileName))
+			try
 			{
-				Console.WriteLine("'{0}' does not exist. Attempting to detach without altering db..", dataFile.FileName);
+				DataFile dataFile = db.FileGroups[0].Files[0];
+				if (!File.Exists(dataFile.FileName))
+				{
+					Console.WriteLine("'{0}' does not exist. Attempting to detach without altering db..", dataFile.FileName);
 
-				try
-				{
-					server.DetachDatabase(db.Name, false);
-				}
-				catch(Exception e)
-				{
-					Console.WriteLine("Detach failed... continuing.");
-					Console.WriteLine(e);
-				}
+					try
+					{
+						server.DetachDatabase(db.Name, false);
+					}
+					catch (Exception e)
+					{
+						Console.WriteLine("Detach failed... continuing.");
+						Console.WriteLine(e);
+					}
+					return;
+				}	
+			}
+			catch(ExecutionFailureException e)
+			{
+				Console.WriteLine("Execution failure exception. Returning from this method.");
+				Console.WriteLine(e);
 				return;
 			}
-
+			
 			db.DatabaseOptions.UserAccess = DatabaseUserAccess.Single;
 
 			server.KillAllProcesses(db.Name);
