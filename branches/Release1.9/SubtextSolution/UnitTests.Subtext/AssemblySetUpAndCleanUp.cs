@@ -250,7 +250,6 @@ namespace UnitTests.Subtext
 				return;
 			}
 			Database db = server.Databases[databaseName];
-
 			try
 			{
 				DataFile dataFile = db.FileGroups[0].Files[0];
@@ -272,8 +271,19 @@ namespace UnitTests.Subtext
 			}
 			catch(ExecutionFailureException e)
 			{
-				Console.WriteLine("Execution failure exception. Returning from this method.");
+				Console.WriteLine("Execution failure exception. Attempting a detach.");
 				Console.WriteLine(e);
+
+				try
+				{
+					server.DetachDatabase(db.Name, false);
+				}
+				catch (Exception x)
+				{
+					Console.WriteLine("Detach failed... continuing.");
+					Console.WriteLine(x);
+				}
+				
 				return;
 			}
 			
