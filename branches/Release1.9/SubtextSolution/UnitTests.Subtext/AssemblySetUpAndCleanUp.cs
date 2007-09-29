@@ -77,6 +77,7 @@ namespace UnitTests.Subtext
 
 		private static void DeleteDatabase(string serverName, string databaseName)
 		{
+			Console.WriteLine(@"Attempting to delete database '{0}\{1}", serverName, databaseName);
 			DetachDatabase(serverName, databaseName);
 			
 			DeleteFile(Path.Combine(Path.GetFullPath(@"App_Data"), databaseName + ".mdf"));
@@ -98,32 +99,62 @@ namespace UnitTests.Subtext
 			try
 			{
 				server = new Server(serverName);
-				Database db = new Database(server, databaseName);
 				
-				db.DatabaseOptions.AutoClose = true;
-				db.DatabaseOptions.AutoShrink = true;
-				db.DatabaseOptions.UserAccess = DatabaseUserAccess.Multiple;
+				Database db = CreateDb(server, databaseName);
+				
+				WindowsIdentity currentIdentity = WindowsIdentity.GetCurrent();
 
-				FileGroup fileGroup = new FileGroup(db, "PRIMARY");
-				db.FileGroups.Add(fileGroup);
-				DataFile dataFile = new DataFile(fileGroup, databaseName + "_Data");
-				fileGroup.Files.Add(dataFile);
-				dataFile.FileName = Path.Combine(Path.GetFullPath(@"App_Data"), databaseName + ".mdf");
-				dataFile.Size = 5.0*1024.0;
-				dataFile.Growth = 10.0;
-				dataFile.GrowthType = FileGrowthType.Percent;
+				CreateSqlUsersGroup(server, db);
+				CreateSqlLoginForCurrentUser(server, db, currentIdentity);
+				CreateSqlUserForCurrentUser(db, currentIdentity);
 
-				LogFile logFile = new LogFile(db, databaseName + "_Log");
-				db.LogFiles.Add(logFile);
-				logFile.FileName = Path.Combine(Path.GetFullPath(@"App_Data"), databaseName + ".ldf");
-				logFile.Size = 2.5*1024.0;
-				logFile.GrowthType = FileGrowthType.Percent;
-				logFile.Growth = 10.0;
+				server.Logins[currentIdentity.Name].AddToRole("sysadmin");
+			}
+			finally
+			{
+				if(server != null)
+					server.ConnectionContext.SqlConnectionObject.Close();
+			}
+		}
 
-				db.Create(false);
+		private static void CreateSqlUserForCurrentUser(Database db, IIdentity currentIdentity)
+		{
+			User user = FindUserByLogin(db, currentIdentity.Name);
+			if (user == null)
+			{
+				try
+				{
+				Console.WriteLine("CREATING USER");
+				CreateUser(db, currentIdentity.Name, currentIdentity.Name);
+				}
+				catch(Exception e)
+				{
+					Console.WriteLine(e);
+					Console.WriteLine("Could not create sql user for current identity.");
+				}
+			}
+		}
 
-				Console.WriteLine("Database Created at path '{0}'.", dataFile.FileName);
+		private static void CreateSqlLoginForCurrentUser(Server server, NamedSmoObject db, IIdentity identity)
+		{
+			try
+			{
+				if (!server.Logins.Contains(identity.Name))
+				{
+					CreateLogin(server, db, identity.Name);
+				}
+			}
+			catch(Exception e)
+			{
+				Console.WriteLine(e);
+				Console.WriteLine("Could not create login for current user.");
+			}
+		}
 
+		private static void CreateSqlUsersGroup(Server server, Database db)
+		{
+			try
+			{
 				if (!server.Logins.Contains(@"BUILTIN\Users"))
 				{
 					try
@@ -142,27 +173,40 @@ namespace UnitTests.Subtext
 					CreateUser(db, @"BUILTIN\Users", "Users");
 				}
 				db.Roles["db_owner"].AddMember("Users");
-
-				WindowsIdentity currentIdentity = WindowsIdentity.GetCurrent();
-				if(!server.Logins.Contains(currentIdentity.Name))
-				{
-					CreateLogin(server, db, currentIdentity.Name);
-				}
-
-				User user = FindUserByLogin(db, currentIdentity.Name);
-				if(user == null)
-				{
-					Console.WriteLine("CREATING USER");
-					CreateUser(db, currentIdentity.Name, currentIdentity.Name);
-				}
-
-				server.Logins[currentIdentity.Name].AddToRole("sysadmin");
 			}
-			finally
+			catch (Exception e)
 			{
-				if(server != null)
-					server.ConnectionContext.SqlConnectionObject.Close();
+				Console.WriteLine(e);
+				Console.WriteLine("Could not create 'Users' group. Continuing...");
 			}
+		}
+
+		private static Database CreateDb(Server server, string databaseName)
+		{
+			Database db = new Database(server, databaseName);
+				
+			db.DatabaseOptions.AutoClose = true;
+			db.DatabaseOptions.AutoShrink = true;
+			db.DatabaseOptions.UserAccess = DatabaseUserAccess.Multiple;
+
+			FileGroup fileGroup = new FileGroup(db, "PRIMARY");
+			db.FileGroups.Add(fileGroup);
+			DataFile dataFile = new DataFile(fileGroup, databaseName + "_Data");
+			fileGroup.Files.Add(dataFile);
+			dataFile.FileName = Path.Combine(Path.GetFullPath(@"App_Data"), databaseName + ".mdf");
+			dataFile.Size = 5.0*1024.0;
+			dataFile.Growth = 10.0;
+			dataFile.GrowthType = FileGrowthType.Percent;
+
+			LogFile logFile = new LogFile(db, databaseName + "_Log");
+			db.LogFiles.Add(logFile);
+			logFile.FileName = Path.Combine(Path.GetFullPath(@"App_Data"), databaseName + ".ldf");
+			logFile.Size = 2.5*1024.0;
+			logFile.GrowthType = FileGrowthType.Percent;
+			logFile.Growth = 10.0;
+
+			db.Create(false);
+			return db;
 		}
 
 		private static User FindUserByLogin(Database db, string login)
@@ -177,7 +221,7 @@ namespace UnitTests.Subtext
 			return null;
 		}
 
-		private static void CreateLogin(Server server, Database db, string loginName)
+		private static void CreateLogin(Server server, NamedSmoObject db, string loginName)
 		{
 			Login login = new Login(server, loginName);
 			login.DefaultDatabase = db.Name;
@@ -200,14 +244,34 @@ namespace UnitTests.Subtext
 
 			// Check if database is current attached to sqlexpress.
 			if (!server.Databases.Contains(databaseName))
+			{
+				Console.WriteLine("Server does not contain db '{0}'", databaseName);
 				return;
-
+			}
 			Database db = server.Databases[databaseName];
+
+			DataFile dataFile = db.FileGroups[0].Files[0];
+			if(!File.Exists(dataFile.FileName))
+			{
+				Console.WriteLine("'{0}' does not exist. Attempting to detach without altering db..", dataFile.FileName);
+
+				try
+				{
+					server.DetachDatabase(db.Name, false);
+				}
+				catch(Exception e)
+				{
+					Console.WriteLine("Detach failed... continuing.");
+					Console.WriteLine(e);
+				}
+				return;
+			}
+
 			db.DatabaseOptions.UserAccess = DatabaseUserAccess.Single;
 
-			Console.WriteLine("DETACHING '{0}'", db.Name);
 			server.KillAllProcesses(db.Name);
-			
+
+			Console.WriteLine("Altering database '{0}'", db.Name);
 			db.Alter(TerminationClause.FailOnOpenTransactions);
 
 			Console.WriteLine("Detaching existing database before restore ...");
