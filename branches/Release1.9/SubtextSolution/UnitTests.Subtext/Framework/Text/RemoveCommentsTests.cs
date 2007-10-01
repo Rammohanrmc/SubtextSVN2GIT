@@ -9,7 +9,6 @@ namespace UnitTests.Subtext.Framework.Text
 	/// just that method.
 	/// </summary>
 	[TestFixture]
-	[Author("Simone Chiaretta", "simone@piyosailing.com", "http://www.codeclimber.net.nz")]
 	public class RemoveCommentsTests
 	{
 

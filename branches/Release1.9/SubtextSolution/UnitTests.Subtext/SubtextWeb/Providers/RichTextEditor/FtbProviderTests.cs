@@ -26,7 +26,6 @@ namespace UnitTests.Subtext.SubtextWeb.Providers.RichTextEditor
 	/// Summary description for FtbProviderTests.
 	/// </summary>
 	[TestFixture]
-	[Author("Simone Chiaretta", "simone@piyosailing.com", "http://www.codeclimber.net.nz")]
 	public class FtbProviderTests
 	{
 		readonly string _hostName = Guid.NewGuid().ToString().Replace("-", string.Empty) + ".com";

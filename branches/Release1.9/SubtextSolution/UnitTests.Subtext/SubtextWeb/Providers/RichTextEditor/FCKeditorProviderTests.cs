@@ -28,7 +28,6 @@ namespace UnitTests.Subtext.SubtextWeb.Providers.RichTextEditor
 	/// Summary description for FCKeditorProviderTests.
 	/// </summary>
 	[TestFixture]
-	[Author("Simone Chiaretta", "simone@piyosailing.com", "http://www.codeclimber.net.nz")]
 	public class FCKeditorProviderTests
 	{
 		readonly string _hostName = Guid.NewGuid().ToString().Replace("-", string.Empty) + ".com";
