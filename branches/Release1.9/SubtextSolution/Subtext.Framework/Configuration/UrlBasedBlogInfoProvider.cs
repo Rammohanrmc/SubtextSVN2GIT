@@ -130,6 +130,7 @@ namespace Subtext.Framework.Configuration
 			log.DebugFormat("Attempting to get blog info. Host: {0}, Subfolder: {1}", blogRequest.Host, blogRequest.Subfolder);
 			
             info = Config.GetBlogInfo(blogRequest.Host, blogRequest.Subfolder, false);
+
 			if (info == null)
 			{
 				info = Config.GetBlogInfo(BlogInfo.GetAlternateHostAlias(blogRequest.Host), blogRequest.Subfolder, false);
@@ -161,6 +162,14 @@ namespace Subtext.Framework.Configuration
 				}
 
 				throw new BlogDoesNotExistException(blogRequest.Host, blogRequest.Subfolder, anyBlogsExist);
+			}
+
+			if(!String.Equals(info.Host, blogRequest.Host, StringComparison.InvariantCultureIgnoreCase) 
+				&& String.Equals(info.Host, "localhost", StringComparison.InvariantCultureIgnoreCase)
+				&& !blogRequest.IsLocal)
+			{
+				info.Host = blogRequest.Host;
+				Config.UpdateConfigData(info);
 			}
 
 			if(!info.IsActive 

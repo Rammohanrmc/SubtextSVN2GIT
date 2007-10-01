@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.Web;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Format;
@@ -44,7 +43,7 @@ namespace Subtext.Web.HttpModules
 			if(!Config.IsValidSubfolderName(subfolder))
 				subfolder = string.Empty;
 
-			BlogRequest.Current = new BlogRequest(Host, subfolder, HttpContext.Current.Request.Url);
+			BlogRequest.Current = new BlogRequest(Host, subfolder, HttpContext.Current.Request.Url, HttpContext.Current.Request.IsLocal);
 		}
 		
 		/// <summary>

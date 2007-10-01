@@ -87,8 +87,16 @@ namespace UnitTests.Subtext
 
 		private static void DeleteFile(string path)
 		{
-			if(File.Exists(path))
-				File.Delete(path);
+			try
+			{
+				if (File.Exists(path))
+					File.Delete(path);
+			}
+			catch(Exception e)
+			{
+				Console.WriteLine("Could not delete '{0}'", path);
+				Console.WriteLine(e);
+			}
 		}
 
 		private static void CreateDatabase(string serverName, string databaseName)
@@ -250,52 +258,53 @@ namespace UnitTests.Subtext
 				return;
 			}
 			Database db = server.Databases[databaseName];
+
 			try
 			{
 				DataFile dataFile = db.FileGroups[0].Files[0];
 				if (!File.Exists(dataFile.FileName))
 				{
 					Console.WriteLine("'{0}' does not exist. Attempting to detach without altering db..", dataFile.FileName);
-
-					try
-					{
-						server.DetachDatabase(db.Name, false);
-					}
-					catch (Exception e)
-					{
-						Console.WriteLine("Detach failed... continuing.");
-						Console.WriteLine(e);
-					}
-					return;
-				}	
+				}
+				db.DatabaseOptions.UserAccess = DatabaseUserAccess.Single;
 			}
-			catch(ExecutionFailureException e)
+			catch (ExecutionFailureException e)
 			{
-				Console.WriteLine("Execution failure exception. Attempting a detach.");
+				Console.WriteLine("Execution failure exception. Continuing.");
 				Console.WriteLine(e);
-
-				try
-				{
-					server.DetachDatabase(db.Name, false);
-				}
-				catch (Exception x)
-				{
-					Console.WriteLine("Detach failed... continuing.");
-					Console.WriteLine(x);
-				}
-				
-				return;
 			}
-			
-			db.DatabaseOptions.UserAccess = DatabaseUserAccess.Single;
 
-			server.KillAllProcesses(db.Name);
+			try
+			{
+				server.KillAllProcesses(db.Name);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine("Could not kill all processes");
+				Console.WriteLine(e);
+			}
 
 			Console.WriteLine("Altering database '{0}'", db.Name);
-			db.Alter(TerminationClause.FailOnOpenTransactions);
+			try
+			{
+				db.Alter(TerminationClause.FailOnOpenTransactions);
+			}
+			catch(Exception e)
+			{
+				Console.WriteLine("Could not alter the database.");
+				Console.WriteLine(e);
+			}
 
-			Console.WriteLine("Detaching existing database before restore ...");
-			server.DetachDatabase(db.Name, false);
+			try
+			{
+				Console.WriteLine("Detaching existing database before restore ...");
+				server.DetachDatabase(db.Name, false);
+			}
+			catch(Exception e)
+			{
+				Console.WriteLine("Detach failed, let's continue anyways.");
+				Console.WriteLine(e);
+			}
 		}
 	}
 }
