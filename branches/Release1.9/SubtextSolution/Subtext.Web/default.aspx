@@ -1,24 +1,26 @@
 <%@ Page CodeBehind="Default.aspx.cs" EnableViewState="false" Language="C#" EnableTheming="false"  AutoEventWireup="false" Inherits="Subtext.Web._default" %>
 <%@ OutputCache Duration="120" VaryByParam="GroupID" VaryByHeader="Accept-Language" %>
 
-<html>
-  <head>
-		<title><asp:Literal id = "TitleTag" runat = "Server" /></title>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+		<title><asp:Literal id="title" runat="server" Text="<%$ AppSettings:AggregateTitle %>" /></title>
 		<asp:Literal id="Style" runat="Server" />
 	</head>
 	<body>
 		<form id="Form1" method="post" runat="server">
 			<div id="header">
-				<h1><asp:HyperLink ID = "TitleLink" Runat="server" /></h1>
+				<h1><asp:HyperLink ID="TitleLink" Text="<%$ AppSettings:AggregateTitle %>" NavigateUrl="<%# AggregateUrl %>" Runat="server" /></h1>
 			</div>
 			<div id="authors">
 				<h2>Welcome</h2>
 				<p>
-					Please contact me (Phil Haack) at <a href="http://haacked.com/contact.aspx" title="Contact Page" rel="external">
-						here</a> with any errors, problems, and/or questions.
+					This is the generic homepage (aka Aggregate Blog) for a Subtext community website. It aggregates 
+					posts from every blog installed in this server. To modify this page, edit the default.aspx page 
+					in your Subtext installation.
 				</p>
 				<p>
-					To learn more about the application, check out <a href="http://subtextproject.com/" title="Haacked Blog" rel="external">
+					To learn more about the application, check out <a href="http://subtextproject.com/" title="Subtext Project Website" rel="external">
 					the Subtext Project Website</a>.
 				</p>
 				<p>
@@ -30,8 +32,11 @@
 				<ul>
 					<li><asp:HyperLink ID="OpmlLink" Text="OPML (list of bloggers)" runat="server" NavigateUrl = "~/Opml.aspx" />
 					<li><asp:HyperLink ID="RssLink" Text="RSS (list of recent posts)" runat="server" NavigateUrl = "~/MainFeed.aspx" />
-					<li><asp:HyperLink ID="Hyperlink4" Text="RSS (Microsoft Bloggers)" runat="server" NavigateUrl = "~/MainFeed.aspx?GroupID=2" />
-					<li><asp:HyperLink ID="Hyperlink5" Text="RSS (Non-Microsoft Bloggers)" runat="server" NavigateUrl = "~/MainFeed.aspx?GroupID=4" /></li>
+					<asp:Repeater ID="blogGroupRepeater" runat="server">
+						<ItemTemplate>
+							<li><asp:HyperLink ID="groupRssLink" Text='<%# Eval("Title", "RSS ({0})") %>' runat="server" NavigateUrl='<%# Eval("Id", "~/MainFeed.aspx?GroupID={0}") %>' /></li>
+						</ItemTemplate>
+					</asp:Repeater>
 
 				</ul>
 				<h2>Blog Stats</h2>

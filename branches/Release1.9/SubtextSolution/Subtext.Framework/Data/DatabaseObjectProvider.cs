@@ -159,6 +159,26 @@ namespace Subtext.Framework.Data
 
 		#endregion
 
+		#region Blog Groups
+		/// <summary>
+		/// Lists the blog groups.
+		/// </summary>
+		/// <param name="activeOnly">if set to <c>true</c> [active only].</param>
+		/// <returns></returns>
+		public override IList<BlogGroup> ListBlogGroups(bool activeOnly)
+		{
+			using(IDataReader reader = DbProvider.Instance().ListBlogGroups(activeOnly))
+			{
+				List<BlogGroup> groups = new List<BlogGroup>();
+				while(reader.Read())
+				{
+					groups.Add(DataHelper.LoadBlogGroup(reader));
+				}
+				return groups;
+			}
+		}
+		#endregion
+
 		#region Entries
 
 		#region Paged Posts

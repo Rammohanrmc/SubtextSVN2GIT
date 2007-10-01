@@ -14,20 +14,15 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
-using System.Web;
+using System.Web.UI;
 using System.Web.UI.WebControls;
-using Subtext.Extensibility.Interfaces;
 using Subtext.Framework;
-using Subtext.Framework.Data;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Exceptions;
-using Subtext.Framework.Format;
-using Subtext.Web.Admin;
-using Subtext.Framework.Security;
 using Subtext.Framework.Providers;
-using System.Web.UI;
 using System.Data.SqlClient;
 
 namespace Subtext.Web.HostAdmin.UserControls
@@ -35,17 +30,17 @@ namespace Subtext.Web.HostAdmin.UserControls
 	/// <summary>
 	///	User control used to create, edit and delete Blog Groups.
 	/// </summary>
-	public partial class GroupsEditor : System.Web.UI.UserControl
+	public partial class GroupsEditor : UserControl
 	{
         const string VSKEY_GROUPID = "VS_GROUPID";
 
 		#region Declared Controls
-		protected System.Web.UI.WebControls.Button btnAddNewGroup = new System.Web.UI.WebControls.Button();
+		protected Button btnAddNewGroup = new Button();
 		#endregion
 
-		protected void Page_Load(object sender, System.EventArgs e)
+		protected void Page_Load(object sender, EventArgs e)
 		{
-            this.btnAddNewGroup.Click += new EventHandler(btnAddNewGroup_Click);			
+            this.btnAddNewGroup.Click += btnAddNewGroup_Click;
 			
 			btnAddNewGroup.CssClass = "button";
 			btnAddNewGroup.Text = "New Blog Group";
@@ -62,13 +57,13 @@ namespace Subtext.Web.HostAdmin.UserControls
 		{
 			this.pnlResults.Visible = true;
 			this.pnlEdit.Visible = false;
-						
-			SqlDataReader reader = (SqlDataReader) DbProvider.Instance().ListBlogGroups(!chkShowInactive.Checked);
 
-            if (reader.HasRows)
+			IList<BlogGroup> groups = Config.ListBlogGroups(!chkShowInactive.Checked);
+
+            if (groups.Count > 0)
 			{
                 this.rprGroupsList.Visible = true;
-                this.rprGroupsList.DataSource = reader;
+                this.rprGroupsList.DataSource = groups;
                 this.rprGroupsList.DataBind();
 				this.lblNoMessages.Visible = false;
 			}
@@ -162,7 +157,7 @@ namespace Subtext.Web.HostAdmin.UserControls
 		}
 		#endregion
 
-		protected void chkShowInactive_CheckedChanged(object sender, System.EventArgs e)
+		protected void chkShowInactive_CheckedChanged(object sender, EventArgs e)
 		{
 			BindList();
 		}
@@ -176,7 +171,7 @@ namespace Subtext.Web.HostAdmin.UserControls
 			BindEdit();
 		}
 
-		protected void rprGroupsList_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
+		protected void rprGroupsList_ItemCommand(object source, RepeaterCommandEventArgs e)
 		{
 			switch (e.CommandName.ToLower(CultureInfo.InvariantCulture)) 
 			{
@@ -211,7 +206,7 @@ namespace Subtext.Web.HostAdmin.UserControls
                 BindList();
         }
 
-		protected void btnSave_Click(object sender, System.EventArgs e)
+		protected void btnSave_Click(object sender, EventArgs e)
 		{
 			SaveConfig();
 		}
@@ -270,7 +265,7 @@ namespace Subtext.Web.HostAdmin.UserControls
 			}
 		}
         
-		protected string ToggleActiveString(bool active)
+		protected static string ToggleActiveString(bool active)
 		{
 			if(active)
 				return "Deactivate";
@@ -292,7 +287,7 @@ namespace Subtext.Web.HostAdmin.UserControls
 			BindList();
 		}
 
-		protected void btnCancel_Click(object sender, System.EventArgs e)
+		protected void btnCancel_Click(object sender, EventArgs e)
 		{
 			this.messagePanel.ShowMessage("Blog Group Update Cancelled. Nothing to see here.");
 			BindList();

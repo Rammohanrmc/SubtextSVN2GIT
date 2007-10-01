@@ -304,12 +304,40 @@ namespace Subtext.Framework.Providers
         /// <returns></returns>
         public abstract IDataReader GetBlogGroup(int id, bool isActive);
 
+		/// <summary>
+		/// Lists the blog groups.
+		/// </summary>
+		/// <param name="isActive">if set to <c>true</c> [is active].</param>
+		/// <returns></returns>
         public abstract IDataReader ListBlogGroups(bool isActive);
 
+		/// <summary>
+		/// Sets the group active.
+		/// </summary>
+		/// <param name="id">The id.</param>
+		/// <param name="isActive">if set to <c>true</c> [is active].</param>
+		/// <returns></returns>
         public abstract IDataReader SetGroupActive(int id, bool isActive);
 
+		/// <summary>
+		/// Updates the blog group.
+		/// </summary>
+		/// <param name="id">The id.</param>
+		/// <param name="title">The title.</param>
+		/// <param name="isActive">if set to <c>true</c> [is active].</param>
+		/// <param name="displayOrder">The display order.</param>
+		/// <param name="description">The description.</param>
+		/// <returns></returns>
         public abstract bool UpdateBlogGroup(int id, string title, bool isActive, int displayOrder, string description);
 
+		/// <summary>
+		/// Inserts the blog group.
+		/// </summary>
+		/// <param name="title">The title.</param>
+		/// <param name="isActive">if set to <c>true</c> [is active].</param>
+		/// <param name="displayOrder">The display order.</param>
+		/// <param name="description">The description.</param>
+		/// <returns></returns>
         public abstract int InsertBlogGroup(string title, bool isActive, int displayOrder, string description);
 
         #endregion

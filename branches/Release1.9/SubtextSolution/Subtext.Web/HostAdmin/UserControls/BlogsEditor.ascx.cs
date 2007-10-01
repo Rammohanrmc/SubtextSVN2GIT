@@ -71,8 +71,7 @@ namespace Subtext.Web.HostAdmin.UserControls
 
         private void BindGroups()
         {
-            SqlDataReader reader = (SqlDataReader) DbProvider.Instance().ListBlogGroups(false);
-            ddlGroups.DataSource = reader;
+            ddlGroups.DataSource = Config.ListBlogGroups(false);
             ddlGroups.DataBind();
         }
 
@@ -124,7 +123,7 @@ namespace Subtext.Web.HostAdmin.UserControls
                 this.txtHost.Text = blog.Host;
                 this.txtUsername.Text = blog.UserName;
                 this.txtTitle.Text = blog.Title;
-                IPagedCollection<BlogAlias> aliases = blog.GetBlogAliases(0, 1000);
+                IPagedCollection<BlogAlias> aliases = blog.GetBlogAliases(0, int.MaxValue);
                 rprBlogAliasList.DataSource = aliases;
                 rprBlogAliasList.DataBind();
                 ddlGroups.Items.FindByValue(blog.BlogGroupId.ToString()).Selected = true;

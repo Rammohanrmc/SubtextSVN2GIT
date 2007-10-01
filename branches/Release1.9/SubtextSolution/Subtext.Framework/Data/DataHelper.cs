@@ -172,7 +172,27 @@ namespace Subtext.Framework.Data
             return entries;
         }
 		#endregion
+
+		#region Blog Group
+		public static BlogGroup LoadBlogGroup(IDataReader reader)
+		{
+			BlogGroup group = new BlogGroup();
+
+			group.Id = ReadInt32(reader, "Id");
+			group.Title = ReadString(reader, "Title");
+			group.Description = ReadString(reader, "Description");
+			group.DisplayOrder = ReadInt32(reader, "DisplayOrder");
+			group.IsActive = ReadBoolean(reader, "IsActive");
+			return group;
+		}
+		#endregion
+
 		#region BlogAlias
+		/// <summary>
+		/// Loads the blog alias.
+		/// </summary>
+		/// <param name="reader">The reader.</param>
+		/// <returns></returns>
 		public static BlogAlias LoadBlogAlias(IDataReader reader)
 		{
 			BlogAlias alias = new BlogAlias();

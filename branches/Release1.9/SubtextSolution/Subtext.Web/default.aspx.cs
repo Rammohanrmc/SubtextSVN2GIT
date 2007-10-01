@@ -14,12 +14,15 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Globalization;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Subtext.Framework.Components;
+using Subtext.Framework.Configuration;
 using Subtext.Framework.Providers;
 
 namespace Subtext.Web
@@ -34,12 +37,31 @@ namespace Subtext.Web
 
 		protected void Page_Load(object sender, EventArgs e)
 		{
-            TitleTag.Text = TitleLink.Text = ConfigurationManager.AppSettings["AggregateTitle"];
-            TitleLink.NavigateUrl = ConfigurationManager.AppSettings["AggregateUrl"];
-
-			//No postbacks on this page. It is output cached.
+            //No postbacks on this page. It is output cached.
 			BindData();
 			SetStyle();
+		}
+
+		private string aggregateUrl = null;
+		/// <summary>
+		/// Url to the aggregate page.
+		/// </summary>
+		protected string AggregateUrl
+		{
+			get
+			{
+				if (this.aggregateUrl == null)
+				{
+					this.aggregateUrl = ConfigurationManager.AppSettings["AggregateUrl"];
+					if (Request.Url.Port != 80)
+					{
+						UriBuilder url = new UriBuilder(aggregateUrl);
+						url.Port = Request.Url.Port;
+						this.aggregateUrl = url.ToString();
+					}
+				}
+				return aggregateUrl;
+			}
 		}
 
 		protected string GetEntryUrl(string host, string app, string entryName, DateTime dt)
@@ -72,19 +94,17 @@ namespace Subtext.Web
 
 		private void BindData()
 		{
-			int GroupID = 1;
+			int groupId = 1;
 
 			if(Request.QueryString["GroupID"] !=null)
 			{
-				try
-				{
-					GroupID = Int32.Parse(Request.QueryString["GroupID"]);
-				}
-				catch{}
-
+				Int32.TryParse(Request.QueryString["GroupID"], out groupId);
 			}
 
-            DataSet ds = DbProvider.Instance().GetAggregateHomePageData(GroupID);
+			IList<BlogGroup> groups = Config.ListBlogGroups(true);
+			this.blogGroupRepeater.DataSource = groups;
+
+            DataSet ds = DbProvider.Instance().GetAggregateHomePageData(groupId);
 
 			Bloggers.DataSource = ds.Tables[0];
 			RecentPosts.DataSource = ds.Tables[1];
@@ -101,8 +121,7 @@ namespace Subtext.Web
 
 			}
 
-			Bloggers.DataBind();
-			RecentPosts.DataBind();
+			DataBind();
 
 			ds.Clear();
 			ds.Dispose();

@@ -14,10 +14,12 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Web.Configuration;
 using log4net;
 using Subtext.Extensibility.Interfaces;
+using Subtext.Framework.Components;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Format;
 using Subtext.Framework.Logging;
@@ -409,25 +411,50 @@ namespace Subtext.Framework.Configuration
 			return true;
 		}
 
+		/// <summary>
+		/// Adds the blog alias to the system.
+		/// </summary>
+		/// <param name="alias">The alias.</param>
+		/// <returns></returns>
 		public static bool AddBlogAlias(BlogAlias alias)
 		{
 			return ObjectProvider.Instance().CreateBlogAlias(alias);
 		}
 
+		/// <summary>
+		/// Updates the blog alias.
+		/// </summary>
+		/// <param name="alias">The alias.</param>
+		/// <returns></returns>
 		public static bool UpdateBlogAlias(BlogAlias alias)
 		{
 
 			return ObjectProvider.Instance().UpdateBlogAlias(alias);
 		}
 
+		/// <summary>
+		/// Deletes the blog alias.
+		/// </summary>
+		/// <param name="alias">The alias.</param>
+		/// <returns></returns>
 		public static bool DeleteBlogAlias(BlogAlias alias)
 		{
 			return ObjectProvider.Instance().DeleteBlogAlias(alias);
 		}
 
+		/// <summary>
+		/// Gets the blog alias.
+		/// </summary>
+		/// <param name="id">The id.</param>
+		/// <returns></returns>
 		public static BlogAlias GetBlogAlias(int id)
 		{
 			return ObjectProvider.Instance().GetBlogAliasById(id);			
+		}
+
+		public static IList<BlogGroup> ListBlogGroups(bool activeOnly)
+		{
+			return ObjectProvider.Instance().ListBlogGroups(activeOnly);
 		}
 	}
 }

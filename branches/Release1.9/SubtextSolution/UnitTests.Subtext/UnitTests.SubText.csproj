@@ -285,6 +285,7 @@
     <Compile Include="Framework\Configuration\BlogCreationTests.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Framework\Configuration\BlogGroupTests.cs" />
     <Compile Include="Framework\Configuration\ConfigTests.cs" />
     <Compile Include="Framework\Configuration\UrlBasedBlogInfoProviderTests.cs" />
     <Compile Include="Framework\Data\CacherTests.cs">

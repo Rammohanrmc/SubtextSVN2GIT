@@ -97,6 +97,16 @@ namespace Subtext.Framework.Providers
 
 		#endregion Blogs
 
+		#region Blog Groups
+
+		/// <summary>
+		/// Lists the blog groups.
+		/// </summary>
+		/// <param name="activeOnly">if set to <c>true</c> [active only].</param>
+		/// <returns></returns>
+		public abstract IList<BlogGroup> ListBlogGroups(bool activeOnly);
+		#endregion
+
 		#region BlogAlias
 
 		public abstract bool CreateBlogAlias(BlogAlias alias);
