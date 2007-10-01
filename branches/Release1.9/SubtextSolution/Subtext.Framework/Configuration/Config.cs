@@ -199,7 +199,7 @@ namespace Subtext.Framework.Configuration
 		public static BlogInfo GetBlogInfoFromDomainAlias(string domainAlias, string subfolder, bool strict)
 		{
 			domainAlias = BlogInfo.StripPortFromHost(domainAlias);
-			return ObjectProvider.Instance().GetBlogByDomainAlias(domainAlias,subfolder,strict);
+			return ObjectProvider.Instance().GetBlogByDomainAlias(domainAlias, subfolder, strict);
 		}
 
 		/// <summary>
@@ -377,6 +377,7 @@ namespace Subtext.Framework.Configuration
 		{
 			return ObjectProvider.Instance().CreateBlogAlias(alias);
 		}
+
 		public static bool UpdateBlogAlias(BlogAlias alias)
 		{
 

@@ -81,6 +81,21 @@ namespace Subtext.Framework.Configuration
 		}
 		#endregion
 
+		static T GetRequestCache<T>(string key)
+		{
+			return (T)HttpContext.Current.Items[key];
+		}
+
+		static void SetRequestCache<T>(string key, T value)
+		{
+			HttpContext.Current.Items[key] = value;
+		}
+
+		static T GetApplicationCache<T>(string key)
+		{
+			return (T) HttpContext.Current.Cache[key];
+		}
+
 		/// <summary>
 		/// Returns a <see cref="BlogInfo"/> instance for the current blog. 
 		/// The object first checks the context for an existing object. 
@@ -89,137 +104,154 @@ namespace Subtext.Framework.Configuration
 		/// <returns></returns>
 		public virtual BlogInfo GetBlogInfo()
 		{
-			// First check the context for an existing BlogConfig. This saves us the trouble
-			// of having to figure out which blog we are at.
-			BlogInfo info = (BlogInfo) HttpContext.Current.Items[cacheKey];
+			// First check the cache for the current request for an 
+			// existing BlogConfig. This saves us the trouble of having 
+			// to figure out which blog is being requested.
+			BlogInfo info = GetRequestCache<BlogInfo>(cacheKey);
+
+			if (info != null)
+				return info;
 			
-#if DEBUG
-			if(info != null)
-				log.DebugFormat("Info found in the HttpContext.Current.Items cache with cachekey {0}", cacheKey);
-#endif
+			BlogRequest blogRequest = BlogRequest.Current;
 			
-			if(info == null)
+			//BlogConfig was not found in the context. It could be in the current cache.
+			string mCacheKey = cacheKey + blogRequest.Host + "/" + blogRequest.Subfolder;
+
+			//check the application cache.
+			info = GetApplicationCache<BlogInfo>(mCacheKey);
+
+			if (info != null)
 			{
-				BlogRequest blogRequest = BlogRequest.Current;
-				
-				//BlogConfig was not found in the context. It could be in the current cache.
-				string mCacheKey = cacheKey + blogRequest.Host + "/" + blogRequest.Subfolder;
-
-				//check the cache.
-				info = (BlogInfo)HttpContext.Current.Cache[mCacheKey];
-				if(info == null)
-				{
-					//Not found in the cache
-					log.DebugFormat("Attempting to get blog info. Host: {0}, Subfolder: {1}", blogRequest.Host, blogRequest.Subfolder);
-					
-                    info = Config.GetBlogInfo(blogRequest.Host, blogRequest.Subfolder, false);
-					if (info == null)
-					{
-						info = Config.GetBlogInfo(BlogInfo.GetAlternateHostAlias(blogRequest.Host), blogRequest.Subfolder, false);
-						if (info == null)
-						{
-							log.DebugFormat("Attempting to get blog by domain alias. Host: {0}, Subfolder: {1}", blogRequest.Host, blogRequest.Subfolder);
-							info = Config.GetBlogInfoFromDomainAlias(blogRequest.Host, blogRequest.Subfolder,false);							
-						}
-						if (info != null)
-						{
-							string url = BlogRequest.Current.RawUrl.ToString();
-							UriBuilder uriBuilder = new UriBuilder(url);
-							uriBuilder.Host = info.Host;
-							if (blogRequest.Subfolder != info.Subfolder)
-							{
-								if (blogRequest.Subfolder.Length > 0)
-									uriBuilder.Path = uriBuilder.Path.Remove(0, blogRequest.Subfolder.Length+1);
-								if (info.Subfolder.Length > 0)
-									uriBuilder.Path = "/" + info.Subfolder + uriBuilder.Path;
-
-							}
-							//string newUrl = HtmlHelper.ReplaceHost(url, info.Host);
-							HttpContext.Current.Response.StatusCode = 301;
-							HttpContext.Current.Response.Status = "301 Moved Permanently";
-							HttpContext.Current.Response.RedirectLocation = uriBuilder.ToString();
-							HttpContext.Current.Response.End();
-						}
-					}
-					
-					if(info == null)
-					{
-						log.InfoFormat("No active blog found for Host: {0}, Subfolder: {1}", blogRequest.Host, blogRequest.Subfolder);
-						bool anyBlogsExist = Config.BlogCount > 0;
-
-                        if (anyBlogsExist && ConfigurationManager.AppSettings["AggregateEnabled"] == "true")
-						{
-                            info = BlogInfo.AggregateBlog;
-                            CacheConfig(HttpContext.Current.Cache, info, mCacheKey);
-                            HttpContext.Current.Items.Add(cacheKey, info);
-                            return info;
-						}
-
-						if(InstallationManager.IsOnLoginPage)
-						{
-							return null;
-						}
-
-						throw new BlogDoesNotExistException(blogRequest.Host, blogRequest.Subfolder, anyBlogsExist);
-					}
-
-					if(!info.IsActive && !InstallationManager.IsInHostAdminDirectory && !InstallationManager.IsInSystemMessageDirectory && !InstallationManager.IsOnLoginPage)
-					{
-						throw new BlogInactiveException();
-					}
-			
-					BlogConfigurationSettings settings = Config.Settings;
-
-					// look here for issues with gallery images not showing up.
-					string webApp = HttpContext.Current.Request.ApplicationPath;
-
-					if(webApp.Length <= 1)
-						webApp="";
-
-					string formattedHost = GetFormattedHost(blogRequest.Host, settings.UseWWW) + webApp;
-
-					string subfolder = blogRequest.Subfolder;
-					if(!subfolder.EndsWith("/"))
-					{
-						subfolder += "/";
-					}
-					if(subfolder.Length > 1)
-						subfolder = "/" + subfolder;
-					
-					string virtualPath = string.Format(CultureInfo.InvariantCulture, "images/{0}{1}", Regex.Replace(blogRequest.Host + webApp, @"\:|\.","_"), subfolder);
-
-					// now put together the host + / + virtual path (url) to images
-					info.ImagePath = string.Format(CultureInfo.InvariantCulture, "{0}/{1}", formattedHost, virtualPath);
-					try
-					{
-						info.ImageDirectory = HttpContext.Current.Request.MapPath("~/" + virtualPath);
-					}
-					catch(ArgumentNullException nullException)
-					{
-						log.Warn("Could not map the image directory.", nullException);
-					}
-
-					CacheConfig(HttpContext.Current.Cache, info, mCacheKey);
-					HttpContext.Current.Items.Add(cacheKey, info);
-
-					if(!InstallationManager.IsInHostAdminDirectory)
-					{
-						// Set the BlogId context for the current request.
-						Log.SetBlogIdContext(info.Id);
-					}
-					else
-					{
-						Log.ResetBlogIdContext();
-					}
-				}
-				else
-				{
-					HttpContext.Current.Items.Add(cacheKey, info);
-				}
+				SetRequestCache(cacheKey, info);
+				return info;
 			}
 
-			//TODO: Use dependency injection or a provider. This'll do for now.
+			//Not found in the cache
+			log.DebugFormat("Attempting to get blog info. Host: {0}, Subfolder: {1}", blogRequest.Host, blogRequest.Subfolder);
 			
+            info = Config.GetBlogInfo(blogRequest.Host, blogRequest.Subfolder, false);
+			if (info == null)
+			{
+				info = Config.GetBlogInfo(BlogInfo.GetAlternateHostAlias(blogRequest.Host), blogRequest.Subfolder, false);
+				if (info == null)
+				{
+					log.DebugFormat("Attempting to get blog by domain alias. Host: {0}, Subfolder: {1}", blogRequest.Host, blogRequest.Subfolder);
+					info = Config.GetBlogInfoFromDomainAlias(blogRequest.Host, blogRequest.Subfolder, false);							
+				}
+
+				if (info != null)
+				{
+					//Redirects to the primary host name. For example, if a request is for "www.example.com" 
+					//but the blog has "example.com" as the primary, then the request is redirected to "example.com".
+					RedirectToPrimaryHost(info, blogRequest);
+					return null;
+				}
+
+				log.InfoFormat("No active blog found for Host: {0}, Subfolder: {1}", blogRequest.Host, blogRequest.Subfolder);
+				bool anyBlogsExist = Config.BlogCount > 0;
+
+				if (anyBlogsExist && ConfigurationManager.AppSettings["AggregateEnabled"] == "true")
+				{
+					return GetAggregateBlog(mCacheKey);
+				}
+
+				if (InstallationManager.IsOnLoginPage)
+				{
+					return null;
+				}
+
+				throw new BlogDoesNotExistException(blogRequest.Host, blogRequest.Subfolder, anyBlogsExist);
+			}
+
+			if(!info.IsActive 
+				&& !InstallationManager.IsInHostAdminDirectory 
+				&& !InstallationManager.IsInSystemMessageDirectory 
+				&& !InstallationManager.IsOnLoginPage)
+			{
+				throw new BlogInactiveException();
+			}
+	
+			// look here for issues with gallery images not showing up.
+			MapImageDirectory(info, blogRequest);
+
+			SetBlogIdContextForLogging(info);
+
+			CacheConfig(HttpContext.Current.Cache, info, mCacheKey);
+			SetRequestCache(cacheKey, info);
+			return info;
+		}
+
+		private static void SetBlogIdContextForLogging(BlogInfo info)
+		{
+			if(!InstallationManager.IsInHostAdminDirectory)
+			{
+				// Set the BlogId context for the current request.
+				Log.SetBlogIdContext(info.Id);
+			}
+			else
+			{
+				Log.ResetBlogIdContext();
+			}
+		}
+
+		private static void RedirectToPrimaryHost(BlogInfo info, BlogRequest blogRequest)
+		{
+			string url = BlogRequest.Current.RawUrl.ToString();
+			UriBuilder uriBuilder = new UriBuilder(url);
+			uriBuilder.Host = info.Host;
+			if (blogRequest.Subfolder != info.Subfolder)
+			{
+				if (blogRequest.Subfolder.Length > 0)
+					uriBuilder.Path = uriBuilder.Path.Remove(0, blogRequest.Subfolder.Length + 1);
+				if (info.Subfolder.Length > 0)
+					uriBuilder.Path = "/" + info.Subfolder + uriBuilder.Path;
+
+			}
+			//string newUrl = HtmlHelper.ReplaceHost(url, info.Host);
+			HttpContext.Current.Response.StatusCode = 301;
+			HttpContext.Current.Response.Status = "301 Moved Permanently";
+			HttpContext.Current.Response.RedirectLocation = uriBuilder.ToString();
+			HttpContext.Current.Response.End();
+		}
+
+		private static void MapImageDirectory(BlogInfo info, BlogRequest blogRequest)
+		{
+			BlogConfigurationSettings settings = Config.Settings;
+			string webApp = HttpContext.Current.Request.ApplicationPath;
+
+			if(webApp.Length <= 1)
+				webApp = string.Empty;
+
+			string formattedHost = GetFormattedHost(blogRequest.Host, settings.UseWWW) + webApp;
+
+			string subfolder = blogRequest.Subfolder;
+			if(!subfolder.EndsWith("/"))
+			{
+				subfolder += "/";
+			}
+			if(subfolder.Length > 1)
+				subfolder = "/" + subfolder;
+					
+			string virtualPath = string.Format(CultureInfo.InvariantCulture, "images/{0}{1}", Regex.Replace(blogRequest.Host + webApp, @"\:|\.","_"), subfolder);
+
+			// now put together the host + / + virtual path (url) to images
+			info.ImagePath = string.Format(CultureInfo.InvariantCulture, "{0}/{1}", formattedHost, virtualPath);
+			try
+			{
+				info.ImageDirectory = HttpContext.Current.Request.MapPath("~/" + virtualPath);
+			}
+			catch(ArgumentNullException nullException)
+			{
+				log.Warn("Could not map the image directory.", nullException);
+			}
+		}
+
+		private BlogInfo GetAggregateBlog(string mCacheKey)
+		{
+			BlogInfo info;
+			info = BlogInfo.AggregateBlog;
+			CacheConfig(HttpContext.Current.Cache, info, mCacheKey);
+			HttpContext.Current.Items.Add(cacheKey, info);
 			return info;
 		}
 
