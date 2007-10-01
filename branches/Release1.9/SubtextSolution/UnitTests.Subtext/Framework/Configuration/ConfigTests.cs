@@ -17,7 +17,6 @@ using System;
 using MbUnit.Framework;
 using Subtext.Framework;
 using Subtext.Framework.Configuration;
-using Subtext.Framework.Web.HttpModules;
 
 namespace UnitTests.Subtext.Framework.Configuration
 {
@@ -28,41 +27,6 @@ namespace UnitTests.Subtext.Framework.Configuration
     public class ConfigTests
     {
         string hostName;
-
-		/// <summary>
-		/// This test makes sure we deal gracefully with a common deployment problem. 
-		/// A user sets up the blog on his/her local machine (aka "localhost"), then 
-		/// deploys the database to their production server. The hostname in the db 
-		/// should be changed to the new domain.
-		/// </summary>
-		[Test]
-		[RollBack2]
-		public void GetBlogInfoChangesHostForOnlyLocalHostBlog()
-		{
-			string subfolder = UnitTestHelper.GenerateRandomString();
-			Config.CreateBlog("title", "username", "password", "localhost", subfolder);
-			Assert.AreEqual(1, BlogInfo.GetBlogs(0, 10, ConfigurationFlag.None).Count, "Need to make sure there's only one blog in the system.");
-
-			BlogRequest.Current = new BlogRequest("example.com", subfolder, new Uri("http://example.com/"), false);
-			BlogInfo info = UrlBasedBlogInfoProvider.Instance.GetBlogInfo();
-			Assert.IsNotNull(info, "Expected to find a blog.");
-			Assert.AreEqual(subfolder, info.Subfolder, "The subfolder has not changed.");
-			Assert.AreEqual("example.com", info.Host, "The host should have changed.");
-		}
-
-		[Test]
-		[RollBack2]
-		public void GetBlogInfoFindsBlogIfItIsOnlyBlogInSystem()
-		{
-			string subfolder = UnitTestHelper.GenerateRandomString();
-			Config.CreateBlog("title", "username", "password", hostName, subfolder);
-			Assert.AreEqual(1, BlogInfo.GetBlogs(0, 10, ConfigurationFlag.None).Count, "Need to make sure there's only one blog in the system.");
-
-			BlogInfo info = Config.GetBlogInfo("anything", string.Empty);
-			Assert.IsNotNull(info, "Expected to find a blog.");
-			Assert.AreEqual(subfolder, info.Subfolder, "The subfolder should not have changed.");
-			Assert.AreEqual(hostName, info.Host, "The hostName should not have changed.");
-		}
 
 		/// <summary>
         /// If we have two or more blogs in the system we want to be sure that 
