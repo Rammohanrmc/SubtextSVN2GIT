@@ -4,7 +4,7 @@ FCKConfig.TagLinks.InternalUrl = '';
 FCKConfig.TagLinks.ExternalCaption = 'Technorati tags: ';
 FCKConfig.TagLinks.InternalCaption = 'Internal tags: ';
 FCKConfig.TagLinks.IncludeHr = true;
-FCKConfig.TagLinks.IncludeInternal = true;
+FCKConfig.TagLinks.IncludeInternal = false;
 FCKConfig.TagLinks.IncludeExternal = true;
 
 FCKConfig.Plugins.Add( 'taglinks', 'en') ;

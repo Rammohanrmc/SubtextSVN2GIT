@@ -1334,6 +1334,9 @@
     <Content Include="Providers\BlogEntryEditor\FCKeditor\editor\plugins\placeholder\placeholder.gif" />
     <Content Include="Providers\BlogEntryEditor\FCKeditor\editor\plugins\simplecommands\fckplugin.js" />
     <Content Include="Providers\BlogEntryEditor\FCKeditor\editor\plugins\tablecommands\fckplugin.js" />
+    <Content Include="Providers\BlogEntryEditor\FCKeditor\editor\plugins\taglinks\fckplugin.js" />
+    <Content Include="Providers\BlogEntryEditor\FCKeditor\editor\plugins\taglinks\images\taglinks.gif" />
+    <Content Include="Providers\BlogEntryEditor\FCKeditor\editor\plugins\taglinks\lang\en.js" />
     <Content Include="Providers\BlogEntryEditor\FCKeditor\editor\skins\default\fck_dialog.css" />
     <Content Include="Providers\BlogEntryEditor\FCKeditor\editor\skins\default\fck_editor.css" />
     <Content Include="Providers\BlogEntryEditor\FCKeditor\editor\skins\default\fck_strip.gif" />

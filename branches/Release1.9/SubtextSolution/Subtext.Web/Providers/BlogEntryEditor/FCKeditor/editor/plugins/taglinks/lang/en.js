@@ -1,1 +1,1 @@
-﻿﻿FCKLang.TaglinksBtn			= 'Insert Tag Links' ;
+﻿FCKLang.TaglinksBtn			= 'Insert Tag Links';
