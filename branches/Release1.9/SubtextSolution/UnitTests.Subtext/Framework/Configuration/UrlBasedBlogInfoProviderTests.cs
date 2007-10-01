@@ -97,6 +97,7 @@ namespace UnitTests.Subtext.Framework.Configuration
 			Config.CreateBlog("title", "username", "password", "localhost", subfolder);
 			Assert.AreEqual(1, BlogInfo.GetBlogs(0, 10, ConfigurationFlag.None).Count, "Need to make sure there's only one blog in the system.");
 
+			UnitTestHelper.SetHttpContextWithBlogRequest("example.com", subfolder);
 			BlogRequest.Current = new BlogRequest("example.com", subfolder, new Uri("http://example.com/"), false);
 			BlogInfo info = UrlBasedBlogInfoProvider.Instance.GetBlogInfo();
 			Assert.IsNotNull(info, "Expected to find a blog.");
@@ -112,8 +113,9 @@ namespace UnitTests.Subtext.Framework.Configuration
 			string subfolder = UnitTestHelper.GenerateRandomString();
 			Config.CreateBlog("title", "username", "password", hostName, subfolder);
 			Assert.AreEqual(1, BlogInfo.GetBlogs(0, 10, ConfigurationFlag.None).Count, "Need to make sure there's only one blog in the system.");
-
-			BlogRequest.Current = new BlogRequest("example.com", subfolder, new Uri("http://example.com/"), false);
+			
+			UnitTestHelper.SetHttpContextWithBlogRequest("example.com", subfolder);
+			BlogRequest.Current = new BlogRequest("example.com", subfolder, new Uri("http://example.com/" + subfolder + "/"), false);
 			BlogInfo info = UrlBasedBlogInfoProvider.Instance.GetBlogInfo();
 			
 			Assert.IsNotNull(info, "Expected to find a blog.");
