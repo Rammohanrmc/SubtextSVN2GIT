@@ -166,9 +166,22 @@ namespace Subtext.Framework
 		{
 			return ObjectProvider.Instance().GetCommentByChecksumHash(checksumHash);
 		}
-		
+
 		/// <summary>
-		/// Gets the entry from the data store by id.
+		/// Returns an active entry by the id regardless of which blog it is 
+		/// located in.
+		/// </summary>
+		/// <param name="entryId">The ID of the entry.</param>
+		/// <param name="includeCategories">Whether the returned entry should have its categories collection populated.</param>
+		/// <returns></returns>
+		public static Entry GetEntry(int entryId, bool includeCategories)
+		{
+			return ObjectProvider.Instance().GetEntry(entryId, true, includeCategories);
+		}
+
+		/// <summary>
+		/// Gets the entry from the data store by id. Only returns an entry if it is 
+		/// within the current blog (Config.CurrentBlog).
 		/// </summary>
 		/// <param name="entryId">The ID of the entry.</param>
 		/// <param name="postConfig">The entry option used to constrain the search.</param>
@@ -181,7 +194,8 @@ namespace Subtext.Framework
 		}
 
 		/// <summary>
-		/// Gets the entry from the data store by entry name.
+		/// Gets the entry from the data store by entry name. Only returns an entry if it is 
+		/// within the current blog (Config.CurrentBlog).
 		/// </summary>
 		/// <param name="EntryName">Name of the entry.</param>
 		/// <param name="postConfig">The entry option used to constrain the search.</param>

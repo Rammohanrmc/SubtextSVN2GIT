@@ -11,6 +11,7 @@
 					<th>Title</th>
 					<th>Host</th>
 					<th>Subfolder</th>
+					<th>Group</th>
 					<th>Active</th>
 				</tr>
 		</HeaderTemplate>
@@ -27,6 +28,11 @@
 				<td>
 					<strong>
 						<%# DataBinder.Eval(Container.DataItem, "Subfolder") %>
+					</strong>
+				</td>
+				<td>
+					<strong>
+						<%# DataBinder.Eval(Container.DataItem, "BlogGroupTitle") %>
 					</strong>
 				</td>
 				<td>
@@ -53,6 +59,11 @@
 				<td>
 					<strong>
 						<%# DataBinder.Eval(Container.DataItem, "Subfolder") %>
+					</strong>
+				</td>
+				<td>
+					<strong>
+						<%# DataBinder.Eval(Container.DataItem, "BlogGroupTitle") %>
 					</strong>
 				</td>
 				<td>
@@ -251,16 +262,27 @@
 			</td>
 		</tr>
 		<tr valign="top">
+			<td>
+			    <label for="ddlGroups">Blog Group:</label>
+			</td>
+			<td>
+				<asp:DropDownList id="ddlGroups" Runat="server" DataTextField="Title" DataValueField="BlogGroupID"></asp:DropDownList></td>
+			<td runat="server" id="tbAliasActive" visible="false">
+				<asp:CheckBox ID="cbAliasActive" runat="server" />
+			</td>
+		</tr>
+		<tr valign="top">
 			<td><label for="txtUsername">
 				<st:HelpToolTip id="helpUsername" runat="server" HelpText="This will be the user who is the administrator of this blog.">
 				User Name:</st:HelpToolTip></label>
 			</td>
 			<td>
-				<asp:TextBox id="txtUsername" Runat="server" MaxLength="50"></asp:TextBox></td>
-			<td runat="server" id="tbAliasActive" visible="false">
-				<asp:CheckBox ID="cbAliasActive" runat="server" />
+				<asp:TextBox id="txtUsername" Runat="server" MaxLength="50"></asp:TextBox>
 			</td>
-
+			<td>
+				<asp:Button ID="btnAliasCancel" Text="Cancel" runat="server" CssClass="button" OnClick="btnAliasCancel_Click" Visible="False" />
+				<asp:Button ID="btnAliasSave" runat="server" CssClass="button" OnClick="btnAliasSave_Click" Text="Save" Visible="False" />
+			</td>
 		</tr>
 		<tr id="passwordRow" runat="server" valign="top">
 			<td><label for="txtPassword">
@@ -269,10 +291,7 @@
 			<td>
 				<asp:TextBox id="txtPassword" Runat="server" MaxLength="50" TextMode="Password"></asp:TextBox>
 			</td>
-			<td>
-				<asp:Button ID="btnAliasCancel" Text="Cancel" runat="server" CssClass="button" OnClick="btnAliasCancel_Click" Visible="False" />
-				<asp:Button ID="btnAliasSave" runat="server" CssClass="button" OnClick="btnAliasSave_Click" Text="Save" Visible="False" />
-			</td>
+			<td></td>
 		</tr>
 		<tr id="passwordRowConfirm" runat="server" valign="top">
 			<td><label for="txtPasswordConfirm">Confirm Password:</label></td>

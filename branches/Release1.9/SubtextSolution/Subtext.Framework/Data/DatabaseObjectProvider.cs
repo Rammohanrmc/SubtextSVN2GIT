@@ -103,10 +103,8 @@ namespace Subtext.Framework.Data
 				if(reader.Read())
 				{
 					BlogInfo info = DataHelper.LoadConfigData(reader);
-					reader.Close();
 					return info;
 				}
-				reader.Close();
 			}
 			return null;
 		}
@@ -416,6 +414,25 @@ namespace Subtext.Framework.Data
 		#endregion
 
 		#region Single Entry
+		/// <summary>
+		/// Returns an active <see cref="Entry" /> by the id regardless of which blog it is 
+		/// located in.
+		/// </summary>
+		/// <param name="id">Id of the entry</param>
+		/// <param name="includeCategories">Whether the entry should have its Categories property populated</param>
+		/// <returns></returns>
+		public override Entry GetEntry(int id, bool includeCategories)
+		{
+			using (IDataReader reader = DbProvider.Instance().GetEntryReader(id, includeCategories))
+			{
+				if (reader.Read())
+				{
+					return DataHelper.LoadEntry(reader);
+				}
+				return null;
+			}
+		}
+		
 		/// <summary>
 		/// Searches the data store for the first comment with a 
 		/// matching checksum hash.
@@ -927,10 +944,27 @@ namespace Subtext.Framework.Data
 		/// <param name="userName">Name of the user.</param>
 		/// <param name="password">Password.</param>
 		/// <returns></returns>
-		public override bool CreateBlog(string title, string userName, string password, string host, string subfolder)
+        public override bool CreateBlog(string title, string userName, string password, string host, string subfolder)
 		{
-			return DbProvider.Instance().AddBlogConfiguration(title, userName, password, host, subfolder);
+			return DbProvider.Instance().AddBlogConfiguration(title, userName, password, host, subfolder, 1);
 		}
+
+        /// <summary>
+        /// Adds the initial blog configuration.  This is a convenience method for 
+        /// allowing a user with a freshly installed blog to immediately gain access 
+        /// to the admin section to edit the blog.
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="host"></param>
+        /// <param name="subfolder"></param>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="password">Password.</param>
+        /// <param name="password">blogGroup.</param>
+        /// <returns></returns>
+        public override bool CreateBlog(string title, string userName, string password, string host, string subfolder, int blogGroupId)
+        {
+            return DbProvider.Instance().AddBlogConfiguration(title, userName, password, host, subfolder, blogGroupId);
+        }
 
 		public override bool CreateBlogAlias(BlogAlias alias)
 		{
@@ -1049,7 +1083,6 @@ namespace Subtext.Framework.Data
 	    }
 
 	    #endregion
-
 
 		#region KeyWords
 

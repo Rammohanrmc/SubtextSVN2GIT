@@ -19,9 +19,9 @@ namespace UnitTests.Subtext.Framework.Import
 	/// </summary>
     [TestFixture]
     public class BlogMLImportTests
-    {		
+    {
         [Test]
-        [RollBack]
+        [RollBack2]
         public void ReadBlogCreatesEntriesAndAttachments()
         {
             //Create blog.
@@ -40,7 +40,7 @@ namespace UnitTests.Subtext.Framework.Import
         }
 
 		[Test]
-		[RollBack]
+		[RollBack2]
 		public void CanReadAndCreateCategories()
 		{
 			UnitTestHelper.CreateBlogAndSetupContext();
@@ -54,7 +54,7 @@ namespace UnitTests.Subtext.Framework.Import
 		}
 
 		[Test]
-		[RollBack]
+		[RollBack2]
 		public void CanPostAndReferenceCategoryAppropriately()
 		{
 			UnitTestHelper.CreateBlogAndSetupContext();
@@ -76,7 +76,7 @@ namespace UnitTests.Subtext.Framework.Import
 		/// doesn't exist, then we just don't add that category.
 		/// </summary>
 		[Test]
-		[RollBack]
+		[RollBack2]
 		public void ImportOfPostWithBadCategoryRefHandlesGracefully()
 		{
 			UnitTestHelper.CreateBlogAndSetupContext();
@@ -94,7 +94,7 @@ namespace UnitTests.Subtext.Framework.Import
 		}
 
         [Test]
-        [RollBack]
+        [RollBack2]
         public void RoundTripBlogMlTest()
         {
 			UnitTestHelper.CreateBlogAndSetupContext();

@@ -34,7 +34,7 @@ namespace Subtext.Framework.Providers
     public abstract class DbProvider : ProviderBase
 	{
 		private static DbProvider provider;
-		private static GenericProviderCollection<DbProvider> providers = ProviderConfigurationHelper.LoadProviderCollection("Database", out provider);
+		private static readonly GenericProviderCollection<DbProvider> providers = ProviderConfigurationHelper.LoadProviderCollection("Database", out provider);
 
 		/// <summary>
 		/// Returns the currently configured DbProvider.
@@ -101,7 +101,13 @@ namespace Subtext.Framework.Providers
         /// <returns></returns>
 	    public abstract DataSet GetAggregateHomePageData(int groupId);
 
+        public abstract DataSet GetAggregateStats(int groupId);
+
+        public abstract DataSet GetAggregateTotalStats(int groupId);
+
         public abstract DataTable GetAggregateRecentPosts(int groupId);
+
+        public abstract DataTable GetAggregateRecentImages(int groupId);
         
 	    /// <summary>
 	    /// Returns a data set with the previous and next entries.
@@ -162,16 +168,27 @@ namespace Subtext.Framework.Providers
 		public abstract IDataReader GetCommentByChecksumHash(string checksumHash);
 	    
 	    /// <summary>
-	    /// Returns a Data Reader pointing to the entry specified by the entry id.
+	    /// Returns a Data Reader pointing to the entry specified by the entry id. 
+	    /// Only returns entries for the current blog (Config.CurrentBlog).
 	    /// </summary>
 	    /// <param name="id"></param>
 	    /// <param name="activeOnly"></param>
 	    /// <param name="includeCategories"></param>
 	    /// <returns></returns>
         public abstract IDataReader GetEntryReader(int id, bool activeOnly, bool includeCategories);
+
+        /// <summary>
+	    /// Returns a Data Reader pointing to the active entry specified by the entry id no matter 
+	    /// which bog it belongs to.
+	    /// </summary>
+	    /// <param name="id"></param>
+        /// <param name="includeCategories"></param>
+	    /// <returns></returns>
+        public abstract IDataReader GetEntryReader(int id, bool includeCategories);
         
 	    /// <summary>
         /// Returns a Data Reader pointing to the entry specified by the entry name.
+		/// Only returns entries for the current blog (Config.CurrentBlog).
         /// </summary>
         /// <param name="entryName">Url friendly entry name.</param>
         /// <param name="activeOnly"></param>
@@ -276,6 +293,27 @@ namespace Subtext.Framework.Providers
 
 		#endregion
 
+        #region BlogGroups
+
+        public abstract bool DeleteBlogGroup(int BlogGroupId);
+        /// <summary>
+        /// Deletes the specified BlogGroup id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="isActive"></param>
+        /// <returns></returns>
+        public abstract IDataReader GetBlogGroup(int id, bool isActive);
+
+        public abstract IDataReader ListBlogGroups(bool isActive);
+
+        public abstract IDataReader SetGroupActive(int id, bool isActive);
+
+        public abstract bool UpdateBlogGroup(int id, string title, bool isActive, int displayOrder, string description);
+
+        public abstract int InsertBlogGroup(string title, bool isActive, int displayOrder, string description);
+
+        #endregion
+
 		#region Config
 		/// <summary>
 		/// Adds the initial blog configuration.  This is a convenience method for 
@@ -289,6 +327,20 @@ namespace Subtext.Framework.Providers
 		/// <param name="password">Password.</param>
 		/// <returns></returns>
 		public abstract bool AddBlogConfiguration(string title, string userName, string password, string host, string subfolder);
+
+		/// <summary>
+		/// Adds the initial blog configuration.  This is a convenience method for
+		/// allowing a user with a freshly installed blog to immediately gain access
+		/// to the admin section to edit the blog.
+		/// </summary>
+		/// <param name="title">The title.</param>
+		/// <param name="userName">Name of the user.</param>
+		/// <param name="password">Password.</param>
+		/// <param name="host">The host.</param>
+		/// <param name="subfolder">The subfolder.</param>
+		/// <param name="blogGroupId">The blog group.</param>
+		/// <returns></returns>
+        public abstract bool AddBlogConfiguration(string title, string userName, string password, string host, string subfolder, int blogGroupId);
 
 		/// <summary>
 		/// Returns a <see cref="IDataReader"/> instance containing 

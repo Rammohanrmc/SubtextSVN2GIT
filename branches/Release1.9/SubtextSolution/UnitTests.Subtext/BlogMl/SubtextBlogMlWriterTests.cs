@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -12,6 +11,7 @@ using Subtext.Extensibility;
 using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
+using Subtext.Framework.Web.HttpModules;
 using Subtext.ImportExport;
 
 namespace UnitTests.Subtext.BlogML
@@ -21,7 +21,7 @@ namespace UnitTests.Subtext.BlogML
 	/// </summary>
 	[TestFixture]
 	public class SubtextBlogMlWriterTests
-	{	
+	{
 		/// <summary>
 		/// Make sure that when we export a post with a category, that we retain 
 		/// the mapping between the post and category.
@@ -192,6 +192,7 @@ namespace UnitTests.Subtext.BlogML
 			string hostName = UnitTestHelper.GenerateRandomString();
 			Assert.IsTrue(Config.CreateBlog("BlogML Import Unit Test Blog", "test", "test", hostName, ""), "Could not create the blog for this test");
 			UnitTestHelper.SetHttpContextWithBlogRequest(hostName, "");
+			BlogRequest.Current = new BlogRequest(hostName, string.Empty, new Uri(string.Format("http://{0}/", hostName)), false);
 			Assert.IsNotNull(Config.CurrentBlog, "Current Blog is null.");
 
 			Config.CurrentBlog.ImageDirectory = Path.Combine(Environment.CurrentDirectory, "images");

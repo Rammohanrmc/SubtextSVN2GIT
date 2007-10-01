@@ -213,7 +213,8 @@ namespace Subtext.Framework.Providers
 		public abstract Entry GetCommentByChecksumHash(string checksumHash);
         
 	    /// <summary>
-	    /// Returns an <see cref="Entry" /> with the specified id.
+	    /// Returns an <see cref="Entry" /> with the specified id as long as it is 
+	    /// within the current blog (Config.CurrentBlog).
 	    /// </summary>
 	    /// <param name="id">Id of the entry</param>
         /// <param name="activeOnly">Whether or not to only return the entry if it is active.</param>
@@ -221,8 +222,18 @@ namespace Subtext.Framework.Providers
 	    /// <returns></returns>
 	    public abstract Entry GetEntry(int id, bool activeOnly, bool includeCategories);
 
+		/// <summary>
+		/// Returns an active <see cref="Entry" /> by the id regardless of which blog it is 
+		/// located in.
+		/// </summary>
+		/// <param name="id">Id of the entry</param>
+		/// <param name="includeCategories">Whether the entry should have its Categories property populated</param>
+		/// <returns></returns>
+		public abstract Entry GetEntry(int id, bool includeCategories);
+
         /// <summary>
-        /// Returns an <see cref="Entry" /> with the specified entry name.
+		/// Returns an <see cref="Entry" /> with the specified entry name as long as it is 
+		/// within the current blog (Config.CurrentBlog).
         /// </summary>
         /// <param name="entryName">Url friendly entry name.</param>
         /// <param name="activeOnly">Whether or not to only return the entry if it is active.</param>
@@ -375,6 +386,19 @@ namespace Subtext.Framework.Providers
 
 		#region  Configuration
 
+        /// <summary>
+        /// Adds the initial blog configuration.  This is a convenience method for 
+        /// allowing a user with a freshly installed blog to immediately gain access 
+        /// to the admin section to edit the blog.
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="password">Password.</param>
+        /// <param name="host"></param>
+        /// <param name="subfolder"></param>
+        /// <returns></returns>
+        public abstract bool CreateBlog(string title, string userName, string password, string host, string subfolder);
+
 		/// <summary>
 		/// Adds the initial blog configuration.  This is a convenience method for 
 		/// allowing a user with a freshly installed blog to immediately gain access 
@@ -385,8 +409,9 @@ namespace Subtext.Framework.Providers
 		/// <param name="password">Password.</param>
 		/// <param name="host"></param>
 		/// <param name="subfolder"></param>
+        /// <param name="blogGroupId"></param>
 		/// <returns></returns>
-		public abstract bool CreateBlog(string title, string userName, string password, string host, string subfolder);
+        public abstract bool CreateBlog(string title, string userName, string password, string host, string subfolder, int blogGroupId);
 
 		/// <summary>
 		/// Updates the specified blog configuration.

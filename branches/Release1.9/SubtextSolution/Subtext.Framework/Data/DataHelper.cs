@@ -177,7 +177,7 @@ namespace Subtext.Framework.Data
 		{
 			BlogAlias alias = new BlogAlias();
 
-			alias.Id = ReadInt32(reader, "AliasId");
+			alias.Id = ReadInt32(reader, "Id");
 			alias.BlogId = ReadInt32(reader, "BlogId");
 			alias.Host = ReadString(reader, "Host");
 			alias.Subfolder = ReadString(reader, "Application");
@@ -558,6 +558,9 @@ namespace Subtext.Framework.Data
 			info.RecentCommentsLength = ReadInt32(reader, "RecentCommentsLength");
 			info.FeedbackSpamServiceKey = ReadString(reader, "AkismetAPIKey");
 			info.FeedBurnerName = ReadString(reader, "FeedBurnerName");
+
+            info.BlogGroupId = ReadInt32(reader, "BlogGroupId");
+            info.BlogGroupTitle = ReadString(reader, "BlogGroupTitle");
 			return info;
 		}
 

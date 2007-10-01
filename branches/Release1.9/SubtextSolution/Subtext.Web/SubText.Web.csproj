@@ -376,6 +376,13 @@
     <Compile Include="HostAdmin\UserControls\BlogsEditor.ascx.designer.cs">
       <DependentUpon>BlogsEditor.ascx</DependentUpon>
     </Compile>
+    <Compile Include="HostAdmin\UserControls\GroupsEditor.ascx.cs">
+      <DependentUpon>GroupsEditor.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="HostAdmin\UserControls\GroupsEditor.ascx.designer.cs">
+      <DependentUpon>GroupsEditor.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Install\BlogNotConfiguredError.aspx.cs">
       <DependentUpon>BlogNotConfiguredError.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -514,6 +521,24 @@
     </Compile>
     <Compile Include="SystemMessages\UpgradeInProgress.aspx.designer.cs">
       <DependentUpon>UpgradeInProgress.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\Aggregate\AggBloggers.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Aggregate\AggBlogStats.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Aggregate\AggPinnedPost.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Aggregate\AggRecentImages.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Aggregate\AggRecentPosts.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\Aggregate\AggSyndication.cs">
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="UI\Controls\ArchiveCategory.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -819,6 +844,10 @@
       <DependentUpon>BlogsEditor.ascx.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="HostAdmin\UserControls\GroupsEditor.ascx.resx">
+      <DependentUpon>GroupsEditor.ascx.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Install\BlogNotConfiguredError.aspx.resx">
       <DependentUpon>BlogNotConfiguredError.aspx.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -977,6 +1006,7 @@
     <Content Include="ExternalDependencies\log4net.dll" />
     <Content Include="ExternalDependencies\log4net.xml" />
     <Content Include="HostAdmin\ChangePassword.aspx" />
+    <Content Include="HostAdmin\ManageGroups.aspx" />
     <Content Include="HostAdmin\Default.aspx" />
     <Content Include="HostAdmin\ErrorLog.aspx" />
     <Content Include="HostAdmin\images\bottom.gif" />
@@ -998,6 +1028,9 @@
       <SubType>Form</SubType>
     </Content>
     <Content Include="HostAdmin\UserControls\BlogsEditor.ascx">
+      <SubType>UserControl</SubType>
+    </Content>
+    <Content Include="HostAdmin\UserControls\GroupsEditor.ascx">
       <SubType>UserControl</SubType>
     </Content>
     <Content Include="Images\admin.gif" />
@@ -1389,6 +1422,15 @@
     <Content Include="Scripts\tableEffects.js" />
     <Content Include="Scripts\XFNHighlighter.css" />
     <Content Include="Scripts\XFNHighlighter.js" />
+    <Content Include="Skins\Aggregate\Simple\blue.css" />
+    <Content Include="Skins\Aggregate\Simple\Controls\AggBloggers.ascx" />
+    <Content Include="Skins\Aggregate\Simple\Controls\AggBlogStats.ascx" />
+    <Content Include="Skins\Aggregate\Simple\Controls\AggPinnedPost.ascx" />
+    <Content Include="Skins\Aggregate\Simple\Controls\AggRecentImages.ascx" />
+    <Content Include="Skins\Aggregate\Simple\Controls\AggRecentPosts.ascx" />
+    <Content Include="Skins\Aggregate\Simple\Controls\AggSyndication.ascx" />
+    <Content Include="Skins\Aggregate\Simple\PageTemplate.ascx" />
+    <Content Include="Skins\Aggregate\Simple\style.css" />
     <Content Include="Skins\AnotherEon001\Controls\ArchiveCategory.ascx" />
     <Content Include="Skins\AnotherEon001\Controls\ArchiveDay.ascx" />
     <Content Include="Skins\AnotherEon001\Controls\ArchiveLinks.ascx" />

@@ -736,7 +736,27 @@ namespace Subtext.Framework
 			set { _trackingCode = value; }
 		}
 
+        private int _blogGroup;
+        /// <summary>
+        /// Gets or sets the Blog Group ID
+        /// </summary>
+        /// <value></value>
+        public int BlogGroupId
+        {
+            get { return _blogGroup; }
+            set { _blogGroup = value; }
+        }
 
+        private string _blogGroupTitle;
+        /// <summary>
+        /// Gets or sets the Blog Group Title
+        /// </summary>
+        /// <value></value>
+        public string BlogGroupTitle
+        {
+            get { return _blogGroupTitle; }
+            set { _blogGroupTitle = value; }
+        }
 
 		/// <summary>
 		/// Gets or sets the license URL.  This is used to 
@@ -1137,5 +1157,6 @@ namespace Subtext.Framework
 		}
 	}
 }
+
 
 

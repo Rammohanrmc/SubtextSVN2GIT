@@ -75,9 +75,47 @@ namespace Subtext.Framework.Data
             return SqlHelper.ExecuteDataset(ConnectionString, CommandType.StoredProcedure, sql, p);
 	    }
 
+        public override DataSet GetAggregateStats(int groupId)
+        {
+            string sql = "DNW_Stats";
+            SqlParameter[] p = 
+				{
+					DataHelper.MakeInParam("@Host", SqlDbType.NVarChar, 100, BlogInfo.AggregateBlog.Host),
+					DataHelper.MakeInParam("@GroupID", SqlDbType.Int, 4, groupId)
+				};
+
+            return SqlHelper.ExecuteDataset(ConnectionString, CommandType.StoredProcedure, sql, p);
+        }
+
+        public override DataSet GetAggregateTotalStats(int groupId)
+        {
+            string sql = "DNW_Total_Stats";
+            SqlParameter[] p = 
+				{
+					DataHelper.MakeInParam("@Host", SqlDbType.NVarChar, 100, BlogInfo.AggregateBlog.Host),
+					DataHelper.MakeInParam("@GroupID", SqlDbType.Int, 4, groupId)
+				};
+
+            return SqlHelper.ExecuteDataset(ConnectionString, CommandType.StoredProcedure, sql, p);
+        }
+
         public override DataTable GetAggregateRecentPosts(int groupId)
         {
             string sql = "DNW_GetRecentPosts";
+            string conn = ConnectionString;
+
+            SqlParameter[] p = 
+				{
+					DataHelper.MakeInParam("@Host", SqlDbType.NVarChar,100, BlogInfo.AggregateBlog.Host),
+					DataHelper.MakeInParam("@GroupID", SqlDbType.Int, 4, groupId)
+				};
+
+            return DataHelper.ExecuteDataTable(conn, CommandType.StoredProcedure, sql, p);
+        }
+
+        public override DataTable GetAggregateRecentImages(int groupId)
+        {
+            string sql = "DNW_GetRecentImages";
             string conn = ConnectionString;
 
             SqlParameter[] p = 
@@ -257,16 +295,7 @@ namespace Subtext.Framework.Data
 		/// <returns></returns>
 		public override IDataReader GetBlogById(int blogId)
 		{
-			string sql = "subtext_GetBlogById";
-
-			SqlConnection conn = new SqlConnection(ConnectionString);
-			SqlCommand command = new SqlCommand(sql, conn);
-			
-			command.CommandType = CommandType.StoredProcedure;
-			command.Parameters.Add(DataHelper.MakeInParam("@BlogId", SqlDbType.Int, 4, DataHelper.CheckNull(blogId)));
-
-			conn.Open();
-			return command.ExecuteReader(CommandBehavior.CloseConnection);
+			return SqlHelper.ExecuteReader(ConnectionString, "subtext_GetBlogById", DataHelper.CheckNull(blogId));
 		}
 
 		public override IDataReader GetBlogByDomainAlias(string host, string subfolder, bool strict)
@@ -487,26 +516,61 @@ namespace Subtext.Framework.Data
 			return GetReader("subtext_GetEntriesByDayRange",p);
 		}
 
+		/// <summary>
+		/// Returns a Data Reader pointing to the entry specified by the entry name.
+		/// Only returns entries for the current blog (Config.CurrentBlog).
+		/// </summary>
+		/// <param name="entryName">Url friendly entry name.</param>
+		/// <param name="activeOnly"></param>
+		/// <param name="includeCategories"></param>
+		/// <returns></returns>
 		public override IDataReader GetEntryReader(string entryName, bool activeOnly, bool includeCategories)
 		{
 			SqlParameter[] p =
 			{
-				DataHelper.MakeInParam("@EntryName",SqlDbType.NVarChar,150,entryName),
-				DataHelper.MakeInParam("@IsActive",SqlDbType.Bit,1, activeOnly),
+				DataHelper.MakeInParam("@EntryName", SqlDbType.NVarChar, 150, entryName),
+				DataHelper.MakeInParam("@IsActive", SqlDbType.Bit, 1, activeOnly),
 				DataHelper.MakeInParam("@IncludeCategories", SqlDbType.Bit, 1, includeCategories),
 				BlogIdParam
 			};
 			return GetReader("subtext_GetSingleEntry", p);
 		}
 
-        public override IDataReader GetEntryReader(int postID, bool activeOnly, bool includeCategories)
+		/// <summary>
+		/// Returns a Data Reader pointing to the entry specified by the entry id. 
+		/// Only returns entries for the current blog (Config.CurrentBlog).
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="activeOnly"></param>
+		/// <param name="includeCategories"></param>
+		/// <returns></returns>
+        public override IDataReader GetEntryReader(int id, bool activeOnly, bool includeCategories)
         {
             SqlParameter[] p =
 			{
-				DataHelper.MakeInParam("@ID", SqlDbType.Int, 4, postID),
+				DataHelper.MakeInParam("@ID", SqlDbType.Int, 4, id),
 				DataHelper.MakeInParam("@IsActive", SqlDbType.Bit, 1, activeOnly),
 				DataHelper.MakeInParam("@IncludeCategories", SqlDbType.Bit, 1, includeCategories),
 				BlogIdParam
+			};
+            return GetReader("subtext_GetSingleEntry", p);
+        }
+
+		/// <summary>
+		/// Returns a Data Reader pointing to the active entry specified by the entry id no matter 
+		/// which bog it belongs to.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="includeCategories"></param>
+		/// <returns></returns>
+        public override IDataReader GetEntryReader(int id, bool includeCategories)
+        {
+            SqlParameter[] p =
+			{
+				DataHelper.MakeInParam("@ID", SqlDbType.Int, 4, id),
+				DataHelper.MakeInParam("@IsActive", SqlDbType.Bit, 1, true),
+				DataHelper.MakeInParam("@IncludeCategories", SqlDbType.Bit, 1, includeCategories),
+				DataHelper.MakeInParam("@BlogId", SqlDbType.Int, 4, null)
 			};
             return GetReader("subtext_GetSingleEntry", p);
         }
@@ -1008,6 +1072,87 @@ namespace Subtext.Framework.Data
 
 		#endregion
 
+        #region BlogGroups
+
+
+        public override bool DeleteBlogGroup(int id)
+        {
+            SqlParameter[] p = 
+			{
+				DataHelper.MakeInParam("@Id",SqlDbType.Int,4,id)
+			};
+            return NonQueryBool("subtext_DeleteBlogGroup", p);
+
+        }
+
+        /// <summary>
+        /// Returns a data reader for the specified blogGroup id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="isActive"></param>
+        /// <returns></returns>
+        public override IDataReader GetBlogGroup(int id, bool isActive)
+        {
+            SqlParameter[] p = 
+			{
+				DataHelper.MakeInParam("@Id", SqlDbType.Int, 4, id),
+				DataHelper.MakeInParam("@Active", SqlDbType.Bit, 1, isActive)
+			};
+            return GetReader("subtext_GetBlogGroup", p);
+        }
+
+        public override IDataReader ListBlogGroups(bool isActive)
+        {
+            SqlParameter[] p = 
+			{
+				DataHelper.MakeInParam("@Active", SqlDbType.Bit, 1, isActive)
+			};
+            return GetReader("subtext_ListBlogGroups", p);
+        }
+
+        public override IDataReader SetGroupActive(int id, bool isActive)
+        {
+            SqlParameter[] p = 
+			{
+				DataHelper.MakeInParam("@Id", SqlDbType.Int, 4, id),
+				DataHelper.MakeInParam("@Active", SqlDbType.Bit, 1, isActive)
+			};
+            return GetReader("subtext_SetGroupActive", p);
+        }
+
+        public override bool UpdateBlogGroup(int id, string title, bool isActive, int displayOrder, string description)
+        {
+            SqlParameter[] p =
+			{
+
+				DataHelper.MakeInParam("@Title", SqlDbType.NVarChar, 150, title),
+				DataHelper.MakeInParam("@Active", SqlDbType.Bit, 1, isActive),
+				DataHelper.MakeInParam("@Id", SqlDbType.Int, 4, id),
+				DataHelper.MakeInParam("@DisplayOrder", SqlDbType.Int, 4, DataHelper.CheckNull(displayOrder)),
+				DataHelper.MakeInParam("@Description", SqlDbType.NVarChar, 1000, DataHelper.CheckNull(description))
+			};
+            return NonQueryBool("subtext_UpdateBlogGroup", p);
+        }
+
+
+        public override int InsertBlogGroup(string title, bool isActive, int displayOrder, string description)
+        {
+            SqlParameter outParam = DataHelper.MakeOutParam("@Id", SqlDbType.Int, 4);
+            SqlParameter[] p =
+			{
+
+				DataHelper.MakeInParam("@Title",SqlDbType.NVarChar,150,title),
+				DataHelper.MakeInParam("@Active",SqlDbType.Bit,1,isActive),
+				DataHelper.MakeInParam("@DisplayOrder",SqlDbType.Int,4,DataHelper.CheckNull(displayOrder)),
+				DataHelper.MakeInParam("@Description",SqlDbType.NVarChar,1000,DataHelper.CheckNull(description)),
+				outParam
+			};
+            NonQueryInt("subtext_InsertBlogGroup", p);
+            return (int)outParam.Value;
+        }
+
+        #endregion
+
 		#region FeedBack
 
 		/// <summary>
@@ -1064,7 +1209,7 @@ namespace Subtext.Framework.Data
 
 		#region Configuration
 
-		/// <summary>
+        /// <summary>
 		/// Adds the initial blog configuration.  This is a convenience method for 
 		/// allowing a user with a freshly installed blog to immediately gain access 
 		/// to the admin section to edit the blog.
@@ -1075,7 +1220,24 @@ namespace Subtext.Framework.Data
 		/// <param name="host"></param>
 		/// <param name="subfolder"></param>
 		/// <returns></returns>
-		public override bool AddBlogConfiguration(string title, string userName, string password, string host, string subfolder)
+        public override bool AddBlogConfiguration(string title, string userName, string password, string host, string subfolder)
+        {
+            return AddBlogConfiguration(title, userName, password, host, subfolder, 1);
+        }
+
+		/// <summary>
+		/// Adds the initial blog configuration.  This is a convenience method for
+		/// allowing a user with a freshly installed blog to immediately gain access
+		/// to the admin section to edit the blog.
+		/// </summary>
+		/// <param name="title">The title.</param>
+		/// <param name="userName">Name of the user.</param>
+		/// <param name="password">Password.</param>
+		/// <param name="host">The host.</param>
+		/// <param name="subfolder">The subfolder.</param>
+		/// <param name="blogGroupId">The blog group.</param>
+		/// <returns></returns>
+		public override bool AddBlogConfiguration(string title, string userName, string password, string host, string subfolder, int blogGroupId)
 		{
 			ConfigurationFlag flag = ConfigurationFlag.IsActive
 			                         | ConfigurationFlag.CommentsEnabled
@@ -1095,6 +1257,7 @@ namespace Subtext.Framework.Data
 				, DataHelper.MakeInParam("@Host", SqlDbType.NVarChar, 50, host)
 				, DataHelper.MakeInParam("@Application", SqlDbType.NVarChar, 50, subfolder)
 				, DataHelper.MakeInParam("@Flag", SqlDbType.Int, 4, flag)
+                , DataHelper.MakeInParam("@BlogGroupId", SqlDbType.Int, 4, blogGroupId)
 			};
 			return NonQueryBool("subtext_UTILITY_AddBlog", parameters);
 		}
@@ -1203,6 +1366,7 @@ namespace Subtext.Framework.Data
 					,DataHelper.MakeInParam("@RecentCommentsLength", SqlDbType.Int, 4, recentCommentsLength)
 					,DataHelper.MakeInParam("@AkismetAPIKey", SqlDbType.VarChar, 16, DataHelper.ReturnNullIfEmpty(info.FeedbackSpamServiceKey))
 					,DataHelper.MakeInParam("@FeedBurnerName", SqlDbType.NVarChar, 64, DataHelper.ReturnNullIfEmpty(info.FeedBurnerName))
+					,DataHelper.MakeInParam("@BlogGroupId", SqlDbType.Int, 4, info.BlogGroupId)
 				};
 
 			return NonQueryBool("subtext_UpdateConfig", p);
@@ -1213,11 +1377,11 @@ namespace Subtext.Framework.Data
 		#region BlogAlias
 		public override IDataReader GetBlogAliasById(int aliasId)
 		{
-			return GetReader("subtext_GetDomainAliasById", new SqlParameter[] { DataHelper.MakeInParam("@AliasId",aliasId)});
+			return GetReader("subtext_GetDomainAliasById", new SqlParameter[] { DataHelper.MakeInParam("@Id", aliasId)});
 		}
 		public override bool AddBlogAlias(BlogAlias alias)
 		{
-			SqlParameter aliasId = DataHelper.MakeOutParam("@AliasId", SqlDbType.Int, 4);
+			SqlParameter aliasId = DataHelper.MakeOutParam("@Id", SqlDbType.Int, 4);
 			SqlParameter[] p = 
 				{
 					 aliasId
@@ -1234,7 +1398,7 @@ namespace Subtext.Framework.Data
 
 		public override bool DeleteBlogAlias(BlogAlias alias)
 		{
-			SqlParameter[] p = { DataHelper.MakeInParam("@AliasId",SqlDbType.Int,4,alias.Id)
+			SqlParameter[] p = { DataHelper.MakeInParam("@Id",SqlDbType.Int,4,alias.Id)
 			};
 
 			return NonQueryBool("subtext_DeleteDomainAlias", p);
@@ -1244,7 +1408,7 @@ namespace Subtext.Framework.Data
 		{
 			SqlParameter[] p = 
 				{
-					DataHelper.MakeInParam("@AliasId",SqlDbType.Int,4,alias.Id)
+					DataHelper.MakeInParam("@Id",SqlDbType.Int,4,alias.Id)
 					,DataHelper.MakeInParam("@BlogId",SqlDbType.Int,4,alias.BlogId)
 					,DataHelper.MakeInParam("@Host",SqlDbType.NVarChar,100,alias.Host)
 					,DataHelper.MakeInParam("@Application",SqlDbType.NVarChar,50,alias.Subfolder)
@@ -1530,6 +1694,8 @@ namespace Subtext.Framework.Data
 		}
 	}
 }
+
+
 
 
 

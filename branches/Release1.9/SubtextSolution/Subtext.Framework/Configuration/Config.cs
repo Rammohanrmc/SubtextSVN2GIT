@@ -202,6 +202,22 @@ namespace Subtext.Framework.Configuration
 			return ObjectProvider.Instance().GetBlogByDomainAlias(domainAlias, subfolder, strict);
 		}
 
+        /// <summary>
+        /// Creates an initial blog.  This is a convenience method for 
+        /// allowing a user with a freshly installed blog to immediately gain access 
+        /// to the admin section to edit the blog.
+        /// </summary>
+        /// <param name="title">Title of the blog</param>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="password">Password.</param>
+        /// <param name="subfolder"></param>
+        /// <param name="host"></param>
+        /// <returns></returns>
+        public static bool CreateBlog(string title, string userName, string password, string host, string subfolder)
+        {
+            return CreateBlog(title, userName, password, host, subfolder, 1, false);
+        }
+
 		/// <summary>
 		/// Creates an initial blog.  This is a convenience method for 
 		/// allowing a user with a freshly installed blog to immediately gain access 
@@ -210,14 +226,16 @@ namespace Subtext.Framework.Configuration
 		/// <param name="title">Title of the blog</param>
 		/// <param name="userName">Name of the user.</param>
 		/// <param name="password">Password.</param>
-		/// <param name="subfolder"></param>
+        /// <param name="subfolder"></param>
+		/// <param name="groupId"></param>
 		/// <param name="host"></param>
 		/// <returns></returns>
-		public static bool CreateBlog(string title, string userName, string password, string host, string subfolder)
+        public static bool CreateBlog(string title, string userName, string password, string host, string subfolder, int groupId)
 		{
-			return CreateBlog(title, userName, password, host, subfolder, false);
+			return CreateBlog(title, userName, password, host, subfolder, groupId, false);
 		}
 
+        
 		/// <summary>
 		/// Creates an initial blog.  This is a convenience method for 
 		/// allowing a user with a freshly installed blog to immediately gain access 
@@ -230,7 +248,25 @@ namespace Subtext.Framework.Configuration
 		/// <param name="host"></param>
 		/// <param name="passwordAlreadyHashed">If true, the password has already been hashed.</param>
 		/// <returns></returns>
-		public static bool CreateBlog(string title, string userName, string password, string host, string subfolder, bool passwordAlreadyHashed)
+        public static bool CreateBlog(string title, string userName, string password, string host, string subfolder, bool passwordAlreadyHashed)
+        {
+            return CreateBlog(title, userName, password, host, subfolder, 1, false);
+        }
+
+		/// <summary>
+		/// Creates an initial blog.  This is a convenience method for 
+		/// allowing a user with a freshly installed blog to immediately gain access 
+		/// to the admin section to edit the blog.
+		/// </summary>
+		/// <param name="title">Title of the blog.</param>
+		/// <param name="userName">Name of the user.</param>
+		/// <param name="password">Password.</param>
+		/// <param name="subfolder"></param>
+		/// <param name="host"></param>
+        /// <param name="blogGroupId"></param>
+		/// <param name="passwordAlreadyHashed">If true, the password has already been hashed.</param>
+		/// <returns></returns>
+        public static bool CreateBlog(string title, string userName, string password, string host, string subfolder, int blogGroupId, bool passwordAlreadyHashed)
 		{
 			if(subfolder != null && subfolder.EndsWith("."))
 				throw new InvalidSubfolderNameException(subfolder);
@@ -282,7 +318,7 @@ namespace Subtext.Framework.Configuration
 			if(!passwordAlreadyHashed && Settings.UseHashedPasswords)
 				password = SecurityHelper.HashPassword(password);
 
-            return (ObjectProvider.Instance().CreateBlog(title, userName, password, host, subfolder));
+            return (ObjectProvider.Instance().CreateBlog(title, userName, password, host, subfolder, blogGroupId));
 		}
 
 		/// <summary>
@@ -389,9 +425,9 @@ namespace Subtext.Framework.Configuration
 			return ObjectProvider.Instance().DeleteBlogAlias(alias);
 		}
 
-		public static BlogAlias GetBlogAlias(int aliasId)
+		public static BlogAlias GetBlogAlias(int id)
 		{
-			return ObjectProvider.Instance().GetBlogAliasById(aliasId);			
+			return ObjectProvider.Instance().GetBlogAliasById(id);			
 		}
 	}
 }

@@ -487,6 +487,24 @@ GO
 if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetDomainAliasById]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [<dbUser,varchar,dbo>].[subtext_GetDomainAliasById]
 GO
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_DeleteBlogGroup]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_DeleteBlogGroup]
+GO
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_GetBlogGroup]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_GetBlogGroup]
+GO
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_InsertBlogGroup]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_InsertBlogGroup]
+GO
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_UpdateBlogGroup]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_UpdateBlogGroup]
+GO
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[subtext_ListBlogGroups]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[subtext_ListBlogGroups]
+GO
+if exists (select * from dbo.sysobjects where id = object_id(N'[<dbUser,varchar,dbo>].[DNW_GetRecentImages]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [<dbUser,varchar,dbo>].[DNW_GetRecentImages]
+GO
 
 
 
@@ -1151,8 +1169,7 @@ AS
 
 IF (@Strict = 0) AND (1 = (SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_Config]))
 BEGIN
-	-- Return the one and only record
-	SELECT
+		SELECT
 		BlogId
 		, UserName
 		, [Password]
@@ -1194,7 +1211,7 @@ BEGIN
 		, UserName
 		, [Password]
 		, Email
-		, Title
+		, [subtext_Config].Title
 		, SubTitle
 		, Skin
 		, [Application]
@@ -1222,7 +1239,10 @@ BEGIN
 		, RecentCommentsLength
 		, AkismetAPIKey
 		, FeedBurnerName
+		, BlogGroupId
+		, bgroup.Title AS BlogGroupTitle
 	FROM [<dbUser,varchar,dbo>].[subtext_Config]
+		LEFT OUTER JOIN [<dbUser,varchar,dbo>].[subtext_BlogGroup] bgroup ON bgroup.Id = [subtext_Config].BlogGroupId
 	WHERE	Host = @Host
 END 
 ELSE
@@ -1232,7 +1252,7 @@ BEGIN
 		, UserName
 		, [Password]
 		, Email
-		, Title
+		, [subtext_Config].Title
 		, SubTitle
 		, Skin
 		, [Application]
@@ -1260,7 +1280,11 @@ BEGIN
 		, RecentCommentsLength
 		, AkismetAPIKey
 		, FeedBurnerName
+		, BlogGroupId
+		, bgroup.Title AS BlogGroupTitle
 	FROM [<dbUser,varchar,dbo>].[subtext_Config]
+		LEFT OUTER JOIN [<dbUser,varchar,dbo>].[subtext_BlogGroup] bgroup ON
+bgroup.Id = [subtext_Config].BlogGroupId
 	WHERE	Host = @Host
 		AND [Application] = @Application
 END
@@ -2421,8 +2445,8 @@ SELECT	BlogId
 	, DateSyndicated
 FROM [<dbUser,varchar,dbo>].[subtext_Content]
 WHERE ID = COALESCE(@ID, ID)
-	AND IsNull(EntryName, '') = COALESCE(@EntryName, EntryName, '') 
-	AND BlogId = @BlogId 
+	AND (EntryName = @EntryName OR @EntryName IS NULL) 
+	AND (BlogId = @BlogId OR  @BlogId IS NULL)
 	AND PostConfig & 1 <> CASE @IsActive WHEN 1 THEN 0 Else -1 END
 ORDER BY [ID] DESC
 
@@ -2980,7 +3004,8 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_UTILITY_AddBlog]
 	@Email nvarchar(50),
 	@Host nvarchar(50),
 	@Application nvarchar(50),
-	@Flag int
+	@Flag int,
+	@BlogGroupId int
 )
 
 AS
@@ -3005,6 +3030,7 @@ INSERT subtext_Config
 	, [Language]
 	, ItemCount
 	, Flag
+	, BlogGroupId
 )
 Values             
 (
@@ -3023,6 +3049,7 @@ Values
 	,'en-US'
 	, 10
 	, @Flag
+	,@BlogGroupId
 )
 END
 
@@ -3105,6 +3132,7 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateConfig]
 	, @RecentCommentsLength int = NULL
 	, @AkismetAPIKey varchar(16) = NULL
 	, @FeedBurnerName nvarchar(64) = NULL
+	, @BlogGroupId int
 )
 AS
 UPDATE [<dbUser,varchar,dbo>].[subtext_Config]
@@ -3136,6 +3164,7 @@ Set
 	, RecentCommentsLength = @RecentCommentsLength
 	, AkismetAPIKey = @AkismetAPIKey
 	, FeedBurnerName = @FeedBurnerName
+	, BlogGroupId =  @BlogGroupId
 WHERE BlogId = @BlogId
 
 GO
@@ -3433,14 +3462,11 @@ DECLARE @StartRowIndex int
 SET @StartRowIndex = @PageIndex * @PageSize + 1
 
 SET ROWCOUNT @StartRowIndex
--- Get the first entry id for the current page.
 SELECT	@FirstId = [BlogId] FROM [<dbUser,varchar,dbo>].[subtext_Config]
 WHERE @ConfigurationFlags & Flag = @ConfigurationFlags
 	AND (Host = @Host OR @Host IS NULL)
 ORDER BY [BlogId] ASC
 
--- Now, set the row count to MaximumRows and get
--- all records >= @first_id
 SET ROWCOUNT @PageSize
 
 SELECT	blog.BlogId 
@@ -3465,7 +3491,7 @@ SELECT	blog.BlogId
 		, blog.CommentCount
 		, blog.Flag
 		, blog.SkinCssFile 
-		, blog.BlogGroup
+		, blog.BlogGroupId
 		, blog.LicenseUrl
 		, blog.DaysTillCommentsClose
 		, blog.CommentDelayInMinutes
@@ -3473,8 +3499,11 @@ SELECT	blog.BlogId
 		, blog.RecentCommentsLength
 		, blog.AkismetAPIKey
 		, blog.FeedBurnerName
+		, bgroup.Title AS BlogGroupTitle
 		
 FROM [<dbUser,varchar,dbo>].[subtext_Config] blog
+	LEFT OUTER JOIN [<dbUser,varchar,dbo>].[subtext_BlogGroup] bgroup ON
+bgroup.Id = blog.BlogGroupId
 WHERE blog.BlogId >= @FirstId
 	AND @ConfigurationFlags & Flag = @ConfigurationFlags
 	AND (Host = @Host OR @Host IS NULL)
@@ -3526,7 +3555,7 @@ SELECT	blog.BlogId
 		, blog.CommentCount
 		, blog.Flag
 		, blog.SkinCssFile 
-		, blog.BlogGroup
+		, blog.BlogGroupId
 		, blog.LicenseUrl
 		, blog.DaysTillCommentsClose
 		, blog.CommentDelayInMinutes
@@ -3534,7 +3563,10 @@ SELECT	blog.BlogId
 		, blog.RecentCommentsLength
 		, blog.AkismetAPIKey
 		, blog.FeedBurnerName
+		, bgroup.Title AS BlogGroupTitle
 FROM [<dbUser,varchar,dbo>].[subtext_Config] blog
+	LEFT OUTER JOIN [<dbUser,varchar,dbo>].[subtext_BlogGroup] bgroup ON
+bgroup.Id = blog.BlogGroupId
 WHERE	blog.BlogId = @BlogId
 GO
 
@@ -3918,7 +3950,7 @@ WHERE  content.PostType = 1
 	AND content.PostConfig & 64 = 64 
 	AND config.Flag & 2 = 2 
 	AND config.Host = @Host
-	AND BlogGroup & @GroupID = @GroupID
+	AND (BlogGroupId = @GroupID or @GroupID = 0)
 ORDER BY [ID] DESC
 
 
@@ -3944,23 +3976,30 @@ CREATE PROC [<dbUser,varchar,dbo>].[DNW_Stats]
 	@GroupID int
 )
 AS
-SELECT BlogId
-	, Author
-	, Application
-	, Host
-	, Title
-	, PostCount
-	, CommentCount
-	, StoryCount
-	, PingTrackCount
-	, LastUpdated
-FROM [<dbUser,varchar,dbo>].[subtext_Config] 
+SELECT blog.BlogId
+	, blog.Author
+	, blog.Application
+	, blog.Host
+	, blog.Title
+	, blog.PostCount
+	, blog.CommentCount
+	, blog.StoryCount
+	, blog.PingTrackCount
+	, blog.LastUpdated
+	, blog.BlogGroupId
+	, bgroup.Title AS BlogGroupTitle
+FROM [<dbUser,varchar,dbo>].[subtext_Config] blog
+	LEFT OUTER JOIN [<dbUser,varchar,dbo>].[subtext_BlogGroup] bgroup ON
+bgroup.Id = blog.BlogGroupId
 WHERE PostCount > 0 
-	AND subtext_Config.Flag & 2 = 2 
-	AND subtext_Config.Flag & 1 = 1
-	AND Host = @Host 
-	AND BlogGroup & @GroupID = @GroupID
-ORDER BY PostCount DESC
+	AND blog.Flag & 2 = 2 
+	AND blog.Flag & 1 = 1
+	AND blog.Host = @Host
+	AND bgroup.Active = 1
+	AND blog.IsActive = 1
+	AND (blog.BlogGroupId = @GroupID
+	OR @GroupID = 0)
+ORDER BY bgroup.DisplayOrder, bgroup.Id,  blog.PostCount DESC
 
 
 GO
@@ -3984,8 +4023,15 @@ CREATE PROC [<dbUser,varchar,dbo>].[DNW_Total_Stats]
 	@GroupID int
 )
 AS
-SELECT Count(*) AS [BlogCount], Sum(PostCount) AS PostCount, Sum(CommentCount) AS CommentCount, Sum(StoryCount) AS StoryCount, Sum(PingTrackCount) AS PingTrackCount 
-FROM [<dbUser,varchar,dbo>].[subtext_Config] WHERE subtext_Config.Flag & 2 = 2 AND Host = @Host AND BlogGroup & @GroupID = @GroupID
+SELECT Count(*) AS [BlogCount]
+	, Sum(PostCount) AS PostCount
+	, Sum(CommentCount) AS CommentCount
+	, Sum(StoryCount) AS StoryCount
+	, Sum(PingTrackCount) AS PingTrackCount 
+FROM [<dbUser,varchar,dbo>].[subtext_Config] 
+	WHERE subtext_Config.Flag & 2 = 2 
+		AND Host = @Host 
+		AND (BlogGroupId = @GroupID OR @GroupID = 0)
 
 SET QUOTED_IDENTIFIER ON
 
@@ -4824,13 +4870,13 @@ DECLARE
 
 	IF @Strict = 0 
 		AND NOT EXISTS(SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].subtext_Config WHERE Host = @Host)
-		AND (1 = (SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].subtext_DomainAliases WHERE Host = @Host))
+		AND (1 = (SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].subtext_DomainAlias WHERE Host = @Host))
 	BEGIN
-		SELECT @BlogId = BlogId FROM [<dbUser,varchar,dbo>].subtext_DomainAliases WHERE (Host = @Host OR Host = 'www.' + @Host) AND IsActive = 1
+		SELECT @BlogId = BlogId FROM [<dbUser,varchar,dbo>].subtext_DomainAlias WHERE (Host = @Host OR Host = 'www.' + @Host) AND IsActive = 1
 	END
 	ELSE
 	BEGIN
-		SELECT @BlogId = BlogId FROM [<dbUser,varchar,dbo>].subtext_DomainAliases WHERE (Host = @Host OR Host = 'www.' + @Host) AND Application = @Application AND IsActive = 1
+		SELECT @BlogId = BlogId FROM [<dbUser,varchar,dbo>].subtext_DomainAlias WHERE (Host = @Host OR Host = 'www.' + @Host) AND Application = @Application AND IsActive = 1
 	END
 	EXEC [<dbUser,varchar,dbo>].[subtext_GetBlogById]  @BlogId = @BlogId
 GO
@@ -4854,7 +4900,7 @@ SET @StartRowIndex = @PageIndex * @PageSize + 1
 
 SET ROWCOUNT @StartRowIndex
 -- Get the first entry id for the current page.
-SELECT	@FirstId = AliasId FROM [<dbUser,varchar,dbo>].[subtext_DomainAliases]
+SELECT	@FirstId = Id FROM [<dbUser,varchar,dbo>].[subtext_DomainAlias]
 WHERE BlogId = @BlogId
 ORDER BY [BlogId] ASC
 
@@ -4863,18 +4909,18 @@ ORDER BY [BlogId] ASC
 SET ROWCOUNT @PageSize
 
 SELECT	
-		  AliasId
+		  Id
 		, BlogId
 		, Host
 		, Application
 		, IsActive
-FROM [<dbUser,varchar,dbo>].[subtext_DomainAliases] 
-WHERE AliasId >= @FirstId
+FROM [<dbUser,varchar,dbo>].[subtext_DomainAlias] 
+WHERE Id >= @FirstId
 	AND BlogId = @BlogId
-ORDER BY AliasId ASC
+ORDER BY Id ASC
 
 SELECT COUNT([BlogId]) AS TotalRecords
-FROM [<dbUser,varchar,dbo>].[subtext_DomainAliases]
+FROM [<dbUser,varchar,dbo>].[subtext_DomainAlias]
 WHERE BlogId = @BlogId
 GO
 GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_GetPageableDomainAliases] TO [public]
@@ -4885,12 +4931,12 @@ CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_CreateDomainAlias]
 		, @Host	nvarchar(100)
 		, @Application nvarchar(50)
 		, @Active bit = 1
-		, @AliasId int = NULL OUTPUT
+		, @Id int = NULL OUTPUT
 	)
 AS
-IF NOT EXISTS(SELECT * FROM [<dbUser,varchar,dbo>].[subtext_DomainAliases] WHERE Host = @Host AND Application = @Application)
+IF NOT EXISTS(SELECT * FROM [<dbUser,varchar,dbo>].[subtext_DomainAlias] WHERE Host = @Host AND Application = @Application)
 BEGIN
-	INSERT INTO [<dbUser,varchar,dbo>].[subtext_DomainAliases]		
+	INSERT INTO [<dbUser,varchar,dbo>].[subtext_DomainAlias]		
 	(
 		 BlogId
 		,Host
@@ -4905,50 +4951,180 @@ BEGIN
 		,@Active
 	)
 
-	SELECT @AliasId = SCOPE_IDENTITY()
+	SELECT @Id = SCOPE_IDENTITY()
 END
 GO
 GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_CreateDomainAlias] TO [public]
 GO
 CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_DeleteDomainAlias]
 	(
-		  @AliasId	INT
+		  @Id	INT
 	)
 AS
 	DELETE 
-	FROM [<dbUser,varchar,dbo>].[subtext_DomainAliases] 
-	WHERE AliasId = @AliasId
+	FROM [<dbUser,varchar,dbo>].[subtext_DomainAlias] 
+	WHERE Id = @Id
 GO
 
 GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_DeleteDomainAlias] TO [public]
 GO
 CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_UpdateDomainAlias]
 	(
-		  @AliasId int
+		  @Id int
 		, @BlogId int
 		, @Host	nvarchar(100)
 		, @Application nvarchar(50)
 		, @Active bit = 1
 	)
 AS
-	UPDATE [<dbUser,varchar,dbo>].[subtext_DomainAliases]		
+	UPDATE [<dbUser,varchar,dbo>].[subtext_DomainAlias]		
 	SET  BlogId			=@BlogId
 		,Host			=@Host
 		,Application	=@Application
 		,IsActive		=@Active
-	WHERE AliasId = @AliasId	
+	WHERE Id = @Id	
 GO
+
 GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UpdateDomainAlias] TO [public]
 GO
+
 CREATE PROCEDURE [<dbUser,varchar,dbo>].[subtext_GetDomainAliasById]
 	(
-		  @AliasId	INT
+		  @Id	INT
 	)
 AS
-	SELECT AliasId, BlogId, Host, Application, IsActive
-	FROM [<dbUser,varchar,dbo>].[subtext_DomainAliases] 
-	WHERE AliasId = @AliasId
+	SELECT Id, BlogId, Host, Application, IsActive
+	FROM [<dbUser,varchar,dbo>].[subtext_DomainAlias] 
+	WHERE Id = @Id
 GO
 
 GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_GetDomainAliasById] TO [public]
+GO
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_DeleteBlogGroup]
+(
+	@Id int
+)
+AS
+DELETE FROM [<dbUser,varchar,dbo>].[subtext_BlogGroup] WHERE Id = @Id
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_DeleteBlogGroup] TO [public]
+GO
+
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetBlogGroup]
+(
+	@Id int
+	, @Active bit
+)
+AS
+SELECT	c.Id
+		, c.Title
+		, c.Active
+		, c.DisplayOrder
+		, c.[Description]
+FROM [<dbUser,varchar,dbo>].[subtext_BlogGroup] c
+WHERE c.Id = @Id AND c.Active <> CASE @Active WHEN 0 THEN -1 else 0 END
+GO
+
+GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_GetBlogGroup] TO [public]
+GO
+
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_InsertBlogGroup]
+(
+	@Title nvarchar(150)
+	, @Active bit
+	, @DisplayOrder int = NULL
+	, @Description nvarchar(1000) = NULL
+	, @Id int OUTPUT
+)
+AS
+Set NoCount ON
+INSERT INTO [<dbUser,varchar,dbo>].[subtext_BlogGroup]
+( 
+	Title
+	, Active
+	, [Description]
+	, DisplayOrder 
+)
+VALUES 
+(
+	@Title
+	, @Active
+	, @Description
+	, @DisplayOrder
+)
+SELECT @Id = SCOPE_IDENTITY()
+GO
+
+GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_InsertBlogGroup] TO [public]
+GO
+
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_UpdateBlogGroup]
+(
+	@Id int,
+	@Title nvarchar(150),
+	@Active bit,
+	@Description nvarchar(1000) = NULL,
+	@DisplayOrder int = NULL
+)
+AS
+UPDATE [<dbUser,varchar,dbo>].[subtext_BlogGroup] 
+SET 
+	[Title] = @Title, 
+	[Active] = @Active,
+	[Description] = @Description,
+	[DisplayOrder] = @DisplayOrder
+WHERE   
+		[Id] = @Id
+GO
+
+GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_UpdateBlogGroup] TO [public]
+GO
+
+CREATE PROC [<dbUser,varchar,dbo>].[subtext_ListBlogGroups]
+(
+	@Active bit
+)
+AS
+SELECT	c.Id
+		, c.Title
+		, c.Active
+		, c.DisplayOrder
+		, c.[Description]
+FROM [<dbUser,varchar,dbo>].[subtext_BlogGroup] c
+WHERE c.Active <> CASE @Active WHEN 0 THEN -1 else 0 END
+ORDER BY DisplayOrder, Title
+GO
+
+GRANT EXECUTE ON [<dbUser,varchar,dbo>].[subtext_ListBlogGroups] TO [public]
+GO
+
+CREATE PROC [<dbUser,varchar,dbo>].[DNW_GetRecentImages]
+	@Host nvarchar(100)
+	, @GroupID int
+
+AS
+SELECT Top 35 Host
+	, Application
+	, images.ImageID
+	, [ImageTitle] = images.Title
+	, [ImageFile] = images.[File]
+	, config.TimeZone
+	, [BlogTitle] = config.Title
+	, [CategoryTitle] = categories.Title
+	, categories.CategoryID
+FROM [<dbUser,varchar,dbo>].[subtext_Images] images
+INNER JOIN	[<dbUser,varchar,dbo>].[subtext_Config] config ON images.BlogId = config.BlogId
+INNER JOIN  [<dbUser,varchar,dbo>].[subtext_LinkCategories] categories ON categories.CategoryID = images.CategoryID
+WHERE  images.Active > 0
+	AND config.Host = @Host
+	AND (config.BlogGroupId = @GroupID OR @GroupID = 0)
+ORDER BY [ImageID] DESC
+GO
+
+GRANT EXECUTE ON [<dbUser,varchar,dbo>].[DNW_GetRecentImages] TO [public]
 GO
