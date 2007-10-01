@@ -266,7 +266,7 @@
 			    <label for="ddlGroups">Blog Group:</label>
 			</td>
 			<td>
-				<asp:DropDownList id="ddlGroups" Runat="server" DataTextField="Title" DataValueField="BlogGroupID"></asp:DropDownList></td>
+				<asp:DropDownList id="ddlGroups" Runat="server" DataTextField="Title" DataValueField="Id"></asp:DropDownList></td>
 			<td runat="server" id="tbAliasActive" visible="false">
 				<asp:CheckBox ID="cbAliasActive" runat="server" />
 			</td>
