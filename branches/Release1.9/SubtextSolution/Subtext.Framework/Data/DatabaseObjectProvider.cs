@@ -167,23 +167,28 @@ namespace Subtext.Framework.Data
 		/// <returns></returns>
 		public override BlogGroup GetBlogGroup(int id, bool activeOnly)
 		{
+			BlogGroup group;
 			using (IDataReader reader = DbProvider.Instance().GetBlogGroup(id, activeOnly))
 			{
 				if (!reader.Read())
 					return null;
 
-				BlogGroup group = DataHelper.LoadBlogGroup(reader);
-				
+				group = DataHelper.LoadBlogGroup(reader);
+			}
+
+			if (group != null)
+			{
 				//TODO: Make this more efficient.
-				IPagedCollection<BlogInfo> blogs = BlogInfo.GetBlogs(0, int.MaxValue, activeOnly ? ConfigurationFlag.IsActive : ConfigurationFlag.None);
+				IPagedCollection<BlogInfo> blogs =
+					BlogInfo.GetBlogs(0, int.MaxValue, activeOnly ? ConfigurationFlag.IsActive : ConfigurationFlag.None);
 				group.Blogs = new List<BlogInfo>();
-				foreach(BlogInfo blog in blogs)
+				foreach (BlogInfo blog in blogs)
 				{
 					if (blog.BlogGroupId == group.Id)
 						group.Blogs.Add(blog);
 				}
-				return group;
 			}
+			return group;
 		}
 
 		/// <summary>
