@@ -20,6 +20,7 @@ using System.Web.Security;
 using Subtext.Framework;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Text;
+using Subtext.Framework.Web.HttpModules;
 
 namespace Subtext.Framework.UrlManager
 {
@@ -131,7 +132,24 @@ namespace Subtext.Framework.UrlManager
 		{
 			if(!UrlAuthorizationModule.CheckUrlAccessForPrincipal(url, HttpContext.Current.User, HttpContext.Current.Request.HttpMethod))
 			{
-				FormsAuthentication.RedirectToLoginPage();
+				BlogRequest request = BlogRequest.Current;
+				if (String.IsNullOrEmpty(request.Subfolder))
+				{
+					FormsAuthentication.RedirectToLoginPage();
+				}
+				else
+				{
+					string query = HttpContext.Current.Request.QueryString.ToString();
+					if(!String.IsNullOrEmpty(query))
+					{
+						query = "?" + query;
+					}
+					HttpContext.Current.Response.Redirect(Config.CurrentBlog.VirtualUrl
+														  + "Login.aspx?ReturnUrl="
+														  +
+														  HttpUtility.UrlEncode(HttpContext.Current.Request.Path + query,
+																				HttpContext.Current.Request.ContentEncoding));
+				}
 				return null;
 			}
 			Type t = BuildManager.GetCompiledType(url);

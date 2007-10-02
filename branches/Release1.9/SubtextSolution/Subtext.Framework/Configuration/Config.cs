@@ -52,8 +52,6 @@ namespace Subtext.Framework.Configuration
 			}
 		}
 
-		
-
 		/// <summary>
 		/// Returns the Subtext connection string.
 		/// </summary>
