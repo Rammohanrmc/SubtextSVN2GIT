@@ -40,10 +40,6 @@ TaglinksCommand.prototype.Execute=function(){
                 s= FCK.LinkedField.document.location.href;
             i = s.toLowerCase().indexOf('/admin/');
             if (i >= 0) s = s.substr(0, i+1);
-            i = s.indexOf('//');
-            if (i >= 0) s = s.substr(i+2);
-            i = s.indexOf('/');
-            if (i >= 0) s = s.substr(i);
             s = s + 'Tags/';
             FCKConfig.TagLinks.InternalUrl = s;
         }
