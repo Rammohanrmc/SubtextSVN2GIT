@@ -4,7 +4,6 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Security.Principal;
 using MbUnit.Framework;
-using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 using Subtext.Framework;
 using Subtext.Framework.Configuration;
@@ -268,7 +267,7 @@ namespace UnitTests.Subtext
 				}
 				db.DatabaseOptions.UserAccess = DatabaseUserAccess.Single;
 			}
-			catch (ExecutionFailureException e)
+			catch (Exception e)
 			{
 				Console.WriteLine("Execution failure exception. Continuing.");
 				Console.WriteLine(e);
