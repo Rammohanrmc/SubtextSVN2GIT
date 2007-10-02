@@ -1089,14 +1089,14 @@ namespace Subtext.Framework.Data
         /// Returns a data reader for the specified blogGroup id.
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="isActive"></param>
+        /// <param name="activeOnly"></param>
         /// <returns></returns>
-        public override IDataReader GetBlogGroup(int id, bool isActive)
+        public override IDataReader GetBlogGroup(int id, bool activeOnly)
         {
             SqlParameter[] p = 
 			{
 				DataHelper.MakeInParam("@Id", SqlDbType.Int, 4, id),
-				DataHelper.MakeInParam("@Active", SqlDbType.Bit, 1, isActive)
+				DataHelper.MakeInParam("@Active", SqlDbType.Bit, 1, activeOnly)
 			};
             return GetReader("subtext_GetBlogGroup", p);
         }

@@ -98,6 +98,13 @@ namespace Subtext.Framework.Providers
 		#endregion Blogs
 
 		#region Blog Groups
+		/// <summary>
+		/// Gets the blog group by id.
+		/// </summary>
+		/// <param name="id">The id.</param>
+		/// <param name="activeOnly">if set to <c>true</c> [active only].</param>
+		/// <returns></returns>
+		public abstract BlogGroup GetBlogGroup(int id, bool activeOnly);
 
 		/// <summary>
 		/// Lists the blog groups.

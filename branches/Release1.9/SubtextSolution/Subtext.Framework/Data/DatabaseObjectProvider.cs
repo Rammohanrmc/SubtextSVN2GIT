@@ -34,7 +34,6 @@ namespace Subtext.Framework.Data
 	/// </summary>
 	public class DatabaseObjectProvider : ObjectProvider
 	{	
-
 		#region Host
 		/// <summary>
 		/// Returns the <see cref="HostInfo"/> for the Subtext installation.
@@ -160,6 +159,33 @@ namespace Subtext.Framework.Data
 		#endregion
 
 		#region Blog Groups
+		/// <summary>
+		/// Gets the blog group.
+		/// </summary>
+		/// <param name="id">The id.</param>
+		/// <param name="activeOnly">if set to <c>true</c> [active only].</param>
+		/// <returns></returns>
+		public override BlogGroup GetBlogGroup(int id, bool activeOnly)
+		{
+			using (IDataReader reader = DbProvider.Instance().GetBlogGroup(id, activeOnly))
+			{
+				if (!reader.Read())
+					return null;
+
+				BlogGroup group = DataHelper.LoadBlogGroup(reader);
+				
+				//TODO: Make this more efficient.
+				IPagedCollection<BlogInfo> blogs = BlogInfo.GetBlogs(0, int.MaxValue, activeOnly ? ConfigurationFlag.IsActive : ConfigurationFlag.None);
+				group.Blogs = new List<BlogInfo>();
+				foreach(BlogInfo blog in blogs)
+				{
+					if (blog.BlogGroupId == group.Id)
+						group.Blogs.Add(blog);
+				}
+				return group;
+			}
+		}
+
 		/// <summary>
 		/// Lists the blog groups.
 		/// </summary>

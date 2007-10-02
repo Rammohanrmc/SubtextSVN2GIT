@@ -64,12 +64,13 @@
 					</HeaderTemplate>
 					<ItemTemplate>
 						<li>
-							<asp:HyperLink Runat = "server" NavigateUrl = '<%# GetFullUrl(DataBinder.Eval(Container.DataItem,"host").ToString(),DataBinder.Eval(Container.DataItem, "Application").ToString()) %>' Text = '<%# DataBinder.Eval(Container.DataItem,"Author") %>' title = '<%# DataBinder.Eval(Container.DataItem,"Title") %>' ID="Hyperlink1" NAME="Hyperlink1"/>
+							<asp:HyperLink Runat="server" 
+								NavigateUrl='<%# Eval("RootUrl") %>' 
+								Text='<%# Eval("Author") %>' 
+								Title = '<%# Eval("Title") %>' ID="blogHyperLink" />
 							<br />
-							<small>(
-								<asp:Literal runat = "server" Text = '<%# DataBinder.Eval(Container.DataItem,"PostCount") %>' ID="Label2"/>,
-								<asp:Literal runat = "server" Text = '<%# (DateTime.Parse(DataBinder.Eval(Container.DataItem,"LastUpdated").ToString())).ToShortDateString() + " " + (DateTime.Parse(DataBinder.Eval(Container.DataItem,"LastUpdated").ToString())).ToShortTimeString() %>' ID="Label1"/>)</small>
-						</li>
+							<small>(<asp:Literal runat="server" Text='<%# DataBinder.Eval(Container.DataItem, "PostCount") %>' ID="postCountLabel"/>, 
+							<asp:Literal runat="server" Text='<%# Eval("LastUpdated", "{0:MM/dd/yyyy hh:mm tt}") %>' ID="lastUpdatedLabel"/>)</small></li>
 					</ItemTemplate>
 					<FooterTemplate>
 						</ul>
@@ -82,14 +83,17 @@
 					<ItemTemplate>
 						<div class="post">
 							<h3>
-								<asp:HyperLink Runat = "server" NavigateUrl = '<%# GetEntryUrl(DataBinder.Eval(Container.DataItem,"host").ToString(),DataBinder.Eval(Container.DataItem,"Application").ToString(), DataBinder.Eval(Container.DataItem,"EntryName").ToString(), (DateTime)DataBinder.Eval(Container.DataItem,"DateAdded")) %>' Text = '<%# DataBinder.Eval(Container.DataItem,"Title") %>' ID="Hyperlink2"/></h3>
-							<asp:Literal runat = "server" Text = '<%# DataBinder.Eval(Container.DataItem,"Description") %>' ID="Label4"/>
-							<p class="postfoot">
-								posted @
-								<asp:Literal runat = "server" Text = '<%# (DateTime.Parse(DataBinder.Eval(Container.DataItem,"DateAdded").ToString())).ToShortDateString() + " " + (DateTime.Parse(DataBinder.Eval(Container.DataItem,"DateAdded").ToString())).ToShortTimeString() %>' ID="Label5" />
-								by
-								<asp:HyperLink Runat = "server" CssClass = "clsSubtext" NavigateUrl = '<%# GetFullUrl(DataBinder.Eval(Container.DataItem,"host").ToString(),DataBinder.Eval(Container.DataItem,"Application").ToString())  %>' Text = '<%# DataBinder.Eval(Container.DataItem,"Author") %>' ID="Hyperlink3"/>
-							</p>
+								<asp:HyperLink Runat="server" NavigateUrl='<%# GetEntryUrl(Eval("host").ToString(), Eval("Application").ToString(), Eval("EntryName").ToString(), (DateTime)Eval("DateAdded")) %>' 
+									Text='<%# Eval("Title") %>' ID="titleLink"/></h3>
+								<asp:Literal runat="server" Text='<%# Eval("Description") %>' ID="description"/>
+								<p class="postfoot">
+									posted @
+									<asp:Literal runat="server" Text = '<%# Eval("DateAdded", "{0:MM/dd/yyyy hh:mm tt}") %>' ID="dateAddedLiteral" />
+									by
+									<asp:HyperLink Runat="server" CssClass="clsSubtext" 
+										NavigateUrl='<%# GetFullUrl(Eval("host").ToString(), Eval("Application").ToString())  %>' 
+										Text='<%# Eval("Author") %>' ID="authorBlogLink"/>
+								</p>
 						</div>
 					</ItemTemplate>
 				</asp:repeater>

@@ -17,7 +17,7 @@ using System;
 
 namespace Subtext.Framework.Components
 {
-	public enum CategoryType
+	public enum CategoryType : byte
 	{
 		None = 0,
 		PostCollection = 1,

@@ -66,7 +66,7 @@ namespace Subtext.Web
 
 		protected string GetEntryUrl(string host, string app, string entryName, DateTime dt)
 		{			
-			return string.Format(CultureInfo.InvariantCulture, "{0}archive/{1:yyyy/MM/dd}/{2}.aspx", GetFullUrl(host,app), dt, entryName);
+			return string.Format(CultureInfo.InvariantCulture, "{0}archive/{1:yyyy/MM/dd}/{2}.aspx", GetFullUrl(host, app), dt, entryName);
 		}
 
 		private void SetStyle()
@@ -77,7 +77,8 @@ namespace Subtext.Web
 		}
 
 		private string appPath;
-		string fullUrl = HttpContext.Current.Request.Url.Scheme + "://{0}{1}{2}/";
+		readonly string fullUrl = HttpContext.Current.Request.Url.Scheme + "://{0}{1}{2}/";
+		
 		protected string GetFullUrl(string host, string app)
 		{
 			if(appPath == null)
@@ -88,7 +89,13 @@ namespace Subtext.Web
 					appPath += "/";
 				}
 			}
-			return string.Format(fullUrl,host,appPath,app);
+
+			if(Request.Url.Port != 80)
+			{
+				host += ":" + Request.Url.Port;
+			}
+
+			return string.Format(fullUrl, host, appPath, app);
 
 		}
 
@@ -104,9 +111,10 @@ namespace Subtext.Web
 			IList<BlogGroup> groups = Config.ListBlogGroups(true);
 			this.blogGroupRepeater.DataSource = groups;
 
-            DataSet ds = DbProvider.Instance().GetAggregateHomePageData(groupId);
+			BlogGroup currentGroup = Config.GetBlogGroup(groupId, true);
+			this.Bloggers.DataSource = currentGroup.Blogs;
 
-			Bloggers.DataSource = ds.Tables[0];
+			DataSet ds = DbProvider.Instance().GetAggregateHomePageData(groupId);
 			RecentPosts.DataSource = ds.Tables[1];
 
 			DataTable dtCounts = ds.Tables[2];

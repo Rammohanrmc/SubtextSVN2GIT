@@ -95,10 +95,11 @@ namespace Subtext.Framework.Providers
 		#endregion Host Data
 
         #region Aggregate HomePage Data
-        /// <summary>
-        /// Returns data displayed on an aggregate blog's home page.
-        /// </summary>
-        /// <returns></returns>
+		/// <summary>
+		/// Returns data displayed on an aggregate blog's home page.
+		/// </summary>
+		/// <param name="groupId">The group id.</param>
+		/// <returns></returns>
 	    public abstract DataSet GetAggregateHomePageData(int groupId);
 
         public abstract DataSet GetAggregateStats(int groupId);
@@ -300,9 +301,9 @@ namespace Subtext.Framework.Providers
         /// Deletes the specified BlogGroup id.
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="isActive"></param>
+        /// <param name="activeOnly"></param>
         /// <returns></returns>
-        public abstract IDataReader GetBlogGroup(int id, bool isActive);
+        public abstract IDataReader GetBlogGroup(int id, bool activeOnly);
 
 		/// <summary>
 		/// Lists the blog groups.

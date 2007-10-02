@@ -452,6 +452,22 @@ namespace Subtext.Framework.Configuration
 			return ObjectProvider.Instance().GetBlogAliasById(id);			
 		}
 
+		/// <summary>
+		/// Gets the blog group by id.
+		/// </summary>
+		/// <param name="id">The id.</param>
+		/// <param name="activeOnly">if set to <c>true</c> [active only].</param>
+		/// <returns></returns>
+		public static BlogGroup GetBlogGroup(int id, bool activeOnly)
+		{
+			return ObjectProvider.Instance().GetBlogGroup(id, activeOnly);
+		}
+
+		/// <summary>
+		/// Lists the blog groups in this installation.
+		/// </summary>
+		/// <param name="activeOnly">if set to <c>true</c> [active only].</param>
+		/// <returns></returns>
 		public static IList<BlogGroup> ListBlogGroups(bool activeOnly)
 		{
 			return ObjectProvider.Instance().ListBlogGroups(activeOnly);

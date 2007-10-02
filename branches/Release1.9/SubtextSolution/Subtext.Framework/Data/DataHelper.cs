@@ -35,7 +35,7 @@ namespace Subtext.Framework.Data
 {
 	/// <summary>
 	/// Contains helper methods for getting blog entries from the database 
-	/// into objects such as <see cref="List<EntryDay>"/>
+	/// into objects such as <see cref="Entry" />
 	/// </summary>
 	public static class DataHelper
 	{
@@ -378,7 +378,7 @@ namespace Subtext.Framework.Data
 			entry.Body = ReadString(reader, "Text");
 			entry.Title = ReadString(reader, "Title");
 			entry.PostConfig = (PostConfig)(ReadInt32(reader, "PostConfig", (int)PostConfig.None));			
-			entry.DateSyndicated = DataHelper.ReadDate(reader, "DateSyndicated");
+			entry.DateSyndicated = ReadDate(reader, "DateSyndicated");
 	
 			if(buildLinks)
 			{
@@ -929,12 +929,13 @@ namespace Subtext.Framework.Data
 		{
 			return ReadDate(reader, columnName, NullValue.NullDateTime);
 		}
-		
+
 		/// <summary>
 		/// Reads the date.
 		/// </summary>
 		/// <param name="reader">The reader.</param>
 		/// <param name="columnName">Name of the column.</param>
+		/// <param name="defaultValue">The default value.</param>
 		/// <returns></returns>
 		public static DateTime ReadDate(IDataReader reader, string columnName, DateTime defaultValue)
 		{
