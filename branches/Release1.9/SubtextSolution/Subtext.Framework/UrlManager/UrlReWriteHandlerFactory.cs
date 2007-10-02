@@ -152,6 +152,12 @@ namespace Subtext.Framework.UrlManager
 				}
 				return null;
 			}
+
+			string path = HttpContext.Current.Request.Path;
+			if (path.EndsWith("/"))
+			{
+				HttpContext.Current.RewritePath(path + "default.aspx");
+			}
 			Type t = BuildManager.GetCompiledType(url);
 			return (IHttpHandler)Activator.CreateInstance(t);
 		}

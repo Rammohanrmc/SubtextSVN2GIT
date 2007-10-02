@@ -326,10 +326,10 @@ namespace Subtext.Framework.Format
 		public static string GetBlogSubfolderFromRequest(string rawUrl, string applicationPath)
 		{
 			if(rawUrl == null)
-				throw new ArgumentNullException("path", "The path cannot be null.");
+				throw new ArgumentNullException("rawUrl", "The path cannot be null.");
 
 			if(applicationPath == null)
-				throw new ArgumentNullException("app", "The app should not be null.");
+				throw new ArgumentNullException("applicationPath", "The app should not be null.");
 
 			// The {0} represents a potential virtual directory
 			string urlPatternFormat = "{0}/(?<app>.*?)/";
