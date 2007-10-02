@@ -19,6 +19,8 @@ namespace UnitTests.Subtext.Extensibility
 			NameValueCollection configValue = new NameValueCollection();
 			configValue["smtpServer"] = "127.0.0.1";
 			configValue["port"] = "8081";
+            configValue["username"] = "abracadabra";
+            configValue["password"] = "haacked";
 			provider.Initialize("providerTest", configValue);
 
 			TestSmtpServer receivingServer = new TestSmtpServer();
