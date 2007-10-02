@@ -692,24 +692,26 @@ namespace Subtext.Framework.Data
 			//TODO: Make this a configuration option.
 			e.Body = Transform.EmoticonTransforms(e.Body);
 
-			if(HtmlHelper.HasIllegalContent(e.Body))
+			if (!Config.Settings.AllowScriptsInPosts && HtmlHelper.HasIllegalContent(e.Body))
 			{
-				return false;
+				throw new IllegalPostCharactersException("Illegal Characters Found");
 			}
 
+			//Never allow scripts in the title.
 			if(HtmlHelper.HasIllegalContent(e.Title))
 			{
-				return false;
+				throw new IllegalPostCharactersException("Illegal Characters Found");
 			}
 
-			if(HtmlHelper.HasIllegalContent(e.Description))
+			if (!Config.Settings.AllowScriptsInPosts && HtmlHelper.HasIllegalContent(e.Description))
 			{
-				return false;
+				throw new IllegalPostCharactersException("Illegal Characters Found");
 			}
 
+			//never allow scripts in the url.
 			if(HtmlHelper.HasIllegalContent(e.Url))
 			{
-				return false;
+				throw new IllegalPostCharactersException("Illegal Characters Found");
 			}
 
 			if(!HtmlHelper.ConvertHtmlToXHtml(e))
@@ -995,18 +997,18 @@ namespace Subtext.Framework.Data
 			return DbProvider.Instance().AddBlogConfiguration(title, userName, password, host, subfolder, 1);
 		}
 
-        /// <summary>
-        /// Adds the initial blog configuration.  This is a convenience method for 
-        /// allowing a user with a freshly installed blog to immediately gain access 
-        /// to the admin section to edit the blog.
-        /// </summary>
-        /// <param name="title"></param>
-        /// <param name="host"></param>
-        /// <param name="subfolder"></param>
-        /// <param name="userName">Name of the user.</param>
-        /// <param name="password">Password.</param>
-        /// <param name="password">blogGroup.</param>
-        /// <returns></returns>
+		/// <summary>
+		/// Adds the initial blog configuration.  This is a convenience method for
+		/// allowing a user with a freshly installed blog to immediately gain access
+		/// to the admin section to edit the blog.
+		/// </summary>
+		/// <param name="title"></param>
+		/// <param name="userName">Name of the user.</param>
+		/// <param name="password">Password.</param>
+		/// <param name="host"></param>
+		/// <param name="subfolder"></param>
+		/// <param name="blogGroupId"></param>
+		/// <returns></returns>
         public override bool CreateBlog(string title, string userName, string password, string host, string subfolder, int blogGroupId)
         {
             return DbProvider.Instance().AddBlogConfiguration(title, userName, password, host, subfolder, blogGroupId);

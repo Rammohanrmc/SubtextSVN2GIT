@@ -271,16 +271,16 @@ namespace Subtext.Framework.Text
         /// <returns></returns>
         public static bool HasIllegalContent(string s)
         {
-            if (s == null || s.Trim().Length == 0)
+            if (String.IsNullOrEmpty(s))
             {
                 return false;
             }
-            if (s.IndexOf("<script") > -1
-                || s.IndexOf("&#60script") > -1
-                || s.IndexOf("&60script") > -1
-                || s.IndexOf("%60script") > -1)
+            if (s.IndexOf("<script", StringComparison.InvariantCultureIgnoreCase) > -1
+				|| s.IndexOf("&#60script", StringComparison.InvariantCultureIgnoreCase) > -1
+				|| s.IndexOf("&60script", StringComparison.InvariantCultureIgnoreCase) > -1
+				|| s.IndexOf("%60script", StringComparison.InvariantCultureIgnoreCase) > -1)
             {
-                throw new IllegalPostCharactersException("Illegal Characters Found");
+            	return true;
             }
             return false;
         }

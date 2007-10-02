@@ -169,49 +169,14 @@ namespace UnitTests.Subtext.Framework.Text
 		}
 
 		/// <summary>
-		/// HasIllegalContent throws exception when encountering script tag.
-		/// </summary>
-		[Test, ExpectedException(typeof(IllegalPostCharactersException))]
-		public void HasIllegalContentThrowsExceptionWithScriptTag()
-		{
-			HtmlHelper.HasIllegalContent("blah <script ");
-		}
-
-		/// <summary>
 		/// HasIllegalContent throws exception when encountering encoded tag.
 		/// </summary>
-		[Test, ExpectedException(typeof(IllegalPostCharactersException))]
-		public void HasIllegalContentThrowsExceptionWithEncodedScriptTag()
+		[RowTest]
+		[Row("blah &#60script ")]
+		[Row("blah <script ")]
+		public void HasIllegalContentReturnsFalseForEncodedScriptTag(string html)
 		{
-			try
-			{
-				HtmlHelper.HasIllegalContent("blah &#60script ");
-				Assert.Fail("Method should have thrown an exception");
-			}
-			catch(IllegalPostCharactersException)
-			{
-				
-			}
-			catch(Exception)
-			{
-				Assert.Fail("Method should have thrown an IllegalPostCharactersException exception");
-			}
-
-			try
-			{
-				HtmlHelper.HasIllegalContent("blah &60script ");
-				Assert.Fail("Method should have thrown an exception");
-			}
-			catch(IllegalPostCharactersException)
-			{
-				
-			}
-			catch(Exception)
-			{
-				Assert.Fail("Method should have thrown an IllegalPostCharactersException exception");
-			}
-
-			HtmlHelper.HasIllegalContent("blah %60script ");
+			Assert.IsFalse(HtmlHelper.HasIllegalContent(html));
 		}
 
 		[Test]

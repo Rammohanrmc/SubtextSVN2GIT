@@ -64,6 +64,13 @@ namespace Subtext.Framework.Configuration
 			set{_allowserviceaccess = value;}
 		}
 
+		public bool AllowScriptsInPosts
+		{
+			get { return this.allowScriptsInPosts; }
+			set{ this.allowScriptsInPosts = value; }
+		}
+		bool allowScriptsInPosts;
+
 		private bool _useHashedPasswords;
 		public bool UseHashedPasswords
 		{
