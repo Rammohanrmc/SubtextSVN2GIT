@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Web.UI.WebControls;
-using Subtext.Configuration;
 using Subtext.Framework.Components;
 
 #region Disclaimer/Info
@@ -99,10 +98,10 @@ namespace Subtext.Web.UI.Controls
 						Link.Attributes["rel"] += "external";
 					}
 
-					if(link.HasRss)
+					HyperLink RssLink = (HyperLink)e.Item.FindControl("RssLink");
+					if (RssLink != null)
 					{
-						HyperLink RssLink = (HyperLink)e.Item.FindControl("RssLink");
-						if(RssLink != null)
+						if(link.HasRss)
 						{
 							RssLink.NavigateUrl = link.Rss;
 							RssLink.Visible = true;
@@ -110,6 +109,10 @@ namespace Subtext.Web.UI.Controls
 							{
 								RssLink.ToolTip = string.Format(CultureInfo.InvariantCulture, "Subscribe to {0}", link.Title);
 							}
+						}
+						else
+						{
+							RssLink.Visible = false;
 						}
 					}
 				}
