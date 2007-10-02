@@ -99,5 +99,15 @@ namespace UnitTests.Subtext.Scripting
 			Stream stream = ScriptHelper.UnpackEmbeddedScript("Installation.01.00.00.sql");
 			Assert.IsNotNull(stream);
 		}
+
+        /// <summary>
+        /// Unpacks the installation script and makes sure it returns a script.
+        /// </summary>
+        [Test]
+        public void UnpackScriptAsStringReturnsScript()
+        {
+            string script = ScriptHelper.UnpackEmbeddedScriptAsString("Installation.01.00.00.sql");
+            StringAssert.IsNonEmpty(script);
+        }
 	}
 }
