@@ -1,3 +1,18 @@
+#region Disclaimer/Info
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Subtext WebLog
+// 
+// Subtext is an open source weblog system that is a fork of the .TEXT
+// weblog system.
+//
+// For updated news and information please visit http://subtextproject.com/
+// Subtext is hosted at SourceForge at http://sourceforge.net/projects/subtext
+// The development mailing list is at subtext-devs@lists.sourceforge.net 
+//
+// This project is licensed under the BSD license.  See the License.txt file for more information.
+///////////////////////////////////////////////////////////////////////////////////////////////////
+#endregion
+
 using System;
 using System.Web;
 using Subtext.Extensibility.Providers;
@@ -24,7 +39,7 @@ namespace Subtext.Web.HttpModules
 		/// </summary>
 		/// <param name="context">An <see cref="T:System.Web.HttpApplication"/> that provides access to the methods, properties, 
 		/// and events common to all application objects within an ASP.NET application</param>
-		public void Init(System.Web.HttpApplication context)
+		public void Init(HttpApplication context)
 		{
 			context.BeginRequest += CheckInstallationStatus;
 		}
