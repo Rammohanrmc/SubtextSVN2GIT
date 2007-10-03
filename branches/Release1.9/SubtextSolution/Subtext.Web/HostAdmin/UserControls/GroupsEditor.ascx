@@ -1,6 +1,7 @@
 <%@ Control Language="C#" EnableTheming="false"  AutoEventWireup="True" Codebehind="GroupsEditor.ascx.cs" Inherits="Subtext.Web.HostAdmin.UserControls.GroupsEditor" TargetSchema="http://schemas.microsoft.com/intellisense/ie5"%>
 <%@ Register TagPrefix="st" Namespace="Subtext.Web.Controls" Assembly="Subtext.Web.Controls" %>
 <%@ Register TagPrefix="st" Namespace="Subtext.Web.Admin.WebUI" Assembly="Subtext.Web" %>
+<%@ Import Namespace="Subtext.Framework" %>
 <st:MessagePanel id="messagePanel" runat="server"></st:MessagePanel>
 <st:AdvancedPanel id="pnlResults" runat="server">
 	<asp:CheckBox id="chkShowInactive" AutoPostBack="True" Text="Show Inactive Blogs Groups" Runat="server" oncheckedchanged="chkShowInactive_CheckedChanged"></asp:CheckBox>
@@ -20,20 +21,20 @@
 				</td>
 				<td>
 					<strong>
-						<%# DataBinder.Eval(Container.DataItem, "DisplayOrder") %>
+						<%# NullValue.IsNull(Int32.Parse(DataBinder.Eval(Container.DataItem, "DisplayOrder").ToString())) ? string.Empty : DataBinder.Eval(Container.DataItem, "DisplayOrder") %>
 					</strong>
 				</td>
 				<td>
-					<%# DataBinder.Eval(Container.DataItem, "Active") %>
+					<%# DataBinder.Eval(Container.DataItem, "IsActive") %>
 				</td>
 				<td>
-					<asp:LinkButton id="lnkEdit" CausesValidation="False" CommandName="Edit" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "BlogGroupId").ToString() + "|" + DataBinder.Eval(Container.DataItem, "Active").ToString()  %>' Text="Edit" runat="server" />
+					<asp:LinkButton id="lnkEdit" CausesValidation="False" CommandName="Edit" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "id").ToString() + "|" + DataBinder.Eval(Container.DataItem, "IsActive").ToString()  %>' Text="Edit" runat="server" />
 				</td>
 				<td>
-					<asp:LinkButton id="lnkActivate" CausesValidation="False" CommandName="ToggleActive" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "BlogGroupId").ToString() + "|" + DataBinder.Eval(Container.DataItem, "Active").ToString()  %>' Text='<%# ToggleActiveString((bool)DataBinder.Eval(Container.DataItem, "Active")) %>' runat="server" />
+					<asp:LinkButton id="lnkActivate" CausesValidation="False" CommandName="ToggleActive" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "id").ToString() + "|" + DataBinder.Eval(Container.DataItem, "IsActive").ToString()  %>' Text='<%# ToggleActiveString((bool)DataBinder.Eval(Container.DataItem, "IsActive")) %>' runat="server" />
 				</td>
 				<td>
-					<asp:LinkButton id="lnkDelete" CausesValidation="False" CommandName="Delete" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "BlogGroupId").ToString() + "|" + DataBinder.Eval(Container.DataItem, "Active").ToString()  %>' Text='Delete' runat="server" OnClientClick="return confirm('Are you sure you want to delete this group?');" />
+					<asp:LinkButton id="lnkDelete" CausesValidation="False" CommandName="Delete" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "id").ToString() + "|" + DataBinder.Eval(Container.DataItem, "IsActive").ToString()  %>' Text='Delete' runat="server" OnClientClick="return confirm('Are you sure you want to delete this group?');" />
 				</td>
 			</tr>
 		</ItemTemplate>
@@ -44,20 +45,20 @@
 				</td>
 				<td>
 					<strong>
-						<%# DataBinder.Eval(Container.DataItem, "DisplayOrder") %>
+						<%# NullValue.IsNull(Int32.Parse(DataBinder.Eval(Container.DataItem, "DisplayOrder").ToString())) ? string.Empty : DataBinder.Eval(Container.DataItem, "DisplayOrder") %>
 					</strong>
 				</td>
 				<td>
-					<%# DataBinder.Eval(Container.DataItem, "Active") %>
+					<%# DataBinder.Eval(Container.DataItem, "IsActive") %>
 				</td>
 				<td>
-					<asp:LinkButton id="lnkEdit" CausesValidation="False" CommandName="Edit" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "BlogGroupId").ToString() + "|" + DataBinder.Eval(Container.DataItem, "Active").ToString()  %>' Text="Edit" runat="server" />
+					<asp:LinkButton id="lnkEdit" CausesValidation="False" CommandName="Edit" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "id").ToString() + "|" + DataBinder.Eval(Container.DataItem, "IsActive").ToString()  %>' Text="Edit" runat="server" />
 				</td>
 				<td>
-					<asp:LinkButton id="lnkActivate" CausesValidation="False" CommandName="ToggleActive" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "BlogGroupId").ToString() + "|" + DataBinder.Eval(Container.DataItem, "Active").ToString()  %>' Text='<%# ToggleActiveString((bool)DataBinder.Eval(Container.DataItem, "Active")) %>' runat="server" />
+					<asp:LinkButton id="lnkActivate" CausesValidation="False" CommandName="ToggleActive" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "id").ToString() + "|" + DataBinder.Eval(Container.DataItem, "IsActive").ToString()  %>' Text='<%# ToggleActiveString((bool)DataBinder.Eval(Container.DataItem, "IsActive")) %>' runat="server" />
 				</td>
 				<td>
-					<asp:LinkButton id="lnkDelete" CausesValidation="False" CommandName="Delete" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "BlogGroupId").ToString() + "|" + DataBinder.Eval(Container.DataItem, "Active").ToString()  %>' Text='Delete' runat="server" OnClientClick="return confirm('Are you sure you want to delete this group?');" />
+					<asp:LinkButton id="lnkDelete" CausesValidation="False" CommandName="Delete" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "id").ToString() + "|" + DataBinder.Eval(Container.DataItem, "IsActive").ToString()  %>' Text='Delete' runat="server" OnClientClick="return confirm('Are you sure you want to delete this group?');" />
 				</td>
 			</tr>
 		</AlternatingItemTemplate>

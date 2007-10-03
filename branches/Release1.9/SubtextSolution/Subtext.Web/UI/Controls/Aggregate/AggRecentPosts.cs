@@ -58,6 +58,12 @@ namespace Subtext.Web.UI.Controls
                     appPath += "/";
                 }
             }
+
+            if (Request.Url.Port != 80)
+            {
+                host += ":" + Request.Url.Port;
+            }
+
             return string.Format(fullUrl, host, appPath, app);
 
         }

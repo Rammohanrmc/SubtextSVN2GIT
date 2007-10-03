@@ -1202,6 +1202,8 @@ BEGIN
 		, RecentCommentsLength
 		, AkismetAPIKey
 		, FeedBurnerName
+		, BlogGroupId
+		, Title AS BlogGroupTitle
 	FROM [<dbUser,varchar,dbo>].[subtext_Config]
 END
 ELSE IF (@Strict = 0) AND (1 = (SELECT COUNT(1) FROM [<dbUser,varchar,dbo>].[subtext_Config] WHERE Host = @Host))
@@ -2425,7 +2427,7 @@ CREATE PROC [<dbUser,varchar,dbo>].[subtext_GetSingleEntry]
 	@ID int = NULL
 	, @EntryName nvarchar(150) = NULL
 	, @IsActive bit
-	, @BlogId int
+	, @BlogId int = NULL
 	, @IncludeCategories bit = 0
 )
 AS

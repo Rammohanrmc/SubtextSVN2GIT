@@ -24,6 +24,7 @@ using Subtext.Framework.Configuration;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Providers;
 using System.Data.SqlClient;
+using Subtext.Framework.Data;
 
 namespace Subtext.Web.HostAdmin.UserControls
 {
@@ -277,7 +278,8 @@ namespace Subtext.Web.HostAdmin.UserControls
 		{
             try
 			{
-				DbProvider.Instance().SetGroupActive(GroupId, !IsActive);
+                BlogGroup group = Config.GetBlogGroup(GroupId, false);
+                DbProvider.Instance().UpdateBlogGroup(GroupId, group.Title, !IsActive, (int) DataHelper.CheckNull(group.DisplayOrder), group.Description); 
 			}
 			catch(BaseBlogConfigurationException e)
 			{

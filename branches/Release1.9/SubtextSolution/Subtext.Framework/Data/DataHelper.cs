@@ -182,7 +182,7 @@ namespace Subtext.Framework.Data
 			group.Title = ReadString(reader, "Title");
 			group.Description = ReadString(reader, "Description");
 			group.DisplayOrder = ReadInt32(reader, "DisplayOrder");
-			group.IsActive = ReadBoolean(reader, "IsActive");
+			group.IsActive = ReadBoolean(reader, "Active");
 			return group;
 		}
 		#endregion

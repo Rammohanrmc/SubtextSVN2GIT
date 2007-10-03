@@ -38,7 +38,6 @@ namespace Subtext.Web
 		protected void Page_Load(object sender, EventArgs e)
 		{
             //No postbacks on this page. It is output cached.
-			BindData();
 			SetStyle();
 		}
 
@@ -64,84 +63,12 @@ namespace Subtext.Web
 			}
 		}
 
-		protected string GetEntryUrl(string host, string app, string entryName, DateTime dt)
-		{			
-			return string.Format(CultureInfo.InvariantCulture, "{0}archive/{1:yyyy/MM/dd}/{2}.aspx", GetFullUrl(host, app), dt, entryName);
-		}
-
 		private void SetStyle()
 		{
 			const string style = "<link href=\"{0}{1}\" type=\"text/css\" rel=\"stylesheet\">";
 			string apppath = HttpContext.Current.Request.ApplicationPath.EndsWith("/") ? HttpContext.Current.Request.ApplicationPath : HttpContext.Current.Request.ApplicationPath + "/";
 			Style.Text = string.Format(style,apppath,"Style.css") + "\n" + string.Format(style,apppath,"blue.css");
 		}
-
-		private string appPath;
-		readonly string fullUrl = HttpContext.Current.Request.Url.Scheme + "://{0}{1}{2}/";
-		
-		protected string GetFullUrl(string host, string app)
-		{
-			if(appPath == null)
-			{
-				appPath = HttpContext.Current.Request.ApplicationPath;
-				if(!appPath.ToLower(CultureInfo.InvariantCulture).EndsWith("/"))
-				{
-					appPath += "/";
-				}
-			}
-
-			if(Request.Url.Port != 80)
-			{
-				host += ":" + Request.Url.Port;
-			}
-
-			return string.Format(fullUrl, host, appPath, app);
-
-		}
-
-		private void BindData()
-		{
-			int groupId = 1;
-
-			if(Request.QueryString["GroupID"] !=null)
-			{
-				Int32.TryParse(Request.QueryString["GroupID"], out groupId);
-			}
-
-			IList<BlogGroup> groups = Config.ListBlogGroups(true);
-			this.blogGroupRepeater.DataSource = groups;
-
-			BlogGroup currentGroup = Config.GetBlogGroup(groupId, true);
-			this.Bloggers.DataSource = currentGroup.Blogs;
-
-			DataSet ds = DbProvider.Instance().GetAggregateHomePageData(groupId);
-			RecentPosts.DataSource = ds.Tables[1];
-
-			DataTable dtCounts = ds.Tables[2];
-			if(dtCounts != null)
-			{
-				DataRow dr = dtCounts.Rows[0];
-				BlogCount.Text = dr["BlogCount"].ToString();
-				PostCount.Text = dr["PostCount"].ToString();
-				StoryCount.Text = dr["StoryCount"].ToString();
-				CommentCount.Text = dr["CommentCount"].ToString();
-				PingtrackCount.Text = dr["PingtrackCount"].ToString();
-
-			}
-
-			DataBind();
-
-			ds.Clear();
-			ds.Dispose();
-
-		}
-
-		protected static string FormatDate(string date)
-		{
-			DateTime dt = DateTime.Parse(date);
-			return dt.ToString("MMddyyyy", CultureInfo.InvariantCulture);
-		}
-
 
 		#region Web Form Designer generated code
 		override protected void OnInit(EventArgs e)
@@ -165,4 +92,5 @@ namespace Subtext.Web
 		#endregion
 	}
 }
+
 

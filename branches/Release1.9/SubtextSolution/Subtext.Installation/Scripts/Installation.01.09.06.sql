@@ -206,4 +206,22 @@ IF EXISTS
 BEGIN
 	EXEC sp_rename '<dbUser,varchar,dbo>.subtext_config.BlogGroup', 'BlogGroupId'
 END
+
+GO
+IF NOT  EXISTS
+(
+	SELECT * FROM [<dbUser,varchar,dbo>].sysobjects
+	WHERE id = OBJECT_ID(N'[<dbUser,varchar,dbo>].[FK_subtext_Config_subtext_BlogGroup]')
+	AND type = 'F'
+)
+BEGIN
+ALTER TABLE [<dbUser,varchar,dbo>].subtext_Config WITH NOCHECK ADD CONSTRAINT
+	FK_subtext_Config_subtext_BlogGroup FOREIGN KEY
+	(
+	BlogGroupId
+	) REFERENCES [<dbUser,varchar,dbo>].subtext_BlogGroup
+	(
+	Id
+	)
+END
 GO

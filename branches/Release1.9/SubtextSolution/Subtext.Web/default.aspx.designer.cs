@@ -10,148 +10,22 @@
 
 namespace Subtext.Web {
     
-    
-    /// <summary>
-    /// _default class.
-    /// </summary>
-    /// <remarks>
-    /// Auto-generated class.
-    /// </remarks>
     public partial class _default {
-        
-        /// <summary>
-        /// title control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal title;
-        
-        /// <summary>
-        /// Style control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal Style;
-        
-        /// <summary>
-        /// Form1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm Form1;
-        
-        /// <summary>
-        /// TitleLink control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink TitleLink;
-        
-        /// <summary>
-        /// HyperLink1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink HyperLink1;
-        
-        /// <summary>
-        /// OpmlLink control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink OpmlLink;
-        
-        /// <summary>
-        /// RssLink control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink RssLink;
-        
-        /// <summary>
-        /// blogGroupRepeater control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater blogGroupRepeater;
-        
-        /// <summary>
-        /// BlogCount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal BlogCount;
-        
-        /// <summary>
-        /// PostCount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal PostCount;
-        
-        /// <summary>
-        /// StoryCount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal StoryCount;
-        
-        /// <summary>
-        /// CommentCount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal CommentCount;
-        
-        /// <summary>
-        /// PingtrackCount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal PingtrackCount;
-        
-        /// <summary>
-        /// Bloggers control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater Bloggers;
-        
-        /// <summary>
-        /// RecentPosts control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater RecentPosts;
+        protected System.Web.UI.WebControls.Literal title;
+        protected System.Web.UI.WebControls.Literal Style;
+        protected Subtext.Web.Controls.ScriptTag commonJs;
+        protected Subtext.Web.Controls.ScriptTag prototypeJs;
+        protected Subtext.Web.Controls.ScriptTag scriptaculousJs;
+        protected Subtext.Web.Controls.ScriptTag effectsJs;
+        protected Subtext.Web.Controls.ScriptTag lightboxJs;
+        protected System.Web.UI.HtmlControls.HtmlForm Form1;
+        protected System.Web.UI.WebControls.HyperLink TitleLink;
+        protected System.Web.UI.WebControls.HyperLink HyperLink1;
+        protected Subtext.Web.UI.Controls.AggSyndication AggSyndication1;
+        protected Subtext.Web.UI.Controls.AggBlogStats AggBlogStats1;
+        protected Subtext.Web.UI.Controls.AggBloggers AggBloggers1;
+        protected Subtext.Web.UI.Controls.AggPinnedPost AggPinnedPost1;
+        protected Subtext.Web.UI.Controls.AggRecentPosts AggRecentPosts1;
+        protected Subtext.Web.UI.Controls.AggRecentImages AggRecentImages1;
     }
 }

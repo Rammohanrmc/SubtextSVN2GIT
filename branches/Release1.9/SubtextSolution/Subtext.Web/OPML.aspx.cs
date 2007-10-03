@@ -33,7 +33,7 @@ namespace Subtext.Web
 			string sql = "DNW_Stats";
 			string conn = Subtext.Framework.Providers.DbProvider.Instance().ConnectionString;
 
-			int groupID = 1;
+			int groupID = 0;
 
 			if(Request.QueryString["GroupID"] !=null)
 			{
@@ -116,4 +116,5 @@ namespace Subtext.Web
 		#endregion
 	}
 }
+
 

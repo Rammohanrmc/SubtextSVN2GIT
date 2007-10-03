@@ -37,7 +37,7 @@ namespace Subtext.Web
 	{
 		private void Page_Load(object sender, EventArgs e)
 		{
-			int groupId = 1;
+			int groupId = 0;
 
 			if(Request.QueryString["GroupID"] !=null)
 			{
@@ -205,4 +205,5 @@ namespace Subtext.Web
 		#endregion
 	}
 }
+
 
