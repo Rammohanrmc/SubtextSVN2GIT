@@ -410,7 +410,9 @@ namespace Subtext.Framework
 			entryName = HttpUtility.UrlEncode(entryName);
 			entryName = RemoveTrailingPeriods(entryName);
 			entryName = entryName.Trim(new char[] {wordSeparator});
-			entryName = RemoveDoublePeriods(entryName);
+			entryName = StringHelper.RemoveDoubleCharacter(entryName, '.');
+			if (wordSeparator != char.MinValue && wordSeparator != '.')
+				entryName = StringHelper.RemoveDoubleCharacter(entryName, wordSeparator);
 		    
 		    if (StringHelper.IsNumeric(entryName))
 		    {
@@ -488,15 +490,6 @@ namespace Subtext.Framework
 			return cleansedText;
 		}
 		
-		static string RemoveDoublePeriods(string text)
-		{
-			while(text.IndexOf("..") > -1)
-			{
-				text = text.Replace("..", ".");
-			}
-			return text;
-		}
-
 		static string RemoveTrailingPeriods(string text)
 		{
 			Regex regex = new Regex(@"\.+$", RegexOptions.Compiled);

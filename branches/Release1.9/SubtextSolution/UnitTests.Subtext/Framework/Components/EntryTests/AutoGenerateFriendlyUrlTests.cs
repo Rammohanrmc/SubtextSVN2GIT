@@ -91,6 +91,8 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
         [Row("Diseñadora de interfaces", char.MinValue, "DisenadoraDeInterfaces")]
 		[Row("Perchè Più felicità può ed é?", char.MinValue, "PerchePiuFelicitaPuoEdE")]
 		[Row(@"[!""'`;:~@#$%^&*(){\[}\]?+/=\\|<> X", char.MinValue, "X")]
+		[Row(@"This  is cool", '_', "This_is_cool")]
+		[Row(@"This - is cool", '-', "This-is-cool")]
 		[RollBack]
 		public void FriendlyUrlGeneratesNiceUrl(string title, char separator, string expected)
 		{

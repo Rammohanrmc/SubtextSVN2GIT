@@ -26,6 +26,38 @@ namespace Subtext.Framework.Text
 	public static class StringHelper
 	{
 		/// <summary>
+		/// Removes any double instances of the specified character. 
+		/// So "--" becomes "-" if the character is '-'.
+		/// </summary>
+		/// <param name="text">The text.</param>
+		/// <param name="character">The character.</param>
+		/// <returns></returns>
+		public static string RemoveDoubleCharacter(string text, char character)
+		{
+			if (text == null)
+				throw new ArgumentNullException("text");
+
+			if (character == char.MinValue)
+				return text;
+
+			char[] newString = new char[text.Length];
+			int i = 0;
+
+			bool lastCharIsOurChar = false;
+			foreach(char c in text)
+			{
+				if(c != character || !lastCharIsOurChar)
+				{
+					newString[i] = c;
+					i++;
+				}
+				lastCharIsOurChar = (c == character);
+			}
+
+			return new string(newString, 0, i);
+		}
+
+		/// <summary>
 		/// Parses a camel cased or pascal cased string and returns an array 
 		/// of the words within the string.
 		/// </summary>
