@@ -23,75 +23,75 @@ using Subtext.Framework.Configuration;
 using Subtext.Framework.Security;
 using Subtext.Framework.Web;
 
-namespace Subtext.Web.HttpModules
+namespace Subtext.Framework.Web.HttpModules
 {
-	/// <summary>
-	/// Summary description for BasicAuthenticationModule
-	/// </summary>
-	public class FormToBasicAuthenticationModule : IHttpModule
-	{
-		public void Dispose()
-		{
-			// throw new Exception("The method or operation is not implemented.");
-		}
+    /// <summary>
+    /// Summary description for BasicAuthenticationModule
+    /// </summary>
+    public class FormToBasicAuthenticationModule : IHttpModule
+    {
+        public void Dispose()
+        {
+            // throw new Exception("The method or operation is not implemented.");
+        }
 
-		public void EndRequest(Object sender, EventArgs e)
-		{
-			HttpContext context = ((HttpApplication)sender).Context;
+        public void EndRequest(Object sender, EventArgs e)
+        {
+            HttpContext context = ((HttpApplication)sender).Context;
 
-			if (!String.IsNullOrEmpty(SecurityHelper.CurrentUserName)
-				||HttpHelper.IsStaticFileRequest()
-				||!(context.Response.StatusCode == 302
-				&& context.Response.RedirectLocation.IndexOf(FormsAuthentication.LoginUrl) == 0))
-				return;
+            if (!String.IsNullOrEmpty(SecurityHelper.CurrentUserName)
+                ||HttpHelper.IsStaticFileRequest()
+                ||!(context.Response.StatusCode == 302
+                    && context.Response.RedirectLocation.IndexOf(FormsAuthentication.LoginUrl) == 0))
+                return;
 
-			if(!Regex.IsMatch(context.Request.Path,@"Rss\.aspx"))
-				return;
+            if(!Regex.IsMatch(context.Request.Path,@"Rss\.aspx"))
+                return;
 
-			string authHeader = context.Request.Headers["Authorization"];
-			if (String.IsNullOrEmpty(authHeader))
-			{
-				SendAuthRequest(context);
-			}
-			else
-			{
-				if (authHeader.IndexOf("Basic ") == 0)
-				{
-					byte[] bytes = Convert.FromBase64String(authHeader.Remove(0, 6));
+            string authHeader = context.Request.Headers["Authorization"];
+            if (String.IsNullOrEmpty(authHeader))
+            {
+                SendAuthRequest(context);
+            }
+            else
+            {
+                if (authHeader.IndexOf("Basic ") == 0)
+                {
+                    byte[] bytes = Convert.FromBase64String(authHeader.Remove(0, 6));
 
-					string authString = Encoding.Default.GetString(bytes);
-					string[] usernamepassword = authString.Split(':');
+                    string authString = Encoding.Default.GetString(bytes);
+                    string[] usernamepassword = authString.Split(':');
 
-					if (SecurityHelper.Authenticate(usernamepassword[0], usernamepassword[1], false))
-					{
-						context.Response.Redirect(context.Request.Url.ToString());
-					}
-					else
-					{
-						SendAuthRequest(context);
-					}
-				}
-				else
-				{
-					FormsAuthentication.RedirectToLoginPage();
-				}
-			}
-		}
+                    if (SecurityHelper.Authenticate(usernamepassword[0], usernamepassword[1], false))
+                    {
+                        context.Response.Redirect(context.Request.Url.ToString());
+                    }
+                    else
+                    {
+                        SendAuthRequest(context);
+                    }
+                }
+                else
+                {
+                    FormsAuthentication.RedirectToLoginPage();
+                }
+            }
+        }
 
-		private static void SendAuthRequest(HttpContext context)
-		{
-			Debug.WriteLine("Auth");
-			context.Response.StatusCode = 401;
+        private static void SendAuthRequest(HttpContext context)
+        {
+            Debug.WriteLine("Auth");
+            context.Response.StatusCode = 401;
 
-			context.Response.AddHeader("WWW-Authenticate", String.Format("Basic realm=\"{0}\"", Config.CurrentBlog.Title));
+            context.Response.AddHeader("WWW-Authenticate", String.Format("Basic realm=\"{0}\"", Config.CurrentBlog.Title));
 //			context.ApplicationInstance.CompleteRequest();
-		}
+        }
 
-		public void Init(HttpApplication app)
-		{
+        public void Init(HttpApplication app)
+        {
 
-			app.EndRequest += EndRequest;
-		}
+            app.EndRequest += EndRequest;
+        }
 
-	}
+    }
 }

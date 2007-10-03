@@ -42,7 +42,7 @@ namespace Subtext.Framework.Web.HttpModules
         /// </param>
         void IHttpModule.Init(HttpApplication context)
         {
-            context.PostReleaseRequestState += new EventHandler(context_PostReleaseRequestState);
+            context.PostReleaseRequestState += context_PostReleaseRequestState;
         }
 
         #endregion
@@ -57,7 +57,7 @@ namespace Subtext.Framework.Web.HttpModules
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         void context_PostReleaseRequestState(object sender, EventArgs e)
         {
-            HttpApplication app = sender as HttpApplication;
+            HttpApplication app = (HttpApplication) sender;
             if (app.Request.Path.Contains("css.axd") || app.Request.Path.Contains("js.axd"))
             {
                 if (IsEncodingAccepted(GZIP))

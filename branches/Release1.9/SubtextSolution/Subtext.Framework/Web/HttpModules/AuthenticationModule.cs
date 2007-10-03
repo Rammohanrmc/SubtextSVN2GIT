@@ -22,7 +22,7 @@ using Subtext.Framework.Logging;
 using Subtext.Framework.Security;
 using Subtext.Framework.Web;
 
-namespace Subtext.Web.HttpModules
+namespace Subtext.Framework.Web.HttpModules
 {
     /// <summary>
     /// Handles the AuthenticateRequest event of a request.  Decrypts the authentication 
@@ -39,18 +39,18 @@ namespace Subtext.Web.HttpModules
 
         void OnAuthenticateRequest(object sender, EventArgs e)
         {
-        	if(HttpHelper.IsStaticFileRequest())
-        		return;
+            if(HttpHelper.IsStaticFileRequest())
+                return;
         	
-			HttpCookie authCookie = SecurityHelper.SelectAuthenticationCookie();
+            HttpCookie authCookie = SecurityHelper.SelectAuthenticationCookie();
 
             if (null == authCookie)
             {
                 log.Debug("There is no authentication cookie.");
-				return;
+                return;
             }
 
-			FormsAuthenticationTicket authTicket;
+            FormsAuthenticationTicket authTicket;
             try
             {
                 authTicket = FormsAuthentication.Decrypt(authCookie.Value);
@@ -58,7 +58,7 @@ namespace Subtext.Web.HttpModules
             catch (Exception ex)
             {
                 log.Error("Could not decrypt the authentication cookie.", ex);
-				HttpContext.Current.Response.Cookies.Add(SecurityHelper.GetExpiredCookie());			
+                HttpContext.Current.Response.Cookies.Add(SecurityHelper.GetExpiredCookie());			
                 return;
             }
 
@@ -72,14 +72,14 @@ namespace Subtext.Web.HttpModules
             if (authTicket.Expired)
             {
                 log.Debug("Authentication ticket expired.");
-				HttpContext.Current.Response.Cookies.Add(SecurityHelper.GetExpiredCookie());
+                HttpContext.Current.Response.Cookies.Add(SecurityHelper.GetExpiredCookie());
                 return;
             }
 
-			if (FormsAuthentication.SlidingExpiration)
-			{
-			    FormsAuthentication.RenewTicketIfOld(authTicket);
-			}
+            if (FormsAuthentication.SlidingExpiration)
+            {
+                FormsAuthentication.RenewTicketIfOld(authTicket);
+            }
 
             // When the ticket was created, the UserData property was assigned a
             // pipe delimited string of role names.
@@ -91,7 +91,7 @@ namespace Subtext.Web.HttpModules
             GenericPrincipal principal = new GenericPrincipal(id, roles);
             // Attach the new principal object to the current HttpContext object
             HttpContext.Current.User = principal;
-			log.Debug("Authentication succeeded. Current.User=" + id.Name + "; " + authTicket.UserData);
+            log.Debug("Authentication succeeded. Current.User=" + id.Name + "; " + authTicket.UserData);
         }
 
         public void Dispose()
