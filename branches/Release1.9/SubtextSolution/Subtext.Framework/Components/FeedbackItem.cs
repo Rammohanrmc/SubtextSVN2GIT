@@ -103,7 +103,7 @@ namespace Subtext.Framework.Components
 			
 			feedback.FlaggedAsSpam = true; //We're going to start with this assumption.
 			feedback.Author = HtmlHelper.SafeFormat(feedback.Author);
-			feedback.Body = HtmlHelper.ConvertToAllowedHtml(feedback.Body);
+			feedback.Body = HtmlHelper.ConvertUrlsToHyperLinks(HtmlHelper.ConvertToAllowedHtml(feedback.Body));
 			feedback.Title = HtmlHelper.SafeFormat(feedback.Title);
 		    
 		    // If we are creating this feedback item as part of an import, we want to 
@@ -206,7 +206,7 @@ namespace Subtext.Framework.Components
 
 			try
 			{
-				SendEmailDelegate sendEmail = new SendEmailDelegate(im.Send);
+				SendEmailDelegate sendEmail = im.Send;
 				AsyncHelper.FireAndForget(sendEmail, to, from, subject, body);
 			}
 			catch(Exception e)
@@ -226,7 +226,7 @@ namespace Subtext.Framework.Components
 		public static void Approve(FeedbackItem feedback)
 		{
 			if (feedback == null)
-				throw new ArgumentNullException("comment", "Cannot approve a null comment.");
+				throw new ArgumentNullException("feedback", "Cannot approve a null comment.");
 
 			feedback.SetStatus(FeedbackStatusFlag.Approved, true);
 			feedback.SetStatus(FeedbackStatusFlag.Deleted, false);
@@ -245,7 +245,7 @@ namespace Subtext.Framework.Components
 		public static void ConfirmSpam(FeedbackItem feedback)
 		{
 			if (feedback == null)
-				throw new ArgumentNullException("comment", "Cannot approve a null comment.");
+				throw new ArgumentNullException("feedback", "Cannot approve a null comment.");
 
 			feedback.SetStatus(FeedbackStatusFlag.Approved, false);
 			feedback.SetStatus(FeedbackStatusFlag.ConfirmedSpam, true);
@@ -265,7 +265,7 @@ namespace Subtext.Framework.Components
 		public static void Delete(FeedbackItem feedback)
 		{
 			if (feedback == null)
-				throw new ArgumentNullException("comment", "Cannot delete a null comment.");
+				throw new ArgumentNullException("feedback", "Cannot delete a null comment.");
 
 			feedback.SetStatus(FeedbackStatusFlag.Approved, false);
 			feedback.SetStatus(FeedbackStatusFlag.Deleted, true);
@@ -280,7 +280,7 @@ namespace Subtext.Framework.Components
 		public static void Destroy(FeedbackItem feedback)
 		{
 			if (feedback == null)
-				throw new ArgumentNullException("comment", "Cannot destroy a null comment.");
+				throw new ArgumentNullException("feedback", "Cannot destroy a null comment.");
 
 			if (feedback.Approved)
 				throw new InvalidOperationException("Cannot destroy an approved comment. Please flag it as spam or trash it first.");
