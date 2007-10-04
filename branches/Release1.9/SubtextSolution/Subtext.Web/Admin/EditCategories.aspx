@@ -15,8 +15,8 @@
 	<st:MessagePanel id="Messages" runat="server" />
 
 	<st:AdvancedPanel id="Edit" runat="server" Collapsible="False" HeaderText="Edit Categories" HeaderCssClass="CollapsibleHeader" DisplayHeader="true">
-		<asp:DataGrid id="dgrItems" AutoGenerateColumns="False" GridLines="None" CssClass="Listing" runat="server">
-			<AlternatingItemStyle CssClass="Alt"></AlternatingItemStyle>
+		<asp:DataGrid id="dgrItems" AutoGenerateColumns="False" GridLines="None" CssClass="listing" runat="server">
+			<AlternatingItemStyle CssClass="alt"></AlternatingItemStyle>
 			<HeaderStyle CssClass="Header"></HeaderStyle>
 
 			<Columns>

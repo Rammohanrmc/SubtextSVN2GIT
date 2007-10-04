@@ -9,7 +9,7 @@
 <ANW:AdvancedPanel id="Results" runat="server" LinkStyle="Image" LinkBeforeHeader="True" DisplayHeader="True" HeaderCssClass="CollapsibleHeader" LinkText="[toggle]" Collapsible="True">
 	<asp:Repeater id="rprSelectionList" runat="server">
 		<HeaderTemplate>
-			<table id="Listing" class="Listing highlightTable" cellspacing="0" cellpadding="0" border="0" style="<%= CheckHiddenStyle() %>">
+			<table id="Listing" class="listing highlightTable" cellspacing="0" cellpadding="0" border="0" style="<%= CheckHiddenStyle() %>">
 				<tr>
 					<th>Description</th>
 					<th width="50">Active</th>
@@ -47,7 +47,7 @@
 			</tr>
 		</ItemTemplate>
 		<AlternatingItemTemplate>
-			<tr class="Alt">
+			<tr class="alt">
 				<td>
 					<asp:HyperLink ID="HyperLink1" runat="server" NavigateUrl='<%# DataBinder.Eval(Container.DataItem, "FullyQualifiedUrl") %>' ToolTip="View Entry" >
 				        <%# DataBinder.Eval(Container.DataItem, "Title") %></asp:HyperLink>

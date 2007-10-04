@@ -10,12 +10,12 @@
 </asp:Content>
 
 <asp:Content ID="statsViewContent" ContentPlaceHolderID="pageContent" runat="server">
-	<st:MessagePanel id=Messages runat="server" ErrorIconUrl="~/images/icons/ico_critical.gif" ErrorCssClass="ErrorPanel" MessageIconUrl="~/images/icons/ico_info.gif" MessageCssClass="MessagePanel" />
+	<st:MessagePanel id="Messages" runat="server" ErrorIconUrl="~/images/icons/ico_critical.gif" ErrorCssClass="ErrorPanel" MessageIconUrl="~/images/icons/ico_info.gif" MessageCssClass="MessagePanel" />
 	Coming Soon
 	<st:AdvancedPanel id="Results" runat="server" Collapsible="False" HeaderText="View Stats" HeaderCssClass="CollapsibleHeader" DisplayHeader="true" Visible = "False">
 		<ASP:Repeater id="rprSelectionList" runat="server" >
 			<HeaderTemplate>
-				<table id="Listing" class="Listing" cellSpacing="0" cellPadding="0" border="0" style="<%= CheckHiddenStyle() %>">
+				<table id="Listing" class="listing highlightTable" cellspacing="0" cellpadding="0" border="0" style="<%= CheckHiddenStyle() %>">
 					<tr>
 						<th>Page Title</th>
 						<th>View Count</th>
@@ -36,7 +36,7 @@
 				</tr>
 			</ItemTemplate>
 			<AlternatingItemTemplate>
-				<tr class="Alt">
+				<tr class="alt">
 					<td nowrap>
 						<b><%# GetPageTitle(Container.DataItem) %></b>
 					</td>

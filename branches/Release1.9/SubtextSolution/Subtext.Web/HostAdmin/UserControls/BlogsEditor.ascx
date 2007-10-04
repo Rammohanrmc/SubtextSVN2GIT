@@ -6,7 +6,7 @@
 	<asp:CheckBox id="chkShowInactive" AutoPostBack="True" Text="Show Inactive Blogs" Runat="server" oncheckedchanged="chkShowInactive_CheckedChanged"></asp:CheckBox>
 	<asp:Repeater id="rprBlogsList" Runat="server" OnItemCommand="rprBlogsList_ItemCommand">
 		<HeaderTemplate>
-			<table class="Listing" cellspacing="0" cellpadding="4" border="0">
+			<table class="listing" cellspacing="0" cellpadding="4" border="0">
 				<tr>
 					<th>Title</th>
 					<th>Host</th>
@@ -47,7 +47,7 @@
 			</tr>
 		</ItemTemplate>
 		<AlternatingItemTemplate>
-			<tr class="Alt">
+			<tr class="alt">
 				<td>
 					<a href="<%# DataBinder.Eval(Container.DataItem, "RootUrl") %>Default.aspx"><%# DataBinder.Eval(Container.DataItem, "Title") %></a>
 				</td>
@@ -194,7 +194,7 @@
 			<td rowspan="7" runat="Server" id="tdAliasList">
 				<asp:Repeater runat="server" ID="rprBlogAliasList" OnItemCommand="rprBlogAliasList_ItemCommand">
 					<HeaderTemplate>
-						<table class="Listing" cellspacing="2" cellpadding="0" border="0">
+						<table class="listing" cellspacing="2" cellpadding="0" border="0">
 							<tr></tr>
 							<tr>
 								<th width="10px">&nbsp;</th>
@@ -224,7 +224,7 @@
 						</tr>
 					</ItemTemplate>
 					<AlternatingItemTemplate>
-						<tr class="Alt">
+						<tr class="alt">
 							<td><asp:ImageButton ID="btnEditAlias" runat="server" ImageUrl="~\Images\edit.gif" CommandName="EditAlias" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "Id") %>' /> </td>
 							<td>
 								<%# DataBinder.Eval(Container.DataItem, "Host") %>

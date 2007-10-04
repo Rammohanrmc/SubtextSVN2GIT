@@ -26,7 +26,7 @@
         <st:AdvancedPanel id="Results" runat="server" Collapsible="False" HeaderText="Comments" HeaderCssClass="CollapsibleHeader" DisplayHeader="true">
 		<asp:Repeater id="rprSelectionList" runat="server" OnItemCommand="rprSelectionList_ItemCommand">
 			<HeaderTemplate>
-				<table id="feedback" class="Listing highlightTable" style="<%= CheckHiddenStyle() %>">
+				<table id="feedback" class="listing highlightTable" style="<%= CheckHiddenStyle() %>">
 					<tr>
 						<th width="16"></th>
 						<th>Title</th>						
@@ -63,7 +63,7 @@
 				</tr>
 			</ItemTemplate>
 			<AlternatingItemTemplate>
-				<tr class="Alt">
+				<tr class="alt">
 					<td>	
 						<asp:ImageButton id="ImageButton1" CausesValidation="False" ImageUrl="~/Images/edit.gif" CommandName="Edit" CommandArgument='<%# DataBinder.Eval(Container.DataItem, "Id") %>' runat="server" ToolTip="Edit this comment" />
 					</td>
@@ -81,7 +81,7 @@
 						<input type="hidden" id="FeedbackIdAlt" name="FeedbackIdAlt" value='<%# DataBinder.Eval(Container.DataItem, "Id") %>' runat="server" />
 					</td>
 				</tr>
-				<tr class="body Alt">
+				<tr class="body alt">
 					<td>
 					</td>
 					<td colspan="4">

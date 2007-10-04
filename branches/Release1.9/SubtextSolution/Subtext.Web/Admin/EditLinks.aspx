@@ -18,7 +18,7 @@
 		HeaderCssClass="CollapsibleHeader" HeaderText="Links" LinkText="[toggle]" Collapsible="True">
 		<asp:Repeater id="rprSelectionList" runat="server">
 			<HeaderTemplate>
-				<table id="Listing" class="Listing highlightTable" cellSpacing="0" cellPadding="0" border="0" style="<%= CheckHiddenStyle() %>">
+				<table id="Listing" class="listing highlightTable" cellspacing="0" cellpadding="0" border="0" style="<%= CheckHiddenStyle() %>">
 					<tr>
 						<th>Link Title</th>
 						<th width="50">Url</th>
@@ -41,7 +41,7 @@
 				</tr>
 			</ItemTemplate>
 			<AlternatingItemTemplate>
-				<tr class="Alt">
+				<tr class="alt">
 					<td>
 						<%# DataBinder.Eval(Container.DataItem, "Title") %>
 					</td>
@@ -73,7 +73,7 @@
 		<div style="HEIGHT: 0px"><!-- IE bug hides label in following div without this -->
 			<div>
 				<div>
-					<p class="Block"><LABEL class="Block">Local File Location (*.opml)</LABEL></p>
+					<p class="Block"><label class="Block">Local File Location (*.opml)</label></p>
 					<input class="FileUpload" id="OpmlImportFile" type="file" size="62" name="ImageFile" runat="server" />
 					<p>Categories</p>
 					<p>
@@ -81,7 +81,7 @@
 				</div>
 				<div style="MARGIN-TOP: 8px">
 					<asp:Button id="lkbImportOpml" runat="server" CssClass="Button" Text="Import" onclick="lkbImportOpml_Click"></asp:Button><A class="Button" href="Export.aspx?command=opml">Export</A>
-					<BR class="clear">
+					<br class="clear" />
 					&nbsp;
 				</div>
 			</div>

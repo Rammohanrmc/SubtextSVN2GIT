@@ -455,7 +455,7 @@ table#Footer td {
 	padding: 4px 8px;
 }
 
-table.Listing 
+table.listing 
 {
 	border-bottom: 3px solid #6B86B3;
 	margin: 0px 0px 8px 0px;
@@ -518,34 +518,34 @@ div.CollapsibleTitle a:hover {
 	background: inherit;
 }
 
-table.Listing td
+table.listing td
 {
 	border-bottom: 1px solid #E6E6E6;
 }
 
-table.Listing td, 
-table.Listing th,
-table.Listing caption, 
+table.listing td, 
+table.listing th,
+table.listing caption, 
 h2 {
 	padding: 4px 12px 4px 12px;
 	text-align: left;
 }
 
-table.Listing tr {
+table.listing tr {
 	color: inherit;
 	background: #F5F5F5;
 }
 
-table.Listing th,
-table.Listing td.Header,
-table.Listing tr.Header td {
+table.listing th,
+table.listing td.Header,
+table.listing tr.Header td {
 	font-weight: bold;
 	color: inherit;
 	border-bottom: 1px solid #6B86B3;
 	background: #FFFFFF;
 }
 
-table.Listing tr.Alt 
+table.listing tr.alt 
 {
 	color: inherit;
 	background: #FFFFFF;

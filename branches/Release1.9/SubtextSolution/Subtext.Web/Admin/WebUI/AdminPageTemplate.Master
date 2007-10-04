@@ -40,7 +40,10 @@
 			</tr>
 			<tr>
 				<td style="vertical-align:bottom;">
-					<div id="LeftNavHeader"><asp:ContentPlaceHolder ID="actionsHeading" runat="server" /></div>
+                    <div id="LeftNavHeader">
+                        <asp:ContentPlaceHolder ID="actionsHeading" runat="server">
+                            Actions</asp:ContentPlaceHolder>
+                    </div>
 				</td>
 				<td class="NavHeaderRow">
 					<div id="headerSS">

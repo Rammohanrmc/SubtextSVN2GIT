@@ -161,7 +161,8 @@ namespace Subtext.Web.Admin.Pages
 				this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, RES_FAILURE, ex.Message));
 			}
 		}
-		#region Web Form Designer generated code
+		
+        #region Web Form Designer generated code
 		override protected void OnInit(EventArgs e)
 		{
 			//
@@ -185,13 +186,13 @@ namespace Subtext.Web.Admin.Pages
 		}
 		#endregion
 
-		private string NormalizeString(string text)
+		private static string NormalizeString(string text)
 		{
 			string tmp = text.Trim();
 			return tmp.Length == 0 ? null : tmp;
 		}
 
-		protected void btnPost_Click(object sender, System.EventArgs e)
+		protected void btnPost_Click(object sender, EventArgs e)
 		{
 			BindPost();
 		}

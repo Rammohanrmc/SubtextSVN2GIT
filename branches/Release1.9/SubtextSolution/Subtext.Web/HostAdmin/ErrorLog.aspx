@@ -41,7 +41,7 @@
 				</tr>
 			</ItemTemplate>
 			<AlternatingItemTemplate>
-				<tr class="Alt">
+				<tr class="alt">
 					<td class="date">
 						<%# DataBinder.Eval(Container.DataItem, "Date") %>
 					</td>
