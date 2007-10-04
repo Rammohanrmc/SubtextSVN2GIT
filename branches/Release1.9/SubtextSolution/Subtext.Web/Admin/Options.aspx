@@ -18,6 +18,12 @@
 		    <a href="Configure.aspx">Configure</a>: Manage your blog.
 	    </p>
 	    <p>
+		    <a href="Customize.aspx">Customize</a>: Customize your blog.
+	    </p>
+	    <p>
+		    <a href="Preferences.aspx">Preferences</a>: Set common preferences.
+	    </p>
+	    <p>
 		    <a href="Syndication.aspx">Syndication</a>: Manage your RSS (or ATOM) Feed.
 	    </p>
 	    <p>
@@ -29,9 +35,6 @@
 	    <p>
 		    <a href="Password.aspx">Password</a>: Update your password.
 	    </p>		
-	    <p>
-		    <a href="Preferences.aspx">Preferences</a>: Set common preferences.
-	    </p>
 	    <br class="clear" />
     </st:AdvancedPanel>
 </asp:Content>

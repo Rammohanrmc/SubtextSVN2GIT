@@ -120,11 +120,11 @@ namespace Subtext.Web.Admin.Pages
 				return String.Empty;
 		}
 
-		public string GetTitle(object dataContainer)
+		public string GetTitle(object dataItem)
 		{
-			if (dataContainer is Referrer)
+			if (dataItem is Referrer)
 			{
-				Referrer referrer = (Referrer) dataContainer;
+				Referrer referrer = (Referrer) dataItem;
 
 				if(referrer.PostTitle != null)
 				{
@@ -149,11 +149,11 @@ namespace Subtext.Web.Admin.Pages
 			}
 		}
 
-		public string GetReferrer(object dataContainer)
+		public string GetReferrer(object dataItem)
 		{
-			if (dataContainer is Referrer)
+			if (dataItem is Referrer)
 			{
-				Referrer referrer = (Referrer) dataContainer;
+				Referrer referrer = (Referrer) dataItem;
                 string urlEncodedReferrerUrl = Uri.EscapeUriString(referrer.ReferrerURL);                
                 string htmlEncodedReferrerUrl;
                 

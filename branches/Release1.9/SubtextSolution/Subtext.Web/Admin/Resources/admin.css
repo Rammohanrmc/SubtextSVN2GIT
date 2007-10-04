@@ -458,6 +458,7 @@ table#Footer td {
 table.listing 
 {
 	border-bottom: 3px solid #6B86B3;
+	border-collapse:collapse;
 	margin: 0px 0px 8px 0px;
 	width: 100%;
 }
@@ -870,3 +871,6 @@ div.wide, fieldset.wide
 .right { float: right; }
 .block { display: block; }
 .inline { display: inline; }
+
+.fluid { width:100% ! important; }
+.auto { width:auto ! important; }

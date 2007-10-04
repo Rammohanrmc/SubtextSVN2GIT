@@ -21,6 +21,6 @@
 		<p>
 			<a href = "ErrorLog.aspx">Error Log</a>: Configure and view error log
 		</p>
-		<br class="clear">
+		<br class="clear" />
 	</st:AdvancedPanel>
 </asp:Content>
