@@ -189,9 +189,6 @@
     <Compile Include="ScriptHelper.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ScriptTag.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="ScrollPositionSaver.cs">
       <SubType>Code</SubType>
     </Compile>

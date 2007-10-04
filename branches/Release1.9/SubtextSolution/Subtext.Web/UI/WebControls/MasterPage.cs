@@ -39,7 +39,7 @@ namespace Subtext.Web.UI.WebControls
 		Designer(typeof(ContainerControlDesigner))]
 	public class MasterPage : HtmlContainerControl
 	{
-		Log Log = new Log();
+		Log log = new Log();
 		private string templateFile;
 		private Control template = null;
 
@@ -90,7 +90,7 @@ namespace Subtext.Web.UI.WebControls
 			}
 			catch(HttpException e)
 			{
-				Log.Warn("The configured skin '" + Config.CurrentBlog.Skin.TemplateFolder + "' does not exist.  Reverting to a default skin.", e);
+				log.Warn("The configured skin '" + Config.CurrentBlog.Skin.TemplateFolder + "' does not exist.  Reverting to a default skin.", e);
 				Config.CurrentBlog.Skin = SkinConfig.GetDefaultSkin();
 				this.templateFile = null;
 				this.template = this.Page.LoadControl(this.TemplateFile);

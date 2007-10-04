@@ -1,18 +1,16 @@
 <%@ Master Language="C#" AutoEventWireup="true" CodeBehind="AdminPageTemplate.master.cs" Inherits="Subtext.Web.Admin.WebUI.AdminPageTemplate" %>
-<%@ Import namespace="Subtext.Framework.Configuration"%>
-<%@ Register TagPrefix="st" Namespace="Subtext.Web.Admin.WebUI" Assembly="Subtext.Web" %>
-<%@ Register TagPrefix="st1" Namespace="Subtext.Web.Controls" Assembly="Subtext.Web.Controls" %>
-<%@ Import Namespace = "Subtext.Web.Admin" %>
+<%@ Import Namespace="Subtext.Framework.Configuration"%>
+<%@ Import Namespace="Subtext.Web.Admin" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head runat="server">
     <title>Subtext - Admin</title>
-    <st1:ScriptTag id="commonJs" src="~/Scripts/common.js" runat="server" />
-    <st1:ScriptTag id="tableEffectsJS" src="~/Scripts/tableEffects.js" runat="server" />
-    <st1:ScriptTag id="NiceForms" src="~/admin/resources/Scripts/niceForms.js" runat="server" />
-	<st1:ScriptTag id="HelptipJs" src="~/admin/resources/Scripts/helptip.js" runat="server" />
-	<st1:ScriptTag id="AdminJs" src="~/admin/resources/Scripts/admin.js" runat="server" />
+    <script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/Scripts/common.js") %>" ></script>
+    <script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/Scripts/tableEffects.js") %>" ></script>
+    <script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/admin/resources/Scripts/niceForms.js") %>"></script>
+	<script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/admin/resources/Scripts/helptip.js") %>" ></script>
+	<script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/admin/resources/Scripts/admin.js") %>" ></script>
 	<link id="commonLayoutCss" type="text/css" rel="stylesheet" runat="Server" href="~/Skins/_System/commonlayout.css" />
 	<link id="commonStyleCss" type="text/css" rel="stylesheet" runat="Server" href="~/Skins/_System/commonstyle.css" />
 	<st:HeaderLink id="HelptipCss" rel="stylesheet" href="resources/scripts/helptip.css" linkType="text/css" runat="server" />

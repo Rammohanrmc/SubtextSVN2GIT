@@ -1,4 +1,5 @@
-<%@ Page Language="C#" EnableTheming="false"  Title="Subtext Admin - Configure" MasterPageFile="~/Admin/WebUI/AdminPageTemplate.Master" Codebehind="Configure.aspx.cs" Inherits="Subtext.Web.Admin.Pages.Configure" %>
+<%@ Page Language="C#" EnableTheming="false" Title="Subtext Admin - Configure" MasterPageFile="~/Admin/WebUI/AdminPageTemplate.Master"
+    Codebehind="Configure.aspx.cs" Inherits="Subtext.Web.Admin.Pages.Configure" %>
 
 <asp:Content ID="actions" ContentPlaceHolderID="actionsHeading" runat="server">
     Actions

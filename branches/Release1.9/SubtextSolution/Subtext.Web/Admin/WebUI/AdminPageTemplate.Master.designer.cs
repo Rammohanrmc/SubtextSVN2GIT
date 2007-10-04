@@ -20,51 +20,6 @@ namespace Subtext.Web.Admin.WebUI {
     public partial class AdminPageTemplate {
         
         /// <summary>
-        /// commonJs control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Subtext.Web.Controls.ScriptTag commonJs;
-        
-        /// <summary>
-        /// tableEffectsJS control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Subtext.Web.Controls.ScriptTag tableEffectsJS;
-        
-        /// <summary>
-        /// NiceForms control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Subtext.Web.Controls.ScriptTag NiceForms;
-        
-        /// <summary>
-        /// HelptipJs control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Subtext.Web.Controls.ScriptTag HelptipJs;
-        
-        /// <summary>
-        /// AdminJs control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Subtext.Web.Controls.ScriptTag AdminJs;
-        
-        /// <summary>
         /// commonLayoutCss control.
         /// </summary>
         /// <remarks>
