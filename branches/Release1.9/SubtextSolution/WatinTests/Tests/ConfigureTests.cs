@@ -13,6 +13,7 @@ namespace WatinTests
 			using(Browser browser = new Browser())
 			{
 				ConfigPage page = browser.ConfigurePage;
+				browser.Login("username", "password");
 				page.TitleField.Value = "Title Changed by Watin";
 				page.SubtitleField.Value = "Subtitle Changed by Watin";
 				page.ClickSave();
