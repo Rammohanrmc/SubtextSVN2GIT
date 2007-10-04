@@ -18,8 +18,6 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.Web;
 using log4net;
-using log4net.Appender;
-using log4net.Repository.Hierarchy;
 using Subtext.Framework;
 using Subtext.Framework.Configuration;
 using Subtext.Framework.Data;
@@ -87,36 +85,7 @@ namespace Subtext.Web
         {
             //This line will trigger the configuration.
             log.Info("Application_Start - This is not a malfunction.");
-#if DEBUG
-            Hierarchy h = LogManager.GetRepository() as Hierarchy;
-            EnsureLog4NetConnectionString(h);
-#endif
         }
-
-#if DEBUG
-        private static void EnsureLog4NetConnectionString(Hierarchy h)
-        {
-            if (h.Root.Appenders.Count == 0)
-                throw new InvalidOperationException("No appenders configured!");
-
-            foreach(IAppender appender in h.Root.Appenders)
-            {
-                AdoNetAppender adoAppender = appender as AdoNetAppender;
-                if(adoAppender != null)
-                {
-                    adoAppender.ActivateOptions();
-                    //Normalize appender connection string, since Log4Net seems to truncate that last semicolon.
-                    if (!String.IsNullOrEmpty(adoAppender.ConnectionString) && !adoAppender.ConnectionString.EndsWith(";"))
-                        adoAppender.ConnectionString += ";";
-
-                    if (adoAppender.ConnectionString != Config.ConnectionString)
-                    {
-                        throw new InvalidOperationException("Log4Net is not picking up our connection string.");
-                    }					
-                }
-            }
-        }
-#endif
 
         /// <summary>
         /// Method called when a session starts.

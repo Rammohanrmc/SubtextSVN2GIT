@@ -250,7 +250,7 @@ namespace Subtext.Framework.Configuration
 		/// <returns></returns>
         public static bool CreateBlog(string title, string userName, string password, string host, string subfolder, bool passwordAlreadyHashed)
         {
-            return CreateBlog(title, userName, password, host, subfolder, 1, false);
+            return CreateBlog(title, userName, password, host, subfolder, 1, passwordAlreadyHashed);
         }
 
 		/// <summary>
