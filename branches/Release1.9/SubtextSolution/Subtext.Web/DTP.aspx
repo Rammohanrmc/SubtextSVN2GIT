@@ -28,11 +28,11 @@
 		<form id="Form1" method="post" runat="server">
             <asp:ScriptManager ID="SubtextScriptManager" runat="server" EnablePartialRendering="true">
             </asp:ScriptManager>
-			<DT:MasterPage id="MPContainer" runat="server">
-				<DT:ContentRegion id="MPMain" runat="server">
+			<st:MasterPage id="MPContainer" runat="server">
+				<st:ContentRegion id="MPMain" runat="server">
 					<asp:PlaceHolder id="CenterBodyControl" runat="server"></asp:PlaceHolder>
-				</DT:ContentRegion>
-			</DT:MasterPage>
+				</st:ContentRegion>
+			</st:MasterPage>
 		</form>
 	<asp:Literal ID="customTrackingCode" Runat="server" />
 	</body>
