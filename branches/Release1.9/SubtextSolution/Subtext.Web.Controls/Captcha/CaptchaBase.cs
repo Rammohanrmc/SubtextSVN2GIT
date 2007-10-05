@@ -16,11 +16,12 @@ namespace Subtext.Web.Controls
 	public abstract class CaptchaBase : BaseValidator
 	{
 		private readonly static ILog log = new Log();
-		static SymmetricAlgorithm encryptionAlgorithm = InitializeEncryptionAlgorithm();
+		static readonly SymmetricAlgorithm encryptionAlgorithm = InitializeEncryptionAlgorithm();
 		
 		static SymmetricAlgorithm InitializeEncryptionAlgorithm()
 		{
 			SymmetricAlgorithm rijaendel = RijndaelManaged.Create();
+			//TODO: We should set these values in the db the very first time this code is called and load them from the db every other time.
 			rijaendel.GenerateKey();
 			rijaendel.GenerateIV();
 			return rijaendel;
