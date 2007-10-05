@@ -53,10 +53,8 @@
                                 <%# EvalHttpEquiv(Container.DataItem) %>
                             </td>
                             <td>
-                                <span class="btn metatag-edit">Edit
-                                    <img src="<%# VirtualPathUtility.ToAbsolute("~/Images/tag_blue_edit.png") %>" alt="Edit Meta Tag" /></span>
-                                <span class="btn metatag-delete">Delete
-                                    <img src="<%# VirtualPathUtility.ToAbsolute("~/Images/tag_blue_delete.png") %>" alt="Delete Meta Tag" /></span>
+                                <span class='btn metatag-edit' title='Edit Meta Tag'>Edit</span>
+                                <span class='btn metatag-delete' title='Delete Meta Tag'>Delete</span>
                             </td>
                         </tr>
                     </ItemTemplate>
@@ -72,10 +70,8 @@
                                 <%# EvalHttpEquiv(Container.DataItem) %>
                             </td>
                             <td>
-                                <span class="btn metatag-edit">Edit
-                                    <img src="<%# VirtualPathUtility.ToAbsolute("~/Images/tag_blue_edit.png") %>" alt="Edit Meta Tag" /></span>
-                                <span class="btn metatag-delete">Delete
-                                    <img src="<%# VirtualPathUtility.ToAbsolute("~/Images/tag_blue_delete.png") %>" alt="Delete Meta Tag" /></span>
+                                <span class="btn metatag-edit" title="Edit Meta Tag">Edit</span>
+                                <span class='btn metatag-delete' title='Delete Meta Tag'>Delete</span>
                             </td>
                         </tr>
                     </AlternatingItemTemplate>
@@ -93,6 +89,7 @@
     
         var msgPanel = $('#messagePanel');
         var msgPanelWrap = msgPanel.parent();
+        var BTNS_METATAG_TEMPLATE = "<span class='btn metatag-edit' title='Edit Meta Tag'>Edit</span><span class='btn metatag-delete' title='Delete Meta Tag'>Delete</span>"
         
         // a global variable for un-doing an operation
         var undoMetaTag = { 
@@ -152,10 +149,12 @@
             var tableRow = "<tr class='new' style='display:none'><td>" + checkForNull(metaTag.name) + "</td>";
             tableRow += "<td>" + checkForNull(metaTag.content) + "</td>";
             tableRow += "<td>" + checkForNull(metaTag.httpEquiv) + "</td>";
-            tableRow += "<td>" + "put buttons here" + "</td></tr>";
+            tableRow += "<td>" + BTNS_METATAG_TEMPLATE + "</td></tr>";
             
             $("#metatag-table tbody").append(tableRow);
-            $("#metatag-table tr:last").fadeIn("slow");
+            var newRow = $("#metatag-table tr:last");
+            
+            newRow.fadeIn("slow");
         }
         
         function deleteMetaTag(metaTagRow)

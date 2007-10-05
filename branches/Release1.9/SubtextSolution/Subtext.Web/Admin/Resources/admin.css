@@ -876,6 +876,23 @@ div.wide, fieldset.wide
 .auto { width:auto ! important; }
 
 
+#metatag-table tr.new { font-weight:bold; }
+
+#metatag-table .metatag-edit,
+#metatag-table .metatag-delete
+{
+	margin-right:.5em;
+	padding-right:20px;
+}
+#metatag-table .metatag-edit
+{
+	background: transparent url(../../Images/tag_blue_edit.png) no-repeat scroll right center;
+}
+#metatag-table .metatag-delete
+{
+	background: transparent url(../../Images/tag_blue_delete.png) no-repeat scroll right center;
+}
+
 #messagePanelContainer { min-height:1.5em; }
 
 #messagePanelWrapper
