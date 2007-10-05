@@ -1,4 +1,5 @@
 using System;
+using System.Configuration;
 using System.Text.RegularExpressions;
 using MbUnit.Framework;
 using WatiN.Core;
@@ -8,8 +9,64 @@ namespace WatinTests
 	/// <summary>
 	/// Use this instead of IE. It encapsulates Subtext specific logic.
 	/// </summary>
-	public class Browser : BrowserBase
+	public class Browser : IE
 	{
+		public static Uri HomeUrl
+		{
+			get
+			{
+				return new Uri(string.Format("http://{0}:{1}/", ConfigurationManager.AppSettings["webServer"],
+									 ConfigurationManager.AppSettings["Port"]));
+			}
+		}
+
+		public static Uri GetUrl(string relativeUrl)
+		{
+			return new Uri(HomeUrl, relativeUrl);
+		}
+
+		public T GoTo<T>() where T : BrowserPageBase
+		{
+			T page = (T)Activator.CreateInstance(typeof(T), this);
+			page.GoToUrl(page.PageUrl);
+			if (IsOnLoginPage)
+				Login("username", "password");
+			return page;
+		}
+
+		public void GoToAdmin()
+		{
+			GoTo(GetUrl("/Admin/"));
+		}
+
+		public void GoToHostAdmin()
+		{
+			GoTo(GetUrl("/HostAdmin/"));
+		}
+
+		public void GoToUrl(string relativeUrl)
+		{
+			GoTo(GetUrl(relativeUrl));
+		}
+
+		public bool IsOnLoginPage
+		{
+			get
+			{
+				return ContainsText("Please Sign In");
+			}
+		}
+
+		public TextField ASPTextField(string id)
+		{
+			return TextField(new Regex(".*" + id));
+		}
+
+		public Button ButtonByValue(string value)
+		{
+			return Button(Find.ByValue(value));
+		}
+
 		/// <summary>
 		/// Runs through the entire installation process. Assumes that the 
 		/// site is not installed with a clean database.
@@ -56,5 +113,7 @@ namespace WatinTests
 		}
 
 		private ConfigPage config = null;
+
+
 	}
 }

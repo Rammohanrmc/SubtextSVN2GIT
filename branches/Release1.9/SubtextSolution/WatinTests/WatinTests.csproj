@@ -54,11 +54,14 @@
   <ItemGroup>
     <Compile Include="AssemblySetupAndTearDown.cs" />
     <Compile Include="Browser.cs" />
-    <Compile Include="BrowserBase.cs" />
     <Compile Include="BrowserPageBase.cs" />
     <Compile Include="ConfigPage.cs" />
+    <Compile Include="EditPostsPage.cs" />
+    <Compile Include="HomePage.cs" />
     <Compile Include="Tests\Admin\ConfigureTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\Admin\EditPostsTests.cs" />
+    <Compile Include="Tests\Admin\LoginTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Subtext.Scripting\Subtext.Scripting.csproj">

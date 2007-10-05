@@ -6,14 +6,16 @@ namespace WatinTests
 {
 	public abstract class BrowserPageBase
 	{
-		private readonly BrowserBase browser;
+		private readonly Browser browser;
 		
-		public BrowserPageBase(BrowserBase browser)
+		public BrowserPageBase(Browser browser)
 		{
 			this.browser = browser;
 		}
 
-		public BrowserBase Browser
+		abstract public string PageUrl {get;}
+
+		public Browser Browser
 		{
 			get { return this.browser; }
 		}
@@ -36,6 +38,11 @@ namespace WatinTests
 		public void ClickLink(string text)
 		{
 			browser.Link(Find.ByText(text)).Click();
+		}
+
+		protected void ClickNavLink<T>(T nav)
+		{
+			ClickLink(nav.ToString().Replace("_", " "));
 		}
 	}
 }

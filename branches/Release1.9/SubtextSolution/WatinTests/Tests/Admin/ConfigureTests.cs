@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using MbUnit.Framework;
 
-namespace WatinTests
+namespace WatinTests.Tests.Admin
 {
 	[TestFixture(ApartmentState = ApartmentState.STA)]
 	public class ConfigureTests
@@ -12,8 +12,8 @@ namespace WatinTests
 		{
 			using(Browser browser = new Browser())
 			{
-				ConfigPage page = browser.ConfigurePage;
-				browser.Login("username", "password");
+				ConfigPage page = browser.GoTo<ConfigPage>();
+				
 				page.TitleField.Value = "Title Changed by Watin";
 				page.SubtitleField.Value = "Subtitle Changed by Watin";
 				page.ClickSave();

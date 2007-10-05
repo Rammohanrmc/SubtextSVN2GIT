@@ -5,9 +5,13 @@ namespace WatinTests
 {
 	public class ConfigPage : BrowserPageBase
 	{
-		internal ConfigPage(BrowserBase browser) : base(browser)
+		public ConfigPage(Browser browser) : base(browser)
 		{
-			browser.GoToUrl("/Admin/Configure.aspx");
+		}
+
+		public override string PageUrl
+		{
+			get { return "/Admin/Configure.aspx"; }
 		}
 
 		public TextField TitleField
@@ -55,9 +59,9 @@ namespace WatinTests
 			ButtonByValue("Save").Click();
 		}
 
-		public void ClickNavLink(ConfigNavigationLink nav)
+		public void ClickNavLink(ConfigNavigationLink link)
 		{
-			ClickLink(nav.ToString());
+			base.ClickNavLink(link);
 		}
 	}
 
