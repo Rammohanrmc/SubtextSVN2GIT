@@ -1053,8 +1053,10 @@
     <Content Include="HostAdmin\UserControls\GroupsEditor.ascx">
       <SubType>UserControl</SubType>
     </Content>
+    <Content Include="Images\accept.png" />
     <Content Include="Images\admin.gif" />
     <Content Include="Images\administration_icon.gif" />
+    <Content Include="Images\arrow_undo.png" />
     <Content Include="Images\atom.gif" />
     <Content Include="Images\atomsmall.gif" />
     <Content Include="Images\blank.gif" />
@@ -1082,6 +1084,8 @@
     <Content Include="Images\emotions\smiley-undecided.gif" />
     <Content Include="Images\emotions\smiley-wink.gif" />
     <Content Include="Images\emotions\smiley-yell.gif" />
+    <Content Include="Images\error.png" />
+    <Content Include="Images\exclamation.png" />
     <Content Include="Images\friends.png" />
     <Content Include="Images\home.gif" />
     <Content Include="Images\icn_delete.gif" />

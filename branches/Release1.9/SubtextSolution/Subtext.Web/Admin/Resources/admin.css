@@ -874,3 +874,52 @@ div.wide, fieldset.wide
 
 .fluid { width:100% ! important; }
 .auto { width:auto ! important; }
+
+
+#messagePanelContainer { min-height:1.5em; }
+
+#messagePanelWrapper
+{
+	padding: .25em 1em;
+	border:1px solid #FFF;
+}
+#messagePanelWrapper p
+{
+	font-size:.9em;
+	margin:0;
+	padding:0;
+}
+
+#messagePanel { padding-left: 20px; }
+
+#messagePanelWrapper.error
+{
+	background-color:#FFADAD;
+	border:1px solid #FF5757;
+}
+#messagePanelWrapper.error #messagePanel
+{
+	background: transparent url(../../Images/exclamation.png) no-repeat scroll left center;
+}
+
+#messagePanelWrapper.warn,
+#messagePanelWrapper.info
+{
+	background-color:#FFFFCC;
+	border:1px solid #FFB366
+}
+#messagePanelWrapper.warn #messagePanel,
+#messagePanelWrapper.info #messagePanel
+{
+	background: transparent url(../../Images/error.png) no-repeat scroll left center;
+}
+
+#messagePanelWrapper.success
+{
+	background-color:#F8FFF0;
+	border:1px solid #A0DC11;
+}
+#messagePanelWrapper.success #messagePanel
+{
+	background: transparent url(../../Images/accept.png) no-repeat scroll left center;
+}

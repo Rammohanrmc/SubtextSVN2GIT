@@ -8,8 +8,12 @@
 <asp:Content ID="Content3" ContentPlaceHolderID="categoryListLinks" runat="server">
 </asp:Content>
 <asp:Content ID="Content4" ContentPlaceHolderID="pageContent" runat="server">
-    <st:MessagePanel ID="Messages" runat="server">
-    </st:MessagePanel>
+    <div id="messagePanelContainer">
+        <div id="messagePanelWrapper">
+            <div id="messagePanel" style="display: none;">
+            </div>
+        </div>
+    </div>
     <div class="CollapsibleHeader">
         <span>Customize</span>
     </div>
@@ -85,6 +89,11 @@
 
     <script type="text/javascript">
     
+        /* ---- { a few global variables } ---- */
+    
+        var msgPanel = $('#messagePanel');
+        var msgPanelWrap = msgPanel.parent();
+        
         // a global variable for un-doing an operation
         var undoMetaTag = { 
             id: null,
@@ -92,6 +101,9 @@
             content: null,
             httpEquiv: null
             };
+        
+        
+        /* ---- { page and event setup } ---- */
         
         // first let's hook up some events
         $(document).ready(function()
@@ -102,8 +114,6 @@
             // wire up the Delete Button handlers
             $("tr[id^='metatag-'] .metatag-delete").click(function()
             {
-                //alert("delete " + $(this).parents("tr[id^='metatag-']").attr('id').split('metatag-').pop());
-                
                 // get the table row that holds this meta tag
                 var tagRow = $(this).parents("tr[id^='metatag-']");
                 
@@ -112,39 +122,86 @@
         });
         
         
+        /* ---- { Meta Tag methods } ---- */
+        
         function addMetaTag()
         {
-            var newTag = ajaxServices.addMetaTagForBlog("Just a test", "author", null);
-            
-            alert("Added new tagid = " + newTag.id);
+            hideMessagePanel();
+        
+            var newTag = ajaxServices.addMetaTagForBlog("Just a test", "author", null, function(response)
+                {
+                    if (response.error)
+                        handleError(response.error);
+                    else
+                        onTagAdded(response.result);
+                });
+        }
+        
+        function onTagAdded(metaTag)
+        {
+            msgPanelWrap.addClass("success");
+            showMessagePanel("Added new tagid = " + metaTag.id);
         }
         
         function deleteMetaTag(metaTagRow)
         {
+            hideMessagePanel();
+        
             var rows = metaTagRow.children('td');
             
             undoMetaTag.id = metaTagRow.attr('id').split('metatag-').pop();
-            undoMetaTag.name = returnNullForEmpty(rows[0].textContent.trim());
-            undoMetaTag.content = rows[1].textContent.trim();
-            undoMetaTag.httpEquiv = returnNullForEmpty(rows[2].textContent.trim());
+            undoMetaTag.name = returnNullForEmpty($(rows[0]).text().trim());
+            undoMetaTag.content = $(rows[1]).text().trim();
+            undoMetaTag.httpEquiv = returnNullForEmpty($(rows[2]).text().trim());
             
             ajaxServices.deleteMetaTag(undoMetaTag.id, function(response)
                 {
-                    if (response.result)
-                        onTagDeleted(response.result);
-                    else
+                    if (response.error)
                         handleError(response.error);
+                    else
+                        onTagDeleted(response.result);
                 });
         }
         
         function onTagDeleted(isDeleted)
         {
-            alert("successfully deleted = " + isDeleted);
+            if(isDeleted)
+            {
+                msgPanelWrap.addClass("success");
+                showMessagePanel("The meta tag was successfully deleted.");
+            }
+            else
+            {
+                msgPanelWrap.addClass("warn");
+                showMessagePanel("Could not delete the meta tag... perhaps it's already gone!");
+            }
         }
+        
+        /* ---- { helper methods } ---- */
         
         function handleError(error)
         {
-            alert(error);
+            msgPanelWrap.addClass("error");
+            showMessagePanel(error.message);
+        
+            // available properties on error
+            //error.errors -> [{error}, ...]
+            //error.name
+            //error.message
+            //error.stackTrace
+        }
+        
+        function showMessagePanel(message)
+        {
+            msgPanel.empty();
+            msgPanel.append("<p>" + message + "</p>");
+            msgPanel.fadeIn("slow");
+        }
+        
+        function hideMessagePanel()
+        {
+            msgPanel.fadeOut(20);
+            msgPanelWrap.removeClass("error").removeClass("warn").removeClass("info").removeClass("success");
         }
         
         function returnNullForEmpty(val)
