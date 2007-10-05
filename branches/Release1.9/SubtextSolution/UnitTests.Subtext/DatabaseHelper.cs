@@ -54,7 +54,6 @@ namespace UnitTests.Subtext
 
 		public static void DeleteDatabase(string serverName, string databaseName, string directory)
 		{
-			Console.WriteLine(@"Attempting to delete database '{0}\{1}", serverName, databaseName);
 			DetachDatabase(serverName, databaseName);
 
 			DeleteDatabaseFiles(databaseName, directory);
@@ -62,6 +61,7 @@ namespace UnitTests.Subtext
 
 		public static void DeleteDatabaseFiles(string databaseName, string directory)
 		{
+			Console.WriteLine(@"Attempting to delete database files '{0} and {1}", databaseName + ".mdf", databaseName + ".ldf");
 			DeleteFile(Path.Combine(Path.GetFullPath(directory), databaseName + ".mdf"));
 			DeleteFile(Path.Combine(Path.GetFullPath(directory), databaseName + ".ldf"));
 		}
@@ -202,6 +202,7 @@ namespace UnitTests.Subtext
 
 		private static void DetachDatabase(string serverName, string databaseName)
 		{
+			Console.WriteLine(@"Attempting to detach database '{0}\{1}", serverName, databaseName);
 			// Initialise server object.
 			Server server = new Server(serverName);
 
@@ -260,6 +261,5 @@ namespace UnitTests.Subtext
 				Console.WriteLine(e);
 			}
 		}
-
 	}
 }
