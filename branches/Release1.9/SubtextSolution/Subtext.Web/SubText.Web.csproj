@@ -46,6 +46,14 @@
     <Reference Include="freetextbox, Version=3.1.4.36150, Culture=neutral, PublicKeyToken=5962a4e684a48b87" />
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.84.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="Identicon, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="Jayrock, Version=0.9.8316.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ExternalDependencies\Jayrock.dll</HintPath>
+    </Reference>
+    <Reference Include="Jayrock.Json, Version=0.9.8316.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ExternalDependencies\Jayrock.Json.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=227c66cf5503649a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -90,6 +98,13 @@
     </Compile>
     <Compile Include="Admin\Confirm.aspx.designer.cs">
       <DependentUpon>Confirm.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\Customize.aspx.cs">
+      <DependentUpon>Customize.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\Customize.aspx.designer.cs">
+      <DependentUpon>Customize.aspx</DependentUpon>
     </Compile>
     <Compile Include="Admin\default.aspx.cs">
       <DependentUpon>default.aspx</DependentUpon>
@@ -467,6 +482,10 @@
     </Compile>
     <Compile Include="Providers\BlogEntryEditor\FTB\FtbBlogEntryEditorProvider.cs" />
     <Compile Include="Providers\BlogEntryEditor\PlainText\PlainTextBlogEntryEditorProvider.cs" />
+    <Compile Include="Admin\Services\Ajax\AjaxServices.ashx.cs">
+      <DependentUpon>AjaxServices.ashx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="SiteMap\ChangeFrequency.cs" />
     <Compile Include="SiteMap\SiteMapHttpHandler.ashx.cs">
       <DependentUpon>SiteMapHttpHandler.ashx</DependentUpon>
@@ -931,6 +950,7 @@
     </Content>
     <Content Include="Admin\Configure.aspx" />
     <Content Include="Admin\Confirm.aspx" />
+    <Content Include="Admin\Customize.aspx" />
     <Content Include="Admin\default.aspx" />
     <Content Include="Admin\EditArticles.aspx" />
     <Content Include="Admin\EditCategories.aspx" />
@@ -1102,6 +1122,10 @@
     <Content Include="Images\subtextLogo32-23.png" />
     <Content Include="Images\SubtextLogo_small.png" />
     <Content Include="Images\subtextWatermark.png" />
+    <Content Include="Images\tag_blue.png" />
+    <Content Include="Images\tag_blue_add.png" />
+    <Content Include="Images\tag_blue_delete.png" />
+    <Content Include="Images\tag_blue_edit.png" />
     <Content Include="Images\xfn-child.png" />
     <Content Include="Images\xfn-colleague-met.png" />
     <Content Include="Images\xfn-colleague.png" />
@@ -1414,6 +1438,8 @@
     <Content Include="Scripts\common.js" />
     <Content Include="Scripts\effects.js" />
     <Content Include="Scripts\ExternalLinks.js" />
+    <Content Include="Scripts\jquery-1.2.1.min.js" />
+    <Content Include="Scripts\json.js" />
     <Content Include="Scripts\lightbox.css" />
     <Content Include="Scripts\lightbox.js" />
     <Content Include="Scripts\LiveCommentPreview.js" />
@@ -1962,6 +1988,7 @@
     <None Include="Providers\BlogEntryEditor\FCKeditor\editor\filemanager\browser\default\images\icons\32\Thumbs.db" />
     <Content Include="SiteMap\SiteMapHttpHandler.ashx" />
     <Content Include="Providers\Web.config" />
+    <Content Include="Admin\Services\Ajax\AjaxServices.ashx" />
     <None Include="Skins\RedBook\Controls\EntryList.ascx" />
     <Content Include="Skins\RedBook\Controls\Footer.ascx" />
     <Content Include="Skins\Naked\Controls\FullTagCloud.ascx" />

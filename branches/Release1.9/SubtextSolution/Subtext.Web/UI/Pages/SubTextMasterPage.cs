@@ -55,6 +55,7 @@ namespace Subtext.Web.UI.Pages
 		protected Literal virtualBlogRoot;
 		protected Literal customTrackingCode;
 		protected Literal additionalMetaTags;
+	    protected PlaceHolder metaTagsPlaceHolder;
 		#endregion
 		
 		protected BlogInfo CurrentBlog;
@@ -150,7 +151,7 @@ namespace Subtext.Web.UI.Pages
                 else
                     mt.HttpEquiv = tag.HttpEquiv;
 
-                Page.Header.Controls.Add(mt);
+                metaTagsPlaceHolder.Controls.Add(mt);
             }
 		}
 

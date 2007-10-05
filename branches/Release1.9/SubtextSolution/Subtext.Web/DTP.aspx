@@ -7,6 +7,7 @@
 	<head runat="server">
 		<title><asp:Literal id="pageTitle" runat="server" /></title>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+		<asp:PlaceHolder id="metaTagsPlaceHolder" runat="server" />
 		<asp:Literal id="authorMetaTag" runat="server" />
 		<asp:Literal id="versionMetaTag" runat="server" />
 		<asp:Literal id="additionalMetaTags" runat="server" />

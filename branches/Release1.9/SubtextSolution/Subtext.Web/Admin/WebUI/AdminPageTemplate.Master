@@ -6,7 +6,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head runat="server">
     <title>Subtext - Admin</title>
+    <script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/Scripts/jquery-1.2.1.min.js") %>" ></script>
     <script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/Scripts/common.js") %>" ></script>
+    <script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/Scripts/json.js") %>" ></script>
+    <script type="text/javascript" src="<%= Config.CurrentBlog.RootUrl + "Admin/Services/Ajax/AjaxServices.ashx?proxy" %>" ></script>
+    <script type="text/javascript">
+        var ajaxServices = new AjaxServices();
+    </script>
     <script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/Scripts/tableEffects.js") %>" ></script>
     <script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/admin/resources/Scripts/niceForms.js") %>"></script>
 	<script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/admin/resources/Scripts/helptip.js") %>" ></script>
