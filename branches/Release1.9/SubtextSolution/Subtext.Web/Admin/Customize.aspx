@@ -126,6 +126,9 @@
         
         function addMetaTag()
         {
+            // unbind the click event so a user can't click it until the current action is done.
+            var addBtn = $(".metatag-add");
+            addBtn.unbind("click").fadeTo("fast", .5);
             hideMessagePanel();
         
             var newTag = ajaxServices.addMetaTagForBlog("Just a test", "author", null, function(response)
@@ -135,16 +138,31 @@
                     else
                         onTagAdded(response.result);
                 });
+            
+            // wire the click event back up.
+            $(".metatag-add").bind("click", addMetaTag).fadeTo("normal", 1);
         }
         
         function onTagAdded(metaTag)
         {
             msgPanelWrap.addClass("success");
             showMessagePanel("Added new tagid = " + metaTag.id);
+            
+            // add the new metatag to the table
+            var tableRow = "<tr class='new' style='display:none'><td>" + checkForNull(metaTag.name) + "</td>";
+            tableRow += "<td>" + checkForNull(metaTag.content) + "</td>";
+            tableRow += "<td>" + checkForNull(metaTag.httpEquiv) + "</td>";
+            tableRow += "<td>" + "put buttons here" + "</td></tr>";
+            
+            $("#metatag-table tbody").append(tableRow);
+            $("#metatag-table tr:last").fadeIn("slow");
         }
         
         function deleteMetaTag(metaTagRow)
         {
+            // partially fade the row and then unbind the click event so the buttons can't be clicked again.
+            metaTagRow.fadeTo("fast", .6);
+            $("span.btn", metaTagRow).unbind("click").removeClass("btn");
             hideMessagePanel();
         
             var rows = metaTagRow.children('td');
@@ -159,14 +177,19 @@
                     if (response.error)
                         handleError(response.error);
                     else
-                        onTagDeleted(response.result);
+                    {
+                        onTagDeleted(response.result, metaTagRow);
+                    }
                 });
         }
         
-        function onTagDeleted(isDeleted)
+        function onTagDeleted(isDeleted, metaTagRow)
         {
             if(isDeleted)
             {
+                // fade the row all the way out and the remove it's contents from the DOM.
+                metaTagRow.fadeOut(function(){ metaTagRow.empty(); });
+                
                 msgPanelWrap.addClass("success");
                 showMessagePanel("The meta tag was successfully deleted.");
             }
@@ -200,7 +223,7 @@
         
         function hideMessagePanel()
         {
-            msgPanel.fadeOut(20);
+            msgPanel.fadeOut();
             msgPanelWrap.removeClass("error").removeClass("warn").removeClass("info").removeClass("success");
         }
         
@@ -210,6 +233,11 @@
                 return val;
                 
             return null;
+        }
+        
+        function checkForNull(val)
+        {
+            return val == null ? "" : val;
         }
     </script>
 
