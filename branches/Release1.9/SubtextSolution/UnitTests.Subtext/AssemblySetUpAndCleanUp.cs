@@ -18,7 +18,7 @@ namespace UnitTests.Subtext
 			if (ConfigurationManager.AppSettings["connectionStringName"] == "subtextExpress")
 			{
 				//For use with SQL Express. If you use "subtextData", we assume you already have the database created.
-				DatabaseHelper.CreateAndInstallDatabase(Config.ConnectionString, "Subtext_Tests_1.9", "App_Data");
+				DatabaseHelper.CreateAndInstallDatabase(Config.ConnectionString, Config.ConnectionString.Database, "App_Data");
 			}
 			else
 			{
@@ -41,7 +41,7 @@ namespace UnitTests.Subtext
 			{
 				try
 				{
-					DatabaseHelper.DeleteDatabase(Config.ConnectionString.Server, "Subtext_Tests", "App_Data");
+					DatabaseHelper.DeleteDatabase(Config.ConnectionString.Server, Config.ConnectionString.Database, "App_Data");
 				}
 				catch(Exception e)
 				{
