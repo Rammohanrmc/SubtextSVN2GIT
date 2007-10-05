@@ -52,12 +52,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PageElements\AdminTable.cs" />
     <Compile Include="AssemblySetupAndTearDown.cs" />
     <Compile Include="Browser.cs" />
     <Compile Include="BrowserPageBase.cs" />
     <Compile Include="ConfigPage.cs" />
     <Compile Include="EditPostsPage.cs" />
     <Compile Include="HomePage.cs" />
+    <Compile Include="PageElements\PostsTable.cs" />
     <Compile Include="Tests\Admin\ConfigureTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\Admin\EditPostsTests.cs" />

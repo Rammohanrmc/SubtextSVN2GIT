@@ -1,5 +1,6 @@
 using System;
 using WatiN.Core;
+using WatinTests.PageElements;
 
 namespace WatinTests
 {
@@ -7,6 +8,12 @@ namespace WatinTests
 	{
 		public EditPostsPage(Browser browser) : base(browser)
 		{
+		}
+
+		public void Reload()
+		{
+			Browser.GoToUrl(PageUrl);
+			Browser.Refresh();
 		}
 
 		public override string PageUrl
@@ -39,6 +46,11 @@ namespace WatinTests
 		public Button PostButton
 		{
 			get { return ButtonByValue("Post"); }
+		}
+
+		public PostsTable TableOfPosts
+		{
+			get { return new PostsTable(Browser, "Listing"); }
 		}
 
 		//xEditingArea is the TD in the IFRame...

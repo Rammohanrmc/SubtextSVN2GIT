@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using MbUnit.Framework;
-using WatiN.Core;
+using WatinTests.PageElements;
 
 namespace WatinTests.Tests.Admin
 {
@@ -18,11 +18,9 @@ namespace WatinTests.Tests.Admin
 				page.TitleField.Value = "Title of the post";
 				page.RichTextEditorField.Value = "Body of the post";
 				page.PostButton.Click();
-
-				HomePage home = browser.GoTo<HomePage>();
-				Link link = home.GetTitleLinkByText("Title of the post");
-				Assert.IsTrue(link.Exists);
-				link.Click();
+				page.Reload();
+				PostRow row = page.TableOfPosts.FindRowByDescription("Title of the post");
+				Assert.IsTrue(row != null && row.Exists, "Could not find our post in the posts table.");
 			}
 		}
 
