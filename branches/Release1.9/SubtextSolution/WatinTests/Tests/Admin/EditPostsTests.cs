@@ -9,7 +9,6 @@ namespace WatinTests.Tests.Admin
 	public class EditPostsTests
 	{
 		[Test]
-		[Ignore("Need to figure out how to set the text of the rich text editor")]
 		public void CanCreateNewPost()
 		{
 			using(Browser browser = new Browser())
@@ -17,7 +16,7 @@ namespace WatinTests.Tests.Admin
 				EditPostsPage page = browser.GoTo<EditPostsPage>();
 				page.ClickNavLink(PostsNavigationLink.New_Post);
 				page.TitleField.Value = "Title of the post";
-				page.SetRichTextEditorText("Testing");
+				page.RichTextEditorField.Value = "Body of the post";
 				page.PostButton.Click();
 
 				HomePage home = browser.GoTo<HomePage>();

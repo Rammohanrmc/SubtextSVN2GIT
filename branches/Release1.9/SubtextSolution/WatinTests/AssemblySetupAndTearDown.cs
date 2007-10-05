@@ -76,6 +76,7 @@ namespace WatinTests
 		{
 			XmlHelper.Poke(webConfigPath, "//appSettings/add[@key='connectionStringName']/@value", "subtextExpress");
 			XmlHelper.Poke(webConfigPath, "//connectionStrings/add[@name='subtextExpress']/@connectionString", connectionString);
+			XmlHelper.Poke(webConfigPath, "//BlogEntryEditor/@defaultProvider", "PlainTextBlogEntryEditorProvider");
 		}
 
 		private static void BackupWebConfig()

@@ -27,9 +27,13 @@ namespace WatinTests
 			}
 		}
 
-		public void SetRichTextEditorText(string text)
+		// In AssemblySetupAndTearDown we replace FCKEditor with the plain textbox editor in Web.config.
+		public TextField RichTextEditorField
 		{
-			Browser.ASPTextField("richTextEditor").Value = text;
+			get
+			{
+				return Browser.ASPTextField("richTextEditor");
+			}
 		}
 
 		public Button PostButton
