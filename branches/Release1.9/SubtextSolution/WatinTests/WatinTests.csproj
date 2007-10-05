@@ -57,7 +57,7 @@
     <Compile Include="BrowserBase.cs" />
     <Compile Include="BrowserPageBase.cs" />
     <Compile Include="ConfigPage.cs" />
-    <Compile Include="Tests\ConfigureTests.cs" />
+    <Compile Include="Tests\Admin\ConfigureTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -99,6 +99,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Tests\HostAdmin\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
