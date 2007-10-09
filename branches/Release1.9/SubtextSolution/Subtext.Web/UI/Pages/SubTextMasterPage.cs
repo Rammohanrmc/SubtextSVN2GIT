@@ -180,18 +180,12 @@ namespace Subtext.Web.UI.Pages
             }
 			versionMetaTag.Text = String.Format(Environment.NewLine + "<meta name=\"Generator\" content=\"{0}\" />", VersionInfo.VersionDisplayText);
 
-			if (!String.IsNullOrEmpty(Config.CurrentBlog.CustomMetaTags))
-			{
-				additionalMetaTags.Text = Environment.NewLine + Config.CurrentBlog.CustomMetaTags + Environment.NewLine;
-			}
-
 			if (!String.IsNullOrEmpty(Config.CurrentBlog.TrackingCode))
 			{
 				customTrackingCode.Text = Config.CurrentBlog.TrackingCode;
 			}
 
             base.OnPreRender (e);
-
 		}
 
 		/// <summary>

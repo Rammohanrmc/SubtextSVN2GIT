@@ -124,10 +124,9 @@ namespace Subtext.Framework.Data
 					day = new EntryDay(dt);
 					edc.Add(day);
 				}
-				day.Add(DataHelper.LoadEntry(reader));
+				day.Add(LoadEntry(reader));
 			}
 			return edc;
-
 		}
 
 
@@ -537,7 +536,7 @@ namespace Subtext.Framework.Data
 		{
 			BlogInfo info = new BlogInfo();
 			info.Author = ReadString(reader, "Author");
-			info.Id = DataHelper.ReadInt32(reader, "BlogId");
+			info.Id = ReadInt32(reader, "BlogId");
 			info.Email = ReadString(reader, "Email");
 			info.Password = ReadString(reader, "Password");
 
@@ -555,7 +554,6 @@ namespace Subtext.Framework.Data
 			info.StoryCount = ReadInt32(reader, "StoryCount");
 			info.PingTrackCount = ReadInt32(reader, "PingTrackCount");
 			info.News = ReadString(reader, "News");
-			info.CustomMetaTags = ReadString(reader, "CustomMetaTags");
 			info.TrackingCode = ReadString(reader, "TrackingCode");	
 			
 			info.LastUpdated = ReadDate(reader, "LastUpdated", new DateTime(2003, 1 , 1));
@@ -693,7 +691,7 @@ namespace Subtext.Framework.Data
 			kw.Rel = ReadString(reader, "Rel");
 			if(reader["Title"] != DBNull.Value)
 			{
-				kw.Title = DataHelper.CheckNullString(reader["Title"]);
+				kw.Title = CheckNullString(reader["Title"]);
 			}
 			kw.Url = ReadString(reader, "Url");
 			kw.Word = ReadString(reader, "Word");
@@ -710,7 +708,7 @@ namespace Subtext.Framework.Data
 		{
 			if (String.IsNullOrEmpty(text))
 			{
-				return System.DBNull.Value;
+				return DBNull.Value;
 			}
 			else
 			{
@@ -739,6 +737,7 @@ namespace Subtext.Framework.Data
 		/// Loads the host from the data reader.
 		/// </summary>
 		/// <param name="reader">Reader.</param>
+		/// <param name="info">HostInfo</param>
 		/// <returns></returns>
 		public static void LoadHost(IDataReader reader, HostInfo info)
 		{
@@ -789,6 +788,7 @@ namespace Subtext.Framework.Data
 		/// </summary>
 		/// <param name="reader">The reader.</param>
 		/// <param name="columnName">Name of the column.</param>
+		/// <param name="defaultValue">devault value for the field</param>
 		/// <returns></returns>
 		public static int ReadInt32(IDataReader reader, string columnName, int defaultValue)
 		{
@@ -884,7 +884,7 @@ namespace Subtext.Framework.Data
 				else
 					return IPAddress.None;
 			}
-			catch(System.FormatException)
+			catch(FormatException)
 			{
 				return IPAddress.None;
 			}
@@ -909,11 +909,11 @@ namespace Subtext.Framework.Data
 				else
 					return null;
 			}
-			catch(System.IndexOutOfRangeException)
+			catch(IndexOutOfRangeException)
 			{
 				return null;
 			}
-			catch(System.FormatException)
+			catch(FormatException)
 			{
 				return null;
 			}

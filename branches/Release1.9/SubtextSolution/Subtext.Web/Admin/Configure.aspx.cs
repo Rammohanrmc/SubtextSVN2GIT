@@ -49,7 +49,6 @@ namespace Subtext.Web.Admin.Pages
 			txbAuthorEmail.Text = info.Email;
 			txbUser.Text = info.UserName;
 			txbNews.Text = info.News;
-			txbMetaTags.Text = info.CustomMetaTags;
 			txbGenericTrackingCode.Text = info.TrackingCode;
 			ckbAllowServiceAccess.Checked = info.AllowServiceAccess;
 			ddlTimezone.DataSource = WindowsTimeZone.TimeZones;
@@ -145,20 +144,18 @@ namespace Subtext.Web.Admin.Pages
 				info.Skin.CustomCssText = txbSecondaryCss.Text.Trim();
 
 				info.News = NormalizeString(txbNews.Text);
-				info.CustomMetaTags = NormalizeString(txbMetaTags.Text);
 				info.TrackingCode = NormalizeString(txbGenericTrackingCode.Text);
-
 
 				SkinTemplate skinTemplate = SkinTemplates.Instance().GetTemplate(ddlSkin.SelectedItem.Value);
 				info.Skin.TemplateFolder = skinTemplate.TemplateFolder;
 				info.Skin.SkinStyleSheet = skinTemplate.StyleSheet;
 				Config.UpdateConfigData(info);
 
-				this.Messages.ShowMessage(RES_SUCCESS);
+				Messages.ShowMessage(RES_SUCCESS);
 			}
 			catch(Exception ex)
 			{
-				this.Messages.ShowError(String.Format(Constants.RES_EXCEPTION, RES_FAILURE, ex.Message));
+				Messages.ShowError(String.Format(Constants.RES_EXCEPTION, RES_FAILURE, ex.Message));
 			}
 		}
 		
@@ -226,4 +223,3 @@ namespace Subtext.Web.Admin.Pages
 		}
 	}
 }
-
