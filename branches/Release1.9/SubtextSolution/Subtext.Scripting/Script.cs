@@ -54,14 +54,14 @@ namespace Subtext.Scripting
 			return scripts;
 		}
 		
-		string _scriptText;
+		readonly string _scriptText;
 		
 		static string StripComments(string scriptText)
 		{
 			Regex regex = new Regex(@"/\*.*?\*/", RegexOptions.Singleline | RegexOptions.Compiled);
 			string cleanText = regex.Replace(scriptText, string.Empty);
 
-			regex = new Regex(@"--.*?(\r?\n|$)", RegexOptions.Compiled);
+			regex = new Regex(@"--[^']*?(\r?\n|$)", RegexOptions.Compiled);
 			return regex.Replace(cleanText, string.Empty);
 		}
 		
@@ -215,7 +215,7 @@ namespace Subtext.Scripting
 				get { return _text; }
 			}
 
-			string _text;
+			readonly string _text;
 
 			/// <summary>
 			/// Gets or sets the next node.
@@ -295,7 +295,7 @@ namespace Subtext.Scripting
 		/// </summary>
 		class TemplateParameterToken : ScriptToken
 		{
-			TemplateParameter _parameter = null;
+			readonly TemplateParameter _parameter = null;
 
 			internal TemplateParameterToken(TemplateParameter parameter)
 			{

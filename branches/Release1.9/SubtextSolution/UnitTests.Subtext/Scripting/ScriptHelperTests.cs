@@ -27,6 +27,20 @@ namespace UnitTests.Subtext.Scripting
 	[TestFixture]
 	public class ScriptHelperTests
 	{
+		[Test]
+		public void QuotedCommentNotStripped()
+		{
+			string script = "PRINT '------------'" + Environment.NewLine 
+				+ "-- This is a real comment" + Environment.NewLine
+				+ "PRINT '----------------'";
+
+			string expected = "PRINT '------------'" + Environment.NewLine
+				+ "PRINT '----------------'";
+
+			ScriptCollection scripts = Script.ParseScripts(script);
+			Assert.AreEqual(expected, scripts[0].ScriptText, "Expected comment to be stripped, but not the quote.");
+		}
+
 		[RowTest]
 		[Row(1, "/* Comment */SELECT * FROM subtext_Content\r\nGO", "SELECT * FROM subtext_Content")]
 		[Row(1, "/* Comment */  SELECT * FROM subtext_Content\r\nGO", "SELECT * FROM subtext_Content")]
