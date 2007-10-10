@@ -293,20 +293,20 @@ namespace UnitTests.Subtext
 		/// <summary>
 		/// This is useful when two strings appear to be but Assert.AreEqual says they are not.
 		/// </summary>
-		/// <param name="original"></param>
+		/// <param name="result"></param>
 		/// <param name="expected"></param>
-		public static void AssertStringsEqualCharacterByCharacter(string original, string expected)
+		public static void AssertStringsEqualCharacterByCharacter(string expected, string result)
 		{
-			if(original != expected)
+			if(result != expected)
 			{
                 int unequalPos = 0;
-				for(int i = 0; i < Math.Max(original.Length, expected.Length); i++)
+				for(int i = 0; i < Math.Max(result.Length, expected.Length); i++)
 				{
 					char originalChar = (char)0;
 					char expectedChar = (char)0;
-					if(i < original.Length)
+					if(i < result.Length)
 					{
-						originalChar = original[i];
+						originalChar = result[i];
 					}
 
 					if(i < expected.Length)
@@ -317,10 +317,10 @@ namespace UnitTests.Subtext
                     if (unequalPos == 0 && originalChar != expectedChar)
 				        unequalPos = i;
 
-					string originalCharDisplay = "" + originalChar;
+					string expectedCharText = "" + originalChar;
 					if(char.IsWhiteSpace(originalChar))
 					{
-						originalCharDisplay = "{" + (int)originalChar  + "}";
+						expectedCharText = "{" + (int)originalChar  + "}";
 					}
 
 					string expectedCharDisplay = "" + expectedChar;
@@ -329,9 +329,9 @@ namespace UnitTests.Subtext
 						expectedCharDisplay = "{" + (int)expectedChar + "}";
 					}
 
-					Console.WriteLine("{0}:\t{1} ({2})\t{3} ({4})", i, originalCharDisplay, (int)originalChar, expectedCharDisplay, (int)expectedChar);
+					Console.WriteLine("{0}:\t{1} ({2})\t{3} ({4})", i, expectedCharDisplay, (int)expectedChar, expectedCharText, (int)originalChar);
 				}
-				Assert.AreEqual(original, expected, "Strings are not equal starting at character {0}", unequalPos);
+				Assert.AreEqual(result, expected, "Strings are not equal starting at character {0}", unequalPos);
 			}
 		}
 

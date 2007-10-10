@@ -30,15 +30,19 @@ namespace UnitTests.Subtext.Scripting
 		[Test]
 		public void QuotedCommentNotStripped()
 		{
-			string script = "PRINT '------------'" + Environment.NewLine 
+			string script = 
+				"PRINT '-- BLAH' -- Comment" + Environment.NewLine
+				+ "PRINT '------------'" + Environment.NewLine 
 				+ "-- This is a real comment" + Environment.NewLine
 				+ "PRINT '----------------'";
 
-			string expected = "PRINT '------------'" + Environment.NewLine
+			string expected = 
+				"PRINT '-- BLAH' " + Environment.NewLine
+				+ "PRINT '------------'" + Environment.NewLine
 				+ "PRINT '----------------'";
 
 			ScriptCollection scripts = Script.ParseScripts(script);
-			Assert.AreEqual(expected, scripts[0].ScriptText, "Expected comment to be stripped, but not the quote.");
+			UnitTestHelper.AssertStringsEqualCharacterByCharacter(expected, scripts[0].ScriptText);
 		}
 
 		[RowTest]
@@ -47,13 +51,13 @@ namespace UnitTests.Subtext.Scripting
 		[Row(1, "/*\r\n Comment\r\n */\r\n  SELECT * FROM subtext_Content\r\nGO", "SELECT * FROM subtext_Content")]
 		[Row(0, "-- EVERYTHING GETS STRIPPED TILL END OF LINE", "")]
 		[Row(1, "-- EVERYTHING GETS STRIPPED TILL END OF LINE\r\nSELECT * FROM MyFoot\r\nGO", "SELECT * FROM MyFoot")]
-		[Row(1, "SELECT * FROM -- MY FOOT EVERYTHING GETS STRIPPED TILL END OF LINE\r\nMy Foot", "SELECT * FROM My Foot")]
+		[Row(1, "SELECT * FROM -- MY FOOT EVERYTHING GETS STRIPPED TILL END OF LINE\r\nMy Foot", "SELECT * FROM \r\nMy Foot")]
 		public void StripsComments(int expectedScriptCount, string scriptText, string expected)
 		{
 			ScriptCollection scripts = Script.ParseScripts(scriptText);
 			Assert.AreEqual(expectedScriptCount, scripts.Count, "This should parse to " + expectedScriptCount + " script.");
 			if (expectedScriptCount > 0)
-				Assert.AreEqual(expected, scripts[0].ScriptText, "Expected the multi-line comment to be stripped.");
+				UnitTestHelper.AssertStringsEqualCharacterByCharacter(expected, scripts[0].ScriptText);
 		}
 		
 		/// <summary>

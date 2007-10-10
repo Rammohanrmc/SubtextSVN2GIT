@@ -61,8 +61,11 @@ namespace Subtext.Scripting
 			Regex regex = new Regex(@"/\*.*?\*/", RegexOptions.Singleline | RegexOptions.Compiled);
 			string cleanText = regex.Replace(scriptText, string.Empty);
 
-			regex = new Regex(@"--[^']*?(\r?\n|$)", RegexOptions.Compiled);
-			return regex.Replace(cleanText, string.Empty);
+			regex = new Regex(@"^--.*(\r?\n|$)", RegexOptions.Compiled | RegexOptions.Multiline);
+			cleanText = regex.Replace(cleanText, string.Empty);
+			
+			regex = new Regex(@"(?<keep>'[^']*')|--.*?(?<keep>\r?\n|$)", RegexOptions.Compiled);
+			return regex.Replace(cleanText, "${keep}");
 		}
 		
 		/// <summary>
