@@ -28,23 +28,65 @@ namespace UnitTests.Subtext.Scripting
 	public class ScriptHelperTests
 	{
 		[Test]
+		public void MultiLineQuoteShouldNotIgnoreDoubleQuote()
+		{
+			string script = "PRINT '" + Environment.NewLine
+							+ "''" + Environment.NewLine
+							+ "--SELECT * FROM BLAH" + Environment.NewLine
+							+ "/*" + Environment.NewLine
+							+ "'";
+
+			ScriptCollection scripts = Script.ParseScripts(script);
+			Assert.AreEqual(1, scripts.Count);
+			UnitTestHelper.AssertStringsEqualCharacterByCharacter(script, scripts[0].ScriptText);
+		}
+
+		[Test, Ignore("Need to improve the parsing code for this one case.")]
+		public void MultiLineQuoteShouldNotBeSplitByGoKeyword()
+		{
+			string script = "PRINT '" + Environment.NewLine 
+							+ "GO" + Environment.NewLine
+			                + "SELECT * FROM BLAH" + Environment.NewLine
+			                + "GO" + Environment.NewLine
+			                + "'";
+
+			ScriptCollection scripts = Script.ParseScripts(script);
+			Assert.AreEqual(1, scripts.Count);
+			UnitTestHelper.AssertStringsEqualCharacterByCharacter(script, scripts[0].ScriptText);
+		}
+
+		[Test]
+		public void MultiLineQuoteShouldNotHaveQuotedCommentStripped()
+		{
+			string script = "PRINT '/*" + Environment.NewLine
+							+ "--SELECT * FROM BLAH" + Environment.NewLine
+							+ "*/" + Environment.NewLine
+							+ "'";
+			ScriptCollection scripts = Script.ParseScripts(script);
+			Assert.AreEqual(1, scripts.Count);
+			UnitTestHelper.AssertStringsEqualCharacterByCharacter(script, scripts[0].ScriptText);
+		}
+
+		[Test]
 		public void QuotedCommentNotStripped()
 		{
-			string script = 
-				"PRINT '-- BLAH' -- Comment" + Environment.NewLine
+			string script =
+				"PRINT '/* GO */' /* Comment */" + Environment.NewLine
+				+ "PRINT '-- BLAH' -- Comment" + Environment.NewLine
 				+ "PRINT '------------'" + Environment.NewLine 
 				+ "-- This is a real comment" + Environment.NewLine
 				+ "PRINT '----------------'";
 
 			string expected = 
-				"PRINT '-- BLAH' " + Environment.NewLine
+				"PRINT '/* GO */' " + Environment.NewLine
+				+ "PRINT '-- BLAH' " + Environment.NewLine
 				+ "PRINT '------------'" + Environment.NewLine
 				+ "PRINT '----------------'";
 
 			ScriptCollection scripts = Script.ParseScripts(script);
 			UnitTestHelper.AssertStringsEqualCharacterByCharacter(expected, scripts[0].ScriptText);
 		}
-
+		
 		[RowTest]
 		[Row(1, "/* Comment */SELECT * FROM subtext_Content\r\nGO", "SELECT * FROM subtext_Content")]
 		[Row(1, "/* Comment */  SELECT * FROM subtext_Content\r\nGO", "SELECT * FROM subtext_Content")]
