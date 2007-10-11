@@ -22,6 +22,7 @@ using System.Web.UI.WebControls;
 using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
+using Subtext.Framework.Text;
 using Subtext.Framework.UI.Skinning;
 using Subtext.Framework.UrlManager;
 using Subtext.Web.UI.Controls;
@@ -35,7 +36,7 @@ namespace Subtext.Web.UI.Pages
 	/// each skin is loaded.
 	/// </summary>
 	public class SubtextMasterPage : Page
-	{
+	{	
 		#region Declared Controls in DTP.aspx
 		private static readonly ScriptElementCollectionRenderer scriptRenderer = new ScriptElementCollectionRenderer(SkinTemplates.Instance());
 		private static readonly StyleSheetElementCollectionRenderer styleRenderer = new StyleSheetElementCollectionRenderer(SkinTemplates.Instance());
@@ -216,6 +217,34 @@ namespace Subtext.Web.UI.Pages
 		/// this does nothing as we are not using ViewState.
 		/// </summary>
 		/// <param name="viewState">State of the view.</param>
-		protected override void SavePageStateToPersistenceMedium(object viewState) { }
+		protected override void SavePageStateToPersistenceMedium(object viewState){}
+
+		#region private class ScriptElementCollectionRenderer
+
+	    #endregion
+
+	    /// <summary>
+		/// Returns the text for a javascript array of allowed elements. 
+		/// This will be used by other scripts.
+		/// </summary>
+		/// <value>The allowed HTML javascript declaration.</value>
+		public static string AllowedHtmlJavascriptDeclaration
+		{
+			get
+			{
+				string declaration = "var subtextAllowedHtmlTags = [";
+				for(int i = 0; i < Config.Settings.AllowedHtmlTags.Count; i++)
+				{
+					string tagname = Config.Settings.AllowedHtmlTags.Keys[i];
+					declaration += string.Format("'{0}', ", tagname);
+				}
+				if(Config.Settings.AllowedHtmlTags.Count > 0)
+				{
+					declaration = StringHelper.Left(declaration, declaration.Length - 2);
+				}
+
+				return declaration + "];";
+			}
+		}
 	}
 }
