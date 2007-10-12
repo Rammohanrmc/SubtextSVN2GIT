@@ -74,6 +74,16 @@ GO";
 		}
 
 		[Test]
+		public void CanParseCommentBeforeGO()
+		{
+			string script = @"SELECT FOO
+/*TEST*/ GO
+BAR";
+			ScriptCollection scripts = Script.ParseScripts(script);
+			Assert.AreEqual(2, scripts.Count);
+		}
+
+		[Test]
 		public void CanParseCommentWithQuoteChar()
 		{
 			string script = 
