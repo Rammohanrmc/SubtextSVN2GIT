@@ -29,6 +29,17 @@ namespace UnitTests.Subtext.Scripting
 	public class ScriptHelperTests
 	{
 		[Test]
+		public void CanParseGoWithDashDashCommentAfter()
+		{
+			string script =
+@"SELECT * FROM foo;
+ GO --  Hello Phil
+CREATE PROCEDURE dbo.Test AS SELECT * FROM foo";
+			ScriptCollection scripts = Script.ParseScripts(script);
+			Assert.AreEqual(2, scripts.Count);
+		}
+
+		[Test]
 		[ExpectedException(typeof(SqlParseException))]
 		public void SlashStarCommentAfterGoThrowsException()
 		{

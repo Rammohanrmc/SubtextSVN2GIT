@@ -40,16 +40,11 @@ namespace Subtext.Scripting
         public static ScriptCollection ParseScripts(string fullScriptText)
         {
 			ScriptCollection scripts = new ScriptCollection(fullScriptText);
-			ScriptSplitter splitter = new ScriptSplitter(fullScriptText
-				, delegate(string scriptText)
-               		{
-						if(scriptText.Trim().Length > 0)
-							scripts.Add(new Script(scriptText.Trim()));
-					});
+			ScriptSplitter splitter = new ScriptSplitter(fullScriptText);
 
-			while (splitter.Next())
+			foreach(string script in splitter)
 			{
-				splitter.Split();
+				scripts.Add(new Script(script));
 			}
 
 			return scripts;

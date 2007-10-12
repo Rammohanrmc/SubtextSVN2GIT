@@ -1,31 +1,30 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Subtext.Scripting.Exceptions;
 
 namespace Subtext.Scripting
 {
-	public class ScriptSplitter
+	public class ScriptSplitter : IEnumerable<string>
 	{
 		private ScriptReader scriptReader = null;
 		private StringBuilder builder = new StringBuilder();
-		protected readonly Action<string> scriptParsed;
 		private readonly TextReader reader;
 		private char current = char.MinValue;
 		private char lastChar = char.MinValue;
 
-		public ScriptSplitter(string script, Action<string> scriptParsed)
+		public ScriptSplitter(string script)
 		{
 			this.reader = new StringReader(script);
-			this.scriptParsed = scriptParsed;
 			this.scriptReader = new SeparatorLineReader(this);
 		}
 
-		public bool Next()
+		internal bool Next()
 		{
 			if (!HasNext)
 			{
-				SetScriptComplete();
 				return false;
 			}
 
@@ -34,29 +33,29 @@ namespace Subtext.Scripting
 			return true;
 		}
 
-		public bool HasNext
+		internal bool HasNext
 		{
 			get { return reader.Peek() != -1; }
 		}
 
-		public int Peek()
+		internal int Peek()
 		{
 			return reader.Peek();
 		}
 
-		public char Current
+		internal char Current
 		{
 			get { return this.current; }
 		}
 
-		public char LastChar
+		internal char LastChar
 		{
 			get { return this.lastChar; }
 		}
 
-		public void Split()
+		private bool Split()
 		{
-			this.scriptReader.ReadNextSection();
+			return this.scriptReader.ReadNextSection();
 		}
 
 		internal void SetParser(ScriptReader newReader)
@@ -74,18 +73,35 @@ namespace Subtext.Scripting
 			builder.Append(c);
 		}
 
-		public void SetScriptComplete()
-		{
-			string script = builder.ToString().Trim();
-			if(script.Length > 0)
-				scriptParsed(builder.ToString());
-			Reset();	
-		}
-
 		void Reset()
 		{
 			current = lastChar = char.MinValue;
 			builder = new StringBuilder();
+		}
+
+		public IEnumerator<string> GetEnumerator()
+		{
+			while (Next())
+			{
+				if (Split())
+				{
+					string script = builder.ToString().Trim();
+					if (script.Length > 0)
+						yield return (script);
+					Reset();
+				}
+			}
+			if (builder.Length > 0)
+			{
+				string scriptRemains = builder.ToString().Trim();
+				if (scriptRemains.Length > 0)
+					yield return (scriptRemains);
+			}
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
 		}
 	}
 
@@ -102,30 +118,29 @@ namespace Subtext.Scripting
 		/// This acts as a template method. Specific Reader instances 
 		/// override the component methods.
 		/// </summary>
-		public void ReadNextSection()
+		public bool ReadNextSection()
 		{
 			if (IsQuote)
 			{
 				ReadQuotedString();
-				return;
+				return false;
 			}
 
 			if (BeginDashDashComment)
 			{
-				ReadDashDashComment();
-				return;
+				return ReadDashDashComment();
 			}
 
 			if (BeginSlashStarComment)
 			{
 				ReadSlashStarComment();
-				return;
+				return false;
 			}
 
-			ReadNext();
+			return ReadNext();
 		}
 
-		protected virtual void ReadDashDashComment()
+		protected virtual bool ReadDashDashComment()
 		{
 			splitter.Append(Current);
 			while (splitter.Next())
@@ -133,10 +148,12 @@ namespace Subtext.Scripting
 				splitter.Append(Current);
 				if (EndOfLine)
 				{
-					this.splitter.SetParser(new SeparatorLineReader(this.splitter));
-					return;
+					break;
 				}
 			}
+			//We should be EndOfLine or EndOfScript here.
+			this.splitter.SetParser(new SeparatorLineReader(this.splitter));
+			return false;
 		}
 
 		protected virtual void ReadSlashStarComment()
@@ -166,7 +183,7 @@ namespace Subtext.Scripting
 			}
 		}
 
-		protected abstract void ReadNext();
+		protected abstract bool ReadNext();
 
 		#region Helper methods and properties
 		protected static bool CharEquals(char expected, char actual)
@@ -256,9 +273,21 @@ namespace Subtext.Scripting
 
 		void Reset()
 		{
+
 			foundGo = false;
 			gFound = false;
 			builder = new StringBuilder();
+		}
+
+		protected override bool ReadDashDashComment()
+		{
+			if (!foundGo)
+			{
+				base.ReadDashDashComment();
+				return false;
+			}
+			base.ReadDashDashComment();
+			return true;
 		}
 
 		protected override void ReadSlashStarComment()
@@ -268,7 +297,7 @@ namespace Subtext.Scripting
 			base.ReadSlashStarComment();
 		}
 
-		protected override void ReadNext()
+		protected override bool ReadNext()
 		{
 			if (EndOfLine) //End of line or script
 			{
@@ -277,26 +306,25 @@ namespace Subtext.Scripting
 					builder.Append(Current);
 					splitter.Append(builder.ToString());
 					splitter.SetParser(new SeparatorLineReader(splitter));
-					return;
+					return false;
 				}
 				else
 				{
 					Reset();
-					splitter.SetScriptComplete();
-					return;
+					return true;
 				}
 			}
 
 			if (WhiteSpace)
 			{
 				builder.Append(Current);
-				return;
+				return false;
 			}
 
 			if (!CharEquals('g') && !CharEquals('o'))
 			{
 				FoundNonEmptyCharacter(Current);
-				return;
+				return false;
 			}
 
 			if (CharEquals('o'))
@@ -312,7 +340,7 @@ namespace Subtext.Scripting
 				if (gFound || (!Char.IsWhiteSpace(LastChar) && LastChar != char.MinValue))
 				{
 					FoundNonEmptyCharacter(Current);
-					return;
+					return false;
 				}
 
 				gFound = true;
@@ -321,11 +349,11 @@ namespace Subtext.Scripting
 			if(!HasNext && foundGo)
 			{
 				Reset();
-				splitter.SetScriptComplete();
-				return;
+				return true;
 			}
 
 			builder.Append(Current);
+			return false;
 		}
 
 		void FoundNonEmptyCharacter(char c)
@@ -343,16 +371,17 @@ namespace Subtext.Scripting
 		{
 		}
 
-		protected override void ReadNext()
+		protected override bool ReadNext()
 		{
 			if (EndOfLine) //end of line
 			{
 				splitter.Append(Current);
 				splitter.SetParser(new SeparatorLineReader(splitter));
-				return;
+				return false;
 			}
 
 			splitter.Append(Current);
+			return false;
 		}
 	}
 }
