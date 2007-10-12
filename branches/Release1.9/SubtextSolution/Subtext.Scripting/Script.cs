@@ -37,36 +37,33 @@ namespace Subtext.Scripting
 		/// using "GO" as the delimiter.
 		/// </summary>
 		/// <param name="fullScriptText">Full script text.</param>
-		public static ScriptCollection ParseScripts(string fullScriptText)
-		{
-			Regex regex = new Regex(@"(^\s*|\s+)GO(\s+|\s*$)",  RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-			string[] scriptTexts = regex.Split(fullScriptText);
+        public static ScriptCollection ParseScripts(string fullScriptText)
+        {
 			ScriptCollection scripts = new ScriptCollection(fullScriptText);
-			foreach(string scriptText in scriptTexts)
+			ScriptSplitter splitter = new ScriptSplitter(fullScriptText
+				, delegate(string scriptText)
+               		{
+						if(scriptText.Trim().Length > 0)
+							scripts.Add(new Script(scriptText.Trim()));
+					});
+
+			while (splitter.Next())
 			{
-				string cleanScriptText = StripComments(scriptText);
-				if (cleanScriptText != null && cleanScriptText.Trim().Length > 0)
-				{
-					scripts.Add(new Script(cleanScriptText.Trim()));
-				}
-
+				splitter.Split();
 			}
-			return scripts;
-		}
-		
-		readonly string _scriptText;
-		
-		static string StripComments(string scriptText)
-		{
-			Regex regex = new Regex(@"/\*.*?\*/", RegexOptions.Singleline | RegexOptions.Compiled);
-			string cleanText = regex.Replace(scriptText, string.Empty);
 
-			regex = new Regex(@"^--.*(\r?\n|$)", RegexOptions.Compiled | RegexOptions.Multiline);
-			cleanText = regex.Replace(cleanText, string.Empty);
-			
-			regex = new Regex(@"(?<keep>'[^']*')|--.*?(?<keep>\r?\n|$)", RegexOptions.Compiled);
-			return regex.Replace(cleanText, "${keep}");
-		}
+			return scripts;
+        }
+
+        readonly string _scriptText;
+
+        public static string RemoveEmptyLines(ref string scriptText)
+        {
+            while (scriptText.IndexOf(Environment.NewLine + Environment.NewLine) >= 0)
+                scriptText = scriptText.Replace(Environment.NewLine + Environment.NewLine, Environment.NewLine);
+            return scriptText;
+        }
+
 		
 		/// <summary>
 		/// Creates a new <see cref="TemplateParameter"/> instance.

@@ -28,13 +28,13 @@ namespace Subtext.Scripting.Exceptions
 	[Serializable]
 	public sealed class SqlScriptExecutionException : Exception, ISerializable
 	{
-		Script _script;
-		int _returnValue;
+		readonly Script _script;
+		readonly int _returnValue;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SqlScriptExecutionException"/> class.
 		/// </summary>
-		public SqlScriptExecutionException() : base()
+		public SqlScriptExecutionException()
 		{
 		}
 
@@ -60,6 +60,7 @@ namespace Subtext.Scripting.Exceptions
 		/// </summary>
 		/// <param name="message">The message.</param>
 		/// <param name="script">The script.</param>
+		/// <param name="returnValue">The return value.</param>
 		public SqlScriptExecutionException(string message, Script script, int returnValue) : base(message)
 		{
 			_script = script;
@@ -71,6 +72,7 @@ namespace Subtext.Scripting.Exceptions
 		/// </summary>
 		/// <param name="message">The message.</param>
 		/// <param name="script">The script.</param>
+		/// <param name="returnValue">The return value.</param>
 		/// <param name="innerException">The inner exception.</param>
 		public SqlScriptExecutionException(string message, Script script, int returnValue, Exception innerException) : base(message, innerException)
 		{
@@ -125,7 +127,7 @@ namespace Subtext.Scripting.Exceptions
 			{
 				string message = base.Message;
 				if (this.Script != null)
-					message += Environment.NewLine + "ScriptName: " + _script.ToString();
+					message += string.Format("{0}ScriptName: {1}", Environment.NewLine, _script);
 				message+= "Return Value: " + ReturnValue;
 				return message;
 			}
