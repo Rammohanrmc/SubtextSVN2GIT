@@ -29,11 +29,11 @@ namespace Subtext.Web.Admin.Pages
 
             if (tags.Count == 0)
             {
-                MetatagWrapper.Attributes.Add("style", "display:none;");
+                MetatagListWrapper.Attributes.Add("style", "display:none;");
             }
             else
             {
-                MetatagMessages.Attributes.Add("style", "display:none;");
+                NoMetatagsMessage.Attributes.Add("style", "display:none;");
             }
 
             // we want to databind either way so we can alter the DOM via JavaScript and AJAX requests.

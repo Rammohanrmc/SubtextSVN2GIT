@@ -23,9 +23,9 @@
                 <span class="btn metatag-add">Add Meta Tag
                     <img src="<%# VirtualPathUtility.ToAbsolute("~/Images/tag_blue_add.png") %>" alt="Add a New Meta Tag" /></span>
             </div>
-            <asp:Panel ID="MetatagMessages" runat="server" CssClass="clear">
+            <asp:Panel ID="NoMetatagsMessage" runat="server" CssClass="clear">
                 There are no Meta Tags created for this blog. Add some now!</asp:Panel>
-            <asp:Panel ID="MetatagWrapper" runat="server" CssClass="clear">
+            <asp:Panel ID="MetatagListWrapper" runat="server" CssClass="clear">
                 <asp:Repeater ID="MetatagRepeater" runat="server">
                     <HeaderTemplate>
                         <table id="metatag-table" class="listing highlightTable">
@@ -89,6 +89,8 @@
     
         var msgPanel = $('#messagePanel');
         var msgPanelWrap = msgPanel.parent();
+        var noTagsMsg = $('#<%= NoMetatagsMessage.ClientID %>');
+        var tagListWrap = $('#<%= MetatagListWrapper.ClientID %>');
         var BTNS_METATAG_TEMPLATE = "<span class='btn metatag-edit' title='Edit Meta Tag'>Edit</span><span class='btn metatag-delete' title='Delete Meta Tag'>Delete</span>"
         
         // a global variable for un-doing an operation
@@ -142,6 +144,9 @@
         
         function onTagAdded(metaTag)
         {
+            noTagsMsg.hide();
+            tagListWrap.fadeIn("normal");
+            
             msgPanelWrap.addClass("success");
             showMessagePanel("Added new tagid = " + metaTag.id);
             
@@ -153,6 +158,13 @@
             
             $("#metatag-table tbody").append(tableRow);
             var newRow = $("#metatag-table tr:last");
+            
+            newRow.attr('id', 'metatag-' + metaTag.id);
+            
+            newRow.click(function()
+            {
+                deleteMetaTag(newRow);
+            });
             
             newRow.fadeIn("slow");
         }
@@ -187,7 +199,17 @@
             if(isDeleted)
             {
                 // fade the row all the way out and the remove it's contents from the DOM.
-                metaTagRow.fadeOut(function(){ metaTagRow.empty(); });
+                metaTagRow.fadeOut(function()
+                {
+                    metaTagRow.empty();
+                    
+                    var tagRows = $(metaTagRow.siblings("tr[id^='metatag-']:visible"));
+                    if (tagRows.length == 0)
+                    {
+                        tagListWrap.hide();
+                        noTagsMsg.fadeIn("normal");
+                    }
+                });
                 
                 msgPanelWrap.addClass("success");
                 showMessagePanel("The meta tag was successfully deleted.");

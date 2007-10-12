@@ -14,14 +14,14 @@
         var ajaxServices = new AjaxServices();
     </script>
     <script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/Scripts/tableEffects.js") %>" ></script>
-    <script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/admin/resources/Scripts/niceForms.js") %>"></script>
-	<script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/admin/resources/Scripts/helptip.js") %>" ></script>
-	<script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/admin/resources/Scripts/admin.js") %>" ></script>
-	<link id="commonLayoutCss" type="text/css" rel="stylesheet" runat="Server" href="~/Skins/_System/commonlayout.css" />
-	<link id="commonStyleCss" type="text/css" rel="stylesheet" runat="Server" href="~/Skins/_System/commonstyle.css" />
-	<st:HeaderLink id="HelptipCss" rel="stylesheet" href="resources/scripts/helptip.css" linkType="text/css" runat="server" />
-	<st:HeaderLink id="adminCss" rel="stylesheet" href="resources/admin.css" linkType="text/css" runat="server" />
-	<st:HeaderLink id="NiceFormsStyle" rel="stylesheet" href="resources/scripts/niceforms-default.css" linkType="text/css" runat="server" />
+    <script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/Admin/Resources/Scripts/niceForms.js") %>"></script>
+	<script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/Admin/Resources/Scripts/helptip.js") %>" ></script>
+	<script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/Admin/Resources/Scripts/admin.js") %>" ></script>
+	<link type="text/css" rel="stylesheet" runat="server" href="~/Skins/_System/commonlayout.css" />
+	<link type="text/css" rel="stylesheet" runat="server" href="~/Skins/_System/commonstyle.css" />
+	<link type="text/css" rel="stylesheet" runat="server" href="~/Admin/Resources/Scripts/helptip.css" />
+	<link type="text/css" rel="stylesheet" runat="server" href="~/Admin/Resources/admin.css" />
+	<link type="text/css" rel="stylesheet" runat="server" href="~/Admin/Resources/Scripts/niceforms-default.css" />
 </head>
 <body id="AdminSection" runat="server">
     <form id="frmMain" runat="server">
