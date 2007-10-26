@@ -161,7 +161,8 @@
             
             newRow.attr('id', 'metatag-' + metaTag.id);
             
-            newRow.click(function()
+            //debugger;
+            $('.metatag-delete', newRow).click(function()
             {
                 deleteMetaTag(newRow);
             });
@@ -212,7 +213,13 @@
                 });
                 
                 msgPanelWrap.addClass("success");
-                showMessagePanel("The meta tag was successfully deleted.");
+                showMessagePanel("The meta tag was successfully deleted. <span>undo</span>");
+                
+                var undoBtn = msgPanel.find("span");
+                undoBtn.click(function()
+                {
+                    undoAction(MetaTagAction.deleteTag);
+                });
             }
             else
             {
@@ -220,6 +227,15 @@
                 showMessagePanel("Could not delete the meta tag... perhaps it's already gone!");
             }
         }
+        
+        function undoAction(actionType)
+        {
+            
+        }
+        
+        var MetaTagAction = {
+            deleteTag: 0,
+            editTag: 1 };
         
         /* ---- { helper methods } ---- */
         
