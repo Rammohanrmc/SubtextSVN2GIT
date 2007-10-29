@@ -112,21 +112,24 @@ div.Pager a.Current:visited  {
 	margin: 0px 2px 0px 2px;
 }
 
-a:link, a:visited {
+a:link, a:visited,
+#messagePanel .btn 
+{
 	color: #002C99;
 	font-weight: bold;
 	text-decoration: none;
 	background: inherit;
 }
 
-a:hover 
+a:hover,
+#messagePanel .btn:hover
 {
 	color: #CC0066;
 	text-decoration: underline;
 }
 
 a.Button:link,
-a.Button:visited 
+a.Button:visited
 {
 	display: block;
 	float: left;

@@ -1,5 +1,5 @@
 <%@ Page Language="C#" MasterPageFile="~/Admin/WebUI/AdminPageTemplate.Master" AutoEventWireup="true"
-    Codebehind="Customize.aspx.cs" Inherits="Subtext.Web.Admin.Pages.Customize" %>
+    CodeBehind="Customize.aspx.cs" Inherits="Subtext.Web.Admin.Pages.Customize" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="actionsHeading" runat="server">
     Actions</asp:Content>
@@ -16,6 +16,12 @@
     </div>
     <div class="CollapsibleHeader">
         <span>Customize</span>
+    </div>
+    <div id="metatag-add-form" style="display:none">
+        <fieldset>
+            <legend>Add a new Meta Tag</legend>
+            <label for="metaTagName">name:</label><input type="text" id="metaTagName" />
+        </fieldset>
     </div>
     <div id="metatag-content">
         <asp:Panel GroupingText="Meta Tags" CssClass="options fluid" runat="server">
@@ -53,8 +59,8 @@
                                 <%# EvalHttpEquiv(Container.DataItem) %>
                             </td>
                             <td>
-                                <span class='btn metatag-edit' title='Edit Meta Tag'>Edit</span>
-                                <span class='btn metatag-delete' title='Delete Meta Tag'>Delete</span>
+                                <span class='btn metatag-edit' title='Edit Meta Tag'>Edit</span> <span class='btn metatag-delete'
+                                    title='Delete Meta Tag'>Delete</span>
                             </td>
                         </tr>
                     </ItemTemplate>
@@ -70,8 +76,8 @@
                                 <%# EvalHttpEquiv(Container.DataItem) %>
                             </td>
                             <td>
-                                <span class="btn metatag-edit" title="Edit Meta Tag">Edit</span>
-                                <span class='btn metatag-delete' title='Delete Meta Tag'>Delete</span>
+                                <span class="btn metatag-edit" title="Edit Meta Tag">Edit</span> <span class='btn metatag-delete'
+                                    title='Delete Meta Tag'>Delete</span>
                             </td>
                         </tr>
                     </AlternatingItemTemplate>
@@ -85,8 +91,24 @@
 
     <script type="text/javascript">
     
+        /* ---- { some objects and enums } ---- */
+        
+        function MetaTag()
+        {
+            this.id = null;
+            this.name = null;
+            this.content = null;
+            this.httpEquiv = null;
+        }
+        
+        var MetaTagAction = {
+            add: 0,
+            remove: 1,
+            edit: 2,
+            undo: 3 };
+        
+        
         /* ---- { a few global variables } ---- */
-    
         var msgPanel = $('#messagePanel');
         var msgPanelWrap = msgPanel.parent();
         var noTagsMsg = $('#<%= NoMetatagsMessage.ClientID %>');
@@ -94,12 +116,7 @@
         var BTNS_METATAG_TEMPLATE = "<span class='btn metatag-edit' title='Edit Meta Tag'>Edit</span><span class='btn metatag-delete' title='Delete Meta Tag'>Delete</span>"
         
         // a global variable for un-doing an operation
-        var undoMetaTag = { 
-            id: null,
-            name: null,
-            content: null,
-            httpEquiv: null
-            };
+        var undoMetaTag = null;
         
         
         /* ---- { page and event setup } ---- */
@@ -108,7 +125,7 @@
         $(document).ready(function()
         {
             // wire up the Add Button handler
-            $(".metatag-add").click(addMetaTag);
+            $(".metatag-add").click(addNewMetaTag);
             
             // wire up the Delete Button handlers
             $("tr[id^='metatag-'] .metatag-delete").click(function()
@@ -123,32 +140,37 @@
         
         /* ---- { Meta Tag methods } ---- */
         
-        function addMetaTag()
+        function addNewMetaTag()
+        {
+            createMetaTag(getMetaTagForAction(MetaTagAction.add));
+        }
+        
+        function createMetaTag(metaTag)
         {
             // unbind the click event so a user can't click it until the current action is done.
             var addBtn = $(".metatag-add");
             addBtn.unbind("click").fadeTo("fast", .5);
             hideMessagePanel();
-        
-            var newTag = ajaxServices.addMetaTagForBlog("Just a test", "author", null, function(response)
+            
+            metaTag = ajaxServices.addMetaTagForBlog(metaTag.content, metaTag.name, metaTag.httpEquiv, function(response)
                 {
                     if (response.error)
                         handleError(response.error);
                     else
-                        onTagAdded(response.result);
+                        onTagCreated(response.result);
                 });
             
             // wire the click event back up.
-            $(".metatag-add").bind("click", addMetaTag).fadeTo("normal", 1);
+            $(".metatag-add").bind("click", addNewMetaTag).fadeTo("normal", 1);
         }
         
-        function onTagAdded(metaTag)
+        function onTagCreated(metaTag)
         {
             noTagsMsg.hide();
             tagListWrap.fadeIn("normal");
             
             msgPanelWrap.addClass("success");
-            showMessagePanel("Added new tagid = " + metaTag.id);
+            showMessagePanel("Meta Tag successfully added. Tag id = " + metaTag.id + ".");
             
             // add the new metatag to the table
             var tableRow = "<tr class='new' style='display:none'><td>" + checkForNull(metaTag.name) + "</td>";
@@ -179,6 +201,7 @@
         
             var rows = metaTagRow.children('td');
             
+            undoMetaTag = new MetaTag();
             undoMetaTag.id = metaTagRow.attr('id').split('metatag-').pop();
             undoMetaTag.name = returnNullForEmpty($(rows[0]).text().trim());
             undoMetaTag.content = $(rows[1]).text().trim();
@@ -189,15 +212,13 @@
                     if (response.error)
                         handleError(response.error);
                     else
-                    {
                         onTagDeleted(response.result, metaTagRow);
-                    }
                 });
         }
         
         function onTagDeleted(isDeleted, metaTagRow)
         {
-            if(isDeleted)
+            if (isDeleted)
             {
                 // fade the row all the way out and the remove it's contents from the DOM.
                 metaTagRow.fadeOut(function()
@@ -213,12 +234,12 @@
                 });
                 
                 msgPanelWrap.addClass("success");
-                showMessagePanel("The meta tag was successfully deleted. <span>undo</span>");
+                showMessagePanel("The meta tag was successfully deleted. <span class='btn' title='Bring back your tag!'>Undo</span>");
                 
                 var undoBtn = msgPanel.find("span");
                 undoBtn.click(function()
                 {
-                    undoAction(MetaTagAction.deleteTag);
+                    undoAction();
                 });
             }
             else
@@ -228,14 +249,10 @@
             }
         }
         
-        function undoAction(actionType)
+        function undoAction()
         {
-            
+            createMetaTag(getMetaTagForAction(MetaTagAction.undo));
         }
-        
-        var MetaTagAction = {
-            deleteTag: 0,
-            editTag: 1 };
         
         /* ---- { helper methods } ---- */
         
@@ -249,6 +266,25 @@
             //error.name
             //error.message
             //error.stackTrace
+        }
+        
+        function getMetaTagForAction(actionType)
+        {
+            // if adding a new tag, collect the values from the form
+            if (actionType == MetaTagAction.add)
+            {
+                var tag = new MetaTag();
+                tag.content = "Just a Test Tag.";
+                tag.name = "author";
+                
+                return tag;
+            }
+            else if (actionType == MetaTagAction.undo)
+            {
+                return undoMetaTag;
+            }
+            
+            return null;
         }
         
         function showMessagePanel(message)
