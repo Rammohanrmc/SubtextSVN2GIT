@@ -20,7 +20,9 @@
     <div id="metatag-add-form" style="display:none">
         <fieldset>
             <legend>Add a new Meta Tag</legend>
-            <label for="metaTagName">name:</label><input type="text" id="metaTagName" />
+            <label for="metaTagName">Name:</label><input type="text" id="metaTagName" />
+            <label for="metaTagContent">Content:</label><input type="text" id="metaTagContent" />
+            <label for="metaTagHttpEquiv">HttpEquiv:</label><input type="text" id="metaTagHttpEquiv" />
         </fieldset>
     </div>
     <div id="metatag-content">
@@ -190,6 +192,7 @@
             });
             
             newRow.fadeIn("slow");
+            newRow.animate( { backgroundColor: 'transparent' }, 2000);
         }
         
         function deleteMetaTag(metaTagRow)
@@ -199,13 +202,13 @@
             $("span.btn", metaTagRow).unbind("click").removeClass("btn");
             hideMessagePanel();
         
-            var rows = metaTagRow.children('td');
+            var cells = metaTagRow.children('td');
             
             undoMetaTag = new MetaTag();
             undoMetaTag.id = metaTagRow.attr('id').split('metatag-').pop();
-            undoMetaTag.name = returnNullForEmpty($(rows[0]).text().trim());
-            undoMetaTag.content = $(rows[1]).text().trim();
-            undoMetaTag.httpEquiv = returnNullForEmpty($(rows[2]).text().trim());
+            undoMetaTag.name = returnNullForEmpty($(cells[0]).text().trim());
+            undoMetaTag.content = $(cells[1]).text().trim();
+            undoMetaTag.httpEquiv = returnNullForEmpty($(cells[2]).text().trim());
             
             ajaxServices.deleteMetaTag(undoMetaTag.id, function(response)
                 {
@@ -218,35 +221,34 @@
         
         function onTagDeleted(isDeleted, metaTagRow)
         {
-            if (isDeleted)
-            {
-                // fade the row all the way out and the remove it's contents from the DOM.
-                metaTagRow.fadeOut(function()
-                {
-                    metaTagRow.empty();
-                    
-                    var tagRows = $(metaTagRow.siblings("tr[id^='metatag-']:visible"));
-                    if (tagRows.length == 0)
-                    {
-                        tagListWrap.hide();
-                        noTagsMsg.fadeIn("normal");
-                    }
-                });
-                
-                msgPanelWrap.addClass("success");
-                showMessagePanel("The meta tag was successfully deleted. <span class='btn' title='Bring back your tag!'>Undo</span>");
-                
-                var undoBtn = msgPanel.find("span");
-                undoBtn.click(function()
-                {
-                    undoAction();
-                });
-            }
-            else
+            if (!isDeleted)
             {
                 msgPanelWrap.addClass("warn");
                 showMessagePanel("Could not delete the meta tag... perhaps it's already gone!");
+                return;
             }
+        
+            // fade the row all the way out and the remove it's contents from the DOM.
+            metaTagRow.fadeOut(function()
+            {
+                metaTagRow.empty();
+                
+                var tagRows = $(metaTagRow.siblings("tr[id^='metatag-']:visible"));
+                if (tagRows.length == 0)
+                {
+                    tagListWrap.hide();
+                    noTagsMsg.fadeIn("normal");
+                }
+            });
+            
+            msgPanelWrap.addClass("success");
+            showMessagePanel("The meta tag was successfully deleted. <span class='btn' title='Bring back your tag!'>Undo</span>");
+            
+            var undoBtn = msgPanel.find("span");
+            undoBtn.click(function()
+            {
+                undoAction();
+            });
         }
         
         function undoAction()
@@ -274,6 +276,8 @@
             if (actionType == MetaTagAction.add)
             {
                 var tag = new MetaTag();
+                
+                //TODO: Need to collect values from the form fields
                 tag.content = "Just a Test Tag.";
                 tag.name = "author";
                 

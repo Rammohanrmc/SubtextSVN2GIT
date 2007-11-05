@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.20706</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8C11B428-9C4A-46C3-B7F0-48215276BFA5}</ProjectGuid>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
@@ -1443,6 +1443,7 @@
     <Content Include="Scripts\effects.js" />
     <Content Include="Scripts\ExternalLinks.js" />
     <Content Include="Scripts\jquery-1.2.1.min.js" />
+    <Content Include="Scripts\jquery.color.min.js" />
     <Content Include="Scripts\json.js" />
     <Content Include="Scripts\lightbox.css" />
     <Content Include="Scripts\lightbox.js" />
@@ -2332,6 +2333,7 @@
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:2732/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
+          <AlwaysStartWebServerOnDebug>True</AlwaysStartWebServerOnDebug>
         </WebProjectProperties>
       </FlavorProperties>
     </VisualStudio>
