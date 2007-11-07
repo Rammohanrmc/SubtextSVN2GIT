@@ -127,7 +127,7 @@
         $(document).ready(function()
         {
             // wire up the Add Button handler
-            $(".metatag-add").click(addNewMetaTag);
+            $(".metatag-add").click(showAddMetaTagUI);
             
             // wire up the Delete Button handlers
             $("tr[id^='metatag-'] .metatag-delete").click(function()
@@ -142,8 +142,9 @@
         
         /* ---- { Meta Tag methods } ---- */
         
-        function addNewMetaTag()
+        function showAddMetaTagUI()
         {
+            
             createMetaTag(getMetaTagForAction(MetaTagAction.add));
         }
         
@@ -163,7 +164,7 @@
                 });
             
             // wire the click event back up.
-            $(".metatag-add").bind("click", addNewMetaTag).fadeTo("normal", 1);
+            $(".metatag-add").bind("click", showAddMetaTagUI).fadeTo("normal", 1);
         }
         
         function onTagCreated(metaTag)
@@ -191,7 +192,7 @@
                 deleteMetaTag(newRow);
             });
             
-            newRow.fadeIn("slow");
+            newRow.fadeIn("normal");
             newRow.animate( { backgroundColor: 'transparent' }, 2000);
         }
         
