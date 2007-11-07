@@ -293,10 +293,10 @@ namespace Subtext.Web.UI.Controls
 				this.tbComment.Text = string.Empty;
 
 			if (this.tbEmail != null)
-				this.tbEmail.Text = SecurityHelper.IsAdmin ? Config.CurrentBlog.Owner.Email : string.Empty;
+				this.tbEmail.Text = SecurityHelper.IsAdmin ? Config.CurrentBlog.Email : string.Empty;
 
 			if (this.tbName != null)
-				this.tbName.Text = SecurityHelper.IsAdmin ? Config.CurrentBlog.Owner.UserName : string.Empty;
+				this.tbName.Text = SecurityHelper.IsAdmin ? Config.CurrentBlog.UserName : string.Empty;
 			
 			if(entry == null)
 				entry = Cacher.GetEntryFromRequest(CacheDuration.Short);

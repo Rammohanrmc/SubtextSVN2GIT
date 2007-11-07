@@ -23,7 +23,6 @@ using log4net;
 using Subtext.Framework.Exceptions;
 using Subtext.Framework.Logging;
 using Subtext.Framework.Web.HttpModules;
-using Subtext.Framework.Properties;
 
 namespace Subtext.Framework.Configuration
 {
@@ -265,16 +264,25 @@ namespace Subtext.Framework.Configuration
 			return info;
 		}
 
-		private static BlogInfo GetAggregateBlog()
+		/// <summary>
+		/// Gets the current host, stripping off the initial "www." if 
+		/// found.
+		/// </summary>
+		/// <param name="Request">Request.</param>
+		/// <returns></returns>
+		protected static string GetCurrentHost(HttpRequest Request)
 		{
-			BlogInfo aggregateBlog = new BlogInfo();
-            aggregateBlog.Title = ConfigurationManager.AppSettings["AggregateTitle"];
-			aggregateBlog.Skin = SkinConfig.GetDefaultSkin();
-            aggregateBlog.Host = ConfigurationManager.AppSettings["AggregateHost"];
-			aggregateBlog.Subfolder = "";
-			//TODO: aggregateBlog.UserName = HostInfo.Instance.HostUserName;
-			
-			return aggregateBlog;
+			string host = Request.Url.Host;
+			if(!Request.Url.IsDefaultPort)
+			{
+				host  += ":" + Request.Url.Port.ToString(CultureInfo.InvariantCulture);
+			}
+
+			if (host.StartsWith("www.", StringComparison.InvariantCultureIgnoreCase))
+			{
+				host = host.Substring(4);
+			}
+			return host;
 		}
 
 		/// <summary>
@@ -289,18 +297,6 @@ namespace Subtext.Framework.Configuration
 		/// <param name="cacheKEY">Cache KEY.</param>
 		protected void CacheConfig(Cache cache, BlogInfo info, string cacheKEY)
 		{
-            if (cache == null)
-                throw new ArgumentNullException("cache", Resources.ArgumentNull_Generic);
-
-            if (info == null)
-                throw new ArgumentNullException("info", Resources.ArgumentNull_Generic);
-
-            if (cacheKEY == null)
-                throw new ArgumentNullException("cacheKEY", Resources.ArgumentNull_Generic);
-
-            if (cacheKEY.Length == 0)
-                throw new ArgumentException(Resources.Argument_StringZeroLength, "cacheKEY");
-
 			cache.Insert(cacheKEY, info, null, DateTime.Now.AddSeconds(CacheTime), TimeSpan.Zero, CacheItemPriority.High, null);
 		}
 	}

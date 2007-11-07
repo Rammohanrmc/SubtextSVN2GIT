@@ -15,11 +15,11 @@
 
 using System;
 using MbUnit.Framework;
+using Subtext.Configuration;
 using Subtext.Extensibility;
 using Subtext.Framework;
 using Subtext.Framework.Components;
 using Subtext.Framework.Configuration;
-using Subtext.Framework.Exceptions;
 
 namespace UnitTests.Subtext.Framework.Components.EntryTests
 {
@@ -30,6 +30,8 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 	[TestFixture]
 	public class AutoGenerateFriendlyUrlTests
 	{
+		string _hostName = string.Empty;
+
 		[Test]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void FriendlyUrlThrowsArgumentException()
@@ -91,47 +93,22 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		[Row(@"[!""'`;:~@#$%^&*(){\[}\]?+/=\\|<> X", char.MinValue, "X")]
 		[Row(@"This  is cool", '_', "This_is_cool")]
 		[Row(@"This - is cool", '-', "This-is-cool")]
-		[RollBack2]
+		[RollBack]
 		public void FriendlyUrlGeneratesNiceUrl(string title, char separator, string expected)
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
 			Assert.AreEqual(expected, Entries.AutoGenerateFriendlyUrl(title, separator), "The auto generated entry name is not what we expected.");
 		}
 
 		[RowTest]
 		[Row("THIS IS A NEW TEST", TextTransform.LowerCase, "this-is-a-new-test")]
-		[RollBack2]
+		[RollBack]
 		public void FriendlyUrlCanTransformText(string title, TextTransform transform, string expected)
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
 			Assert.AreEqual(expected, Entries.AutoGenerateFriendlyUrl(title, '-', transform), "The auto generated entry name is not what we expected.");
 		}
 
-		/// <summary>
-		/// Makes sure we are generating nice friendly URLs Using Underscores.
-		/// </summary>
-		[RowTest]
-		[Row("Title", "Title")]
-		[Row("Title.", "Title")]
-		[Row("A Very Good Book Yo", "A_Very_Good_Book_Yo")]
-		[Row("a very good book yo", "a_very_good_book_yo")]
-		[Row("A Very ::Good Book", "A_Very_Good_Book")]
-		[Row("A Very ;;Good Book", "A_Very_Good_Book")]
-		[Row("A Very Good Book yo.", "A_Very_Good_Book_yo")]
-		[Row("A Very Good Book yo..", "A_Very_Good_Book_yo")]
-		[Row("Å Vêry Good Book yo..", "A_Very_Good_Book_yo")]
-		[Row("Trouble With VS.NET Yo", "Trouble_With_VS.NET_Yo")]
-		[Row("Barça is a nice town", "Barca_is_a_nice_town")]
-		[Row("Perchè Più felicità può ed é?", "Perche_Piu_felicita_puo_ed_e")]
-		[Row(@"[!""'`;:~@#$%^&*(){\[}\]?+/=\\|<> Y", "Y")]
-		[Row(@"[!""'`;:~@#$%^&*(){\[}\]?+/=\\|<>YY", "YY")]
-		[RollBack2]
-		public void FriendlyUrlGeneratesNiceUrlWithUnderscores(string title, string expected)
-		{
-			UnitTestHelper.SetupBlog();
-            Assert.AreEqual(expected, Entries.AutoGenerateFriendlyUrl(title, '_'), "THe auto generated entry name is not what we expected.");
-		}
-		
 		/// <summary>
 		/// Makes sure we are generating nice friendly URLs Using Periods.
 		/// </summary>
@@ -139,10 +116,10 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		[Row("Title.", "Title")]
 		[Row("Contains.PeriodAlready", "Contains.PeriodAlready")]
 		[Row("A Very Good Book yo..", "A.Very.Good.Book.yo")]
-		[RollBack2]
+		[RollBack]
 		public void FriendlyUrlGeneratesNiceUrlWithPeriods(string title, string expected)
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
             Assert.AreEqual(expected, Entries.AutoGenerateFriendlyUrl(title, '.'), "THe auto generated entry name is not what we expected.");
 		}
 
@@ -151,10 +128,10 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		[Row(char.MinValue, "OneTwo")]
 		[Row('.', "One.Two")]
 		[Row('-', "One-Two")]
-		[RollBack2]
+		[RollBack]
 		public void FriendlyUrlHandlesBadSeparators(char wordSeparator, string expected)
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
 
 			string title = "One Two";
 			Assert.AreEqual(expected, Entries.AutoGenerateFriendlyUrl(title, wordSeparator), "THe auto generated entry name is not what we expected.");
@@ -165,10 +142,10 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		/// Entryname should take precedence.
 		/// </summary>
 		[Test]
-		[RollBack2]
+		[RollBack]
 		public void FriendlyUrlDoesNotOverrideEntryName()
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
 
 			Config.CurrentBlog.AutoFriendlyUrlEnabled = true;
 			Entry entry = new Entry(PostType.BlogPost);
@@ -185,10 +162,10 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
         [RowTest]
         [Row("12345", '_', "n_12345")]
         [Row("12345f", '_', "12345f")]
-        [RollBack2]
+        [RollBack]
         public void GenerateFriendlyUrlFixesNumericTitles(string title, char wordSeparator, string expected)
         {
-			UnitTestHelper.SetupBlog();
+            Config.CreateBlog("foo-izze", "username", "password", _hostName, string.Empty);
             string friendlyName = Entries.AutoGenerateFriendlyUrl(title, wordSeparator);
             Assert.AreEqual(expected, friendlyName, "Need to prepend an 'n' to the end of numeric EntryNames.");
         }
@@ -197,10 +174,10 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		/// Make sure that generated friendly urls are unique.
 		/// </summary>
 		[Test]
-		[RollBack2]
+		[RollBack]
 		public void FriendlyUrlIsUnique()
 		{
-			UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
 
 			Config.CurrentBlog.AutoFriendlyUrlEnabled = true;
 			Entry entry = new Entry(PostType.BlogPost);
@@ -257,31 +234,18 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
             savedDupe = Entries.GetEntry(dupeId, PostConfig.None, false);
 			
 			Assert.AreEqual("Some_Entry_Title_To_Beat_A_Dead_Horse", savedDupe.EntryName, "Should have appended 'To_Beat_A_Dead_Horse'");
-
-			yetAnotherDuplicate = new Entry(PostType.BlogPost);
-			yetAnotherDuplicate.DateCreated = DateTime.Now;
-			yetAnotherDuplicate.Title = "Some Entry Title";
-			yetAnotherDuplicate.Body = "Some Body";
-
-			try
-			{
-				Entries.Create(yetAnotherDuplicate);
-				Assert.Fail("Expected a duplicate entry exception");
-			}
-			catch(DuplicateEntryException)
-			{
-			}
 		}
 
 		/// <summary>
 		/// Make sure that generated friendly urls are not changed when updating entry.
 		/// </summary>
 		[Test]
-		[RollBack2]
+		[RollBack]
 		public void FriendlyUrlIsNotChangedInUpdates() 
 		{
-		    UnitTestHelper.SetupBlog();
-            Config.CurrentBlog.AutoFriendlyUrlEnabled = true;
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
+
+			Config.CurrentBlog.AutoFriendlyUrlEnabled = true;
 
 			Entry entry = new Entry(PostType.BlogPost);
 			entry.DateCreated = DateTime.Now;
@@ -302,10 +266,11 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		/// Make sure that generated friendly urls are not changed when updating entry.
 		/// </summary>
 		[Test]
-		[RollBack2]
+		[RollBack]
 		public void FriendlyUrlIsUniqueInUpdates()
 		{
-		    UnitTestHelper.SetupBlog();
+			Assert.IsTrue(Config.CreateBlog("", "username", "password", _hostName, string.Empty));
+
 			Config.CurrentBlog.AutoFriendlyUrlEnabled = true;
 
 			Entry entry1 = new Entry(PostType.BlogPost);
@@ -342,6 +307,13 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
 		{
 			//Confirm app settings
             UnitTestHelper.AssertAppSettings();
+		}
+
+		[SetUp]
+		public void SetUp()
+		{
+			_hostName = Guid.NewGuid().ToString().Replace("-", "") + ".com";
+			UnitTestHelper.SetHttpContextWithBlogRequest(_hostName, "");
 		}
 
 		[TearDown]

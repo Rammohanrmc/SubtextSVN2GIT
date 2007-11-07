@@ -48,15 +48,16 @@ namespace Subtext.Web.UI.Pages
 		protected HtmlLink AtomLink;
 		protected PlaceHolder CenterBodyControl;
 		protected Literal versionMetaTag;
-		protected Literal authorMetaTag;
+        protected Literal authorMetaTag;
 		protected Literal scripts;
 		protected Literal styles;
 		protected Literal virtualRoot;
 		protected Literal virtualBlogRoot;
 		protected Literal customTrackingCode;
 		protected Literal additionalMetaTags;
+	    protected PlaceHolder metaTagsPlaceHolder;
 		#endregion
-
+		
 		protected BlogInfo CurrentBlog;
 		protected Comments commentsControl;
 		protected PostComment postCommentControl;
@@ -68,39 +69,39 @@ namespace Subtext.Web.UI.Pages
 			MaintainScrollPositionOnPostBack = true;
 			CurrentBlog = Config.CurrentBlog;
 
-			string skinFolder = CurrentBlog.Skin.TemplateFolder;
+            string skinFolder = CurrentBlog.Skin.TemplateFolder;
 
 			string[] controls = HandlerConfiguration.GetControls(Context);
-			if (controls != null)
-			{
+            if (controls != null)
+            {
 				UpdatePanel apnlCommentsWrapper = new UpdatePanel();
-				apnlCommentsWrapper.Visible = true;
-				apnlCommentsWrapper.ID = "apnlCommentsWrapper";
-
-				foreach (string controlId in controls)
-				{
-					Control control = LoadControl(string.Format(ControlLocation, skinFolder, controlId));
-					control.ID = controlId.Replace(".", "_");
-
-					if (controlId.Equals("Comments.ascx"))
-					{
-						control.Visible = true;
+            	apnlCommentsWrapper.Visible = true;
+            	apnlCommentsWrapper.ID = "apnlCommentsWrapper";
+                
+                foreach (string controlId in controls)
+                {
+                    Control control = LoadControl(string.Format(ControlLocation, skinFolder, controlId));
+                    control.ID = controlId.Replace(".", "_");
+                    
+                    if (controlId.Equals("Comments.ascx"))
+                    {
+                    	control.Visible = true;
 						commentsControl = control as Comments;
-						apnlCommentsWrapper.ContentTemplateContainer.Controls.Add(control);
-					}
-					else if (controlId.Equals("PostComment.ascx"))
-					{
-						postCommentControl = (PostComment)control;
+                        apnlCommentsWrapper.ContentTemplateContainer.Controls.Add(control);
+                    }
+                    else if (controlId.Equals("PostComment.ascx"))
+                    {
+                    	postCommentControl = (PostComment)control;
 						postCommentControl.CommentApproved += postCommentControl_CommentPosted;
-						apnlCommentsWrapper.ContentTemplateContainer.Controls.Add(control);
-						CenterBodyControl.Controls.Add(apnlCommentsWrapper);
-					}
-					else
-					{
-						CenterBodyControl.Controls.Add(control);
-					}
-				}
-			}
+                        apnlCommentsWrapper.ContentTemplateContainer.Controls.Add(control);
+                        CenterBodyControl.Controls.Add(apnlCommentsWrapper);
+                    }
+                    else
+                    {
+                        CenterBodyControl.Controls.Add(control);
+                    }
+                }
+            }
 
 			if(CurrentBlog.Skin.HasCustomCssText)
 			{
@@ -111,18 +112,18 @@ namespace Subtext.Web.UI.Pages
 				//MAC IE does not like the empy CSS file, plus its a waste :)
 				CustomCss.Visible = false;
 			}
-
-			if (Rsd != null)
+			
+			if(Rsd != null)
 			{
 				Rsd.Attributes.Add("href", CurrentBlog.RootUrl + "rsd.xml.ashx");
 			}
-
-			if (RSSLink != null)
+			
+			if(RSSLink != null)
 			{
 				RSSLink.Attributes.Add("href", CurrentBlog.UrlFormats.RssUrl.ToString());
 			}
-
-			if (AtomLink != null)
+			
+			if(AtomLink != null)
 			{
 				AtomLink.Attributes.Add("href", CurrentBlog.UrlFormats.RssUrl.ToString());
 			}
@@ -130,34 +131,35 @@ namespace Subtext.Web.UI.Pages
 		    // if specified, add script elements
 			if (scripts != null)
 			{
-				scripts.Text = scriptRenderer.RenderScriptElementCollection(CurrentBlog.Skin.SkinKey);
+                scripts.Text = scriptRenderer.RenderScriptElementCollection(CurrentBlog.Skin.SkinKey);
 			}
 
-			if (styles != null)
+			if(styles != null)
 			{
                 styles.Text = styleRenderer.RenderStyleElementCollection(CurrentBlog.Skin.SkinKey);
 			}
 
-			// Add the per-blog MetaTags to the page Head section.
-			ICollection<MetaTag> blogMetaTags = MetaTags.GetMetaTagsForBlog(CurrentBlog);
-			foreach (MetaTag tag in blogMetaTags)
-			{
-				HtmlMeta mt = new HtmlMeta();
-				mt.Content = tag.Content;
+            // Add the per-blog MetaTags to the page Head section.
+            ICollection<MetaTag> blogMetaTags = MetaTags.GetMetaTagsForBlog(CurrentBlog);
+            foreach (MetaTag tag in blogMetaTags)
+            {
+                HtmlMeta mt = new HtmlMeta();
+                mt.Content = tag.Content;
 
-				if (!string.IsNullOrEmpty(tag.Name))
-					mt.Name = tag.Name;
-				else
-					mt.HttpEquiv = tag.HttpEquiv;
+                if (!string.IsNullOrEmpty(tag.Name))
+                    mt.Name = tag.Name;
+                else
+                    mt.HttpEquiv = tag.HttpEquiv;
 
-				Page.Header.Controls.Add(mt);
-			}
+                metaTagsPlaceHolder.Controls.Add(mt);
+            }
 		}
 
 		void postCommentControl_CommentPosted(object sender, EventArgs e)
 		{
 			commentsControl.BindFeedback(false); //don't get it from cache.
 		}
+
 
 		/// <summary>
 		/// Before rendering, turns off ViewState again (why? not sure),  
@@ -173,23 +175,17 @@ namespace Subtext.Web.UI.Pages
 			EnableViewState = false;
 			pageTitle.Text = Globals.CurrentTitle(Context);
 			if (!String.IsNullOrEmpty(Config.CurrentBlog.Author))
-			{
+            {
 				authorMetaTag.Text = String.Format(Environment.NewLine + "<meta name=\"author\" content=\"{0}\" />", Config.CurrentBlog.Author);
-			}
+            }
 			versionMetaTag.Text = String.Format(Environment.NewLine + "<meta name=\"Generator\" content=\"{0}\" />", VersionInfo.VersionDisplayText);
-
-			if (!String.IsNullOrEmpty(Config.CurrentBlog.CustomMetaTags))
-			{
-				additionalMetaTags.Text = Environment.NewLine + Config.CurrentBlog.CustomMetaTags + Environment.NewLine;
-			}
 
 			if (!String.IsNullOrEmpty(Config.CurrentBlog.TrackingCode))
 			{
 				customTrackingCode.Text = Config.CurrentBlog.TrackingCode;
 			}
 
-			base.OnPreRender(e);
-
+            base.OnPreRender (e);
 		}
 
 		/// <summary>
@@ -211,7 +207,7 @@ namespace Subtext.Web.UI.Pages
 		{
 			return null;
 		}
-
+		
 		/// <summary>
 		/// Saves the page state to persistence medium.  In this case 
 		/// this does nothing as we are not using ViewState.
@@ -228,7 +224,7 @@ namespace Subtext.Web.UI.Pages
 		/// This will be used by other scripts.
 		/// </summary>
 		/// <value>The allowed HTML javascript declaration.</value>
-		public static string AllowedHtmlJavascriptDeclaration
+		protected static string AllowedHtmlJavascriptDeclaration
 		{
 			get
 			{
