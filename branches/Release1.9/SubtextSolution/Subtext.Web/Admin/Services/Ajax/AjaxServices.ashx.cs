@@ -26,6 +26,14 @@ namespace Subtext.Web.Admin.Services.Ajax
             return newTag;
         }
 
+        [JsonRpcMethod("updateMetaTag")]
+        public MetaTag UpdateMetaTag(MetaTag updatedTag)
+        {
+            MetaTags.Update(updatedTag);
+
+            return updatedTag;
+        }
+
         [JsonRpcMethod("deleteMetaTag")]
         public bool DeleteMetaTag(int id)
         {

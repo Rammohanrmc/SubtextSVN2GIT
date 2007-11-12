@@ -113,7 +113,8 @@
             add: 0,
             remove: 1,
             edit: 2,
-            undo: 3 };
+            undo: 3,
+            readonly: 4 };
         
         
         /* ---- { a few global variables } ---- */
@@ -121,7 +122,8 @@
         var msgPanelWrap = msgPanel.parent();
         var noTagsMsg = $('#<%= NoMetatagsMessage.ClientID %>');
         var tagListWrap = $('#<%= MetatagListWrapper.ClientID %>');
-        var BTNS_METATAG_TEMPLATE = "<span class='btn metatag-edit' title='Edit Meta Tag'>Edit</span><span class='btn metatag-delete' title='Delete Meta Tag'>Delete</span>"
+        var BTNS_METATAG_DELETE_TEMPLATE = "<span class='btn metatag-edit' title='Edit Meta Tag'>Edit</span><span class='btn metatag-delete' title='Delete Meta Tag'>Delete</span>"
+        var BTNS_METATAG_SAVE_TEMPLATE = "<span class='btn metatag-save' title='Save the Meta Tag'>Save</span> <span class='btn metatag-cancel' title='Cancel Changes'>Cancel</span>";
         
         // a global variable for un-doing an operation
         var undoMetaTag = null;
@@ -138,15 +140,22 @@
                 theRow.fadeIn("slow", function() { $(":input", theRow)[0].focus(); });
             });
             
+            // next is the Edit Button handlers
+            $("tr[id^='metatag-'] .metatag-edit").click(function()
+            {
+                // grab the table row that holds this meta tag
+                var editRow = $(this).parents("tr[id^='metatag-']");
+                setupEditUI(editRow);
+            });
+            
             // wire up the Delete Button handlers
             $("tr[id^='metatag-'] .metatag-delete").click(function()
             {
-                // get the table row that holds this meta tag
                 var tagRow = $(this).parents("tr[id^='metatag-']");
-                
                 deleteMetaTag(tagRow);
             });
             
+            // now wire up the save and cancel buttons
             $(".metatag-save").click(saveMetaTag);
             $(".metatag-cancel").click(clearAndHideAddMetaTagUI);
             
@@ -209,7 +218,7 @@
             var tableRow = "<tr class='new' style='display:none'><td>" + checkForNull(metaTag.name) + "</td>";
             tableRow += "<td>" + checkForNull(metaTag.content) + "</td>";
             tableRow += "<td>" + checkForNull(metaTag.httpEquiv) + "</td>";
-            tableRow += "<td>" + BTNS_METATAG_TEMPLATE + "</td></tr>";
+            tableRow += "<td>" + BTNS_METATAG_DELETE_TEMPLATE + "</td></tr>";
             
             $("#metatag-add-row").before(tableRow);
             var newRow = $("#metatag-table tr.new:last");
@@ -217,6 +226,10 @@
             newRow.attr('id', 'metatag-' + metaTag.id);
             
             // now wire up the events for the row's buttons
+            $('.metatag-edit', newRow).click(function()
+            {
+                setupEditUI(newRow);
+            });
             $('.metatag-delete', newRow).click(function()
             {
                 deleteMetaTag(newRow);
@@ -224,6 +237,66 @@
             
             newRow.show();
             newRow.animate( { backgroundColor: 'transparent' }, 5000);
+        }
+        
+        function setupEditUI(metaTagRow)
+        {
+            var cells = $("td", metaTagRow);
+            var currTag = getMetaTagForAction(MetaTagAction.readonly, metaTagRow);
+            
+            // replace the edit/delete buttons w/ save/cancel buttons
+            var cell = $(cells[3]);
+            cell.html(BTNS_METATAG_SAVE_TEMPLATE);
+            cell.append("<input type='hidden' value='" + JSON.stringify(currTag) + "' /");
+            
+            // could use the currTag, but wanted to save a little typing so a simple loop works
+            for (i = 0; i < 3; i++)
+            {
+                cell = $(cells[i]);
+                var currValue = cell.text().trim();
+                cell.html("<input type='text' />");
+                $(":input", cell).val(currValue);
+            }
+            
+            $(".metatag-save", metaTagRow).click(function()
+            {
+                
+            });
+            
+            $(".metatag-cancel", metaTagRow).click(function()
+            {
+                var editRow = $(this).parents("tr[id^='metatag-']");
+                cancelEditUI(editRow);
+            });
+        }
+        
+        function cancelEditUI(metaTagRow)
+        {
+            var cells = $("td", metaTagRow);
+            var currTag = JSON.parse($(":hidden", cells[3]).val());
+            
+            // replace the edit/delete buttons w/ save/cancel buttons
+            $(cells[3]).html(BTNS_METATAG_DELETE_TEMPLATE);
+            
+            var cell = $(cells[0]);
+            cell.html(checkForNull(currTag.name));
+            
+            cell = $(cells[1]);
+            cell.html(checkForNull(currTag.content));
+            
+            cell = $(cells[2]);
+            cell.html(checkForNull(currTag.httpEquiv));
+            
+            $(".metatag-edit", metaTagRow).click(function()
+            {
+                setupEditUI(metaTagRow);
+            });
+            
+            // wire up the Delete Button handlers
+            $(".metatag-delete", metaTagRow).click(function()
+            {
+                deleteMetaTag(metaTagRow);
+            });
         }
         
         function deleteMetaTag(metaTagRow)
@@ -297,28 +370,31 @@
         
         function getMetaTagForAction(actionType, metaTagRow)
         {
-            // if adding a new tag, collect the values from the form
-            if (actionType == MetaTagAction.add)
+            var tag = new MetaTag();
+            // if adding or editing a tag, collect the values from the form
+            if (actionType == MetaTagAction.add || actionType == MetaTagAction.edit)
             {
-                var tag = new MetaTag();
                 var inputBoxes = $("#metatag-add-row :input");
-                tag.name = $(inputBoxes[0]).val();
-                tag.content = $(inputBoxes[1]).val();
-                tag.httpEquiv = $(inputBoxes[2]).val();
+                
+                tag.name = $(inputBoxes[0]).val().trim();
+                tag.content = $(inputBoxes[1]).val().trim();
+                tag.httpEquiv = $(inputBoxes[2]).val().trim();
+                
+                if (actionType == MetaTagAction.edit)
+                    tag.id = metaTagRow.attr('id').split('metatag-').pop();
                 
                 return tag;
             }
-            else if (actionType == MetaTagAction.edit || actionType == MetaTagAction.remove)
+            else if (actionType == MetaTagAction.remove || actionType == MetaTagAction.readonly)
             {
                 var cells = metaTagRow.children('td');
-                var myTag = new MetaTag();
                 
-                myTag.id = metaTagRow.attr('id').split('metatag-').pop();
-                myTag.name = returnNullForEmpty($(cells[0]).text().trim());
-                myTag.content = $(cells[1]).text().trim();
-                myTag.httpEquiv = returnNullForEmpty($(cells[2]).text().trim());
+                tag.id = metaTagRow.attr('id').split('metatag-').pop();
+                tag.name = returnNullForEmpty($(cells[0]).text().trim());
+                tag.content = $(cells[1]).text().trim();
+                tag.httpEquiv = returnNullForEmpty($(cells[2]).text().trim());
                 
-                return myTag;
+                return tag;
             }
             else if (actionType == MetaTagAction.undo)
             {
