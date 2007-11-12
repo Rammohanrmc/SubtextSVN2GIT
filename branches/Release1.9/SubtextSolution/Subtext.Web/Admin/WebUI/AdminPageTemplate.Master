@@ -8,6 +8,7 @@
     <title>Subtext - Admin</title>
     <script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/Scripts/jquery-1.2.1.min.js") %>" ></script>
     <script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/Scripts/jquery.color.min.js") %>" ></script>
+    <script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/Scripts/jquery.hotkeys.min.js") %>" ></script>
     <script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/Scripts/common.js") %>" ></script>
     <script type="text/javascript" src="<%= VirtualPathUtility.ToAbsolute("~/Scripts/json.js") %>" ></script>
     <script type="text/javascript" src="<%= Config.CurrentBlog.RootUrl + "Admin/Services/Ajax/AjaxServices.ashx?proxy" %>" ></script>

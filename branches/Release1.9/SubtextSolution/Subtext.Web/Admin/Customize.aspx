@@ -17,19 +17,21 @@
     <div class="CollapsibleHeader">
         <span>Customize</span>
     </div>
-    <div id="metatag-add-form" style="display:none">
+    <div id="metatag-add-form" style="display: none">
         <fieldset>
             <legend>Add a new Meta Tag</legend>
-            <label for="metaTagName">Name:</label><input type="text" id="metaTagName" />
-            <label for="metaTagContent">Content:</label><input type="text" id="metaTagContent" />
-            <label for="metaTagHttpEquiv">HttpEquiv:</label><input type="text" id="metaTagHttpEquiv" />
+            <label for="metaTagName">
+                Name:</label><input type="text" id="metaTagName" />
+            <label for="metaTagContent">
+                Content:</label><input type="text" id="metaTagContent" />
+            <label for="metaTagHttpEquiv">
+                HttpEquiv:</label><input type="text" id="metaTagHttpEquiv" />
         </fieldset>
     </div>
     <div id="metatag-content">
         <asp:Panel GroupingText="Meta Tags" CssClass="options fluid" runat="server">
             <div class="right">
-                <span class="btn metatag-add">Add Meta Tag
-                    <img src="<%# VirtualPathUtility.ToAbsolute("~/Images/tag_blue_add.png") %>" alt="Add a New Meta Tag" /></span>
+                <span class="btn metatag-add" title="Add a New Meta Tag">Add Meta Tag</span>
             </div>
             <asp:Panel ID="NoMetatagsMessage" runat="server" CssClass="clear">
                 There are no Meta Tags created for this blog. Add some now!</asp:Panel>
@@ -84,6 +86,21 @@
                         </tr>
                     </AlternatingItemTemplate>
                     <FooterTemplate>
+                        <tr id="metatag-add-row" style="display: none;">
+                            <td>
+                                <input type="text" />
+                            </td>
+                            <td>
+                                <input type="text" />
+                            </td>
+                            <td>
+                                <input type="text" />
+                            </td>
+                            <td>
+                                <span class="btn metatag-save" title="Save the Meta Tag">Save</span> <span class="btn metatag-cancel"
+                                    title="Cancel Changes">Cancel</span>
+                            </td>
+                        </tr>
                         </tbody> </table>
                     </FooterTemplate>
                 </asp:Repeater>
@@ -120,14 +137,18 @@
         // a global variable for un-doing an operation
         var undoMetaTag = null;
         
-        
         /* ---- { page and event setup } ---- */
         
         // first let's hook up some events
         $(document).ready(function()
         {
             // wire up the Add Button handler
-            $(".metatag-add").click(showAddMetaTagUI);
+            //$(".metatag-add").click(showAddMetaTagUI);
+            $(".metatag-add").click(function() 
+            {
+                var theRow = $("#metatag-add-row");
+                theRow.fadeIn("slow", function() { $(":input", theRow)[0].focus(); });
+            });
             
             // wire up the Delete Button handlers
             $("tr[id^='metatag-'] .metatag-delete").click(function()
@@ -137,38 +158,59 @@
                 
                 deleteMetaTag(tagRow);
             });
+            
+            $(".metatag-save").click(saveMetaTag);
+            $(".metatag-cancel").click(clearAndHideAddMetaTagUI);
+            
+            // setup some hotkeys
+            $.hotkeys.add("return", { target:jQuery("#metatag-add-row")[0] }, function()
+                { $(".metatag-save").click(); });
         });
         
         
         /* ---- { Meta Tag methods } ---- */
         
-        function showAddMetaTagUI()
+        function clearAndHideAddMetaTagUI()
         {
+            var theRow = $("#metatag-add-row");
             
+            theRow.fadeOut("fast");
+            $(":input", theRow).each(function() 
+                {
+                    $(this).val("");
+                });
+        }
+        
+        function saveMetaTag()
+        {
+            hideMessagePanel();
             createMetaTag(getMetaTagForAction(MetaTagAction.add));
         }
         
         function createMetaTag(metaTag)
         {
             // unbind the click event so a user can't click it until the current action is done.
-            var addBtn = $(".metatag-add");
+            var addBtn = $(".metatag-save");
             addBtn.unbind("click").fadeTo("fast", .5);
-            hideMessagePanel();
             
             metaTag = ajaxServices.addMetaTagForBlog(metaTag.content, metaTag.name, metaTag.httpEquiv, function(response)
                 {
+                    // wire the click events back up.
+                    $(".metatag-save").bind("click", saveMetaTag).fadeTo("normal", 1);
+                    
                     if (response.error)
                         handleError(response.error);
                     else
+                    {
+                        clearAndHideAddMetaTagUI();
                         onTagCreated(response.result);
+                    }
                 });
-            
-            // wire the click event back up.
-            $(".metatag-add").bind("click", showAddMetaTagUI).fadeTo("normal", 1);
         }
         
         function onTagCreated(metaTag)
         {
+            hideMessagePanel();
             noTagsMsg.hide();
             tagListWrap.fadeIn("normal");
             
@@ -181,8 +223,9 @@
             tableRow += "<td>" + checkForNull(metaTag.httpEquiv) + "</td>";
             tableRow += "<td>" + BTNS_METATAG_TEMPLATE + "</td></tr>";
             
-            $("#metatag-table tbody").append(tableRow);
-            var newRow = $("#metatag-table tr:last");
+            $("#metatag-add-row").before(tableRow);
+            //$("#metatag-table tbody").append(tableRow);
+            var newRow = $("#metatag-table tr.new:last");
             
             newRow.attr('id', 'metatag-' + metaTag.id);
             
@@ -192,8 +235,8 @@
                 deleteMetaTag(newRow);
             });
             
-            newRow.fadeIn("normal");
-            newRow.animate( { backgroundColor: 'transparent' }, 2000);
+            newRow.show();
+            newRow.animate( { backgroundColor: 'transparent' }, 5000);
         }
         
         function deleteMetaTag(metaTagRow)
@@ -222,6 +265,8 @@
         
         function onTagDeleted(isDeleted, metaTagRow)
         {
+            hideMessagePanel();
+            
             if (!isDeleted)
             {
                 msgPanelWrap.addClass("warn");
@@ -261,6 +306,7 @@
         
         function handleError(error)
         {
+            hideMessagePanel();
             msgPanelWrap.addClass("error");
             showMessagePanel(error.message);
         
@@ -279,8 +325,10 @@
                 var tag = new MetaTag();
                 
                 //TODO: Need to collect values from the form fields
-                tag.content = "Just a Test Tag.";
-                tag.name = "author";
+                var inputBoxes = $("#metatag-add-row :input");
+                tag.name = $(inputBoxes[0]).val();
+                tag.content = $(inputBoxes[1]).val();
+                tag.httpEquiv = $(inputBoxes[2]).val();
                 
                 return tag;
             }

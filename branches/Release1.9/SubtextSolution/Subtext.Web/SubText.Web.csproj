@@ -1060,9 +1060,11 @@
     <Content Include="Images\atom.gif" />
     <Content Include="Images\atomsmall.gif" />
     <Content Include="Images\blank.gif" />
+    <Content Include="Images\cancel.png" />
     <Content Include="Images\close.gif" />
     <Content Include="Images\closelabel.gif" />
     <Content Include="Images\contact.gif" />
+    <Content Include="Images\cross.png" />
     <Content Include="Images\default_gravatar.png" />
     <Content Include="Images\edit.gif" />
     <Content Include="Images\email.gif" />
@@ -1444,6 +1446,7 @@
     <Content Include="Scripts\ExternalLinks.js" />
     <Content Include="Scripts\jquery-1.2.1.min.js" />
     <Content Include="Scripts\jquery.color.min.js" />
+    <Content Include="Scripts\jquery.hotkeys.min.js" />
     <Content Include="Scripts\json.js" />
     <Content Include="Scripts\lightbox.css" />
     <Content Include="Scripts\lightbox.js" />

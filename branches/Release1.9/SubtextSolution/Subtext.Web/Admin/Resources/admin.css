@@ -122,7 +122,7 @@ a:link, a:visited,
 }
 
 a:hover,
-#messagePanel .btn:hover
+.btn:hover
 {
 	color: #CC0066;
 	text-decoration: underline;
@@ -882,23 +882,41 @@ div.wide, fieldset.wide
 #metatag-table tr.new
 {
 	font-weight:bold;
-	background-color: #FFFFCC;
+	background-color: #FFFF66;
 }
 
-#metatag-table .metatag-edit,
-#metatag-table .metatag-delete
+#metatag-table th,
+#metatag-table td
+{
+	width:24%;
+}
+
+#metatag-content .btn
 {
 	margin-right:.5em;
 	padding-right:20px;
 }
-#metatag-table .metatag-edit
+#metatag-content .metatag-add
+{
+	background: transparent url(../../Images/tag_blue_add.png) no-repeat scroll right center;
+}
+#metatag-content .metatag-edit
 {
 	background: transparent url(../../Images/tag_blue_edit.png) no-repeat scroll right center;
 }
-#metatag-table .metatag-delete
+#metatag-content .metatag-delete
 {
 	background: transparent url(../../Images/tag_blue_delete.png) no-repeat scroll right center;
 }
+#metatag-content .metatag-save
+{
+	background: transparent url(../../Images/accept.png) no-repeat scroll right center;
+}
+#metatag-content .metatag-cancel
+{
+	background: transparent url(../../Images/cross.png) no-repeat scroll right center;
+}
+
 
 #messagePanelContainer { min-height:1.5em; }
 
@@ -929,8 +947,8 @@ div.wide, fieldset.wide
 #messagePanelWrapper.warn,
 #messagePanelWrapper.info
 {
-	background-color:#FFFFCC;
-	border:1px solid #FFB366
+	background-color:#FFFF66;
+	border:1px solid #B2B347;
 }
 #messagePanelWrapper.warn #messagePanel,
 #messagePanelWrapper.info #messagePanel
