@@ -132,7 +132,6 @@
         $(document).ready(function()
         {
             // wire up the Add Button handler
-            //$(".metatag-add").click(showAddMetaTagUI);
             $(".metatag-add").click(function() 
             {
                 var theRow = $("#metatag-add-row");
@@ -213,12 +212,11 @@
             tableRow += "<td>" + BTNS_METATAG_TEMPLATE + "</td></tr>";
             
             $("#metatag-add-row").before(tableRow);
-            //$("#metatag-table tbody").append(tableRow);
             var newRow = $("#metatag-table tr.new:last");
             
             newRow.attr('id', 'metatag-' + metaTag.id);
             
-            //debugger;
+            // now wire up the events for the row's buttons
             $('.metatag-delete', newRow).click(function()
             {
                 deleteMetaTag(newRow);
@@ -234,14 +232,8 @@
             metaTagRow.fadeTo("fast", .6);
             $("span.btn", metaTagRow).unbind("click").removeClass("btn");
             hideMessagePanel();
-        
-            var cells = metaTagRow.children('td');
             
-            undoMetaTag = new MetaTag();
-            undoMetaTag.id = metaTagRow.attr('id').split('metatag-').pop();
-            undoMetaTag.name = returnNullForEmpty($(cells[0]).text().trim());
-            undoMetaTag.content = $(cells[1]).text().trim();
-            undoMetaTag.httpEquiv = returnNullForEmpty($(cells[2]).text().trim());
+            undoMetaTag = getMetaTagForAction(MetaTagAction.remove, metaTagRow);
             
             ajaxServices.deleteMetaTag(undoMetaTag.id, function(response)
                 {
@@ -280,10 +272,7 @@
             showMessagePanel("The meta tag was successfully deleted. <span class='btn' title='Bring back your tag!'>Undo</span>");
             
             var undoBtn = msgPanel.find("span");
-            undoBtn.click(function()
-            {
-                undoAction();
-            });
+            undoBtn.click(undoAction);
         }
         
         function undoAction()
@@ -306,20 +295,30 @@
             //error.stackTrace
         }
         
-        function getMetaTagForAction(actionType)
+        function getMetaTagForAction(actionType, metaTagRow)
         {
             // if adding a new tag, collect the values from the form
             if (actionType == MetaTagAction.add)
             {
                 var tag = new MetaTag();
-                
-                //TODO: Need to collect values from the form fields
                 var inputBoxes = $("#metatag-add-row :input");
                 tag.name = $(inputBoxes[0]).val();
                 tag.content = $(inputBoxes[1]).val();
                 tag.httpEquiv = $(inputBoxes[2]).val();
                 
                 return tag;
+            }
+            else if (actionType == MetaTagAction.edit || actionType == MetaTagAction.remove)
+            {
+                var cells = metaTagRow.children('td');
+                var myTag = new MetaTag();
+                
+                myTag.id = metaTagRow.attr('id').split('metatag-').pop();
+                myTag.name = returnNullForEmpty($(cells[0]).text().trim());
+                myTag.content = $(cells[1]).text().trim();
+                myTag.httpEquiv = returnNullForEmpty($(cells[2]).text().trim());
+                
+                return myTag;
             }
             else if (actionType == MetaTagAction.undo)
             {
@@ -331,9 +330,7 @@
         
         function showMessagePanel(message)
         {
-            msgPanel.empty();
-            msgPanel.append("<p>" + message + "</p>");
-            msgPanel.fadeIn("slow");
+            msgPanel.empty().append("<p>" + message + "</p>").fadeIn("slow");
         }
         
         function hideMessagePanel()
