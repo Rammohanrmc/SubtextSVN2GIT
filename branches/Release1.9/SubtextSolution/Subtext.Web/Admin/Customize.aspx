@@ -17,17 +17,6 @@
     <div class="CollapsibleHeader">
         <span>Customize</span>
     </div>
-    <div id="metatag-add-form" style="display: none">
-        <fieldset>
-            <legend>Add a new Meta Tag</legend>
-            <label for="metaTagName">
-                Name:</label><input type="text" id="metaTagName" />
-            <label for="metaTagContent">
-                Content:</label><input type="text" id="metaTagContent" />
-            <label for="metaTagHttpEquiv">
-                HttpEquiv:</label><input type="text" id="metaTagHttpEquiv" />
-        </fieldset>
-    </div>
     <div id="metatag-content">
         <asp:Panel GroupingText="Meta Tags" CssClass="options fluid" runat="server">
             <div class="right">
