@@ -160,8 +160,10 @@
             $(".metatag-cancel").click(clearAndHideAddMetaTagUI);
             
             // setup some hotkeys
-            $.hotkeys.add("return", { target:jQuery("#metatag-add-row")[0] }, function()
-                { $(".metatag-save").click(); });
+            $.hotkeys.add(
+            	"return",
+                { target:jQuery("#metatag-add-row")[0] },
+                function(){ $(".metatag-save").click(); });
         });
         
         
