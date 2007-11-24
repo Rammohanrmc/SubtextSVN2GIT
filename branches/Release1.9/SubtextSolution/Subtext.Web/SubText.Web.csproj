@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.20706</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8C11B428-9C4A-46C3-B7F0-48215276BFA5}</ProjectGuid>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
@@ -38,14 +38,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ExternalDependencies\AjaxControlToolkit.dll</HintPath>
     </Reference>
-    <Reference Include="AngryPets.Web.Frameworks.ReverseDOS, Version=2.9.0.39780, Culture=neutral" />
     <Reference Include="BlogML, Version=1.0.2229.38505, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Subtext.Framework\ExternalDependencies\BlogML.dll</HintPath>
     </Reference>
     <Reference Include="freetextbox, Version=3.1.4.36150, Culture=neutral, PublicKeyToken=5962a4e684a48b87" />
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.84.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="Identicon, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="Identicon, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="Jayrock, Version=0.9.8316.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ExternalDependencies\Jayrock.dll</HintPath>
@@ -2336,7 +2335,7 @@
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:2732/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
-          <AlwaysStartWebServerOnDebug>True</AlwaysStartWebServerOnDebug>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>
     </VisualStudio>
