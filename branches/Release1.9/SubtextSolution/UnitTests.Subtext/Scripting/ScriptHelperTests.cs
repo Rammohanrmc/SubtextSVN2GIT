@@ -39,6 +39,20 @@ CREATE PROCEDURE dbo.Test AS SELECT * FROM foo";
 			Assert.AreEqual(2, scripts.Count);
 		}
 
+        [Test]
+        public void CanParseNestedComments()
+        {
+            string script =
+@"/*
+select 1
+/* nested comment */
+go
+delete from users
+-- */";
+            ScriptCollection scripts = Script.ParseScripts(script);
+            Assert.AreEqual(1, scripts.Count, "This contains a comment and no scripts.");
+        }
+
 		[Test]
 		[ExpectedException(typeof(SqlParseException))]
 		public void SlashStarCommentAfterGoThrowsException()

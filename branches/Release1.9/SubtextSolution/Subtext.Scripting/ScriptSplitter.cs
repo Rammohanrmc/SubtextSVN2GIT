@@ -158,17 +158,32 @@ namespace Subtext.Scripting
 
 		protected virtual void ReadSlashStarComment()
 		{
-			splitter.Append(Current);
-			while (splitter.Next())
+			if (ReadSlashStarCommentWithResult())
 			{
-				splitter.Append(Current);
-				if (EndSlashStarComment)
-				{
-					splitter.SetParser(new SeparatorLineReader(splitter));
-					return;
-				}
+				splitter.SetParser(new SeparatorLineReader(splitter));
+				return;
 			}
 		}
+
+        private bool ReadSlashStarCommentWithResult()
+        {
+            splitter.Append(Current);
+            while (splitter.Next())
+            {
+                if (BeginSlashStarComment)
+                {
+                    ReadSlashStarCommentWithResult();
+                    continue;
+                }
+                splitter.Append(Current);
+
+                if (EndSlashStarComment)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
 		protected virtual void ReadQuotedString()
 		{
