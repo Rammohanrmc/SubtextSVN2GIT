@@ -22,6 +22,40 @@ namespace UnitTests.Subtext.Framework.Import
     {
         [Test]
         [RollBack2]
+        public void CanImportAndTruncateTooLongFields()
+        {
+            //Create blog.
+            UnitTestHelper.CreateBlogAndSetupContext();
+
+            //Test BlogML reader.
+            BlogMLReader reader = BlogMLReader.Create(new SubtextBlogMLProvider());
+            Stream stream = UnitTestHelper.UnpackEmbeddedResource("BlogMl.FieldsTooLong.xml");
+            reader.ReadBlog(stream);
+
+            IList<Entry> entries = Entries.GetRecentPosts(10, PostType.BlogPost, PostConfig.None, true);
+            Assert.AreEqual(1, entries.Count, "Expected only one post.");
+            Assert.AreEqual(150, entries[0].Categories[0].Length, "Expected the category name to be the max length");
+        }
+
+        [Test]
+        [RollBack2]
+        public void CanImportAndTruncateTooLongTitle()
+        {
+            //Create blog.
+            UnitTestHelper.CreateBlogAndSetupContext();
+
+            //Test BlogML reader.
+            BlogMLReader reader = BlogMLReader.Create(new SubtextBlogMLProvider());
+            Stream stream = UnitTestHelper.UnpackEmbeddedResource("BlogMl.CategoryNameTooLong.xml");
+            reader.ReadBlog(stream);
+
+            IList<Entry> entries = Entries.GetRecentPosts(10, PostType.BlogPost, PostConfig.None, false);
+            Assert.AreEqual(1, entries.Count, "Expected only one post.");
+            Assert.AreEqual(255, entries[0].Title.Length, "Expected the title to be the max length");
+        }
+
+        [Test]
+        [RollBack2]
         public void ReadBlogCreatesEntriesAndAttachments()
         {
             //Create blog.

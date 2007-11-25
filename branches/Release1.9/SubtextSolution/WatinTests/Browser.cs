@@ -11,6 +11,9 @@ namespace WatinTests
 	/// </summary>
 	public class Browser : IE
 	{
+        public Browser() : base() { }
+        public Browser(Uri url) : base(url) { }
+
 		public static Uri HomeUrl
 		{
 			get
@@ -75,7 +78,6 @@ namespace WatinTests
 		/// <param name="password"></param>
 		public void StepThroughInstallation(string username, string password)
 		{
-			GoToUrl("/");
 			Assert.IsTrue(ContainsText("Welcome to the Subtext Installation Wizard"), "We don't appear to be on the installation wizard.");
 			Button(Find.ByValue("On to Step 2")).Click();
 			Button(Find.ByValue("Install Now!")).Click();

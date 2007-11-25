@@ -35,7 +35,7 @@ namespace WatinTests
 			StartWebServer();
 
 			//Run through the installation process.
-			using (Browser browser = new Browser())
+			using (Browser browser = new Browser(Browser.GetUrl("/")))
 			{
 				browser.StepThroughInstallation("username", "password");
 				browser.Login("username", "password");
