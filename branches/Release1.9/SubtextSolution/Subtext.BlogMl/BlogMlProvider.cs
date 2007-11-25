@@ -194,11 +194,12 @@ namespace Subtext.BlogML
 		/// <summary>
 		/// Creates a blog post and returns the id.
 		/// </summary>
+        /// <param name="blog"></param>
 		/// <param name="post"></param>
 		/// <param name="content">The rewritten content of the post.</param>
 		/// <param name="categoryIdMap">A dictionary used to map the blogml category id to the internal category id.</param>
 		/// <returns></returns>
-		public abstract string CreateBlogPost(BlogMLPost post, string content, IDictionary<string, string> categoryIdMap);
+		public abstract string CreateBlogPost(BlogMLBlog blog, BlogMLPost post, string content, IDictionary<string, string> categoryIdMap);
 
 		/// <summary>
 		/// Creates a comment in the system.

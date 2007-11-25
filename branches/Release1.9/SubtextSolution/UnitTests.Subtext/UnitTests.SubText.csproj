@@ -439,8 +439,8 @@
     <Content Include="ExternalDependencies\Rhino.Mocks.xml" />
     <Content Include="ExternalDependencies\TestFu.dll" />
     <Content Include="ExternalDependencies\Velocit.RegularExpressions.dll" />
+    <EmbeddedResource Include="Resources\BlogMl\PostWithAuthor.xml" />
     <EmbeddedResource Include="Resources\BlogMl\FieldsTooLong.xml" />
-    <EmbeddedResource Include="Resources\BlogMl\TitleTooLong.xml" />
     <EmbeddedResource Include="Resources\Web\emoticons.txt" />
     <EmbeddedResource Include="Resources\BlogMl\SinglePostWithBadCategoryRef.xml" />
     <EmbeddedResource Include="Resources\BlogMl\SinglePostWithCategory.xml" />

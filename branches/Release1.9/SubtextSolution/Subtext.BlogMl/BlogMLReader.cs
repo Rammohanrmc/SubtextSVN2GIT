@@ -74,7 +74,7 @@ namespace Subtext.BlogML
                     postContent = CreateFilesFromAttachments(bmlPost, postContent);
                 }
 
-				string newEntryID = provider.CreateBlogPost(bmlPost, postContent, categoryIdMap);
+				string newEntryID = provider.CreateBlogPost(blog, bmlPost, postContent, categoryIdMap);
 				
                 if (bmlPost.Comments.Count > 0)
                 {

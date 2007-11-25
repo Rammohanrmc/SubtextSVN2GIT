@@ -4,7 +4,7 @@
   <sub-title type="text"><![CDATA[Thinking Products...]]></sub-title>
   <authors>
     <author id="2100" date-created="2006-08-10T08:44:35" date-modified="2006-09-04T13:46:38" approved="true" email="someone@blogml.com">
-      <title type="text"><![CDATA[admin]]></title>
+      <title type="text"><![CDATA[The Author]]></title>
     </author>
   </authors>
   <categories>
@@ -24,6 +24,9 @@
       <categories>
         <category ref="1" />
       </categories>
+      <authors>
+        <author ref="2100" />
+      </authors>
     </post>
   </posts>
 </blog>

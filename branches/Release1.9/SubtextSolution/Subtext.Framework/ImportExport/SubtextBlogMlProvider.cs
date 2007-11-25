@@ -408,11 +408,12 @@ namespace Subtext.ImportExport
 		/// <summary>
 		/// Creates a blog post and returns the id.
 		/// </summary>
+        /// <param name="blog"></param>
 		/// <param name="post"></param>
 		/// <param name="content"></param>
 		/// <param name="categoryIdMap">A dictionary used to map the blogml category id to the internal category id.</param>
 		/// <returns></returns>
-		public override string CreateBlogPost(BlogMLPost post, string content, IDictionary<string, string> categoryIdMap)
+		public override string CreateBlogPost(BlogMLBlog blog, BlogMLPost post, string content, IDictionary<string, string> categoryIdMap)
 		{
             Entry newEntry = new Entry((post.PostType == BlogPostTypes.Article) ? PostType.Story : PostType.BlogPost);
 			newEntry.BlogId = Config.CurrentBlog.Id;
@@ -428,6 +429,18 @@ namespace Subtext.ImportExport
 			newEntry.IncludeInMainSyndication = post.Approved;
 			newEntry.IsAggregated = post.Approved;
 			newEntry.AllowComments = true;
+            if (post.Authors.Count > 0)
+            {
+                foreach (BlogMLAuthor author in blog.Authors)
+                {
+                    if (author.ID == post.Authors[0].Ref)
+                    {
+                        newEntry.Author = author.Title;
+                        newEntry.Email = author.Email;
+                        break;
+                    }
+                }
+            }
 
             if (!string.IsNullOrEmpty(post.PostName))
                 newEntry.EntryName = Entries.AutoGenerateFriendlyUrl(post.PostName, newEntry.Id);

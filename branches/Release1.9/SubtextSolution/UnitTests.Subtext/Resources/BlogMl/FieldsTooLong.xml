@@ -24,6 +24,9 @@
       <categories>
         <category ref="1" />
       </categories>
+      <authors>
+        <author ref="2100" />
+      </authors>
     </post>
   </posts>
 </blog>
