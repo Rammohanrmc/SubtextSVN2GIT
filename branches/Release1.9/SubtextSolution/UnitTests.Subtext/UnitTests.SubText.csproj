@@ -286,6 +286,7 @@
     <Compile Include="Framework\Components\MetaTagTests\MetaTagInsertTests.cs" />
     <Compile Include="Framework\Components\MetaTagTests\MetaTagIsValidTests.cs" />
     <Compile Include="Framework\Components\MetaTagTests\MetaTagUpdateTests.cs" />
+    <Compile Include="Framework\Components\ReferrerTests.cs" />
     <Compile Include="Framework\Components\TagTests.cs" />
     <Compile Include="Framework\Components\TrackbackTests\TrackbackCreation.cs">
       <SubType>Code</SubType>
