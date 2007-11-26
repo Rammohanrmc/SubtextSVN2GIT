@@ -240,6 +240,7 @@
     <Compile Include="Akismet\AkismetApiTests.cs" />
     <Compile Include="AssemblySetUpAndCleanUp.cs" />
     <Compile Include="BlogEntryProvider\FileBrowserConnectorTests.cs" />
+    <Compile Include="BlogMl\BlogMlHandlerTests.cs" />
     <Compile Include="BlogMl\BlogMlImportTests.cs" />
     <Compile Include="BlogMl\BlogMLReaderTests.cs" />
     <Compile Include="BlogMl\BlogMlWriterTests.cs" />
@@ -254,6 +255,8 @@
     <Compile Include="Framework\BlogInfoTests.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Framework\Components\ArchiveCountTests.cs" />
+    <Compile Include="Framework\Components\BlogGroupTests.cs" />
     <Compile Include="Framework\Components\CollectionBookTests.cs" />
     <Compile Include="Framework\Components\CommentTests\CommentSettingsTests.cs" />
     <Compile Include="Framework\Components\CommentTests\FeedbackTests.cs" />
@@ -274,14 +277,20 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Framework\Components\EntryTests\PreviousNextTests.cs" />
+    <Compile Include="Framework\Components\EntryViewTests.cs" />
+    <Compile Include="Framework\Components\ImageTests.cs" />
+    <Compile Include="Framework\Components\KeywordTests.cs" />
+    <Compile Include="Framework\Components\LinkTests.cs" />
     <Compile Include="Framework\Components\MetaTagTests\MetaTagDeleteTests.cs" />
     <Compile Include="Framework\Components\MetaTagTests\MetaTagGetTests.cs" />
     <Compile Include="Framework\Components\MetaTagTests\MetaTagInsertTests.cs" />
     <Compile Include="Framework\Components\MetaTagTests\MetaTagIsValidTests.cs" />
     <Compile Include="Framework\Components\MetaTagTests\MetaTagUpdateTests.cs" />
+    <Compile Include="Framework\Components\TagTests.cs" />
     <Compile Include="Framework\Components\TrackbackTests\TrackbackCreation.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Framework\Components\ViewStatTests.cs" />
     <Compile Include="Framework\Configuration\BlogAliasTests.cs" />
     <Compile Include="Framework\Configuration\BlogCreationTests.cs">
       <SubType>Code</SubType>

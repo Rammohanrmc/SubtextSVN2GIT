@@ -38,6 +38,9 @@ using Subtext.Framework.Format;
 using Subtext.Framework.Security;
 using Subtext.Framework.Text;
 using Subtext.Framework.Web.HttpModules;
+using System.Collections;
+using System.Collections.Specialized;
+using System.Net;
 
 namespace UnitTests.Subtext
 {
@@ -772,6 +775,77 @@ namespace UnitTests.Subtext
 				}
 			}
 		}
+
+        public static void AssertSimpleProperties(object o, params string[] excludedProperties)
+        {
+            StringDictionary excludes = new StringDictionary();
+            foreach (string exclude in excludedProperties)
+            {
+                excludes.Add(exclude, "");
+            }
+
+            Type t = o.GetType();
+            PropertyInfo[] props = t.GetProperties();
+            foreach (PropertyInfo property in props)
+            {
+                if (excludes.ContainsKey(property.Name))
+                    continue;
+
+                if (property.CanRead && property.CanWrite)
+                {
+                    object valueToSet = null;
+                    if (property.PropertyType == typeof(int)
+                        || property.PropertyType == typeof(short)
+                        || property.PropertyType == typeof(decimal)
+                        || property.PropertyType == typeof(double)
+                        || property.PropertyType == typeof(long))
+                    {
+                        valueToSet = 42;
+                    }
+                    else if (property.PropertyType == typeof(string))
+                    {
+                        valueToSet = "This Is a String";
+                    }
+                    else if (property.PropertyType == typeof(DateTime))
+                    {
+                        valueToSet = DateTime.Now;
+                    }
+                    else if (property.PropertyType == typeof(Uri))
+                    {
+                        valueToSet = new Uri("http://subtextproject.com/");
+                    }
+                    else if (property.PropertyType == typeof(IPAddress))
+                    {
+                        valueToSet = IPAddress.Parse("127.0.0.1");
+                    }
+                    else if (property.PropertyType == typeof(bool))
+                    {
+                        valueToSet = true;
+                    }
+                    else if (property.PropertyType == typeof(PageType))
+                    {
+                        valueToSet = PageType.HomePage;
+                    }
+                    else if (property.PropertyType == typeof(ICollection<Link>))
+                    {
+                        valueToSet = new List<Link>();
+                    }
+                    else if (property.PropertyType == typeof(ICollection<Image>))
+                    {
+                        valueToSet = new List<Image>();
+                    }
+                    else
+                    {
+                        //Don't know what to do.
+                        continue;
+                    }
+
+                    property.SetValue(o, valueToSet, null);
+                    object retrievedValue = property.GetValue(o, null);
+                    Assert.AreEqual(valueToSet, retrievedValue, string.Format("Could not set and get this property '{0}'", property.Name));
+                }
+            }
+        }
 
 		public static void SetCurrentPrincipalRoles(MockRepository mocks, out IPrincipal principal, params string[] roles)
 		{

@@ -5,6 +5,10 @@ using System.Web;
 using MbUnit.Framework;
 using Rhino.Mocks;
 using Subtext.Akismet;
+using System.IO;
+using System.Text;
+using System.Runtime.Serialization;
+using System.Reflection;
 
 namespace UnitTests.Subtext.Akismet
 {
@@ -35,12 +39,24 @@ namespace UnitTests.Subtext.Akismet
 		}
 		#endregion
 
+        [Test]
+        public void CanSetAndGetCommentProperties()
+        {
+            Comment comment = new Comment(IPAddress.Loopback, "Test");
+            UnitTestHelper.AssertSimpleProperties(comment);
+            Assert.AreEqual(IPAddress.Loopback, comment.IpAddress);
+            Assert.AreEqual("Test", comment.UserAgent);
+            comment.ServerEnvironmentVariables.Add("SomeVar", "SomeVal");
+            Assert.AreEqual(1, comment.ServerEnvironmentVariables.Count);
+        }
+
 		[Test]
 		public void ConstructorSetsApiKeyAndUrl()
 		{
 			AkismetClient client = new AkismetClient("fake-key", new Uri("http://haacked.com/"), new HttpClient());
 			Assert.AreEqual(new Uri("http://haacked.com/"), client.BlogUrl);
 			Assert.AreEqual("fake-key", client.ApiKey);
+            UnitTestHelper.AssertSimpleProperties(client, "ApiKey");
 		}
 
 		[Test]
