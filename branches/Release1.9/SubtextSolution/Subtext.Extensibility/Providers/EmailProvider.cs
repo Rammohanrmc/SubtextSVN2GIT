@@ -30,6 +30,7 @@ namespace Subtext.Extensibility.Providers
 		string _name;
 		string _smtpServer = "localhost";
 		int _port = DefaultSmtpPort;
+		bool _sslEnabled = false;
 		string _password;
 		string _userName;
 		string _adminEmail;
@@ -51,6 +52,17 @@ namespace Subtext.Extensibility.Providers
 				try
 				{
 					_port = int.Parse(configValue["port"]);
+				}
+				catch (System.FormatException)
+				{
+					//Do nothing.
+				}
+			}
+			if (configValue["sslEnabled"] != null)
+			{
+				try
+				{
+					_sslEnabled = bool.Parse(configValue["sslEnabled"]);
 				}
 				catch (System.FormatException)
 				{
@@ -127,6 +139,15 @@ namespace Subtext.Extensibility.Providers
 			set { this._port = value; }
 		}
 
+		/// <summary>
+		/// Gets and sets the SSL protocol enable.
+		/// </summary>
+		/// <value>true or false.</value>
+		public bool SslEnabled
+		{
+            get { return this._sslEnabled; }
+            set { this._sslEnabled = value; }
+		}
 
 		/// <summary>
 		/// Gets or sets the password used for SMTP servers that 

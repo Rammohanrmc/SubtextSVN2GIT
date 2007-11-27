@@ -52,6 +52,7 @@ namespace Subtext.Framework.Email
 
                 SmtpClient client = new SmtpClient(this.SmtpServer);
 				client.Port = this.Port;
+				client.EnableSsl = this.SslEnabled;
 
 				if(this.UserName != null && this.Password != null)
 				{
@@ -74,4 +75,5 @@ namespace Subtext.Framework.Email
 		}
 	}
 }
+
 
