@@ -92,17 +92,36 @@ namespace Subtext.Framework.Components
             get
             {
                 if (string.IsNullOrEmpty(this.Content))
+                {
+                    _validationMessage = "Meta Tag requires Content.";
                     return false;
+                }
 
                 // to be valid, a MetaTag requires etiher the Name or HttpEquiv attribute, but never both.
                 if (string.IsNullOrEmpty(this.Name) && string.IsNullOrEmpty(this.HttpEquiv))
+                {
+                    _validationMessage = "Meta Tag requires either a Name or Http-Equiv value.";
                     return false;
+                }
 
                 if (!string.IsNullOrEmpty(this.Name) && !string.IsNullOrEmpty(this.HttpEquiv))
+                {
+                    _validationMessage = "Meta Tag can not have both a Name and Http-Equiv value.";
                     return false;
+                }
 
+                _validationMessage = null;
                 return true;
             }
         }
+
+            private string _validationMessage;
+            public string ValidationMessage
+            {
+                get
+                {
+                    return _validationMessage;
+                }
+            }
+        }
     }
-}

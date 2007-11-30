@@ -32,7 +32,7 @@ namespace Subtext.Framework
                 throw new ArgumentNullException("metaTag", "The meta tag can not be NULL.");
 
             if (!metaTag.IsValid)
-                throw new ArgumentException("The meta tag not valid.", "metaTag");
+                throw new ArgumentException(metaTag.ValidationMessage);
 			metaTag.Id = ObjectProvider.Instance().Create(metaTag);
 		    
             return metaTag.Id;
@@ -44,7 +44,7 @@ namespace Subtext.Framework
                 throw new ArgumentNullException("metaTag", "The meta tag can not be NULL.");
 
             if (!metaTag.IsValid)
-                throw new ArgumentException("The meta tag is not valid", "metaTag");
+                throw new ArgumentException(metaTag.ValidationMessage);
 		    
             return ObjectProvider.Instance().Update(metaTag);
 		}

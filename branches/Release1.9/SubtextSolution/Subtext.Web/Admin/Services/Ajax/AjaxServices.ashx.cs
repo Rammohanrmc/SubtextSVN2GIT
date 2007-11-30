@@ -29,6 +29,7 @@ namespace Subtext.Web.Admin.Services.Ajax
         [JsonRpcMethod("updateMetaTag")]
         public MetaTag UpdateMetaTag(MetaTag updatedTag)
         {
+            updatedTag.BlogId = Config.CurrentBlog.Id;
             MetaTags.Update(updatedTag);
 
             return updatedTag;

@@ -879,7 +879,8 @@ div.wide, fieldset.wide
 .auto { width:auto ! important; }
 
 
-#metatag-table tr.new
+#metatag-table tr.new,
+#metatag-table tr.updated
 {
 	font-weight:bold;
 	background-color: #FFFF66;

@@ -192,7 +192,9 @@
         function saveMetaTag()
         {
             hideMessagePanel();
-            createMetaTag(getMetaTagForAction(MetaTagAction.add));
+            
+            var addRow = $(this).parents("tr[id^='metatag-']");
+            createMetaTag(getMetaTagForAction(MetaTagAction.add, addRow));
         }
         
         function createMetaTag(metaTag)
@@ -271,32 +273,53 @@
             
             $(".metatag-save", metaTagRow).click(function()
             {
+                var editRow = $(this).parents("tr[id^='metatag-']");
+                var tag = getMetaTagForAction(MetaTagAction.edit, editRow);
                 
+                var updatedTag = ajaxServices.updateMetaTag(tag, function(response)
+                    {
+                        if (response.error)
+                            handleError(response.error);
+                        else
+                        {
+                            // update the UI to let the user know we're done
+                            editRow.attr("style","");
+                            setupReadOnlyEditRow(editRow, tag);
+                            editRow.addClass("updated");
+                            
+                            hideMessagePanel();
+                            msgPanelWrap.addClass("success");
+                            showMessagePanel("Meta Tag successfully udpated.");
+                            
+                            editRow.animate( { backgroundColor: 'transparent' }, 5000);
+                        }
+                    });
             });
             
             $(".metatag-cancel", metaTagRow).click(function()
             {
                 var editRow = $(this).parents("tr[id^='metatag-']");
-                cancelEditUI(editRow);
+                var origTag = JSON.parse($("td input:hidden", metaTagRow).val());
+                
+                setupReadOnlyEditRow(editRow, origTag);
             });
         }
         
-        function cancelEditUI(metaTagRow)
+        function setupReadOnlyEditRow(metaTagRow, readOnlyMetaTag)
         {
             var cells = $("td", metaTagRow);
-            var currTag = JSON.parse($(":hidden", cells[3]).val());
             
             // replace the edit/delete buttons w/ save/cancel buttons
             $(cells[3]).html(BTNS_METATAG_DELETE_TEMPLATE);
             
             var cell = $(cells[0]);
-            cell.html(checkForNull(currTag.name));
+            cell.html(checkForNull(readOnlyMetaTag.name));
             
             cell = $(cells[1]);
-            cell.html(checkForNull(currTag.content));
+            cell.html(checkForNull(readOnlyMetaTag.content));
             
             cell = $(cells[2]);
-            cell.html(checkForNull(currTag.httpEquiv));
+            cell.html(checkForNull(readOnlyMetaTag.httpEquiv));
             
             $(".metatag-edit", metaTagRow).click(function()
             {
@@ -344,7 +367,6 @@
             {
                 metaTagRow.empty();
                 
-                //var tagRows = $(metaTagRow.siblings("tr[id^='metatag-']:visible"));
                 if (getActiveMetaTagRows().length == 0)
                 {
                     tagListWrap.hide();
@@ -385,7 +407,7 @@
             // if adding or editing a tag, collect the values from the form
             if (actionType == MetaTagAction.add || actionType == MetaTagAction.edit)
             {
-                var inputBoxes = $("#metatag-add-row :input");
+                var inputBoxes = $(":input", metaTagRow);
                 
                 tag.name = $(inputBoxes[0]).val().trim();
                 tag.content = $(inputBoxes[1]).val().trim();
