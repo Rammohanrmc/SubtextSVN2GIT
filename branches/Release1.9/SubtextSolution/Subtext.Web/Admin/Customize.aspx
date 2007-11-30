@@ -136,6 +136,9 @@
             // wire up the Add Button handler
             $(".metatag-add").click(function() 
             {
+                tagListWrap.show();
+                noTagsMsg.hide();
+                
                 var theRow = $("#metatag-add-row");
                 theRow.fadeIn("slow", function() { $(":input", theRow)[0].focus(); });
             });
@@ -178,6 +181,12 @@
                 {
                     $(this).val("");
                 });
+                
+            if (getActiveMetaTagRows().length == 0)
+            {
+                tagListWrap.hide();
+                noTagsMsg.fadeIn();
+            }
         }
         
         function saveMetaTag()
@@ -335,8 +344,8 @@
             {
                 metaTagRow.empty();
                 
-                var tagRows = $(metaTagRow.siblings("tr[id^='metatag-']:visible"));
-                if (tagRows.length == 0)
+                //var tagRows = $(metaTagRow.siblings("tr[id^='metatag-']:visible"));
+                if (getActiveMetaTagRows().length == 0)
                 {
                     tagListWrap.hide();
                     noTagsMsg.fadeIn("normal");
@@ -415,6 +424,11 @@
         {
             msgPanel.fadeOut();
             msgPanelWrap.removeClass("error").removeClass("warn").removeClass("info").removeClass("success");
+        }
+        
+        function getActiveMetaTagRows()
+        {
+            return $("tr[id^='metatag-'][id!='metatag-add-row']:visible", "#metatag-table");
         }
         
         function returnNullForEmpty(val)
