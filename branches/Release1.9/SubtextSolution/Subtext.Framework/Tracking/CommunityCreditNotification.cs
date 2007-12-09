@@ -1,4 +1,5 @@
 using System;
+using System.Configuration;
 using System.Collections.Generic;
 using System.Text;
 using Subtext.Framework.Components;
@@ -15,18 +16,13 @@ namespace Subtext.Framework.Tracking
       public static void AddCommunityCredits(Entry entry)
       {
          string result = string.Empty;
-
+            
          bool commCreditsEnabled;
-         try
-         {
-            commCreditsEnabled = Convert.ToBoolean(System.Configuration.ConfigurationManager.AppSettings["CommCreditEnabled"]);
-         }
-         catch (Exception)
-         {
-            commCreditsEnabled = false;
-         }
 
-         if (commCreditsEnabled)
+         if (!bool.TryParse(ConfigurationManager.AppSettings["CommCreditEnabled"], out commCreditsEnabled))
+             return;
+
+         if (commCreditsEnabled && entry.IsActive)
          {
             com.community_credit.www.AffiliateServices wsCommunityCredit = new com.community_credit.www.AffiliateServices();
             string url = entry.FullyQualifiedUrl.ToString();
