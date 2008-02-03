@@ -72,7 +72,7 @@ namespace Subtext.Framework
 
         /// <summary>
         /// If the host starts with www., gets the host without the www. If it 
-        /// doesn't start with www., returns the host with wwww..
+        /// doesn't start with www., returns the host with www.
         /// </summary>
         /// <param name="host">Host.</param>
         /// <returns></returns>
