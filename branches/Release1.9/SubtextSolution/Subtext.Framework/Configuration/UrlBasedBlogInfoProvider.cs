@@ -134,7 +134,10 @@ namespace Subtext.Framework.Configuration
 			if (info == null)
 			{
 				info = Config.GetBlogInfo(BlogInfo.GetAlternateHostAlias(blogRequest.Host), blogRequest.Subfolder, false);
-				if (info == null)
+				if (info == null
+						&& !InstallationManager.IsInHostAdminDirectory 
+						&& !InstallationManager.IsInSystemMessageDirectory 
+						&& !InstallationManager.IsOnLoginPage)
 				{
 					log.DebugFormat("Attempting to get blog by domain alias. Host: {0}, Subfolder: {1}", blogRequest.Host, blogRequest.Subfolder);
 					info = Config.GetBlogInfoFromDomainAlias(blogRequest.Host, blogRequest.Subfolder, false);							
