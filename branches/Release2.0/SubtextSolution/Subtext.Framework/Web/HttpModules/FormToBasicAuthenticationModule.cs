@@ -15,6 +15,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -45,36 +46,13 @@ namespace Subtext.Framework.Web.HttpModules
                     && context.Response.RedirectLocation.IndexOf(FormsAuthentication.LoginUrl) == 0))
                 return;
 
-            if(!Regex.IsMatch(context.Request.Path,@"Rss\.aspx"))
+            if(!Regex.IsMatch(context.Request.Path,@"Rss\.axd"))
                 return;
 
             string authHeader = context.Request.Headers["Authorization"];
             if (String.IsNullOrEmpty(authHeader))
             {
                 SendAuthRequest(context);
-            }
-            else
-            {
-                if (authHeader.IndexOf("Basic ") == 0)
-                {
-                    byte[] bytes = Convert.FromBase64String(authHeader.Remove(0, 6));
-
-                    string authString = Encoding.Default.GetString(bytes);
-                    string[] usernamepassword = authString.Split(':');
-
-                    if (SecurityHelper.Authenticate(usernamepassword[0], usernamepassword[1], false))
-                    {
-                        context.Response.Redirect(context.Request.Url.ToString());
-                    }
-                    else
-                    {
-                        SendAuthRequest(context);
-                    }
-                }
-                else
-                {
-                    FormsAuthentication.RedirectToLoginPage();
-                }
             }
         }
 
@@ -89,9 +67,33 @@ namespace Subtext.Framework.Web.HttpModules
 
         public void Init(HttpApplication app)
         {
-
+        	app.AuthenticateRequest += AuthenticateRequest;
             app.EndRequest += EndRequest;
         }
 
+    	private void AuthenticateRequest(object sender, EventArgs e)
+    	{
+			HttpContext context = ((HttpApplication)sender).Context;
+			string authHeader = context.Request.Headers["Authorization"];
+			if(String.IsNullOrEmpty(authHeader))
+				return;
+			if (authHeader.IndexOf("Basic ") == 0)
+			{
+				byte[] bytes = Convert.FromBase64String(authHeader.Remove(0, 6));
+
+				string authString = Encoding.Default.GetString(bytes);
+				string[] usernamepassword = authString.Split(':');
+
+				if (SecurityHelper.Authenticate(usernamepassword[0], usernamepassword[1], false))
+				{
+					context.User = new GenericPrincipal(new GenericIdentity(usernamepassword[0]), null); 
+
+				}
+				else
+				{
+					SendAuthRequest(context);
+				}
+			}
+		}
     }
 }
