@@ -102,7 +102,7 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
             Enclosure enc = UnitTestHelper.BuildEnclosure("Nothing to see here.", "httP://blablabla.com", "audio/mp3", entryZero.Id, 12345678, true, true);
             Enclosures.Create(enc);
 
-            List<string> tags = new List<string>(new[] { "Tag1", "Tag2" });
+            List<string> tags = new List<string>(new string[] { "Tag1", "Tag2" });
             new DatabaseObjectProvider().SetEntryTagList(entryZero.Id, tags);
             new DatabaseObjectProvider().SetEntryTagList(entryOne.Id, tags);
 
