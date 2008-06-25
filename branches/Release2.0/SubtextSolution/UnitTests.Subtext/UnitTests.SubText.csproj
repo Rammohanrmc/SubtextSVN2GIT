@@ -180,6 +180,7 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
+    <Reference Include="TestFu, Version=2.4.2.130, Culture=neutral, PublicKeyToken=5e72ecd30bc408d5" />
     <Reference Include="Velocit.RegularExpressions, Version=1.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ExternalDependencies\Velocit.RegularExpressions.dll</HintPath>
