@@ -57,7 +57,7 @@ var commentLivePreview =
 
 		if(tagNamesRegex.length > 0)
 		{
-			tagNamesRegex = tagNamesRegex.substring(0, tagNamesRegex.length - 2);
+			tagNamesRegex = tagNamesRegex.substring(0, tagNamesRegex.length - 1);
 		}
 
 		commentLivePreview.allowedTagsRegExp = new RegExp("&lt;(/?(" + tagNamesRegex + ")(\\s+.*?)?)&gt;", "g");
