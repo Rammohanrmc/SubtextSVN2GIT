@@ -107,14 +107,12 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
             Assert.AreEqual(2, entryList.Count, "Expected to find two days.");
 
             EntryDay entries = days[1];
-            Assert.AreEqual(3, entries.Count, "Expected to find three entries.");
+            Assert.AreEqual(2, entries.Count, "Expected to find two entries.");
 
             Assert.AreEqual(entries[0].Id, entryOne.Id, "Ordering is off.");
             Assert.AreEqual(entries[1].Id, entryZero.Id, "Ordering is off.");
-            Assert.AreEqual(entries[2].Id, entryTwo.Id, "Ordering is off.");
 
             Assert.IsNull(entries[0].Enclosure, "Entry should not have enclosure.");
-            Assert.IsNull(entries[2].Enclosure, "Entry should not have enclosure.");
             Assert.IsNotNull(entries[1].Enclosure, "Entry should have enclosure.");
             UnitTestHelper.AssertEnclosures(enc, entries[1].Enclosure);
         }
@@ -154,7 +152,7 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
             Assert.AreEqual(2, entryList.Count, "Expected to find two days.");
 
             EntryDay entries = days[1];
-            Assert.AreEqual(2, entries.Count, "Expected to find three entries.");
+            Assert.AreEqual(2, entries.Count, "Expected to find two entries.");
 
             Assert.AreEqual(entries[0].Id, entryOne.Id, "Ordering is off.");
             Assert.AreEqual(entries[1].Id, entryZero.Id, "Ordering is off.");
@@ -208,7 +206,7 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
             Assert.AreEqual(2, entryList.Count, "Expected to find two days.");
 
             EntryDay entries = days[1];
-            Assert.AreEqual(2, entries.Count, "Expected to find three entries.");
+            Assert.AreEqual(2, entries.Count, "Expected to find two entries.");
 
             Assert.AreEqual(entries[0].Id, entryOne.Id, "Ordering is off.");
             Assert.AreEqual(entries[1].Id, entryZero.Id, "Ordering is off.");

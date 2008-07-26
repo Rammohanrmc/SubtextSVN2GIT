@@ -8,7 +8,7 @@ use the following search and replace expressions to convert the
 script to use INFORMATION_SCHEMA.
 
 SEARCH:  IF:b* EXISTS \(SELECT \* FROM dbo\.sysobjects WHERE id = OBJECT_ID\(N'\[[^\]]+\]\.\[{[^\]]+}\]'\) AND OBJECTPROPERTY\(id,:b*N'IsProcedure'\) = 1\)
-REPLACE: IF EXISTS (SELECT * FROM [INFORMATION_SCHEMA].[ROUTINES] WHERE ROUTINE_NAME = '\1' AND ROUTINE_SCHEMA = '<dbUser,varchar,dbo>')
+REPLACE: IF EXISTS (SELECT * FROM [INFORMATION_SCHEMA].[ROUTINES] WHERE ROUTINE_NAME = '\1' AND ROUTINE_SCHEMA = '<dbUsker,varchar,dbo>')
 
 */
 
@@ -603,7 +603,7 @@ AS
 				AND f.StatusFlag & 1 = 1
 				AND f.FeedbackType = 1
 				AND c.PostConfig & 1 = 1
-				AND c.DateSyndicated < getdate()
+				AND c.DateSyndicated <= getdate()
 		)
 	WHERE BlogId = @BlogId
 	
@@ -618,7 +618,7 @@ AS
 				AND f.StatusFlag & 1 = 1
 				AND f.FeedbackType = 2
 				AND c.PostConfig & 1 = 1
-				AND c.DateSyndicated < getdate()
+				AND c.DateSyndicated <= getdate()
 		)
 	WHERE BlogId = @BlogId
 
@@ -648,7 +648,7 @@ AS
 		    WHERE BlogId = @BlogId 
 				AND PostType = 1 
 				AND PostConfig & 1 = 1
-				AND DateSyndicated < getdate()
+				AND DateSyndicated <= getdate()
 	    ),
 	    StoryCount = 
 	    (
@@ -656,7 +656,7 @@ AS
 	        WHERE BlogId = @BlogId 
 				AND PostType = 2 
 				AND PostConfig & 1 = 1
-				AND DateSyndicated < getdate()
+				AND DateSyndicated <= getdate()
 	    )
     WHERE BlogId = @BlogId
     
@@ -1142,7 +1142,7 @@ FROM [<dbUser,varchar,dbo>].[subtext_Content]
 WHERE	PostType = @PostType 
 	AND BlogId = COALESCE(@BlogId, BlogId)
 	AND PostConfig & @PostConfig = @PostConfig
-	AND DateSyndicated < getdate()
+	AND (DateSyndicated IS NULL OR DateSyndicated <= getdate() AND PostConfig & 1 = 1)
 ORDER BY ISNULL([DateSyndicated], [DateAdded]) DESC
 
 SET ROWCOUNT 0
@@ -2418,7 +2418,7 @@ FROM [<dbUser,varchar,dbo>].[subtext_Content]
 WHERE	PostType=1 
 	AND (BlogId = @BlogId OR @BlogId IS NULL)
 	AND PostConfig & 1 = 1 
-	AND DateSyndicated < getdate()
+	AND DateSyndicated <= getdate()
 	AND Month(DateSyndicated) = @Month 
 	AND Year(DateSyndicated)  = @Year
 ORDER BY DateSyndicated DESC
@@ -2450,7 +2450,7 @@ SELECT Month(DateSyndicated) AS [Month]
 FROM [<dbUser,varchar,dbo>].[subtext_Content] 
 WHERE PostType = 1 
 	AND PostConfig & 1 = 1 
-	AND DateSyndicated < getdate()
+	AND DateSyndicated <= getdate()
 	AND (BlogId = @BlogId OR @BlogId IS NULL)
 	AND NOT DateSyndicated IS NULL
 GROUP BY Year(DateSyndicated), Month(DateSyndicated) 
@@ -2480,7 +2480,7 @@ AS
 SELECT 1 AS [Month], Year(DateSyndicated) AS [Year], 1 AS Day, Count(*) AS [Count] FROM [<dbUser,varchar,dbo>].[subtext_Content] 
 WHERE PostType = 1 
 	AND PostConfig & 1 = 1 
-	AND DateSyndicated < getdate()
+	AND DateSyndicated <= getdate()
 	AND BlogId = @BlogId 
 GROUP BY Year(DateSyndicated) ORDER BY [Year] DESC
 
@@ -2534,7 +2534,7 @@ WHERE Year(DateSyndicated) = Year(@Date)
     And PostType=1
     AND BlogId = @BlogId 
     AND PostConfig & 1 = 1 
-    AND DateSyndicated < getdate()
+    AND DateSyndicated <= getdate()
 ORDER BY DateSyndicated DESC;
 
 
@@ -4115,7 +4115,7 @@ FROM [<dbUser,varchar,dbo>].[subtext_Content] content
 INNER JOIN	[<dbUser,varchar,dbo>].[subtext_Config] config ON content.BlogId = config.BlogId
 WHERE  content.PostType = 1 
 	AND content.PostConfig & 1 = 1 
-	AND DateSyndicated < getdate()
+	AND DateSyndicated <= getdate()
 	AND content.PostConfig & 64 = 64 
 	AND config.Flag & 2 = 2 
 	AND config.Host = @Host
@@ -4385,7 +4385,7 @@ Select [ID]
 From [<dbUser,varchar,dbo>].[subtext_Content]
 Where (PostType = 1 OR PostType = 2)
 	AND PostConfig & 1 = 1 -- IsActive!
-	AND DateSyndicated < getdate()
+	AND DateSyndicated <= getdate()
 	AND ([Text] LIKE @SearchStr OR Title LIKE @SearchStr)
 	AND BlogId = @BlogId
 	
@@ -4437,7 +4437,7 @@ SELECT * FROM
 	WHERE ISNULL([DateSyndicated], [DateAdded]) >= @DateSyndicated
 		AND subtext_Content.BlogId = @BlogId 
 		AND subtext_Content.PostConfig & 1 = 1 
-		AND subtext_Content.DateSyndicated < getdate()
+		AND subtext_Content.DateSyndicated <= getdate()
 		AND PostType = @PostType
 		AND [ID] != @ID
 	ORDER BY ISNULL(DateSyndicated, DateAdded) ASC
@@ -4458,7 +4458,7 @@ SELECT * FROM
 	WHERE ISNULL([DateSyndicated], [DateAdded]) <= @DateSyndicated
 		AND subtext_Content.BlogId = @BlogId 
 		AND subtext_Content.PostConfig & 1 = 1 
-		AND subtext_Content.DateSyndicated < getdate()
+		AND subtext_Content.DateSyndicated <= getdate()
 		AND PostType = @PostType
 		AND [ID] != @ID
 	ORDER BY ISNULL(DateSyndicated, DateAdded) DESC
@@ -4823,7 +4823,7 @@ FROM [<dbUser,varchar,dbo>].[subtext_Content] content WITH (NOLOCK)
 	LEFT JOIN [<dbUser,varchar,dbo>].[subtext_Enclosure] e on content.[ID] = e.EntryId
 WHERE  content.BlogId = @BlogId 
 	AND content.PostConfig & 1 = 1
-	AND content.DateSyndicated < getdate()
+	AND content.DateSyndicated <= getdate()
 	AND content.ID IN 
 	(
 		SELECT EntryId 
