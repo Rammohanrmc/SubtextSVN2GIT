@@ -379,8 +379,9 @@ namespace Subtext.Web.Admin.UserControls
                         enc.ShowWithPost = Boolean.Parse(ddlDisplayOnPost.SelectedValue);
                     }
                     else
+                    {
                         entry.Enclosure = null;
-
+                    }
 
 					// Advanced options
 					entry.IsActive = ckbPublished.Checked;
@@ -409,9 +410,13 @@ namespace Subtext.Web.Admin.UserControls
 						Entries.Update(entry);
 
                         if (entry.Enclosure == null && enclosureId != 0)
+                        {
                             Enclosures.Delete(enclosureId);
+                        }
                         else if (entry.Enclosure != null && entry.Enclosure.Id != 0)
+                        {
                             Enclosures.Update(entry.Enclosure);
+                        }
                         else if (entry.Enclosure != null && entry.Enclosure.Id == 0)
                         {
                             entry.Enclosure.EntryId = entry.Id;
@@ -422,7 +427,6 @@ namespace Subtext.Web.Admin.UserControls
 					}
 					else
 					{
-						entry.DateCreated = Config.CurrentBlog.TimeZone.Now;						
 						_postId = Entries.Create(entry);
 
                         if(entry.Enclosure != null)

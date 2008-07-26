@@ -232,7 +232,9 @@ namespace Subtext.Framework
 		public static int Create(Entry entry)
 		{
             if (entry == null)
+            {
                 throw new ArgumentNullException("entry");//Resources.ArgumentNull_Generic);
+            }
 
             Debug.Assert(entry.PostType != PostType.None, "Posttype should never be null.");
 
@@ -252,10 +254,17 @@ namespace Subtext.Framework
 				entry.DateCreated = Config.CurrentBlog.TimeZone.Now;
 			}
 
-			if(entry.IsActive && entry.IncludeInMainSyndication)
-				entry.DateSyndicated = Config.CurrentBlog.TimeZone.Now;
-			else
-				entry.DateSyndicated = NullValue.NullDateTime;
+            if (entry.IsActive && entry.IncludeInMainSyndication)
+            {
+                if (NullValue.IsNull(entry.DateSyndicated))
+                {
+                    entry.DateSyndicated = Config.CurrentBlog.TimeZone.Now;
+                }
+            }
+            else
+            {
+                entry.DateSyndicated = NullValue.NullDateTime;
+            }
 
 			int[] categoryIds = {};
 			if(entry.Categories.Count > 0)

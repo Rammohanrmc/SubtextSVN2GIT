@@ -8,7 +8,7 @@ use the following search and replace expressions to convert the
 script to use INFORMATION_SCHEMA.
 
 SEARCH:  IF:b* EXISTS \(SELECT \* FROM dbo\.sysobjects WHERE id = OBJECT_ID\(N'\[[^\]]+\]\.\[{[^\]]+}\]'\) AND OBJECTPROPERTY\(id,:b*N'IsProcedure'\) = 1\)
-REPLACE: IF EXISTS (SELECT * FROM [INFORMATION_SCHEMA].[ROUTINES] WHERE ROUTINE_NAME = '\1' AND ROUTINE_SCHEMA = '<dbUsker,varchar,dbo>')
+REPLACE: IF EXISTS (SELECT * FROM [INFORMATION_SCHEMA].[ROUTINES] WHERE ROUTINE_NAME = '\1' AND ROUTINE_SCHEMA = '<dbuser,varchar,dbo>')
 
 */
 
@@ -1142,7 +1142,7 @@ FROM [<dbUser,varchar,dbo>].[subtext_Content]
 WHERE	PostType = @PostType 
 	AND BlogId = COALESCE(@BlogId, BlogId)
 	AND PostConfig & @PostConfig = @PostConfig
-	AND (DateSyndicated IS NULL OR DateSyndicated <= getdate() AND PostConfig & 1 = 1)
+	AND (@PostConfig & 1 != 1 OR DateSyndicated <= getdate())
 ORDER BY ISNULL([DateSyndicated], [DateAdded]) DESC
 
 SET ROWCOUNT 0
