@@ -22,7 +22,7 @@
 			        <%# DataBinder.Eval(Container.DataItem, "Title") %></asp:HyperLink>
 			</td>
 			<td>
-				<%# DataBinder.Eval(Container.DataItem, "IsActive") %>
+				<%# IsActiveText(Container.DataItem)%>
 			</td>												
 			<td>
 				<%# DataBinder.Eval(Container.DataItem, "WebCount") %>
@@ -48,7 +48,7 @@
 			        <%# DataBinder.Eval(Container.DataItem, "Title") %></asp:HyperLink>
 			</td>
 			<td>
-				<%# DataBinder.Eval(Container.DataItem, "IsActive") %>
+				<%# IsActiveText(Container.DataItem)%>
 			</td>
 			<td>
 				<%# DataBinder.Eval(Container.DataItem, "WebCount") %>

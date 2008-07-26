@@ -55,6 +55,24 @@ namespace Subtext.Web.Admin.UserControls {
             Server.Transfer("../" + Constants.URL_CONFIRM);
         }
 
+        protected string IsActiveText(object entryObject) 
+        {
+            Entry entry = entryObject as Entry;
+            if (entry == null)
+                throw new InvalidOperationException("Entry was null when it shouldn't be.");
+
+            string active = "False";
+            if (entry.IsActive) 
+            {
+                active = "True";
+                if (entry.DateSyndicated > DateTime.Now) 
+                {
+                    active += "<em> on " + entry.DateSyndicated.ToShortDateString() + "</em>";
+                }
+            }
+            return active;
+        }
+
 
         private void BindList() 
         {
