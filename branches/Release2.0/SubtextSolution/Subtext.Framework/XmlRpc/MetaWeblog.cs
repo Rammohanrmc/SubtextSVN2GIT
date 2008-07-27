@@ -203,7 +203,13 @@ namespace Subtext.Framework.XmlRpc
                     entry.Categories.AddRange(post.categories);
 
                 entry.PostType = PostType.BlogPost;
+                //User trying to change future dating.
+                if (post.dateCreated > DateTime.Now && publish) 
+                {
+                    entry.DateSyndicated = post.dateCreated;
+                }
                 entry.IsActive = publish;
+                
 
                 entry.DateModified = Config.CurrentBlog.TimeZone.Now;
                 int[] categoryIds = { };
