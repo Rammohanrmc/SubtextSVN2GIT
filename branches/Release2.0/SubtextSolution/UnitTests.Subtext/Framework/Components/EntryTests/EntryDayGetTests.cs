@@ -152,17 +152,17 @@ namespace UnitTests.Subtext.Framework.Components.EntryTests
         {
             //Create some entries.
             Entry entryZero = UnitTestHelper.CreateEntryInstanceForSyndication("me", "title-zero", "body-zero");
+            Thread.Sleep(500);
             Entry entryOne = UnitTestHelper.CreateEntryInstanceForSyndication("me", "title-one", "body-one");
+            Thread.Sleep(500);
             Entry entryTwo = UnitTestHelper.CreateEntryInstanceForSyndication("me", "title-two", "body-two");
             entryTwo.IsActive = false;
-            Entry entryThree = UnitTestHelper.CreateEntryInstanceForSyndication("me", "title-three", "body-zero");
+            Thread.Sleep(500);
+            Entry entryThree = UnitTestHelper.CreateEntryInstanceForSyndication("me", "title-three", "body-three");
 
             //Persist entries.
-            entryZero.DateCreated = DateTime.Now.AddSeconds(-100);
             Entries.Create(entryZero);
-            entryOne.DateCreated = DateTime.Now.AddSeconds(-50);
             Entries.Create(entryOne);
-            entryTwo.DateCreated = DateTime.Now.AddSeconds(-25);
             Entries.Create(entryTwo);
             Entries.Create(entryThree);
 
