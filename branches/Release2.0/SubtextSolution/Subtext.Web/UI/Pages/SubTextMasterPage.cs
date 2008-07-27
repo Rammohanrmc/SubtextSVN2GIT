@@ -169,7 +169,9 @@ namespace Subtext.Web.UI.Pages
                 else
                     mt.HttpEquiv = tag.HttpEquiv;
 
-                metaTagsPlaceHolder.Controls.Add(new Literal() { Text = Environment.NewLine });
+                Literal newLineLiteral = new Literal();
+                newLineLiteral.Text = Environment.NewLine;
+                metaTagsPlaceHolder.Controls.Add(newLineLiteral);
                 metaTagsPlaceHolder.Controls.Add(mt);
             }
         }
