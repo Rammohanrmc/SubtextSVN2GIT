@@ -77,7 +77,7 @@
 <st:PagingControl id="resultsPager" runat="server" 
 		PrefixText="<div>Goto page</div>" 
 		LinkFormatActive='<a href="{0}" class="Current">{1}</a>' 
-		UrlFormat="Posts/Edit.aspx?pg={0}" 
+		UrlFormat="Default.aspx?pg={0}" 
 		CssClass="Pager" />
 <br class="clear" />
 
