@@ -92,6 +92,10 @@ namespace Subtext.Framework.XmlRpc
             entry.PostType = postType;
 
             entry.IsActive = publish;
+            if (publish) 
+            { 
+                entry.DateSyndicated = entry.DateCreated;
+            }
             entry.AllowComments = true;
             entry.DisplayOnHomePage = true;
             entry.IncludeInMainSyndication = true;

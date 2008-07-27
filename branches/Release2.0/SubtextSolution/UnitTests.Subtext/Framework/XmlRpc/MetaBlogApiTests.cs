@@ -71,6 +71,31 @@ namespace UnitTests.Subtext.Framework.XmlRpc
 
         [Test]
         [RollBack]
+        public void NewPostWithFutureDateSyndicatesInTheFuture() {
+            string hostname = UnitTestHelper.GenerateRandomString();
+            Assert.IsTrue(Config.CreateBlog("", "username", "password", hostname, ""));
+            UnitTestHelper.SetHttpContextWithBlogRequest(hostname, "");
+            Config.CurrentBlog.AllowServiceAccess = true;
+
+            MetaWeblog api = new MetaWeblog();
+            Post post = new Post();
+            post.categories = null;
+            post.description = "A unit test";
+            post.title = "A unit testing title";
+            post.dateCreated = DateTime.Now.AddDays(1);
+
+            string result = api.newPost(Config.CurrentBlog.Id.ToString(CultureInfo.InvariantCulture), "username", "password", post, true);
+            int entryId = int.Parse(result);
+
+            Entry entry = Entries.GetEntry(entryId, PostConfig.None, true);
+            Assert.IsNotNull(entry, "Guess the entry did not get created properly.");
+            Assert.IsTrue(entry.DateSyndicated > DateTime.Now.AddDays(.75));
+            Assert.IsTrue(entry.DateSyndicated <= DateTime.Now.AddDays(1));
+        }
+
+
+        [Test]
+        [RollBack]
         public void NewPostWithEnclosureCreatesEntryWithEnclosure()
         {
             string hostname = UnitTestHelper.GenerateRandomString();
