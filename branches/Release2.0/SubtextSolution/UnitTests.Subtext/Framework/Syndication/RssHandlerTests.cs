@@ -20,6 +20,11 @@ namespace UnitTests.Subtext.Framework.Syndication
 	[TestFixture]
 	public class RssHandlerTests
 	{
+
+        const int PacificTimeZoneId = -2037797565;
+        const int HawaiiTimeZoneId = 1106595067;
+
+
 		/// <summary>
 		/// Tests writing a simple RSS feed from some database entries.
 		/// </summary>
@@ -140,9 +145,10 @@ namespace UnitTests.Subtext.Framework.Syndication
 			Entries.Create(UnitTestHelper.CreateEntryInstanceForSyndication("Haacked", "Title Test", "Body Rocking"));
 			int id = Entries.Create(UnitTestHelper.CreateEntryInstanceForSyndication("Haacked", "Title Test 2", "Body Rocking Pt 2"));
             Entry entry = Entries.GetEntry(id, PostConfig.None, false);
+		    DateTime date = entry.DateSyndicated;
 			entry.IncludeInMainSyndication = false;
 			Entries.Update(entry);
-			Assert.AreEqual(NullValue.NullDateTime, entry.DateSyndicated);
+            Assert.AreEqual(date, entry.DateSyndicated);
 
 			XmlNodeList itemNodes = GetRssHandlerItemNodes(sb);
 			Assert.AreEqual(1, itemNodes.Count, "expected one item node.");
@@ -190,10 +196,17 @@ namespace UnitTests.Subtext.Framework.Syndication
 			Entry firstEntry = Entries.GetEntry(firstId, PostConfig.None, false);
 			firstEntry.IncludeInMainSyndication = false;
 			Entries.Update(firstEntry);
-			
+
+            sb = new StringBuilder();
+            output = new StringWriter(sb);
+            UnitTestHelper.SetHttpContextWithBlogRequest(hostName, "", "", "", output);
+            itemNodes = GetRssHandlerItemNodes(sb);
+		    Assert.AreEqual(1, itemNodes.Count, "Here we were expeting only one item");
+
 		    Thread.Sleep(10);
-			//Now add it back in.
+			//Now add it back in changing the DateSyndicated
 			firstEntry.IncludeInMainSyndication = true;
+		    firstEntry.DateSyndicated = Config.CurrentBlog.TimeZone.Now;
 			Entries.Update(firstEntry);
 			
 			sb = new StringBuilder();
@@ -202,9 +215,48 @@ namespace UnitTests.Subtext.Framework.Syndication
 			itemNodes = GetRssHandlerItemNodes(sb);
 			
 			//Expect the second item to be the second entry.
+            Assert.AreEqual(2, itemNodes.Count, "Here we were expeting 2 items");
 			Assert.AreEqual("Title Test", itemNodes[0].SelectSingleNode("title").InnerText, "Not what we expected for the first title.");
 			Assert.AreEqual("Title Test 2", itemNodes[1].SelectSingleNode("title").InnerText, "Not what we expected for the second title.");
 		}
+
+
+
+        [Test]
+        [RollBack]
+        public void RssHandlerHandlesDoesNotSyndicateFuturePosts()
+        {
+            // Setup
+            string hostName = Guid.NewGuid().ToString().Replace("-", "") + ".com";
+            StringBuilder sb = new StringBuilder();
+            TextWriter output = new StringWriter(sb);
+            UnitTestHelper.SetHttpContextWithBlogRequest(hostName, "", "", "", output);
+            Assert.IsTrue(Config.CreateBlog("", "username", "password", hostName, string.Empty));
+            Config.CurrentBlog.TimeZoneId = HawaiiTimeZoneId;
+
+            //Create two entries, but only include one in main syndication.
+            Entries.Create(UnitTestHelper.CreateEntryInstanceForSyndication("Haacked", "Title Test", "Body Rocking",null, NullValue.NullDateTime));
+            Entry futureEntry = UnitTestHelper.CreateEntryInstanceForSyndication("Haacked", "Title Test 2", "Body Rocking Pt 2", null, NullValue.NullDateTime);
+            futureEntry.DateSyndicated = Config.CurrentBlog.TimeZone.Now.AddMinutes(20);
+            Entries.Create(futureEntry);
+
+            XmlNodeList itemNodes = GetRssHandlerItemNodes(sb);
+            Assert.AreEqual(1, itemNodes.Count, "expected one item node.");
+
+            Assert.AreEqual("Title Test", itemNodes[0].SelectSingleNode("title").InnerText, "Not what we expected for the first title.");
+            Assert.AreEqual("Body Rocking", itemNodes[0].SelectSingleNode("description").InnerText.Substring(0, "Body Rocking".Length), "Not what we expected for the first body.");
+
+
+            Config.CurrentBlog.TimeZoneId = PacificTimeZoneId;
+
+            sb = new StringBuilder();
+            output = new StringWriter(sb);
+            UnitTestHelper.SetHttpContextWithBlogRequest(hostName, "", "", "", output);
+            itemNodes = GetRssHandlerItemNodes(sb);
+            Assert.AreEqual(2, itemNodes.Count, "Expected two items in the feed now.");
+        }
+
+
 
 		private static XmlNodeList GetRssHandlerItemNodes(StringBuilder sb)
 		{

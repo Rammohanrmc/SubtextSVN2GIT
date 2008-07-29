@@ -534,8 +534,8 @@ namespace Subtext.Framework
 			if (NullValue.IsNull(entry.DateSyndicated) && entry.IsActive && entry.IncludeInMainSyndication)
 				entry.DateSyndicated = Config.CurrentBlog.TimeZone.Now;
 
-			if (!entry.IncludeInMainSyndication)
-				entry.DateSyndicated = NullValue.NullDateTime;
+            //if (!entry.IncludeInMainSyndication)
+            //    entry.DateSyndicated = NullValue.NullDateTime;
 
             Update(entry, null);
 		}
