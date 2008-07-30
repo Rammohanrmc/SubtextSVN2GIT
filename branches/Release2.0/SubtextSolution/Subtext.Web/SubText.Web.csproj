@@ -355,8 +355,8 @@
     <Compile Include="Admin\WebUI\Controls\LinkList.cs" />
     <Compile Include="Admin\WebUI\Controls\MessagePanel.cs" />
     <Compile Include="Admin\Credits.aspx.cs">
-      <SubType>ASPXCodeBehind</SubType>
       <DependentUpon>Credits.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Admin\Credits.aspx.designer.cs">
       <DependentUpon>Credits.aspx</DependentUpon>
