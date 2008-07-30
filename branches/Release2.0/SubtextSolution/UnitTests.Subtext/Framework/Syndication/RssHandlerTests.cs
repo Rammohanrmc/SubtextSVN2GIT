@@ -42,8 +42,9 @@ namespace UnitTests.Subtext.Framework.Syndication
 			Config.CurrentBlog.Email = "Subtext@example.com";
 			Config.CurrentBlog.RFC3229DeltaEncodingEnabled = false;
 
-			DateTime dateCreated = DateTime.Now;
-			Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("Author", "testtitle", "testbody", null, dateCreated);
+			DateTime dateSyndicated = DateTime.Now.AddDays(-1);
+            Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("Author", "testtitle", "testbody", null, NullValue.NullDateTime);
+		    entry.DateSyndicated = dateSyndicated;
 			Entries.Create(entry); //persist to db.
 
 
@@ -51,7 +52,7 @@ namespace UnitTests.Subtext.Framework.Syndication
 			Assert.AreEqual(1, itemNodes.Count, "expected one item nodes.");
 
 			string urlFormat = "http://{0}/archive/{1:yyyy/MM/dd}/{2}.aspx";
-			string expectedUrl = string.Format(urlFormat, hostName, dateCreated, "testtitle");
+            string expectedUrl = string.Format(urlFormat, hostName, dateSyndicated, "testtitle");
 
 			Assert.AreEqual("testtitle", itemNodes[0].SelectSingleNode("title").InnerText, "Not what we expected for the title.");
 			Assert.AreEqual(expectedUrl, itemNodes[0].SelectSingleNode("link").InnerText, "Not what we expected for the link.");
@@ -73,8 +74,9 @@ namespace UnitTests.Subtext.Framework.Syndication
             Config.CurrentBlog.Email = "Subtext@example.com";
             Config.CurrentBlog.RFC3229DeltaEncodingEnabled = false;
 
-            DateTime dateCreated = DateTime.Now;
-            Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("Author", "testtitle", "testbody", null, dateCreated);
+            DateTime dateSyndicated = DateTime.Now.AddDays(-1);
+            Entry entry = UnitTestHelper.CreateEntryInstanceForSyndication("Author", "testtitle", "testbody", null, NullValue.NullDateTime);
+            entry.DateSyndicated = dateSyndicated;
             int entryId = Entries.Create(entry); //persist to db.
 
             string enclosureUrl = "http://perseus.franklins.net/hanselminutes_0107.mp3";
@@ -89,7 +91,7 @@ namespace UnitTests.Subtext.Framework.Syndication
             Assert.AreEqual(1, itemNodes.Count, "expected one item nodes.");
 
             string urlFormat = "http://{0}/archive/{1:yyyy/MM/dd}/{2}.aspx";
-            string expectedUrl = string.Format(urlFormat, hostName, dateCreated, "testtitle");
+            string expectedUrl = string.Format(urlFormat, hostName, dateSyndicated, "testtitle");
 
             Assert.AreEqual("testtitle", itemNodes[0].SelectSingleNode("title").InnerText, "Not what we expected for the title.");
             Assert.AreEqual(expectedUrl, itemNodes[0].SelectSingleNode("link").InnerText, "Not what we expected for the link.");

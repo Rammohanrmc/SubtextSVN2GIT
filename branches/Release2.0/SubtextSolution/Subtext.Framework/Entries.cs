@@ -254,7 +254,7 @@ namespace Subtext.Framework
 				entry.DateCreated = Config.CurrentBlog.TimeZone.Now;
 			}
 
-            if (entry.IsActive && entry.IncludeInMainSyndication)
+            if (entry.IsActive)
             {
                 if (NullValue.IsNull(entry.DateSyndicated))
                 {
