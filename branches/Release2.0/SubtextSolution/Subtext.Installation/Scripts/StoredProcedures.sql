@@ -4390,7 +4390,7 @@ GO
 CREATE PROC [<dbUser,varchar,dbo>].[subtext_SearchEntries]
 (
 	@BlogId int
-	, @SearchStr nvarchar(30)
+	,@SearchStr nvarchar(30)
 	,@CurrentDateTime datetime
 )
 as

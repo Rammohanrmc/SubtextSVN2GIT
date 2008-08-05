@@ -4,6 +4,7 @@ using Subtext.Extensibility.Interfaces;
 using Subtext.Framework;
 using System.Globalization;
 using Subtext.Extensibility;
+using Subtext.Framework.Configuration;
 using Subtext.Web.Admin.Pages;
 
 namespace Subtext.Web.Admin.UserControls {
@@ -65,7 +66,7 @@ namespace Subtext.Web.Admin.UserControls {
             if (entry.IsActive) 
             {
                 active = "True";
-                if (entry.DateSyndicated > DateTime.Now) 
+                if (entry.DateSyndicated > Config.CurrentBlog.TimeZone.Now) 
                 {
                     active += "<em> on " + entry.DateSyndicated.ToShortDateString() + "</em>";
                 }

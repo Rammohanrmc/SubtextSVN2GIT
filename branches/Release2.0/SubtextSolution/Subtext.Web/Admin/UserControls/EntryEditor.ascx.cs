@@ -175,7 +175,7 @@ namespace Subtext.Web.Admin.UserControls
 			}
 		
 			txbTitle.Text = entry.Title;
-            if (!NullValue.IsNull(entry.DateSyndicated) && entry.DateSyndicated > DateTime.Now) {
+            if (!NullValue.IsNull(entry.DateSyndicated) && entry.DateSyndicated > Config.CurrentBlog.TimeZone.Now) {
                 txtPostDate.Text = entry.DateSyndicated.ToString(CultureInfo.CurrentCulture);
             }
 
