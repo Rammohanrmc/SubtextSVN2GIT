@@ -47,7 +47,7 @@ namespace Subtext.ImportExport
             base.Initialize(name, configValue);
             if (string.IsNullOrEmpty(ConnectionString))
             {
-                ConnectionString = Config.ConnectionString;
+                ConnectionString = Config.ConnectionString.RawOriginal;
             }
         }
 
