@@ -1259,6 +1259,8 @@ BEGIN
 		, MobileSkin
 		, MobileSkinCssFile
 		, OpenIDUrl
+		, OpenIDServer
+		, OpenIDDelegate
 		, CardSpaceHash
 	FROM [<dbUser,varchar,dbo>].[subtext_Config]
 END
@@ -1301,6 +1303,8 @@ BEGIN
 		, MobileSkin
 		, MobileSkinCssFile
 		, OpenIDUrl
+		, OpenIDServer
+		, OpenIDDelegate
 		, CardSpaceHash
 	FROM [<dbUser,varchar,dbo>].[subtext_Config]
 		LEFT OUTER JOIN [<dbUser,varchar,dbo>].[subtext_BlogGroup] bgroup ON bgroup.Id = [subtext_Config].BlogGroupId
