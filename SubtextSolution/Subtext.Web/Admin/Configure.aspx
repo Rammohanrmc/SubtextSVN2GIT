@@ -1,15 +1,16 @@
 <%@ Page Language="C#" EnableTheming="false" Title="Subtext Admin - Configure" MasterPageFile="~/Admin/WebUI/AdminPageTemplate.Master"
-    CodeBehind="Configure.aspx.cs" Inherits="Subtext.Web.Admin.Pages.Configure" %>
+    Codebehind="Configure.aspx.cs" Inherits="Subtext.Web.Admin.Pages.Configure" %>
 
 <asp:Content ID="actions" ContentPlaceHolderID="actionsHeading" runat="server">
-    <h2>
-        Options</h2>
+    <h2>Options</h2>
 </asp:Content>
+
 <asp:Content ID="categoryListTitle" ContentPlaceHolderID="categoryListHeading" runat="server">
 </asp:Content>
-<asp:Content ID="categoriesLinkListing" ContentPlaceHolderID="categoryListLinks"
-    runat="server">
+
+<asp:Content ID="categoriesLinkListing" ContentPlaceHolderID="categoryListLinks" runat="server">
 </asp:Content>
+
 <asp:Content ID="configurationOptions" ContentPlaceHolderID="pageContent" runat="server">
     <st:MessagePanel ID="Messages" runat="server" />
     <h2>

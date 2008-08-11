@@ -638,7 +638,6 @@ namespace Subtext.Framework.Data
 		{
 			const string dateformat = "{0:00}/{1:00}/{2:0000}";
 			string dt; //
-            DateTime parsedDate;
 			ArchiveCount ac;// new ArchiveCount();
             IList<ArchiveCount> acc = new Collection<ArchiveCount>();
 			while(reader.Read())
@@ -646,9 +645,8 @@ namespace Subtext.Framework.Data
 				ac = new ArchiveCount();
 				dt = string.Format(CultureInfo.InvariantCulture, dateformat, ReadInt32(reader, "Month"),ReadInt32(reader, "Day"),ReadInt32(reader, "Year"));
 				// FIX: BUG SF1423271 Archives Links
-                if (!DateTime.TryParseExact(dt, "MM/dd/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out parsedDate))
-                    break;
-                ac.Date = parsedDate;
+				ac.Date = DateTime.ParseExact(dt,"MM/dd/yyyy",CultureInfo.InvariantCulture);
+                
 				ac.Count = ReadInt32(reader, "Count");
                 //TODO: This broke the unit tests: ac.Title = ReadString(reader, "Title");
 				//TODO: This broke the unit tests: ac.Id = ReadInt32(reader, "Id");
