@@ -247,7 +247,7 @@ namespace Subtext.Framework.Text
 							{
 								xmlWriter.WriteStartElement(reader.LocalName);
 								xmlWriter.WriteAttributes(reader, true);
-								if (reader.LocalName == "a" || reader.LocalName == "script")
+								if (reader.LocalName == "a" || reader.LocalName == "script" || reader.LocalName == "iframe")
 									xmlWriter.WriteFullEndElement();
 								else
 									xmlWriter.WriteEndElement();
@@ -273,8 +273,8 @@ namespace Subtext.Framework.Text
 						case XmlNodeType.EndElement:
 							if (reader.LocalName == "a")
 								insideAnchor = false;
-							
-							if (reader.LocalName == "a" || reader.LocalName == "script")
+
+							if (reader.LocalName == "a" || reader.LocalName == "script" || reader.LocalName == "iframe")
 								xmlWriter.WriteFullEndElement();
 							else
 								xmlWriter.WriteEndElement();
