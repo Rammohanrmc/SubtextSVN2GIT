@@ -176,6 +176,7 @@ namespace Subtext.Web.Admin.Pages
 
 		private void dgrCategories_EditCommand(object source, DataGridCommandEventArgs e)
 		{
+            BindLocalUI();
 			dgrItems.EditItemIndex = e.Item.ItemIndex;
 			BindList();
 			this.Messages.Clear();
