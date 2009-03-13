@@ -35,6 +35,9 @@ namespace Subtext.Web.UI
             get
             {
                 BlogInfo blog = Config.CurrentBlog;
+                if (blog == null) {
+                    return null;
+                }
                 BrowserDetectionService service = new BrowserDetectionService(HttpContext.Current, blog.Id);
                 BrowserInfo capabilities = service.DetectBrowserCapabilities();
 
