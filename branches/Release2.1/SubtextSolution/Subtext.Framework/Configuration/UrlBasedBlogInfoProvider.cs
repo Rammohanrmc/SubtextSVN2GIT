@@ -159,7 +159,7 @@ namespace Subtext.Framework.Configuration
 					return GetAggregateBlog(mCacheKey);
 				}
 
-				if (InstallationManager.IsOnLoginPage)
+				if (InstallationManager.IsOnLoginPage || InstallationManager.IsInInstallDirectory)
 				{
 					return null;
 				}
